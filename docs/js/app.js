@@ -23,13 +23,7 @@ const NAV = [
           { label: 'Applying tokens',  id: 'foundations/tokens/applying' },
         ]
       },
-      { label: 'Color',         id: 'foundations/color' },
-      { label: 'Elevation',     id: 'foundations/elevation' },
-      { label: 'Iconography',   id: 'foundations/iconography' },
-      { label: 'Spacing',       id: 'foundations/spacing' },
-      { label: 'Typography',    id: 'foundations/typography' },
-      { label: 'Motion',        id: 'foundations/motion' },
-      { label: 'Border Radius', id: 'foundations/border-radius' },
+      // Color ve sonrası şimdilik kaldırıldı
     ]
   },
   {
