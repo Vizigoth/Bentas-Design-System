@@ -520,8 +520,8 @@ code {
 
 /* ── TOC (screenshot 1 style — left border sidebar) ────────── */
 .toc {
-  width: var(--toc-w);
   flex-shrink: 0;
+  width: max-content;
   padding-top: 36px;
   border-left: 1px solid var(--bt-border-muted);
   margin-left: 8px;
