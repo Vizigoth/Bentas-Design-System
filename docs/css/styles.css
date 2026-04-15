@@ -515,13 +515,11 @@ code {
 .placeholder-title { font-size: 14px; font-weight: 600; color: var(--bt-text-default); margin-bottom: 6px; }
 .placeholder-text  { font-size: 13.5px; color: var(--bt-text-muted); }
 
-/* ── TOC (screenshot 1 style — left border sidebar) ────────── */
+/* ── TOC ────────────────────────────────────────────────────── */
 .toc {
   flex-shrink: 0;
-  width: max-content;
-  min-width: 160px;
-  padding: 36px 32px 0 24px;
-  border-left: 1px solid var(--bt-border-muted);
+  width: 220px;
+  padding: 36px 8px 0 8px;
 }
 
 .toc-inner {
@@ -534,30 +532,33 @@ code {
   font-size: 12px;
   font-weight: 600;
   color: var(--bt-text-muted);
-  padding: 0 0 10px 20px;
+  padding: 0 10px 8px 10px;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .toc-link {
   display: block;
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--bt-text-emphasis);
-  padding: 7px 12px 7px 18px;
-  border-left: 2px solid transparent;
-  margin-left: -1px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-bottom: 1px;
   cursor: pointer;
-  transition: color 100ms, background 100ms, border-color 100ms;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 100ms, background 100ms;
 }
 
 .toc-link:hover {
   color: var(--bt-text-default);
-  background: var(--bt-surface-light);
+  background: var(--bt-surface-subtle);
 }
 
 .toc-link.active {
   color: var(--bt-text-brand);
-  font-weight: 500;
-  border-left-color: var(--bt-surface-brand);
+  font-weight: 600;
   background: var(--bt-surface-brand-light);
 }
 
