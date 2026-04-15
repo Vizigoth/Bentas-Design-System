@@ -38,7 +38,7 @@
   <!-- ── Main ── -->
   <div class="main">
 
-    <!-- Main Header -->
+    <!-- Main Header (full width) -->
     <header class="main-header">
       <div class="main-header-left">
         <span class="header-title">Mobile</span>
@@ -53,16 +53,25 @@
       </div>
     </header>
 
-    <!-- Tabs bar -->
-    <div class="tabs-bar" id="tabs-bar" style="display:none"></div>
+    <!-- Body: content column + TOC column -->
+    <div class="main-body">
 
-    <!-- Content + TOC -->
-    <div class="content-wrap">
-      <div class="content">
-        <h1 class="page-title" id="page-title" style="display:none"></h1>
-        <div id="content-body"></div>
+      <!-- Center column: tabs + scrollable content -->
+      <div class="content-col">
+        <div class="tabs-bar" id="tabs-bar" style="display:none"></div>
+        <div class="content-wrap">
+          <div class="content">
+            <h1 class="page-title" id="page-title" style="display:none"></h1>
+            <div id="content-body"></div>
+          </div>
+        </div>
       </div>
-      <div class="toc" id="toc" style="display:none"></div>
+
+      <!-- Right column: TOC panel -->
+      <aside class="toc-col" id="toc-col" style="display:none">
+        <div id="toc"></div>
+      </aside>
+
     </div>
 
   </div>

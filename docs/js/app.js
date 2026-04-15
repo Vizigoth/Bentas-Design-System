@@ -379,19 +379,18 @@ function renderContent(page) {
 
 // ── TOC ─────────────────────────────────────────────────────
 function renderToc(page) {
-  const el = document.getElementById('toc');
+  const col = document.getElementById('toc-col');
+  const el  = document.getElementById('toc');
   if (!page.toc || page.toc.length === 0) {
-    el.style.display = 'none';
+    col.style.display = 'none';
     return;
   }
-  el.style.display = 'block';
+  col.style.display = 'block';
   el.innerHTML = `
-    <div class="toc-inner">
-      <div class="toc-label">On this page</div>
-      ${page.toc.map((t,i) => `
-        <div class="toc-link ${i === 0 ? 'active' : ''}" onclick="scrollToSection('${t}')">${t}</div>
-      `).join('')}
-    </div>
+    <div class="toc-label">On this page</div>
+    ${page.toc.map((t,i) => `
+      <div class="toc-link ${i === 0 ? 'active' : ''}" onclick="scrollToSection('${t}')">${t}</div>
+    `).join('')}
   `;
 }
 
