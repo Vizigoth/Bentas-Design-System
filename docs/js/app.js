@@ -123,28 +123,46 @@ const PAGES = {
       const title = 'Foundation Tokens';
 
       const sizes = [
-        ['sizing.50','{sizing-base}*0.5','4px',4],
-        ['sizing.100','{sizing-base}*1','8px',8],
-        ['sizing.200','{sizing-base}*2','16px',16],
-        ['sizing.300','{sizing-base}*3','24px',24],
-        ['sizing.400','{sizing-base}*4','32px',32],
-        ['sizing.500','{sizing-base}*5','40px',40],
-        ['sizing.550','{sizing-base}*5.5','44px',44],
-        ['sizing.600','{sizing-base}*6','48px',48],
-        ['sizing.700','{sizing-base}*7','56px',56],
+        ['bt-base-sizing-none', '0rem',     '0px',   0],
+        ['bt-base-sizing-3xs',  '0.25rem',  '4px',   4],
+        ['bt-base-sizing-2xs',  '0.5rem',   '8px',   8],
+        ['bt-base-sizing-xs',   '0.75rem',  '12px',  12],
+        ['bt-base-sizing-sm',   '1rem',     '16px',  16],
+        ['bt-base-sizing-md',   '1.25rem',  '20px',  20],
+        ['bt-base-sizing-lg',   '1.5rem',   '24px',  24],
+        ['bt-base-sizing-xl',   '1.75rem',  '28px',  28],
+        ['bt-base-sizing-2xl',  '2rem',     '32px',  32],
+        ['bt-base-sizing-3xl',  '2.25rem',  '36px',  36],
+        ['bt-base-sizing-4xl',  '2.5rem',   '40px',  40],
+        ['bt-base-sizing-5xl',  '2.75rem',  '44px',  44],
+        ['bt-base-sizing-6xl',  '3rem',     '48px',  48],
+        ['bt-base-sizing-7xl',  '3.25rem',  '52px',  52],
+        ['bt-base-sizing-8xl',  '3.5rem',   '56px',  56],
+        ['bt-base-sizing-9xl',  '3.75rem',  '60px',  60],
+        ['bt-base-sizing-10xl', '4rem',     '64px',  64],
+        ['bt-base-sizing-11xl', '4.25rem',  '68px',  68],
+        ['bt-base-sizing-12xl', '4.5rem',   '72px',  72],
+        ['bt-base-sizing-13xl', '4.75rem',  '76px',  76],
+        ['bt-base-sizing-14xl', '5rem',     '80px',  80],
+        ['bt-base-sizing-15xl', '5.25rem',  '84px',  84],
+        ['bt-base-sizing-16xl', '5.5rem',   '88px',  88],
+        ['bt-base-sizing-17xl', '5.75rem',  '92px',  92],
+        ['bt-base-sizing-18xl', '6rem',     '96px',  96],
+        ['bt-base-sizing-19xl', '6.25rem',  '100px', 100],
+        ['bt-base-sizing-20xl', '7.5rem',   '120px', 120],
       ];
 
       const ourTokensHtml = `
         <h2 id="Sizing">Sizing</h2>
         <table class="token-table">
-          <thead><tr><th>Name</th><th>Formula</th><th>Value</th><th>Example</th></tr></thead>
+          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
-            ${sizes.map(([name,formula,val,px]) => `
+            ${sizes.map(([name, val, px, size]) => `
               <tr>
                 <td><span class="token-name">${name}</span></td>
-                <td>${formula}</td>
                 <td>${val}</td>
-                <td><div class="swatch-wrap"><div class="swatch" style="width:${Math.min(px,64)}px;height:${Math.min(px,64)}px"></div></div></td>
+                <td>${px}</td>
+                <td><div class="swatch-wrap"><div class="swatch" style="width:${Math.min(size,64)}px;height:${Math.min(size,64)}px;border-radius:2px"></div></div></td>
               </tr>
             `).join('')}
           </tbody>
