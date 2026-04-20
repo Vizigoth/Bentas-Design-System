@@ -17,7 +17,6 @@ const NAV = [
     label: 'Foundations', children: [
       {
         label: 'Design Tokens', children: [
-          { label: 'Overview',    id: 'foundations/tokens/overview' },
           { label: 'Our Tokens',  id: 'foundations/tokens/our-tokens' },
         ]
       },
@@ -118,14 +117,11 @@ const PAGES = {
   },
 
   'foundations/tokens/our-tokens': {
-    tabs: ['Overview', 'Our tokens', 'Applying tokens'],
-    toc: ['Foundation tokens', 'Sizing', 'Spacing', 'Border radius', 'Border width', 'Opacity', 'Shadow', 'Typography'],
+    tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
+    toc: ['Sizing', 'Spacing', 'Border Radius'],
     render: (tab) => {
-      const title = 'Foundation tokens';
-      if (tab === 'Overview') return { title, html: `<p class="page-desc">Foundation tokens define our global design language — spacing, sizing, radii, typography styles, and more.</p><div class="placeholder"><div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="placeholder-title">Overview</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
-      if (tab === 'Applying tokens') return { title, html: `<p class="page-desc">How to apply tokens in your designs and code.</p><div class="placeholder"><div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="placeholder-title">Applying tokens</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
+      const title = 'Foundation Tokens';
 
-      // "Our tokens" tab
       const sizes = [
         ['sizing.50','{sizing-base}*0.5','4px',4],
         ['sizing.100','{sizing-base}*1','8px',8],
@@ -137,8 +133,8 @@ const PAGES = {
         ['sizing.600','{sizing-base}*6','48px',48],
         ['sizing.700','{sizing-base}*7','56px',56],
       ];
-      return { title, html: `
-        <p class="page-desc">Foundation tokens define our global design language — spacing, sizing, radii, typography styles, and more. They provide the base values used to build components and layouts.</p>
+
+      const ourTokensHtml = `
         <h2 id="Sizing">Sizing</h2>
         <table class="token-table">
           <thead><tr><th>Name</th><th>Formula</th><th>Value</th><th>Example</th></tr></thead>
@@ -167,7 +163,7 @@ const PAGES = {
             `).join('')}
           </tbody>
         </table>
-        <h2 id="Border radius">Border radius</h2>
+        <h2 id="Border Radius">Border Radius</h2>
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Example</th></tr></thead>
           <tbody>
@@ -180,6 +176,26 @@ const PAGES = {
             `).join('')}
           </tbody>
         </table>
+      `;
+
+      const applyingHtml = `
+        <h2 id="Applying Tokens">How to apply tokens</h2>
+        <p class="page-desc">How to apply tokens in your designs and code.</p>
+        <div class="placeholder">
+          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <div class="placeholder-title">Applying Tokens</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
+      `;
+
+      if (tab === 'Our Tokens')      return { title, html: `<p class="page-desc">Foundation tokens define our global design language — spacing, sizing, radii, and more.</p>${ourTokensHtml}` };
+      if (tab === 'Applying Tokens') return { title, html: applyingHtml };
+
+      // Overview: all content
+      return { title, html: `
+        <p class="page-desc">Foundation tokens define our global design language — spacing, sizing, radii, typography styles, and more. They provide the base values used to build components and layouts.</p>
+        ${ourTokensHtml}
+        ${applyingHtml}
       `};
     }
   },
