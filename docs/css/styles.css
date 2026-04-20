@@ -462,7 +462,9 @@ code {
   text-transform: uppercase;
   color: var(--bt-text-muted);
   border-bottom: 1px solid var(--bt-border-muted);
+  border-right: 1px solid var(--bt-border-muted);
 }
+.token-table th:last-child { border-right: none; }
 
 .token-table td {
   padding: 12px 16px;
