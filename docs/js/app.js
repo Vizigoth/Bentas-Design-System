@@ -245,15 +245,19 @@ const PAGES = {
       const ourTokensHtml = `
         <h2 id="Sizing">Sizing</h2>
         <table class="token-table">
-          <thead><tr><th>Name</th><th>Value (REM)</th><th>Pixel</th></tr></thead>
+          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
-            ${sizes.map(([name, val, px]) => `
+            ${sizes.map(([name, val, px]) => {
+              const pxNum = parseInt(px);
+              const sz = Math.min(pxNum, 80);
+              return `
               <tr>
                 <td><span class="token-name">${name}</span></td>
                 <td>${val}</td>
                 <td>${px}</td>
-              </tr>
-            `).join('')}
+                <td><div class="swatch-wrap">${pxNum > 0 ? `<div class="swatch" style="width:${sz}px;height:${sz}px"></div>` : ''}</div></td>
+              </tr>`;
+            }).join('')}
           </tbody>
         </table>
 

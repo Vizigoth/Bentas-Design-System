@@ -444,28 +444,27 @@ code {
 .token-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid var(--bt-border-muted);
-  border-radius: 8px;
-  overflow: hidden;
   margin: 16px 0 32px;
   font-size: 13.5px;
 }
 
-.token-table thead tr { background: var(--bt-surface-subtle); }
+.token-table thead tr { background: transparent; }
 
 .token-table th {
   text-align: left;
   padding: 10px 16px;
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--bt-text-default);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bt-text-muted);
   border-bottom: 1px solid var(--bt-border-muted);
 }
 
 .token-table td {
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--bt-surface-subtle);
-  color: var(--bt-text-emphasis);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bt-border-muted);
+  color: var(--bt-text-default);
   vertical-align: middle;
 }
 
@@ -474,16 +473,13 @@ code {
 
 .token-name {
   font-family: var(--mono);
-  font-size: 12.5px;
-  color: var(--token-name);
-  background: #fff0f4;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 13px;
+  color: var(--bt-text-default);
   white-space: nowrap;
 }
 
 .swatch-wrap { display: flex; align-items: center; }
-.swatch { border-radius: 4px; border: 1px solid var(--bt-border-muted); background: var(--bt-blue-400); flex-shrink: 0; }
+.swatch { border-radius: 4px; background: var(--bt-blue-600); flex-shrink: 0; }
 
 /* ── Callout ───────────────────────────────────────────────── */
 .callout {
