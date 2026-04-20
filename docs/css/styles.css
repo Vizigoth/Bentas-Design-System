@@ -477,9 +477,16 @@ code {
 .token-table tr:hover td { background: var(--bt-surface-light); }
 
 .token-name {
+  display: inline-block;
   font-family: var(--mono);
-  font-size: 13px;
-  color: var(--bt-text-default);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--bt-gray-900);
+  background: var(--bt-gray-50);
+  border: 1px solid var(--bt-gray-300);
+  padding: 4px 8px;
+  border-radius: 4px;
   white-space: nowrap;
 }
 
