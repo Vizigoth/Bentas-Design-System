@@ -288,14 +288,17 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
-            ${radii.map(([name, rem, px, r]) => `
+            ${radii.map(([name, rem, px, r]) => {
+              const rx = Math.min(r, 24);
+              const svg = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="47" height="47" rx="${rx}" fill="#f1f7fe" stroke="#0d4e97" stroke-dasharray="24 24"/></svg>`;
+              return `
               <tr>
                 <td><span class="token-name">${name}</span></td>
                 <td>${rem}</td>
                 <td>${px}</td>
-                <td><div class="radius-example" style="border-radius:${r === 9999 ? '9999px' : r + 'px'}"></div></td>
-              </tr>
-            `).join('')}
+                <td>${svg}</td>
+              </tr>`;
+            }).join('')}
           </tbody>
         </table>
 
