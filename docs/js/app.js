@@ -155,29 +155,29 @@ const PAGES = {
 
       // ── Spacing (Figma: Space/*)
       const spacing = [
-        ['Space/none', '0px'],
-        ['Space/2xs',  '2px'],
-        ['Space/xs',   '4px'],
-        ['Space/sm',   '6px'],
-        ['Space/md',   '8px'],
-        ['Space/lg',   '10px'],
-        ['Space/xl',   '12px'],
-        ['Space/2xl',  '16px'],
-        ['Space/3xl',  '20px'],
-        ['Space/4xl',  '24px'],
-        ['Space/5xl',  '28px'],
-        ['Space/6xl',  '32px'],
-        ['Space/7xl',  '36px'],
-        ['Space/8xl',  '40px'],
-        ['Space/9xl',  '44px'],
-        ['Space/10xl', '48px'],
-        ['Space/11xl', '52px'],
-        ['Space/12xl', '56px'],
-        ['Space/13xl', '60px'],
-        ['Space/14xl', '64px'],
-        ['Space/15xl', '68px'],
-        ['Space/16xl', '72px'],
-        ['Space/17xl', '80px'],
+        ['space-none', '0rem',     '0px',   0],
+        ['space-2xs',  '0.125rem', '2px',   2],
+        ['space-xs',   '0.25rem',  '4px',   4],
+        ['space-sm',   '0.375rem', '6px',   6],
+        ['space-md',   '0.5rem',   '8px',   8],
+        ['space-lg',   '0.625rem', '10px',  10],
+        ['space-xl',   '0.75rem',  '12px',  12],
+        ['space-2xl',  '1rem',     '16px',  16],
+        ['space-3xl',  '1.25rem',  '20px',  20],
+        ['space-4xl',  '1.5rem',   '24px',  24],
+        ['space-5xl',  '1.75rem',  '28px',  28],
+        ['space-6xl',  '2rem',     '32px',  32],
+        ['space-7xl',  '2.25rem',  '36px',  36],
+        ['space-8xl',  '2.5rem',   '40px',  40],
+        ['space-9xl',  '2.75rem',  '44px',  44],
+        ['space-10xl', '3rem',     '48px',  48],
+        ['space-11xl', '3.25rem',  '52px',  52],
+        ['space-12xl', '3.5rem',   '56px',  56],
+        ['space-13xl', '3.75rem',  '60px',  60],
+        ['space-14xl', '4rem',     '64px',  64],
+        ['space-15xl', '4.25rem',  '68px',  68],
+        ['space-16xl', '4.5rem',   '72px',  72],
+        ['space-17xl', '5rem',     '80px',  80],
       ];
 
       // ── Radius (Figma: Radius/*)
@@ -263,14 +263,24 @@ const PAGES = {
 
         <h2 id="Spacing">Spacing</h2>
         <table class="token-table">
-          <thead><tr><th>Name</th><th>Value</th></tr></thead>
+          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
-            ${spacing.map(([name, val]) => `
+            ${spacing.map(([name, rem, px, pxNum]) => {
+              const gap = Math.min(pxNum, 64);
+              return `
               <tr>
                 <td><span class="token-name">${name}</span></td>
-                <td>${val}</td>
-              </tr>
-            `).join('')}
+                <td>${rem}</td>
+                <td>${px}</td>
+                <td>
+                  <div class="spacing-example">
+                    <div class="spacing-point spacing-point-a">A</div>
+                    <div class="spacing-gap" style="width:${gap}px"></div>
+                    <div class="spacing-point spacing-point-b">B</div>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')}
           </tbody>
         </table>
 

@@ -46,6 +46,10 @@
   --bt-red-600:    #d83a52;
   --bt-red-50:     #fef2f2;
 
+  /* Purple */
+  --bt-purple-800: #6b21a8;
+  --bt-purple-100: #f3e8ff;
+
   /* ── Semantic tokens ───────────────────────────────────────── */
   /* Text */
   --bt-text-default:       #1a1a1a;
@@ -667,4 +671,26 @@ code {
 .color-hex {
   font-size: 11px; color: var(--bt-text-muted);
   font-family: var(--font-mono);
+}
+
+/* ── Spacing example (A—gap—B) ───────────────────────────────── */
+.spacing-example {
+  display: inline-flex; align-items: center; gap: 0;
+}
+.spacing-point {
+  display: flex; align-items: center; justify-content: center;
+  width: 16px; height: 24px;
+  background: var(--bt-blue-700);
+  color: var(--bt-blue-50);
+  font-size: 12px; font-weight: 600; line-height: 16px;
+  flex-shrink: 0;
+}
+.spacing-point-a { border-radius: 4px 0 0 4px; }
+.spacing-point-b { border-radius: 0 4px 4px 0; }
+.spacing-gap {
+  height: 24px;
+  background: var(--bt-purple-100);
+  border-top: 1px dashed var(--bt-purple-800);
+  border-bottom: 1px dashed var(--bt-purple-800);
+  flex-shrink: 0;
 }
