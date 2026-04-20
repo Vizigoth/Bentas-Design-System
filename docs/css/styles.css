@@ -444,11 +444,11 @@ code {
 .token-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid var(--bt-border-muted);
   border-radius: 8px;
   overflow: hidden;
   margin: 16px 0 32px;
   font-size: 13.5px;
+  box-shadow: 0 0 0 1px var(--bt-border-muted);
 }
 
 .token-table thead tr { background: var(--bt-surface-subtle); }
