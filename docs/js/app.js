@@ -290,9 +290,22 @@ const PAGES = {
           <tbody>
             ${radii.map(([name, rem, px, r]) => {
               const rx = Math.min(r, 23.5);
-              const perimeter = 4 * 47 - 8 * rx + 2 * Math.PI * rx;
-              const dash = +(perimeter / 16).toFixed(2);
-              const svg = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="47" height="47" rx="${rx}" fill="#f1f7fe" stroke="#0d4e97" stroke-dasharray="${dash} ${dash}"/></svg>`;
+              const straight = 47 - 2 * rx;
+              const arcLen = Math.PI * rx / 2;
+              let d, offset;
+              if (straight < 1) {
+                d = +(2 * Math.PI * rx / 16).toFixed(2);
+                offset = 0;
+              } else if (straight < 10) {
+                const perim = 4 * straight + 2 * Math.PI * rx;
+                d = +(perim / 16).toFixed(2);
+                offset = d;
+              } else {
+                const N = arcLen > 0.1 ? Math.min(5, Math.max(2, Math.floor(straight / (2 * arcLen)))) : 5;
+                d = +(straight / (2 * N)).toFixed(2);
+                offset = d;
+              }
+              const svg = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="47" height="47" rx="${rx}" fill="#f1f7fe" stroke="#0d4e97" stroke-dasharray="${d} ${d}" stroke-dashoffset="${offset}"/></svg>`;
               return `
               <tr>
                 <td><span class="token-name">${name}</span></td>
