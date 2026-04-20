@@ -118,7 +118,7 @@ const PAGES = {
 
   'foundations/tokens/our-tokens': {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
-    toc: ['Sizing', 'Spacing', 'Border Radius', 'Typography', 'Colors'],
+    toc: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Colors'],
     render: (tab) => {
       const title = 'Foundation Tokens';
 
@@ -182,18 +182,18 @@ const PAGES = {
 
       // ── Radius (Figma: Radius/*)
       const radii = [
-        ['Radius/none', '0px',    0],
-        ['Radius/xs',   '2px',    2],
-        ['Radius/sm',   '4px',    4],
-        ['Radius/md',   '6px',    6],
-        ['Radius/lg',   '8px',    8],
-        ['Radius/xl',   '10px',   10],
-        ['Radius/2xl',  '12px',   12],
-        ['Radius/3xl',  '14px',   14],
-        ['Radius/4xl',  '16px',   16],
-        ['Radius/5xl',  '20px',   20],
-        ['Radius/6xl',  '24px',   24],
-        ['Radius/full', '9999px', 9999],
+        ['radius-none', '0rem',     '0px',    0],
+        ['radius-xs',   '0.125rem', '2px',    2],
+        ['radius-sm',   '0.25rem',  '4px',    4],
+        ['radius-md',   '0.375rem', '6px',    6],
+        ['radius-lg',   '0.5rem',   '8px',    8],
+        ['radius-xl',   '0.625rem', '10px',   10],
+        ['radius-2xl',  '0.75rem',  '12px',   12],
+        ['radius-3xl',  '0.875rem', '14px',   14],
+        ['radius-4xl',  '1rem',     '16px',   16],
+        ['radius-5xl',  '1.25rem',  '20px',   20],
+        ['radius-6xl',  '1.5rem',   '24px',   24],
+        ['radius-full', '—',        '9999px', 9999],
       ];
 
       // ── Typography (Figma: Font/Size/* + Font/Line-Height/*)
@@ -284,15 +284,16 @@ const PAGES = {
           </tbody>
         </table>
 
-        <h2 id="Border Radius">Border Radius</h2>
+        <h2 id="Radius">Radius</h2>
         <table class="token-table">
-          <thead><tr><th>Name</th><th>Value</th><th>Example</th></tr></thead>
+          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
-            ${radii.map(([name, val, r]) => `
+            ${radii.map(([name, rem, px, r]) => `
               <tr>
                 <td><span class="token-name">${name}</span></td>
-                <td>${val}</td>
-                <td><div class="swatch-wrap"><div class="swatch" style="width:32px;height:32px;border-radius:${Math.min(r,16)}px"></div></div></td>
+                <td>${rem}</td>
+                <td>${px}</td>
+                <td><div class="radius-example" style="border-radius:${r === 9999 ? '9999px' : r + 'px'}"></div></td>
               </tr>
             `).join('')}
           </tbody>

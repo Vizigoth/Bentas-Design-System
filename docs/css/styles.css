@@ -673,6 +673,14 @@ code {
   font-family: var(--font-mono);
 }
 
+/* ── Radius example ──────────────────────────────────────────── */
+.radius-example {
+  width: 48px; height: 48px;
+  background: var(--bt-blue-50);
+  border: 1px dashed var(--bt-blue-700);
+  flex-shrink: 0;
+}
+
 /* ── Spacing example (A—gap—B) ───────────────────────────────── */
 .spacing-example {
   display: inline-flex; align-items: center; gap: 0;
