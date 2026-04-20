@@ -118,82 +118,189 @@ const PAGES = {
 
   'foundations/tokens/our-tokens': {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
-    toc: ['Sizing', 'Spacing', 'Border Radius'],
+    toc: ['Sizing', 'Spacing', 'Border Radius', 'Typography', 'Colors'],
     render: (tab) => {
       const title = 'Foundation Tokens';
 
+      // ── Sizing (Figma: bt-base-sizing-*)
       const sizes = [
-        ['bt-base-sizing-none', '0rem',     '0px',   0],
-        ['bt-base-sizing-3xs',  '0.25rem',  '4px',   4],
-        ['bt-base-sizing-2xs',  '0.5rem',   '8px',   8],
-        ['bt-base-sizing-xs',   '0.75rem',  '12px',  12],
-        ['bt-base-sizing-sm',   '1rem',     '16px',  16],
-        ['bt-base-sizing-md',   '1.25rem',  '20px',  20],
-        ['bt-base-sizing-lg',   '1.5rem',   '24px',  24],
-        ['bt-base-sizing-xl',   '1.75rem',  '28px',  28],
-        ['bt-base-sizing-2xl',  '2rem',     '32px',  32],
-        ['bt-base-sizing-3xl',  '2.25rem',  '36px',  36],
-        ['bt-base-sizing-4xl',  '2.5rem',   '40px',  40],
-        ['bt-base-sizing-5xl',  '2.75rem',  '44px',  44],
-        ['bt-base-sizing-6xl',  '3rem',     '48px',  48],
-        ['bt-base-sizing-7xl',  '3.25rem',  '52px',  52],
-        ['bt-base-sizing-8xl',  '3.5rem',   '56px',  56],
-        ['bt-base-sizing-9xl',  '3.75rem',  '60px',  60],
-        ['bt-base-sizing-10xl', '4rem',     '64px',  64],
-        ['bt-base-sizing-11xl', '4.25rem',  '68px',  68],
-        ['bt-base-sizing-12xl', '4.5rem',   '72px',  72],
-        ['bt-base-sizing-13xl', '4.75rem',  '76px',  76],
-        ['bt-base-sizing-14xl', '5rem',     '80px',  80],
-        ['bt-base-sizing-15xl', '5.25rem',  '84px',  84],
-        ['bt-base-sizing-16xl', '5.5rem',   '88px',  88],
-        ['bt-base-sizing-17xl', '5.75rem',  '92px',  92],
-        ['bt-base-sizing-18xl', '6rem',     '96px',  96],
-        ['bt-base-sizing-19xl', '6.25rem',  '100px', 100],
-        ['bt-base-sizing-20xl', '7.5rem',   '120px', 120],
+        ['bt-base-sizing-none', '0rem',    '0px'],
+        ['bt-base-sizing-3xs',  '0.25rem', '4px'],
+        ['bt-base-sizing-2xs',  '0.5rem',  '8px'],
+        ['bt-base-sizing-xs',   '0.75rem', '12px'],
+        ['bt-base-sizing-sm',   '1rem',    '16px'],
+        ['bt-base-sizing-md',   '1.25rem', '20px'],
+        ['bt-base-sizing-lg',   '1.5rem',  '24px'],
+        ['bt-base-sizing-xl',   '1.75rem', '28px'],
+        ['bt-base-sizing-2xl',  '2rem',    '32px'],
+        ['bt-base-sizing-3xl',  '2.25rem', '36px'],
+        ['bt-base-sizing-4xl',  '2.5rem',  '40px'],
+        ['bt-base-sizing-5xl',  '2.75rem', '44px'],
+        ['bt-base-sizing-6xl',  '3rem',    '48px'],
+        ['bt-base-sizing-7xl',  '3.25rem', '52px'],
+        ['bt-base-sizing-8xl',  '3.5rem',  '56px'],
+        ['bt-base-sizing-9xl',  '3.75rem', '60px'],
+        ['bt-base-sizing-10xl', '4rem',    '64px'],
+        ['bt-base-sizing-11xl', '4.25rem', '68px'],
+        ['bt-base-sizing-12xl', '4.5rem',  '72px'],
+        ['bt-base-sizing-13xl', '4.75rem', '76px'],
+        ['bt-base-sizing-14xl', '5rem',    '80px'],
+        ['bt-base-sizing-15xl', '5.25rem', '84px'],
+        ['bt-base-sizing-16xl', '5.5rem',  '88px'],
+        ['bt-base-sizing-17xl', '5.75rem', '92px'],
+        ['bt-base-sizing-18xl', '6rem',    '96px'],
+        ['bt-base-sizing-19xl', '6.25rem', '100px'],
+        ['bt-base-sizing-20xl', '7.5rem',  '120px'],
       ];
+
+      // ── Spacing (Figma: Space/*)
+      const spacing = [
+        ['Space/none', '0px'],
+        ['Space/2xs',  '2px'],
+        ['Space/xs',   '4px'],
+        ['Space/sm',   '6px'],
+        ['Space/md',   '8px'],
+        ['Space/lg',   '10px'],
+        ['Space/xl',   '12px'],
+        ['Space/2xl',  '16px'],
+        ['Space/3xl',  '20px'],
+        ['Space/4xl',  '24px'],
+        ['Space/5xl',  '28px'],
+        ['Space/6xl',  '32px'],
+        ['Space/7xl',  '36px'],
+        ['Space/8xl',  '40px'],
+        ['Space/9xl',  '44px'],
+        ['Space/10xl', '48px'],
+        ['Space/11xl', '52px'],
+        ['Space/12xl', '56px'],
+        ['Space/13xl', '60px'],
+        ['Space/14xl', '64px'],
+        ['Space/15xl', '68px'],
+        ['Space/16xl', '72px'],
+        ['Space/17xl', '80px'],
+      ];
+
+      // ── Radius (Figma: Radius/*)
+      const radii = [
+        ['Radius/none', '0px',    0],
+        ['Radius/xs',   '2px',    2],
+        ['Radius/sm',   '4px',    4],
+        ['Radius/md',   '6px',    6],
+        ['Radius/lg',   '8px',    8],
+        ['Radius/xl',   '10px',   10],
+        ['Radius/2xl',  '12px',   12],
+        ['Radius/3xl',  '14px',   14],
+        ['Radius/4xl',  '16px',   16],
+        ['Radius/5xl',  '20px',   20],
+        ['Radius/6xl',  '24px',   24],
+        ['Radius/full', '9999px', 9999],
+      ];
+
+      // ── Typography (Figma: Font/Size/* + Font/Line-Height/*)
+      const typeScale = [
+        ['Font/Size/text-2xs', '10px', '12px'],
+        ['Font/Size/text-xs',  '12px', '16px'],
+        ['Font/Size/text-sm',  '14px', '16px'],
+        ['Font/Size/text-md',  '16px', '24px'],
+        ['Font/Size/text-lg',  '18px', '24px'],
+        ['Font/Size/text-xl',  '20px', '28px'],
+        ['Font/Size/text-2xl', '24px', '32px'],
+        ['Font/Size/text-3xl', '28px', '36px'],
+        ['Font/Size/text-4xl', '32px', '40px'],
+        ['Font/Size/text-5xl', '36px', '44px'],
+        ['Font/Size/text-6xl', '40px', '48px'],
+      ];
+
+      // ── Colors (Figma: Color Palettes / Primitives)
+      const palettes = {
+        Blue:   [['50','#f1f7fe'],['100','#e2edfc'],['200','#bedbf9'],['300','#85bdf4'],['400','#449bec'],['500','#1c7fdb'],['600','#0e62bb'],['700','#0d4e97'],['800','#0f447d'],['900','#123968'],['950','#0c2445']],
+        Gray:   [['50','#fafafa'],['100','#f5f5f5'],['200','#e6e6e6'],['300','#d4d4d4'],['400','#a3a3a3'],['500','#727272'],['600','#535353'],['700','#404040'],['800','#272727'],['900','#1a1a1a'],['950','#0b0b0b']],
+        Green:  [['50','#e8f3ee'],['100','#daede5'],['200','#b4dbcb'],['300','#87c1ab'],['400','#5ea38b'],['500','#448871'],['600','#356c5b'],['700','#2d584b'],['800','#28473e'],['900','#243d36'],['950','#1a2e26']],
+        Yellow: [['50','#fdf9e8'],['100','#f9f2ce'],['200','#f4e8aa'],['300','#edd882'],['400','#e2c455'],['500','#d4af2c'],['600','#c49a12'],['700','#aa820a'],['800','#8c6a05'],['900','#6b5103'],['950','#523e02']],
+        Red:    [['50','#fef2f2'],['100','#fde6e6'],['200','#fbd0d2'],['300','#f7aaae'],['400','#f27a83'],['500','#e84b5b'],['600','#d83a52'],['700','#b31d38'],['800','#961b35'],['900','#801b33'],['950','#470a17']],
+        Teal:   [['50','#f0fdfa'],['100','#ccfbf1'],['200','#99f6e4'],['300','#5eead4'],['400','#2dd4bf'],['500','#14b8a6'],['600','#0d9488'],['700','#0f766e'],['800','#115e59'],['900','#134e4a'],['950','#042f2e']],
+        Purple: [['50','#faf5ff'],['100','#f3e8ff'],['200','#e9d5ff'],['300','#d8b4fe'],['400','#c084fc'],['500','#a855f7'],['600','#9333ea'],['700','#7e22ce'],['800','#6b21a8'],['900','#581c87'],['950','#3b0764']],
+      };
+
+      const colorHtml = Object.entries(palettes).map(([name, shades]) => `
+        <h3 id="color-${name.toLowerCase()}">${name}</h3>
+        <div class="color-palette">
+          ${shades.map(([step, hex]) => {
+            const stepNum = parseInt(step);
+            const isDark = stepNum >= 500;
+            return `
+            <div class="color-chip-wrap">
+              <div class="color-chip" style="background:${hex}">
+                <span class="color-step" style="color:${isDark ? 'rgba(255,255,255,0.8)' : '#404040'}">${step}</span>
+              </div>
+              <div class="color-chip-info">
+                <span class="color-token-name">${name}/${step}</span>
+                <span class="color-hex">${hex}</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('');
 
       const ourTokensHtml = `
         <h2 id="Sizing">Sizing</h2>
         <table class="token-table">
-          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
+          <thead><tr><th>Name</th><th>Value (REM)</th><th>Pixel</th></tr></thead>
           <tbody>
-            ${sizes.map(([name, val, px, size]) => `
+            ${sizes.map(([name, val, px]) => `
               <tr>
                 <td><span class="token-name">${name}</span></td>
                 <td>${val}</td>
                 <td>${px}</td>
-                <td><div class="swatch-wrap"><div class="swatch" style="width:${Math.min(size,64)}px;height:${Math.min(size,64)}px;border-radius:2px"></div></div></td>
               </tr>
             `).join('')}
           </tbody>
         </table>
+
         <h2 id="Spacing">Spacing</h2>
         <table class="token-table">
-          <thead><tr><th>Name</th><th>Formula</th><th>Value</th><th>Example</th></tr></thead>
+          <thead><tr><th>Name</th><th>Value</th></tr></thead>
           <tbody>
-            ${[['spacing.100','4px',4],['spacing.200','8px',8],['spacing.300','12px',12],['spacing.400','16px',16],['spacing.500','20px',20],['spacing.600','24px',24]].map(([name,val,px]) => `
+            ${spacing.map(([name, val]) => `
               <tr>
                 <td><span class="token-name">${name}</span></td>
-                <td>—</td>
                 <td>${val}</td>
-                <td><div class="swatch-wrap"><div class="swatch" style="width:${px}px;height:${px}px"></div></div></td>
               </tr>
             `).join('')}
           </tbody>
         </table>
+
         <h2 id="Border Radius">Border Radius</h2>
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Example</th></tr></thead>
           <tbody>
-            ${[['radius.none','0px',0],['radius.sm','4px',4],['radius.md','8px',8],['radius.lg','12px',12],['radius.xl','16px',16],['radius.full','9999px',9999]].map(([name,val,r]) => `
+            ${radii.map(([name, val, r]) => `
               <tr>
                 <td><span class="token-name">${name}</span></td>
                 <td>${val}</td>
-                <td><div class="swatch-wrap"><div class="swatch" style="width:32px;height:32px;border-radius:${r}px"></div></div></td>
+                <td><div class="swatch-wrap"><div class="swatch" style="width:32px;height:32px;border-radius:${Math.min(r,16)}px"></div></div></td>
               </tr>
             `).join('')}
           </tbody>
         </table>
+
+        <h2 id="Typography">Typography</h2>
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Size</th><th>Line Height</th><th>Preview</th></tr></thead>
+          <tbody>
+            ${typeScale.map(([token, size, lh]) => `
+              <tr>
+                <td><span class="token-name">${token}</span></td>
+                <td>${size}</td>
+                <td>${lh}</td>
+                <td><span style="font-size:${size};line-height:${lh};color:var(--bt-text-default)">Aa</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <h2 id="Colors">Colors</h2>
+        ${colorHtml}
       `;
 
       const applyingHtml = `
@@ -206,12 +313,11 @@ const PAGES = {
         </div>
       `;
 
-      if (tab === 'Our Tokens')      return { title, html: `<p class="page-desc">Foundation tokens define our global design language — spacing, sizing, radii, and more.</p>${ourTokensHtml}` };
+      if (tab === 'Our Tokens')      return { title, html: `<p class="page-desc">Foundation tokens sourced directly from Figma ASSK App local variables.</p>${ourTokensHtml}` };
       if (tab === 'Applying Tokens') return { title, html: applyingHtml };
 
-      // Overview: all content
       return { title, html: `
-        <p class="page-desc">Foundation tokens define our global design language — spacing, sizing, radii, typography styles, and more. They provide the base values used to build components and layouts.</p>
+        <p class="page-desc">Foundation tokens define our global design language — sizing, spacing, radius, typography and color. Sourced directly from Figma ASSK App local variables.</p>
         ${ourTokensHtml}
         ${applyingHtml}
       `};
