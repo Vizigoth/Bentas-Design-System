@@ -359,55 +359,121 @@ const PAGES = {
 
   'components/button': {
     tabs: ['Overview', 'Usage', 'Design'],
-    toc: ['Overview', 'Variants', 'Sizes', 'States'],
+    toc: ['Variants', 'Sizes', 'States'],
     render: (tab) => {
       const title = 'Button';
+
+      const b = 'display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--font);font-weight:500;border-radius:6px;white-space:nowrap;transition:opacity 120ms;';
+
+      const variants = [
+        { name: 'Solid',   label: 'Primary',   desc: 'Ana aksiyon. Ekran başına bir tane kullanılır.',           style: `${b}background:var(--bt-blue-700);color:#fff;padding:12px 16px;font-size:16px;` },
+        { name: 'Flat',    label: 'Secondary',  desc: 'İkincil aksiyonlar. Primary ile yan yana kullanılır.',     style: `${b}background:var(--bt-gray-100);color:var(--bt-gray-900);padding:12px 16px;font-size:16px;` },
+        { name: 'Outline', label: 'Tertiary',   desc: 'Düşük öncelikli aksiyonlar. Border ile belirginleştirilir.', style: `${b}background:var(--bt-gray-100);color:var(--bt-gray-900);border:1px solid var(--bt-gray-300);padding:12px 16px;font-size:16px;` },
+        { name: 'Ghost',   label: 'Ghost',      desc: 'En düşük öncelik. Toolbar ve inline aksiyonlar için.',     style: `${b}background:transparent;color:var(--bt-gray-900);padding:12px 16px;font-size:16px;` },
+      ];
+
+      const sizes = [
+        { size: '2xs', py: '4px',  px: '12px', fs: '14px', lh: '16px' },
+        { size: 'xs',  py: '6px',  px: '12px', fs: '14px', lh: '16px' },
+        { size: 'sm',  py: '8px',  px: '12px', fs: '14px', lh: '16px' },
+        { size: 'md',  py: '8px',  px: '16px', fs: '16px', lh: '24px' },
+        { size: 'lg',  py: '12px', px: '16px', fs: '16px', lh: '24px' },
+        { size: 'xl',  py: '16px', px: '24px', fs: '16px', lh: '24px' },
+      ];
+
+      const states = [
+        { state: 'Default',  bg: 'var(--bt-blue-700)', color: '#fff',                    border: 'none',                              opacity: '1',    desc: 'Normal durum.' },
+        { state: 'Hover',    bg: 'var(--bt-blue-700)', color: '#fff',                    border: 'none',                              opacity: '0.88', desc: 'Mouse üzerinde olduğunda.' },
+        { state: 'Pressed',  bg: 'var(--bt-blue-700)', color: '#fff',                    border: 'none',                              opacity: '0.76', desc: 'Tıklama anında.' },
+        { state: 'Disabled', bg: 'var(--bt-gray-200)', color: 'var(--bt-gray-400)',      border: 'none',                              opacity: '1',    desc: 'Etkileşim kapalı.' },
+      ];
+
       if (tab === 'Usage') return { title, html: `
-        <p class="page-desc">Guidelines for when and how to use buttons.</p>
-        <h2 id="Overview">Do</h2>
+        <p class="page-desc">Button bileşenini ne zaman ve nasıl kullanacağınıza dair kılavuz.</p>
+        <h2 id="Do">Do</h2>
         <ul>
-          <li>Use a single primary button per view</li>
-          <li>Keep button labels short and action-oriented</li>
-          <li>Use sentence case for button labels</li>
+          <li>Ekran başına tek bir <strong>Solid</strong> button kullanın</li>
+          <li>Label'ları kısa ve aksiyon odaklı tutun</li>
+          <li>Sentence case kullanın (örn. "Save changes")</li>
+          <li>İkincil aksiyonlar için <strong>Flat</strong> veya <strong>Outline</strong> tercih edin</li>
         </ul>
         <h2>Don't</h2>
         <ul>
-          <li>Don't use more than one primary button per screen</li>
-          <li>Don't truncate button labels</li>
-          <li>Don't use buttons for navigation — use links instead</li>
+          <li>Aynı ekranda birden fazla Solid button kullanmayın</li>
+          <li>Label'ları kesmekten kaçının</li>
+          <li>Navigasyon için button kullanmayın, link tercih edin</li>
+          <li>Disabled state'i gereksiz yere kullanmayın</li>
         </ul>
       `};
+
       if (tab === 'Design') return { title, html: `
-        <p class="page-desc">Design specs ve Figma bileşen bağlantıları.</p>
-        <div class="placeholder"><div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div><div class="placeholder-title">Figma specs</div><div class="placeholder-text">Figma'dan design specs buraya bağlanacak.</div></div>
-      `};
-      return { title, html: `
-        <p class="page-desc">Buttons trigger an action or event, such as submitting a form, opening a dialog, or performing a delete operation.</p>
-        <div class="preview-box">
-          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-            <button style="background:#5C5CE6;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer">Primary</button>
-            <button style="background:#fff;color:#111827;border:1px solid #E5E7EB;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer">Secondary</button>
-            <button style="background:transparent;color:#5C5CE6;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer">Ghost</button>
-            <button style="background:#FEE2E2;color:#DC2626;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer">Danger</button>
-          </div>
-        </div>
-        <h2 id="Variants">Variants</h2>
+        <p class="page-desc">Figma'dan alınan token ve tasarım değerleri.</p>
+        <h2 id="Tokens">Tokens</h2>
         <table class="token-table">
-          <thead><tr><th>Variant</th><th>Usage</th></tr></thead>
+          <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">primary</span></td><td>Main call to action. Use once per view.</td></tr>
-            <tr><td><span class="token-name">secondary</span></td><td>Secondary actions alongside a primary button.</td></tr>
-            <tr><td><span class="token-name">ghost</span></td><td>Low-emphasis actions, toolbars.</td></tr>
-            <tr><td><span class="token-name">danger</span></td><td>Destructive actions like delete or remove.</td></tr>
+            <tr><td><span class="token-name">--bt-blue-700</span></td><td>#0d4e97</td><td>Solid / Primary background</td></tr>
+            <tr><td><span class="token-name">--bt-gray-100</span></td><td>#f5f5f5</td><td>Flat & Outline background</td></tr>
+            <tr><td><span class="token-name">--bt-gray-200</span></td><td>#e6e6e6</td><td>Disabled background</td></tr>
+            <tr><td><span class="token-name">--bt-gray-300</span></td><td>#d4d4d4</td><td>Outline border</td></tr>
+            <tr><td><span class="token-name">--bt-gray-400</span></td><td>#a3a3a3</td><td>Disabled text</td></tr>
+            <tr><td><span class="token-name">--bt-gray-900</span></td><td>#1a1a1a</td><td>Secondary / Tertiary / Ghost text</td></tr>
+            <tr><td><span class="token-name">radius/md</span></td><td>6px</td><td>Border radius (all sizes)</td></tr>
+            <tr><td><span class="token-name">Font/Family/Text</span></td><td>Geist</td><td>Font family</td></tr>
+            <tr><td><span class="token-name">Font/Weight/Medium</span></td><td>500</td><td>Font weight (all sizes)</td></tr>
+            <tr><td><span class="token-name">text-sm</span></td><td>14px / 16px</td><td>2xs · xs · sm sizes</td></tr>
+            <tr><td><span class="token-name">text-md</span></td><td>16px / 24px</td><td>md · lg · xl sizes</td></tr>
           </tbody>
         </table>
+      `};
+
+      return { title, html: `
+        <p class="page-desc">Buttons trigger an action or event, such as submitting a form, opening a dialog, or performing a delete operation.</p>
+
+        <div class="preview-box">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            ${variants.map(v => `<button style="${v.style}">${v.label}</button>`).join('')}
+            <button style="${b}background:var(--bt-gray-200);color:var(--bt-gray-400);padding:12px 16px;font-size:16px;cursor:not-allowed">Disabled</button>
+          </div>
+        </div>
+
+        <h2 id="Variants">Variants</h2>
+        <table class="token-table">
+          <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
+          <tbody>
+            ${variants.map(v => `
+            <tr>
+              <td><span class="token-name">${v.name}</span></td>
+              <td><button style="${v.style}">${v.label}</button></td>
+              <td style="color:var(--bt-text-emphasis)">${v.desc}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+
         <h2 id="Sizes">Sizes</h2>
         <table class="token-table">
-          <thead><tr><th>Size</th><th>Height</th><th>Padding</th></tr></thead>
+          <thead><tr><th>Size</th><th>Padding (V / H)</th><th>Font</th><th>Preview</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">sm</span></td><td>32px</td><td>8px 14px</td></tr>
-            <tr><td><span class="token-name">md</span></td><td>40px</td><td>10px 18px</td></tr>
-            <tr><td><span class="token-name">lg</span></td><td>48px</td><td>12px 22px</td></tr>
+            ${sizes.map(s => `
+            <tr>
+              <td><span class="token-name">${s.size}</span></td>
+              <td>${s.py} / ${s.px}</td>
+              <td>${s.fs} / ${s.lh}</td>
+              <td><button style="${b}background:var(--bt-blue-700);color:#fff;padding:${s.py} ${s.px};font-size:${s.fs};line-height:${s.lh}">Button</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <h2 id="States">States</h2>
+        <table class="token-table">
+          <thead><tr><th>State</th><th>Preview</th><th>Description</th></tr></thead>
+          <tbody>
+            ${states.map(s => `
+            <tr>
+              <td><span class="token-name">${s.state}</span></td>
+              <td><button style="${b}background:${s.bg};color:${s.color};border:${s.border};opacity:${s.opacity};padding:8px 16px;font-size:14px;${s.state==='Disabled'?'cursor:not-allowed;':''}">${s.state}</button></td>
+              <td style="color:var(--bt-text-emphasis)">${s.desc}</td>
+            </tr>`).join('')}
           </tbody>
         </table>
       `};
