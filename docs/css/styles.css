@@ -200,7 +200,8 @@ a { color: inherit; text-decoration: none; }
   height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  font-size: 13.5px;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--bt-text-default);
   cursor: pointer;
   user-select: none;
