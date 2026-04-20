@@ -289,8 +289,10 @@ const PAGES = {
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
             ${radii.map(([name, rem, px, r]) => {
-              const rx = Math.min(r, 24);
-              const svg = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="47" height="47" rx="${rx}" fill="#f1f7fe" stroke="#0d4e97" stroke-dasharray="24 24"/></svg>`;
+              const rx = Math.min(r, 23.5);
+              const perimeter = 4 * 47 - 8 * rx + 2 * Math.PI * rx;
+              const dash = +(perimeter / 16).toFixed(2);
+              const svg = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="47" height="47" rx="${rx}" fill="#f1f7fe" stroke="#0d4e97" stroke-dasharray="${dash} ${dash}"/></svg>`;
               return `
               <tr>
                 <td><span class="token-name">${name}</span></td>
