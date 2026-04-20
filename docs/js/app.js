@@ -15,15 +15,12 @@ const NAV = [
   },
   {
     label: 'Foundations', children: [
-      { label: 'Overview',      id: 'foundations/overview' },
       {
         label: 'Design Tokens', children: [
-          { label: 'Overview',         id: 'foundations/tokens/overview' },
-          { label: 'Our tokens',       id: 'foundations/tokens/our-tokens' },
-          { label: 'Applying tokens',  id: 'foundations/tokens/applying' },
+          { label: 'Overview',    id: 'foundations/tokens/overview' },
+          { label: 'Our Tokens',  id: 'foundations/tokens/our-tokens' },
         ]
       },
-      // Color ve sonrası şimdilik kaldırıldı
     ]
   },
   {
