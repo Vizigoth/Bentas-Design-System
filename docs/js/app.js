@@ -346,11 +346,50 @@ const PAGES = {
         </div>
 
         <h2 id="Text">Text</h2>
-        <div class="placeholder">
-          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-          <div class="placeholder-title">Text Tokens</div>
-          <div class="placeholder-text">Yakında eklenecek.</div>
-        </div>
+        <table class="token-table">
+          <thead><tr><th>Example</th><th>Token Variable</th><th>Color Token</th><th>Hex</th></tr></thead>
+          <tbody>
+            ${[
+              ['--bt-text-default',      'Gray/900',   '#1a1a1a'],
+              ['--bt-text-solid',        'Gray/800',   '#272727'],
+              ['--bt-text-heavy',        'Gray/700',   '#404040'],
+              ['--bt-text-strong',       'Gray/600',   '#535353'],
+              ['--bt-text-emphasis',     'Gray/500',   '#727272'],
+              ['--bt-text-muted',        'Gray/400',   '#a3a3a3'],
+              ['--bt-text-subtle',       'Gray/300',   '#d4d4d4'],
+              ['--bt-text-light',        'Gray/200',   '#e6e6e6'],
+              ['--bt-text-inverted',     'Gray/0',     '#ffffff'],
+              ['--bt-text-brand',        'Blue/700',   '#0d4e97'],
+              ['--bt-text-brand-subtle', 'Blue/600',   '#0e62bb'],
+              ['--bt-text-brand-light',  'Blue/500',   '#1c7fdb'],
+              ['--bt-text-success',      'Green/700',  '#2d584b'],
+              ['--bt-text-warning',      'Yellow/700', '#aa820a'],
+              ['--bt-text-error',        'Red/700',    '#b31d38'],
+            ].map(([token, colorToken, hex]) => `
+              <tr>
+                <td><span style="font-size:20px;font-weight:500;line-height:28px;color:${hex === '#ffffff' ? '#1a1a1a' : hex}">Aa</span></td>
+                <td>
+                  <div style="display:inline-flex;align-items:center;gap:6px;">
+                    <span class="token-name">${token}</span>
+                    <button class="copy-btn" onclick="copyText('${token}', this)" title="Copy token">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td>${colorToken}</td>
+                <td>
+                  <div style="display:inline-flex;align-items:center;gap:8px;">
+                    <div style="width:16px;height:16px;border-radius:3px;background:${hex};border:1px solid var(--bt-border-muted);flex-shrink:0;"></div>
+                    <span>${hex}</span>
+                    <button class="copy-btn" onclick="copyText('${hex}', this)" title="Copy hex">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
 
         <h2 id="Border">Border</h2>
         <div class="placeholder">
@@ -681,6 +720,15 @@ function renderToc(page) {
 window.scrollToSection = function(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.copyText = function(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+    btn.classList.add('copy-btn--success');
+    setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copy-btn--success'); }, 1500);
+  });
 };
 
 // ── Full render ─────────────────────────────────────────────

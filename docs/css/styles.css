@@ -539,6 +539,23 @@ code {
 .placeholder-title { font-size: 14px; font-weight: 600; color: var(--bt-text-default); margin-bottom: 6px; }
 .placeholder-text  { font-size: 13.5px; color: var(--bt-text-muted); }
 
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--bt-text-muted);
+  flex-shrink: 0;
+  transition: background 100ms, color 100ms;
+}
+.copy-btn:hover { background: var(--bt-surface-subtle); color: var(--bt-text-default); }
+.copy-btn--success { color: #2d584b; }
+
 /* ── TOC Column (right panel, aligned to tab bar top) ───────── */
 .toc-col {
   width: 220px;
