@@ -564,6 +564,16 @@ code {
   letter-spacing: 0.02em;
 }
 
+.toc-group-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bt-text-muted);
+  padding: 10px 10px 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .toc-link {
   display: block;
   font-size: 13.5px;

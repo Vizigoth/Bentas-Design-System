@@ -118,7 +118,10 @@ const PAGES = {
 
   'foundations/tokens/our-tokens': {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
-    toc: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Colors'],
+    toc: [
+      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Colors'] },
+      { group: 'Theme Tokens',      items: ['Background', 'Text', 'Border', 'Visual Assets'] },
+    ],
     render: (tab) => {
       const title = 'Foundation Tokens';
 
@@ -334,6 +337,34 @@ const PAGES = {
 
         <h2 id="Colors">Colors</h2>
         ${colorHtml}
+
+        <h2 id="Background">Background</h2>
+        <div class="placeholder">
+          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <div class="placeholder-title">Background Tokens</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
+
+        <h2 id="Text">Text</h2>
+        <div class="placeholder">
+          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <div class="placeholder-title">Text Tokens</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
+
+        <h2 id="Border">Border</h2>
+        <div class="placeholder">
+          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <div class="placeholder-title">Border Tokens</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
+
+        <h2 id="Visual Assets">Visual Assets</h2>
+        <div class="placeholder">
+          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+          <div class="placeholder-title">Visual Assets</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
       `;
 
       const applyingHtml = `
@@ -622,12 +653,29 @@ function renderToc(page) {
     return;
   }
   col.style.display = 'block';
-  el.innerHTML = `
-    <div class="toc-label">On this page</div>
-    ${page.toc.map((t,i) => `
-      <div class="toc-link ${i === 0 ? 'active' : ''}" onclick="scrollToSection('${t}')">${t}</div>
-    `).join('')}
-  `;
+
+  const isGrouped = page.toc.length > 0 && typeof page.toc[0] === 'object';
+  let firstLink = true;
+
+  if (isGrouped) {
+    el.innerHTML = `
+      <div class="toc-label">On this page</div>
+      ${page.toc.map(({ group, items }) => `
+        <div class="toc-group-label">${group}</div>
+        ${items.map(t => {
+          const cls = firstLink ? (firstLink = false, 'active') : '';
+          return `<div class="toc-link ${cls}" onclick="scrollToSection('${t}')">${t}</div>`;
+        }).join('')}
+      `).join('')}
+    `;
+  } else {
+    el.innerHTML = `
+      <div class="toc-label">On this page</div>
+      ${page.toc.map((t,i) => `
+        <div class="toc-link ${i === 0 ? 'active' : ''}" onclick="scrollToSection('${t}')">${t}</div>
+      `).join('')}
+    `;
+  }
 }
 
 window.scrollToSection = function(id) {
