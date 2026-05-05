@@ -16,8 +16,20 @@ const NAV = [
   {
     label: 'Foundations', children: [
       {
-        label: 'Design Tokens', children: [
-          { label: 'Our Tokens',  id: 'foundations/tokens/our-tokens' },
+        label: 'Foundation Tokens', children: [
+          { label: 'Sizing',     id: 'foundations/tokens/sizing' },
+          { label: 'Spacing',    id: 'foundations/tokens/spacing' },
+          { label: 'Radius',     id: 'foundations/tokens/radius' },
+          { label: 'Typography', id: 'foundations/tokens/typography' },
+          { label: 'Colors',     id: 'foundations/tokens/colors' },
+        ]
+      },
+      {
+        label: 'Theme Tokens', children: [
+          { label: 'Background',    id: 'foundations/theme/background' },
+          { label: 'Text',          id: 'foundations/theme/text' },
+          { label: 'Border',        id: 'foundations/theme/border' },
+          { label: 'Visual Assets', id: 'foundations/theme/visual-assets' },
         ]
       },
     ]
@@ -116,13 +128,11 @@ const PAGES = {
     })
   },
 
-  'foundations/tokens/our-tokens': {
-    tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
-    toc: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Colors'],
-    render: (tab) => {
-      const title = 'Foundation Tokens';
-
-      // ── Sizing (Figma: bt-base-sizing-*)
+  'foundations/tokens/sizing': {
+    tabs: [],
+    toc: ['Sizing'],
+    render: () => {
+      const title = 'Sizing';
       const sizes = [
         ['base-sizing-none', '0rem',    '0px'],
         ['base-sizing-3xs',  '0.25rem', '4px'],
@@ -152,8 +162,33 @@ const PAGES = {
         ['base-sizing-19xl', '6.25rem', '100px'],
         ['base-sizing-20xl', '7.5rem',  '120px'],
       ];
+      return { title, html: `
+        <p class="page-desc">Global boyutlandırma tokenları. Figma ASSK App local variables'dan alınmıştır.</p>
+        <h2 id="Sizing">Sizing</h2>
+        <table class="token-table">
+          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
+          <tbody>
+            ${sizes.map(([name, val, px]) => {
+              const pxNum = parseInt(px);
+              const sz = Math.min(pxNum, 80);
+              return `<tr>
+                <td><span class="token-name">${name}</span></td>
+                <td>${val}</td>
+                <td>${px}</td>
+                <td><div class="swatch-wrap">${pxNum > 0 ? `<div class="swatch" style="width:${sz}px;height:${sz}px"></div>` : ''}</div></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      `};
+    }
+  },
 
-      // ── Spacing (Figma: Space/*)
+  'foundations/tokens/spacing': {
+    tabs: [],
+    toc: ['Spacing'],
+    render: () => {
+      const title = 'Spacing';
       const spacing = [
         ['space-none', '0rem',     '0px',   0],
         ['space-2xs',  '0.125rem', '2px',   2],
@@ -179,96 +214,15 @@ const PAGES = {
         ['space-16xl', '4.5rem',   '72px',  72],
         ['space-17xl', '5rem',     '80px',  80],
       ];
-
-      // ── Radius (Figma: Radius/*)
-      const radii = [
-        ['radius-none', '0rem',     '0px',    0],
-        ['radius-xs',   '0.125rem', '2px',    2],
-        ['radius-sm',   '0.25rem',  '4px',    4],
-        ['radius-md',   '0.375rem', '6px',    6],
-        ['radius-lg',   '0.5rem',   '8px',    8],
-        ['radius-xl',   '0.625rem', '10px',   10],
-        ['radius-2xl',  '0.75rem',  '12px',   12],
-        ['radius-3xl',  '0.875rem', '14px',   14],
-        ['radius-4xl',  '1rem',     '16px',   16],
-        ['radius-5xl',  '1.25rem',  '20px',   20],
-        ['radius-6xl',  '1.5rem',   '24px',   24],
-        ['radius-full', '—',        '9999px', 9999],
-      ];
-
-      // ── Typography (Figma: Font/Size/* + Font/Line-Height/*)
-      const typeScale = [
-        ['Font/Size/text-2xs', '10px', '12px'],
-        ['Font/Size/text-xs',  '12px', '16px'],
-        ['Font/Size/text-sm',  '14px', '16px'],
-        ['Font/Size/text-md',  '16px', '24px'],
-        ['Font/Size/text-lg',  '18px', '24px'],
-        ['Font/Size/text-xl',  '20px', '28px'],
-        ['Font/Size/text-2xl', '24px', '32px'],
-        ['Font/Size/text-3xl', '28px', '36px'],
-        ['Font/Size/text-4xl', '32px', '40px'],
-        ['Font/Size/text-5xl', '36px', '44px'],
-        ['Font/Size/text-6xl', '40px', '48px'],
-      ];
-
-      // ── Colors (Figma: Color Palettes / Primitives)
-      const palettes = {
-        Blue:   [['50','#f1f7fe'],['100','#e2edfc'],['200','#bedbf9'],['300','#85bdf4'],['400','#449bec'],['500','#1c7fdb'],['600','#0e62bb'],['700','#0d4e97'],['800','#0f447d'],['900','#123968'],['950','#0c2445']],
-        Gray:   [['50','#fafafa'],['100','#f5f5f5'],['200','#e6e6e6'],['300','#d4d4d4'],['400','#a3a3a3'],['500','#727272'],['600','#535353'],['700','#404040'],['800','#272727'],['900','#1a1a1a'],['950','#0b0b0b']],
-        Green:  [['50','#e8f3ee'],['100','#daede5'],['200','#b4dbcb'],['300','#87c1ab'],['400','#5ea38b'],['500','#448871'],['600','#356c5b'],['700','#2d584b'],['800','#28473e'],['900','#243d36'],['950','#1a2e26']],
-        Yellow: [['50','#fdf9e8'],['100','#f9f2ce'],['200','#f4e8aa'],['300','#edd882'],['400','#e2c455'],['500','#d4af2c'],['600','#c49a12'],['700','#aa820a'],['800','#8c6a05'],['900','#6b5103'],['950','#523e02']],
-        Red:    [['50','#fef2f2'],['100','#fde6e6'],['200','#fbd0d2'],['300','#f7aaae'],['400','#f27a83'],['500','#e84b5b'],['600','#d83a52'],['700','#b31d38'],['800','#961b35'],['900','#801b33'],['950','#470a17']],
-        Teal:   [['50','#f0fdfa'],['100','#ccfbf1'],['200','#99f6e4'],['300','#5eead4'],['400','#2dd4bf'],['500','#14b8a6'],['600','#0d9488'],['700','#0f766e'],['800','#115e59'],['900','#134e4a'],['950','#042f2e']],
-        Purple: [['50','#faf5ff'],['100','#f3e8ff'],['200','#e9d5ff'],['300','#d8b4fe'],['400','#c084fc'],['500','#a855f7'],['600','#9333ea'],['700','#7e22ce'],['800','#6b21a8'],['900','#581c87'],['950','#3b0764']],
-      };
-
-      const colorHtml = Object.entries(palettes).map(([name, shades]) => `
-        <h3 id="color-${name.toLowerCase()}">${name}</h3>
-        <div class="color-palette">
-          ${shades.map(([step, hex]) => {
-            const stepNum = parseInt(step);
-            const isDark = stepNum >= 500;
-            return `
-            <div class="color-chip-wrap">
-              <div class="color-chip" style="background:${hex}">
-                <span class="color-step" style="color:${isDark ? 'rgba(255,255,255,0.8)' : '#404040'}">${step}</span>
-              </div>
-              <div class="color-chip-info">
-                <span class="color-token-name">${name}/${step}</span>
-                <span class="color-hex">${hex}</span>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-      `).join('');
-
-      const ourTokensHtml = `
-        <h2 id="Sizing">Sizing</h2>
-        <table class="token-table">
-          <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
-          <tbody>
-            ${sizes.map(([name, val, px]) => {
-              const pxNum = parseInt(px);
-              const sz = Math.min(pxNum, 80);
-              return `
-              <tr>
-                <td><span class="token-name">${name}</span></td>
-                <td>${val}</td>
-                <td>${px}</td>
-                <td><div class="swatch-wrap">${pxNum > 0 ? `<div class="swatch" style="width:${sz}px;height:${sz}px"></div>` : ''}</div></td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-
+      return { title, html: `
+        <p class="page-desc">Elemanlar arası boşluk tokenları. Figma ASSK App local variables'dan alınmıştır.</p>
         <h2 id="Spacing">Spacing</h2>
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
             ${spacing.map(([name, rem, px, pxNum]) => {
               const gap = Math.min(pxNum, 64);
-              return `
-              <tr>
+              return `<tr>
                 <td><span class="token-name">${name}</span></td>
                 <td>${rem}</td>
                 <td>${px}</td>
@@ -283,7 +237,31 @@ const PAGES = {
             }).join('')}
           </tbody>
         </table>
+      `};
+    }
+  },
 
+  'foundations/tokens/radius': {
+    tabs: [],
+    toc: ['Radius'],
+    render: () => {
+      const title = 'Radius';
+      const radii = [
+        ['radius-none', '0rem',     '0px',    0],
+        ['radius-xs',   '0.125rem', '2px',    2],
+        ['radius-sm',   '0.25rem',  '4px',    4],
+        ['radius-md',   '0.375rem', '6px',    6],
+        ['radius-lg',   '0.5rem',   '8px',    8],
+        ['radius-xl',   '0.625rem', '10px',   10],
+        ['radius-2xl',  '0.75rem',  '12px',   12],
+        ['radius-3xl',  '0.875rem', '14px',   14],
+        ['radius-4xl',  '1rem',     '16px',   16],
+        ['radius-5xl',  '1.25rem',  '20px',   20],
+        ['radius-6xl',  '1.5rem',   '24px',   24],
+        ['radius-full', '—',        '9999px', 9999],
+      ];
+      return { title, html: `
+        <p class="page-desc">Köşe yarıçapı tokenları. Figma ASSK App local variables'dan alınmıştır.</p>
         <h2 id="Radius">Radius</h2>
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
@@ -306,8 +284,7 @@ const PAGES = {
                 offset = d;
               }
               const svg = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="47" height="47" rx="${rx}" fill="#f1f7fe" stroke="#0d4e97" stroke-dasharray="${d} ${d}" stroke-dashoffset="${offset}"/></svg>`;
-              return `
-              <tr>
+              return `<tr>
                 <td><span class="token-name">${name}</span></td>
                 <td>${rem}</td>
                 <td>${px}</td>
@@ -316,7 +293,30 @@ const PAGES = {
             }).join('')}
           </tbody>
         </table>
+      `};
+    }
+  },
 
+  'foundations/tokens/typography': {
+    tabs: [],
+    toc: ['Typography'],
+    render: () => {
+      const title = 'Typography';
+      const typeScale = [
+        ['Font/Size/text-2xs', '10px', '12px'],
+        ['Font/Size/text-xs',  '12px', '16px'],
+        ['Font/Size/text-sm',  '14px', '16px'],
+        ['Font/Size/text-md',  '16px', '24px'],
+        ['Font/Size/text-lg',  '18px', '24px'],
+        ['Font/Size/text-xl',  '20px', '28px'],
+        ['Font/Size/text-2xl', '24px', '32px'],
+        ['Font/Size/text-3xl', '28px', '36px'],
+        ['Font/Size/text-4xl', '32px', '40px'],
+        ['Font/Size/text-5xl', '36px', '44px'],
+        ['Font/Size/text-6xl', '40px', '48px'],
+      ];
+      return { title, html: `
+        <p class="page-desc">Yazı boyutu ve satır yüksekliği tokenları. Figma ASSK App local variables'dan alınmıştır.</p>
         <h2 id="Typography">Typography</h2>
         <table class="token-table">
           <thead><tr><th>Token</th><th>Size</th><th>Line Height</th><th>Preview</th></tr></thead>
@@ -331,30 +331,100 @@ const PAGES = {
             `).join('')}
           </tbody>
         </table>
-
-        <h2 id="Colors">Colors</h2>
-        ${colorHtml}
-      `;
-
-      const applyingHtml = `
-        <h2 id="Applying Tokens">How to apply tokens</h2>
-        <p class="page-desc">How to apply tokens in your designs and code.</p>
-        <div class="placeholder">
-          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-          <div class="placeholder-title">Applying Tokens</div>
-          <div class="placeholder-text">Yakında eklenecek.</div>
-        </div>
-      `;
-
-      if (tab === 'Our Tokens')      return { title, html: `<p class="page-desc">Foundation tokens sourced directly from Figma ASSK App local variables.</p>${ourTokensHtml}` };
-      if (tab === 'Applying Tokens') return { title, html: applyingHtml };
-
-      return { title, html: `
-        <p class="page-desc">Foundation tokens define our global design language — sizing, spacing, radius, typography and color. Sourced directly from Figma ASSK App local variables.</p>
-        ${ourTokensHtml}
-        ${applyingHtml}
       `};
     }
+  },
+
+  'foundations/tokens/colors': {
+    tabs: [],
+    toc: ['Colors'],
+    render: () => {
+      const title = 'Colors';
+      const palettes = {
+        Blue:   [['50','#f1f7fe'],['100','#e2edfc'],['200','#bedbf9'],['300','#85bdf4'],['400','#449bec'],['500','#1c7fdb'],['600','#0e62bb'],['700','#0d4e97'],['800','#0f447d'],['900','#123968'],['950','#0c2445']],
+        Gray:   [['50','#fafafa'],['100','#f5f5f5'],['200','#e6e6e6'],['300','#d4d4d4'],['400','#a3a3a3'],['500','#727272'],['600','#535353'],['700','#404040'],['800','#272727'],['900','#1a1a1a'],['950','#0b0b0b']],
+        Green:  [['50','#e8f3ee'],['100','#daede5'],['200','#b4dbcb'],['300','#87c1ab'],['400','#5ea38b'],['500','#448871'],['600','#356c5b'],['700','#2d584b'],['800','#28473e'],['900','#243d36'],['950','#1a2e26']],
+        Yellow: [['50','#fdf9e8'],['100','#f9f2ce'],['200','#f4e8aa'],['300','#edd882'],['400','#e2c455'],['500','#d4af2c'],['600','#c49a12'],['700','#aa820a'],['800','#8c6a05'],['900','#6b5103'],['950','#523e02']],
+        Red:    [['50','#fef2f2'],['100','#fde6e6'],['200','#fbd0d2'],['300','#f7aaae'],['400','#f27a83'],['500','#e84b5b'],['600','#d83a52'],['700','#b31d38'],['800','#961b35'],['900','#801b33'],['950','#470a17']],
+        Teal:   [['50','#f0fdfa'],['100','#ccfbf1'],['200','#99f6e4'],['300','#5eead4'],['400','#2dd4bf'],['500','#14b8a6'],['600','#0d9488'],['700','#0f766e'],['800','#115e59'],['900','#134e4a'],['950','#042f2e']],
+        Purple: [['50','#faf5ff'],['100','#f3e8ff'],['200','#e9d5ff'],['300','#d8b4fe'],['400','#c084fc'],['500','#a855f7'],['600','#9333ea'],['700','#7e22ce'],['800','#6b21a8'],['900','#581c87'],['950','#3b0764']],
+      };
+      const colorHtml = Object.entries(palettes).map(([name, shades]) => `
+        <h3 id="color-${name.toLowerCase()}">${name}</h3>
+        <div class="color-palette">
+          ${shades.map(([step, hex]) => {
+            const stepNum = parseInt(step);
+            const isDark = stepNum >= 500;
+            return `<div class="color-chip-wrap">
+              <div class="color-chip" style="background:${hex}">
+                <span class="color-step" style="color:${isDark ? 'rgba(255,255,255,0.8)' : '#404040'}">${step}</span>
+              </div>
+              <div class="color-chip-info">
+                <span class="color-token-name">${name}/${step}</span>
+                <span class="color-hex">${hex}</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('');
+      return { title, html: `
+        <p class="page-desc">Renk paleti tokenları. Figma ASSK App local variables'dan alınmıştır.</p>
+        <h2 id="Colors">Colors</h2>
+        ${colorHtml}
+      `};
+    }
+  },
+
+  'foundations/theme/background': {
+    tabs: [],
+    toc: [],
+    render: () => ({ title: 'Background', html: `
+      <p class="page-desc">Arkaplan tema tokenları.</p>
+      <div class="placeholder">
+        <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="placeholder-title">Background Tokens</div>
+        <div class="placeholder-text">Yakında eklenecek.</div>
+      </div>
+    `})
+  },
+
+  'foundations/theme/text': {
+    tabs: [],
+    toc: [],
+    render: () => ({ title: 'Text', html: `
+      <p class="page-desc">Metin rengi tema tokenları.</p>
+      <div class="placeholder">
+        <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="placeholder-title">Text Tokens</div>
+        <div class="placeholder-text">Yakında eklenecek.</div>
+      </div>
+    `})
+  },
+
+  'foundations/theme/border': {
+    tabs: [],
+    toc: [],
+    render: () => ({ title: 'Border', html: `
+      <p class="page-desc">Kenarlık tema tokenları.</p>
+      <div class="placeholder">
+        <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="placeholder-title">Border Tokens</div>
+        <div class="placeholder-text">Yakında eklenecek.</div>
+      </div>
+    `})
+  },
+
+  'foundations/theme/visual-assets': {
+    tabs: [],
+    toc: [],
+    render: () => ({ title: 'Visual Assets', html: `
+      <p class="page-desc">Görsel varlık tema tokenları.</p>
+      <div class="placeholder">
+        <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="placeholder-title">Visual Assets</div>
+        <div class="placeholder-text">Yakında eklenecek.</div>
+      </div>
+    `})
   },
 
   'components/button': {
