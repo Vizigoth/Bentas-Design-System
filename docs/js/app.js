@@ -367,7 +367,12 @@ const PAGES = {
               ['--bt-text-error',        'Red/700',    '#b31d38'],
             ].map(([token, colorToken, hex]) => `
               <tr>
-                <td><span style="font-size:20px;font-weight:500;line-height:28px;color:${hex === '#ffffff' ? '#1a1a1a' : hex}">Aa</span></td>
+                <td>
+                  ${hex === '#ffffff'
+                    ? `<div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:10px;background:#1a1a1a;"><span style="font-size:20px;font-weight:500;color:#ffffff;">Aa</span></div>`
+                    : `<span style="font-size:20px;font-weight:500;line-height:28px;color:${hex}">Aa</span>`
+                  }
+                </td>
                 <td>
                   <div style="display:inline-flex;align-items:center;gap:6px;">
                     <span class="token-name">${token}</span>
