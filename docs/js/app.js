@@ -347,7 +347,7 @@ const PAGES = {
 
         <h2 id="Text">Text</h2>
         <table class="token-table">
-          <thead><tr><th>Example</th><th>Token Variable</th><th>Color Token</th><th>Hex</th></tr></thead>
+          <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
           <tbody>
             ${[
               ['--bt-text-default',      'Gray/900',   '#1a1a1a'],
@@ -378,8 +378,7 @@ const PAGES = {
                 </td>
                 <td>${colorToken}</td>
                 <td>
-                  <div style="display:inline-flex;align-items:center;gap:8px;">
-                    <div style="width:16px;height:16px;border-radius:3px;background:${hex};border:1px solid var(--bt-border-muted);flex-shrink:0;"></div>
+                  <div style="display:inline-flex;align-items:center;gap:6px;">
                     <span>${hex}</span>
                     <button class="copy-btn" onclick="copyText('${hex}', this)" title="Copy hex">
                       <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
