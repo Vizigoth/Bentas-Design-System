@@ -28,6 +28,7 @@ const NAV = [
       { label: 'Top App Bar',       id: 'components/top-app-bar' },
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Button',            id: 'components/button' },
+      { label: 'TextBox',           id: 'components/textbox' },
       { label: 'FAB',               id: 'components/fab' },
       { label: 'Icon Button',       id: 'components/icon-button' },
       { label: 'Text Field',        id: 'components/text-field' },
@@ -427,6 +428,171 @@ const PAGES = {
         <p class="page-desc">Foundation tokens define our global design language — sizing, spacing, radius, typography and color. Sourced directly from Figma ASSK App local variables.</p>
         ${ourTokensHtml}
         ${applyingHtml}
+      `};
+    }
+  },
+
+  'components/textbox': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Variants', 'Sizes', 'States', 'Types'],
+    render: (tab) => {
+      const title = 'TextBox';
+
+      const base = 'display:flex;flex-direction:column;gap:4px;width:280px;font-family:var(--font);';
+      const inputBase = 'display:flex;align-items:center;border-radius:8px;border:1px solid;padding-left:16px;height:48px;font-size:16px;font-family:var(--font);background:white;outline:none;width:100%;box-sizing:border-box;';
+
+      const previewHtml = `
+        <div class="preview-box" style="display:flex;flex-wrap:wrap;gap:24px;padding:32px;">
+          <div style="${base}">
+            <div style="${inputBase}border-color:var(--bt-border-muted);cursor:pointer;">
+              <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
+                <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
+                <span style="font-size:16px;color:var(--bt-text-muted);line-height:24px;">Placeholder</span>
+              </div>
+            </div>
+            <span style="font-size:12px;color:var(--bt-text-default);">Description text</span>
+          </div>
+          <div style="${base}">
+            <div style="${inputBase}border-color:var(--bt-blue-700);cursor:text;">
+              <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
+                <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
+                <span style="font-size:16px;color:var(--bt-text-default);line-height:24px;">Active state</span>
+              </div>
+            </div>
+            <span style="font-size:12px;color:var(--bt-text-default);">Description text</span>
+          </div>
+          <div style="${base}">
+            <div style="${inputBase}border-color:#f7aaae;background:white;">
+              <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
+                <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
+                <span style="font-size:16px;color:var(--bt-text-muted);line-height:24px;">Placeholder</span>
+              </div>
+              <div style="padding:12px;display:flex;align-items:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#b31d38" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+            </div>
+            <span style="font-size:12px;color:#b31d38;">Error message</span>
+          </div>
+          <div style="${base}">
+            <div style="${inputBase}border-color:var(--bt-border-muted);background:var(--bt-surface-subtle);">
+              <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
+                <span style="font-size:12px;color:var(--bt-text-muted);letter-spacing:0.04px;">Label</span>
+                <span style="font-size:16px;color:var(--bt-text-muted);line-height:24px;">Disabled</span>
+              </div>
+            </div>
+            <span style="font-size:12px;color:var(--bt-text-default);">Description text</span>
+          </div>
+        </div>
+      `;
+
+      const variantsHtml = `
+        <h2 id="Variants">Variants</h2>
+        <p class="page-desc">TextBox üç tip ile gelir: Default, Error ve Success.</p>
+        <table class="token-table">
+          <thead><tr><th>Type</th><th>Border</th><th>Açıklama</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Default</span></td><td><code style="font-family:var(--mono);font-size:12px;">--bt-border-default</code> #d4d4d4</td><td>Normal giriş durumu.</td></tr>
+            <tr><td><span class="token-name">Error</span></td><td><code style="font-family:var(--mono);font-size:12px;">--bt-border-error-emphasis</code> #f7aaae</td><td>Doğrulama hatası. Sağda uyarı ikonu gösterilir.</td></tr>
+            <tr><td><span class="token-name">Success</span></td><td>Green/300</td><td>Başarılı doğrulama durumu.</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      const sizesHtml = `
+        <h2 id="Sizes">Sizes</h2>
+        <table class="token-table">
+          <thead><tr><th>Size</th><th>Input Height</th><th>Toplam</th><th>Font</th><th>Preview</th></tr></thead>
+          <tbody>
+            ${[
+              ['Sm', '40px', '64px',  '14px'],
+              ['Md', '48px', '72px',  '16px'],
+              ['Lg', '56px', '80px',  '18px'],
+            ].map(([size, h, total, fs]) => `
+              <tr>
+                <td><span class="token-name">${size}</span></td>
+                <td>${h}</td>
+                <td>${total}</td>
+                <td>${fs}</td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <div style="display:flex;align-items:center;border-radius:8px;border:1px solid var(--bt-border-muted);padding-left:16px;height:${h};background:white;width:220px;box-sizing:border-box;">
+                      <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
+                        <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
+                        <span style="font-size:${fs};color:var(--bt-text-muted);line-height:${parseInt(fs)+8}px;">Placeholder</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      const statesHtml = `
+        <h2 id="States">States</h2>
+        <table class="token-table">
+          <thead><tr><th>State</th><th>Border</th><th>Background</th><th>Metin</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Default</span></td><td>#d4d4d4</td><td>white</td><td>Placeholder: <code style="font-size:12px;font-family:var(--mono);">--bt-text-emphasis</code></td></tr>
+            <tr><td><span class="token-name">Hover</span></td><td>#d4d4d4</td><td>white</td><td>—</td></tr>
+            <tr><td><span class="token-name">Active</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-brand-contrast-default</code> #0d4e97</td><td>white</td><td>Value: <code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code></td></tr>
+            <tr><td><span class="token-name">Filled</span></td><td>#d4d4d4</td><td>white</td><td>Value: <code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code></td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td>#d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-subtle</code> #f5f5f5</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-muted</code></td></tr>
+            <tr><td><span class="token-name">Read Only</span></td><td>#d4d4d4</td><td>#f5f5f5</td><td>—</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      const typesHtml = `
+        <h2 id="Types">Types</h2>
+        <p class="page-desc">Error ve Success tiplerinde Description Text rengi değişir, Error'da sağ tarafa ikon eklenir.</p>
+        <table class="token-table">
+          <thead><tr><th>Type</th><th>Description rengi</th><th>İkon</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Default</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code> #1a1a1a</td><td>—</td></tr>
+            <tr><td><span class="token-name">Error</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-error-emphasis</code> #b31d38</td><td>circle-alert</td></tr>
+            <tr><td><span class="token-name">Success</span></td><td>Green/700 #2d584b</td><td>circle-check</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      const designHtml = `
+        <h2 id="Tokens">Token Reference</h2>
+        <table class="token-table">
+          <thead><tr><th>Özellik</th><th>Token</th><th>Değer</th></tr></thead>
+          <tbody>
+            <tr><td>Border radius</td><td><code style="font-size:12px;font-family:var(--mono);">radius/lg</code></td><td>8px</td></tr>
+            <tr><td>Left padding</td><td><code style="font-size:12px;font-family:var(--mono);">space/2xl</code></td><td>16px</td></tr>
+            <tr><td>Gap (input ↔ desc)</td><td><code style="font-size:12px;font-family:var(--mono);">space/md</code></td><td>8px</td></tr>
+            <tr><td>Label font</td><td>Inter Regular 12px</td><td>letter-spacing: 0.04px</td></tr>
+            <tr><td>Value font</td><td>Geist Regular 16px</td><td>line-height: 24px</td></tr>
+            <tr><td>Description font</td><td>Inter Regular 12px</td><td>line-height: 16px</td></tr>
+            <tr><td>Border (default)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code></td><td>#d4d4d4</td></tr>
+            <tr><td>Border (active)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-brand-contrast-default</code></td><td>#0d4e97</td></tr>
+            <tr><td>Border (error)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-error-emphasis</code></td><td>#f7aaae</td></tr>
+            <tr><td>Bg (default)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code></td><td>#ffffff</td></tr>
+            <tr><td>Bg (disabled)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-subtle</code></td><td>#f5f5f5</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      if (tab === 'Usage') return { title, html: `
+        <p class="page-desc">TextBox kullanım kuralları.</p>
+        <div class="placeholder">
+          <div class="placeholder-title">Usage Guidelines</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
+      `};
+      if (tab === 'Design') return { title, html: designHtml };
+
+      return { title, html: `
+        <p class="page-desc">TextBox, kullanıcıdan metin girişi almak için kullanılan temel form bileşenidir. 3 boyut, 3 tip ve 6 durum ile gelir.</p>
+        ${previewHtml}
+        ${variantsHtml}
+        ${sizesHtml}
+        ${statesHtml}
+        ${typesHtml}
       `};
     }
   },
