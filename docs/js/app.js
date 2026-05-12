@@ -202,17 +202,17 @@ const PAGES = {
 
       // ── Typography (Figma: Font/Size/* + Font/Line-Height/*)
       const typeScale = [
-        ['Font/Size/text-2xs', '10px', '12px'],
-        ['Font/Size/text-xs',  '12px', '16px'],
-        ['Font/Size/text-sm',  '14px', '16px'],
-        ['Font/Size/text-md',  '16px', '24px'],
-        ['Font/Size/text-lg',  '18px', '24px'],
-        ['Font/Size/text-xl',  '20px', '28px'],
-        ['Font/Size/text-2xl', '24px', '32px'],
-        ['Font/Size/text-3xl', '28px', '36px'],
-        ['Font/Size/text-4xl', '32px', '40px'],
-        ['Font/Size/text-5xl', '36px', '44px'],
-        ['Font/Size/text-6xl', '40px', '48px'],
+        ['text-2xs', '10px', '12px'],
+        ['text-xs',  '12px', '16px'],
+        ['text-sm',  '14px', '16px'],
+        ['text-md',  '16px', '24px'],
+        ['text-lg',  '18px', '24px'],
+        ['text-xl',  '20px', '28px'],
+        ['text-2xl', '24px', '32px'],
+        ['text-3xl', '28px', '36px'],
+        ['text-4xl', '32px', '40px'],
+        ['text-5xl', '36px', '44px'],
+        ['text-6xl', '40px', '48px'],
       ];
 
       // ── Colors (Figma: Color Palettes / Primitives)
