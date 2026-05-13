@@ -347,6 +347,12 @@ const PAGES = {
         </div>
 
         <h2 id="Text">Text</h2>
+        <div class="seg-ctrl" style="display:inline-flex;align-items:center;background:#f5f5f5;border-radius:8px;padding:4px;gap:0;margin-bottom:16px;">
+          <button class="seg-btn seg-btn--active" onclick="switchTextView('preview', this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:var(--bt-blue-700);color:#fff;transition:background 120ms,color 120ms;">Preview</button>
+          <button class="seg-btn" onclick="switchTextView('json', this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:transparent;color:var(--bt-text-default);transition:background 120ms,color 120ms;">Json</button>
+        </div>
+
+        <div id="text-view-preview">
         <table class="token-table">
           <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
           <tbody>
@@ -395,6 +401,34 @@ const PAGES = {
             `).join('')}
           </tbody>
         </table>
+        </div>
+
+        <div id="text-view-json" style="display:none;">
+          <div style="position:relative;">
+            <button class="copy-btn" onclick="copyText(document.getElementById('text-json-code').textContent, this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(255,255,255,0.08);border-radius:6px;color:#e2edfc;">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+            <pre id="text-json-code" style="background:#1a1a1a;color:#e2edfc;border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(
+              Object.fromEntries([
+                ['--bt-text-default',      '#1a1a1a'],
+                ['--bt-text-solid',        '#272727'],
+                ['--bt-text-heavy',        '#404040'],
+                ['--bt-text-strong',       '#535353'],
+                ['--bt-text-emphasis',     '#727272'],
+                ['--bt-text-muted',        '#a3a3a3'],
+                ['--bt-text-subtle',       '#d4d4d4'],
+                ['--bt-text-light',        '#e6e6e6'],
+                ['--bt-text-inverted',     '#ffffff'],
+                ['--bt-text-brand',        '#0d4e97'],
+                ['--bt-text-brand-subtle', '#0e62bb'],
+                ['--bt-text-brand-light',  '#1c7fdb'],
+                ['--bt-text-success',      '#2d584b'],
+                ['--bt-text-warning',      '#aa820a'],
+                ['--bt-text-error',        '#b31d38'],
+              ]), null, 2
+            )}</pre>
+          </div>
+        </div>
 
         <h2 id="Border">Border</h2>
         <div class="placeholder">
@@ -890,6 +924,20 @@ function renderToc(page) {
 window.scrollToSection = function(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.switchTextView = function(view, btn) {
+  const preview = document.getElementById('text-view-preview');
+  const json    = document.getElementById('text-view-json');
+  if (!preview || !json) return;
+  const isPreview = view === 'preview';
+  preview.style.display = isPreview ? '' : 'none';
+  json.style.display    = isPreview ? 'none' : '';
+  btn.closest('.seg-ctrl').querySelectorAll('.seg-btn').forEach(b => {
+    const active = b === btn;
+    b.style.background = active ? 'var(--bt-blue-700)' : 'transparent';
+    b.style.color      = active ? '#fff' : 'var(--bt-text-default)';
+  });
 };
 
 window.copyText = function(text, btn) {
