@@ -405,10 +405,10 @@ const PAGES = {
 
         <div id="text-view-json" style="display:none;">
           <div style="position:relative;">
-            <button class="copy-btn" onclick="copyText(document.getElementById('text-json-code').textContent, this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(255,255,255,0.08);border-radius:6px;color:#e2edfc;">
+            <button class="copy-btn" onclick="copyText(document.getElementById('text-json-code').textContent, this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:var(--bt-surface-subtle);border-radius:6px;color:var(--bt-text-emphasis);">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             </button>
-            <pre id="text-json-code" style="background:#1a1a1a;color:#e2edfc;border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(
+            <pre id="text-json-code" style="background:var(--bt-surface-subtle);color:var(--bt-text-default);border:1px solid var(--bt-border-muted);border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(
               Object.fromEntries([
                 ['--bt-text-default',      'var(--bt-gray-900)'],
                 ['--bt-text-solid',        'var(--bt-gray-800)'],
