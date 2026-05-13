@@ -373,25 +373,29 @@ const PAGES = {
         <h2 id="Text">Text</h2>
         ${_seg('text')}
         <div id="token-view-preview-text">
+
+        <p class="section-label" style="margin-bottom:8px;">Base</p>
         <table class="token-table">
           <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
           <tbody>
             ${[
-              ['--bt-text-default',      'Gray/900',   '#1a1a1a'],
-              ['--bt-text-solid',        'Gray/800',   '#272727'],
-              ['--bt-text-heavy',        'Gray/700',   '#404040'],
-              ['--bt-text-strong',       'Gray/600',   '#535353'],
-              ['--bt-text-emphasis',     'Gray/500',   '#727272'],
-              ['--bt-text-muted',        'Gray/400',   '#a3a3a3'],
-              ['--bt-text-subtle',       'Gray/300',   '#d4d4d4'],
-              ['--bt-text-light',        'Gray/200',   '#e6e6e6'],
-              ['--bt-text-inverted',     'Gray/0',     '#ffffff'],
-              ['--bt-text-brand',        'Blue/700',   '#0d4e97'],
-              ['--bt-text-brand-subtle', 'Blue/600',   '#0e62bb'],
-              ['--bt-text-brand-light',  'Blue/500',   '#1c7fdb'],
-              ['--bt-text-success',      'Green/700',  '#2d584b'],
-              ['--bt-text-warning',      'Yellow/700', '#aa820a'],
-              ['--bt-text-error',        'Red/700',    '#b31d38'],
+              ['--bt-text-default',         'Gray/900',   '#1a1a1a'],
+              ['--bt-text-solid',           'Gray/800',   '#272727'],
+              ['--bt-text-heavy',           'Gray/700',   '#404040'],
+              ['--bt-text-strong',          'Gray/600',   '#535353'],
+              ['--bt-text-emphasis',        'Gray/500',   '#727272'],
+              ['--bt-text-muted',           'Gray/400',   '#a3a3a3'],
+              ['--bt-text-subtle',          'Gray/300',   '#d4d4d4'],
+              ['--bt-text-light',           'Gray/200',   '#e6e6e6'],
+              ['--bt-text-inverted',        'Gray/0',     '#ffffff'],
+              ['--bt-text-brand',           'Blue/700',   '#0d4e97'],
+              ['--bt-text-brand-subtle',    'Blue/600',   '#0e62bb'],
+              ['--bt-text-brand-light',     'Blue/500',   '#1c7fdb'],
+              ['--bt-text-success-emphasis','Green/700',  '#2d584b'],
+              ['--bt-text-success-muted',   'Green/50',   '#e8f3ee'],
+              ['--bt-text-warning-muted',   'Yellow/50',  '#fdf9e8'],
+              ['--bt-text-error-emphasis',  'Red/700',    '#b31d38'],
+              ['--bt-text-error-muted',     'Red/50',     '#fef2f2'],
             ].map(([token, colorToken, hex]) => `
               <tr>
                 <td>
@@ -421,24 +425,157 @@ const PAGES = {
             `).join('')}
           </tbody>
         </table>
+
+        ${[
+          { label: 'Error Scale', tokens: [
+            ['--bt-text-error-light',    'Red/50',   '#fef2f2'],
+            ['--bt-text-error-subtle',   'Red/100',  '#fde6e6'],
+            ['--bt-text-error-muted',    'Red/200',  '#fbd0d2'],
+            ['--bt-text-error-emphasis', 'Red/300',  '#f7aaae'],
+            ['--bt-text-error-strong',   'Red/400',  '#f27a83'],
+            ['--bt-text-error-heavy',    'Red/500',  '#e84b5b'],
+            ['--bt-text-error-solid',    'Red/600',  '#d83a52'],
+            ['--bt-text-error-default',  'Red/700',  '#b31d38'],
+            ['--bt-text-error-intense',  'Red/800',  '#961b35'],
+          ]},
+          { label: 'Success Scale', tokens: [
+            ['--bt-text-success-light',    'Green/50',  '#e8f3ee'],
+            ['--bt-text-success-subtle',   'Green/100', '#daede5'],
+            ['--bt-text-success-muted',    'Green/200', '#b4dbcb'],
+            ['--bt-text-success-emphasis', 'Green/300', '#87c1ab'],
+            ['--bt-text-success-strong',   'Green/400', '#5ea38b'],
+            ['--bt-text-success-heavy',    'Green/500', '#448871'],
+            ['--bt-text-success-solid',    'Green/600', '#356c5b'],
+            ['--bt-text-success-default',  'Green/700', '#2d584b'],
+            ['--bt-text-success-intense',  'Green/800', '#28473e'],
+          ]},
+          { label: 'Warning Scale', tokens: [
+            ['--bt-text-warning-light',    'Yellow/50',  '#fdf9e8'],
+            ['--bt-text-warning-subtle',   'Yellow/100', '#f9f2ce'],
+            ['--bt-text-warning-muted',    'Yellow/200', '#f4e8aa'],
+            ['--bt-text-warning-emphasis', 'Yellow/300', '#edd882'],
+            ['--bt-text-warning-strong',   'Yellow/400', '#e2c455'],
+            ['--bt-text-warning-heavy',    'Yellow/500', '#d4af2c'],
+            ['--bt-text-warning-solid',    'Yellow/600', '#c49a12'],
+            ['--bt-text-warning-default',  'Yellow/700', '#aa820a'],
+            ['--bt-text-warning-intense',  'Yellow/800', '#8c6a05'],
+          ]},
+          { label: 'Information Scale', tokens: [
+            ['--bt-text-information-light',    'Blue/50',  '#f1f7fe'],
+            ['--bt-text-information-subtle',   'Blue/100', '#e2edfc'],
+            ['--bt-text-information-muted',    'Blue/200', '#bedbf9'],
+            ['--bt-text-information-emphasis', 'Blue/300', '#85bdf4'],
+            ['--bt-text-information-strong',   'Blue/400', '#449bec'],
+            ['--bt-text-information-heavy',    'Blue/500', '#1c7fdb'],
+            ['--bt-text-information-solid',    'Blue/600', '#0e62bb'],
+            ['--bt-text-information-default',  'Blue/700', '#0d4e97'],
+            ['--bt-text-information-intense',  'Blue/800', '#0f447d'],
+          ]},
+          { label: 'Brand Contrast Scale', tokens: [
+            ['--bt-text-brand-contrast-light',    'Blue/50',  '#f1f7fe'],
+            ['--bt-text-brand-contrast-subtle',   'Blue/100', '#e2edfc'],
+            ['--bt-text-brand-contrast-muted',    'Blue/200', '#bedbf9'],
+            ['--bt-text-brand-contrast-emphasis', 'Blue/300', '#85bdf4'],
+            ['--bt-text-brand-contrast-strong',   'Blue/400', '#449bec'],
+            ['--bt-text-brand-contrast-heavy',    'Blue/500', '#1c7fdb'],
+            ['--bt-text-brand-contrast-solid',    'Blue/600', '#0e62bb'],
+            ['--bt-text-brand-contrast-default',  'Blue/700', '#0d4e97'],
+            ['--bt-text-brand-contrast-intense',  'Blue/800', '#0f447d'],
+          ]},
+        ].map(({ label, tokens }) => `
+          <p class="section-label" style="margin-top:32px;margin-bottom:8px;">${label}</p>
+          <table class="token-table">
+            <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
+            <tbody>
+              ${tokens.map(([token, colorToken, hex]) => `
+                <tr>
+                  <td><span style="font-size:20px;font-weight:500;line-height:28px;color:${hex}">Aa</span></td>
+                  <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span><button class="copy-btn" onclick="copyText('${token}',this)" title="Copy token"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div></td>
+                  <td>${colorToken}</td>
+                  <td><div style="display:inline-flex;align-items:center;gap:6px;"><span>${hex}</span><button class="copy-btn" onclick="copyText('${hex}',this)" title="Copy hex"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `).join('')}
+
         </div>
-        ${_jv('text', Object.fromEntries([
-          ['--bt-text-default',      'var(--bt-gray-900)'],
-          ['--bt-text-solid',        'var(--bt-gray-800)'],
-          ['--bt-text-heavy',        'var(--bt-gray-700)'],
-          ['--bt-text-strong',       'var(--bt-gray-600)'],
-          ['--bt-text-emphasis',     'var(--bt-gray-500)'],
-          ['--bt-text-muted',        'var(--bt-gray-400)'],
-          ['--bt-text-subtle',       'var(--bt-gray-300)'],
-          ['--bt-text-light',        'var(--bt-gray-200)'],
-          ['--bt-text-inverted',     'var(--bt-gray-0)'],
-          ['--bt-text-brand',        'var(--bt-blue-700)'],
-          ['--bt-text-brand-subtle', 'var(--bt-blue-600)'],
-          ['--bt-text-brand-light',  'var(--bt-blue-500)'],
-          ['--bt-text-success',      'var(--bt-green-700)'],
-          ['--bt-text-warning',      'var(--bt-yellow-700)'],
-          ['--bt-text-error',        'var(--bt-red-700)'],
-        ]))}
+        ${_jv('text', {
+          base: Object.fromEntries([
+            ['--bt-text-default',         'var(--bt-gray-900)'],
+            ['--bt-text-solid',           'var(--bt-gray-800)'],
+            ['--bt-text-heavy',           'var(--bt-gray-700)'],
+            ['--bt-text-strong',          'var(--bt-gray-600)'],
+            ['--bt-text-emphasis',        'var(--bt-gray-500)'],
+            ['--bt-text-muted',           'var(--bt-gray-400)'],
+            ['--bt-text-subtle',          'var(--bt-gray-300)'],
+            ['--bt-text-light',           'var(--bt-gray-200)'],
+            ['--bt-text-inverted',        'var(--bt-gray-0)'],
+            ['--bt-text-brand',           'var(--bt-blue-700)'],
+            ['--bt-text-brand-subtle',    'var(--bt-blue-600)'],
+            ['--bt-text-brand-light',     'var(--bt-blue-500)'],
+            ['--bt-text-success-emphasis','var(--bt-green-700)'],
+            ['--bt-text-success-muted',   'var(--bt-green-50)'],
+            ['--bt-text-warning-muted',   'var(--bt-yellow-50)'],
+            ['--bt-text-error-emphasis',  'var(--bt-red-700)'],
+            ['--bt-text-error-muted',     'var(--bt-red-50)'],
+          ]),
+          'error-scale': Object.fromEntries([
+            ['--bt-text-error-light',    'var(--bt-red-50)'],
+            ['--bt-text-error-subtle',   'var(--bt-red-100)'],
+            ['--bt-text-error-muted',    'var(--bt-red-200)'],
+            ['--bt-text-error-emphasis', 'var(--bt-red-300)'],
+            ['--bt-text-error-strong',   'var(--bt-red-400)'],
+            ['--bt-text-error-heavy',    'var(--bt-red-500)'],
+            ['--bt-text-error-solid',    'var(--bt-red-600)'],
+            ['--bt-text-error-default',  'var(--bt-red-700)'],
+            ['--bt-text-error-intense',  'var(--bt-red-800)'],
+          ]),
+          'success-scale': Object.fromEntries([
+            ['--bt-text-success-light',    'var(--bt-green-50)'],
+            ['--bt-text-success-subtle',   'var(--bt-green-100)'],
+            ['--bt-text-success-muted',    'var(--bt-green-200)'],
+            ['--bt-text-success-emphasis', 'var(--bt-green-300)'],
+            ['--bt-text-success-strong',   'var(--bt-green-400)'],
+            ['--bt-text-success-heavy',    'var(--bt-green-500)'],
+            ['--bt-text-success-solid',    'var(--bt-green-600)'],
+            ['--bt-text-success-default',  'var(--bt-green-700)'],
+            ['--bt-text-success-intense',  'var(--bt-green-800)'],
+          ]),
+          'warning-scale': Object.fromEntries([
+            ['--bt-text-warning-light',    'var(--bt-yellow-50)'],
+            ['--bt-text-warning-subtle',   'var(--bt-yellow-100)'],
+            ['--bt-text-warning-muted',    'var(--bt-yellow-200)'],
+            ['--bt-text-warning-emphasis', 'var(--bt-yellow-300)'],
+            ['--bt-text-warning-strong',   'var(--bt-yellow-400)'],
+            ['--bt-text-warning-heavy',    'var(--bt-yellow-500)'],
+            ['--bt-text-warning-solid',    'var(--bt-yellow-600)'],
+            ['--bt-text-warning-default',  'var(--bt-yellow-700)'],
+            ['--bt-text-warning-intense',  'var(--bt-yellow-800)'],
+          ]),
+          'information-scale': Object.fromEntries([
+            ['--bt-text-information-light',    'var(--bt-blue-50)'],
+            ['--bt-text-information-subtle',   'var(--bt-blue-100)'],
+            ['--bt-text-information-muted',    'var(--bt-blue-200)'],
+            ['--bt-text-information-emphasis', 'var(--bt-blue-300)'],
+            ['--bt-text-information-strong',   'var(--bt-blue-400)'],
+            ['--bt-text-information-heavy',    'var(--bt-blue-500)'],
+            ['--bt-text-information-solid',    'var(--bt-blue-600)'],
+            ['--bt-text-information-default',  'var(--bt-blue-700)'],
+            ['--bt-text-information-intense',  'var(--bt-blue-800)'],
+          ]),
+          'brand-contrast-scale': Object.fromEntries([
+            ['--bt-text-brand-contrast-light',    'var(--bt-blue-50)'],
+            ['--bt-text-brand-contrast-subtle',   'var(--bt-blue-100)'],
+            ['--bt-text-brand-contrast-muted',    'var(--bt-blue-200)'],
+            ['--bt-text-brand-contrast-emphasis', 'var(--bt-blue-300)'],
+            ['--bt-text-brand-contrast-strong',   'var(--bt-blue-400)'],
+            ['--bt-text-brand-contrast-heavy',    'var(--bt-blue-500)'],
+            ['--bt-text-brand-contrast-solid',    'var(--bt-blue-600)'],
+            ['--bt-text-brand-contrast-default',  'var(--bt-blue-700)'],
+            ['--bt-text-brand-contrast-intense',  'var(--bt-blue-800)'],
+          ]),
+        })}
 
         <h2 id="Border">Border</h2>
         <div class="placeholder">
