@@ -464,7 +464,7 @@ code {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--bt-text-muted);
+  color: var(--bt-text-default);
   border-bottom: 1px solid var(--bt-border-muted);
   border-right: 1px solid var(--bt-border-muted);
 }
