@@ -339,7 +339,20 @@ const PAGES = {
           </tbody>
         </table>
         </div>
-        ${_jv('radius', Object.fromEntries(radii.map(([name, rem, px]) => [`--bt-${name}`, rem === '—' ? px : rem])))}
+        ${_jv('radius', Object.fromEntries([
+          ['--bt-radius-none', 'var(--bt-base-sizing-none)'],
+          ['--bt-radius-xs',   'var(--bt-base-sizing-2xs)'],
+          ['--bt-radius-sm',   'var(--bt-base-sizing-xs)'],
+          ['--bt-radius-md',   'var(--bt-base-sizing-sm)'],
+          ['--bt-radius-lg',   'var(--bt-base-sizing-md)'],
+          ['--bt-radius-xl',   'var(--bt-base-sizing-lg)'],
+          ['--bt-radius-2xl',  'var(--bt-base-sizing-xl)'],
+          ['--bt-radius-3xl',  'var(--bt-base-sizing-2xl)'],
+          ['--bt-radius-4xl',  'var(--bt-base-sizing-3xl)'],
+          ['--bt-radius-5xl',  'var(--bt-base-sizing-4xl)'],
+          ['--bt-radius-6xl',  'var(--bt-base-sizing-5xl)'],
+          ['--bt-radius-full', 'var(--bt-base-sizing-full)'],
+        ]))}
 
         <h2 id="Typography">Typography</h2>
         ${_seg('typography')}
