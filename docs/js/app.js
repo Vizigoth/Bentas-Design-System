@@ -158,6 +158,7 @@ const PAGES = {
         ['base-sizing-22xl', '6rem',     '96px'],
         ['base-sizing-23xl', '6.25rem',  '100px'],
         ['base-sizing-24xl', '7.5rem',   '120px'],
+        ['base-sizing-full', '—',        '9999px'],
       ];
 
       // ── Spacing (Figma: Space/*)
