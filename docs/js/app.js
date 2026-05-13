@@ -418,7 +418,7 @@ const PAGES = {
                 ['--bt-text-muted',        'var(--bt-gray-400)'],
                 ['--bt-text-subtle',       'var(--bt-gray-300)'],
                 ['--bt-text-light',        'var(--bt-gray-200)'],
-                ['--bt-text-inverted',     '#ffffff'],
+                ['--bt-text-inverted',     'var(--bt-gray-0)'],
                 ['--bt-text-brand',        'var(--bt-blue-700)'],
                 ['--bt-text-brand-subtle', 'var(--bt-blue-600)'],
                 ['--bt-text-brand-light',  'var(--bt-blue-500)'],
