@@ -246,8 +246,14 @@ const PAGES = {
         </div>
       `).join('');
 
+      const _seg = id => `<div class="seg-ctrl" style="display:inline-flex;align-items:center;background:#f5f5f5;border-radius:8px;padding:4px;gap:0;margin-bottom:16px;"><button class="seg-btn seg-btn--active" onclick="switchTokenView('${id}','preview',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:var(--bt-blue-700);color:#fff;transition:background 120ms,color 120ms;">Preview</button><button class="seg-btn" onclick="switchTokenView('${id}','json',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:transparent;color:var(--bt-text-default);transition:background 120ms,color 120ms;">Json</button></div>`;
+      const _ci = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+      const _jv  = (id, data) => `<div id="token-view-json-${id}" style="display:none;"><div style="position:relative;"><button class="copy-btn" onclick="copyText(document.getElementById('token-json-${id}').textContent,this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:var(--bt-surface-subtle);border-radius:6px;color:var(--bt-text-emphasis);">${_ci}</button><pre id="token-json-${id}" style="background:var(--bt-surface-subtle);color:var(--bt-text-default);border:1px solid var(--bt-border-muted);border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(data, null, 2)}</pre></div></div>`;
+
       const ourTokensHtml = `
         <h2 id="Sizing">Sizing</h2>
+        ${_seg('sizing')}
+        <div id="token-view-preview-sizing">
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
@@ -264,8 +270,12 @@ const PAGES = {
             }).join('')}
           </tbody>
         </table>
+        </div>
+        ${_jv('sizing', Object.fromEntries(sizes.map(([name, val]) => [`--bt-${name}`, val])))}
 
         <h2 id="Spacing">Spacing</h2>
+        ${_seg('spacing')}
+        <div id="token-view-preview-spacing">
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
@@ -287,8 +297,12 @@ const PAGES = {
             }).join('')}
           </tbody>
         </table>
+        </div>
+        ${_jv('spacing', Object.fromEntries(spacing.map(([name, rem]) => [`--bt-${name}`, rem])))}
 
         <h2 id="Radius">Radius</h2>
+        ${_seg('radius')}
+        <div id="token-view-preview-radius">
         <table class="token-table">
           <thead><tr><th>Name</th><th>Value</th><th>Pixel</th><th>Example</th></tr></thead>
           <tbody>
@@ -320,8 +334,12 @@ const PAGES = {
             }).join('')}
           </tbody>
         </table>
+        </div>
+        ${_jv('radius', Object.fromEntries(radii.map(([name, rem, px]) => [`--bt-${name}`, rem === '—' ? px : rem])))}
 
         <h2 id="Typography">Typography</h2>
+        ${_seg('typography')}
+        <div id="token-view-preview-typography">
         <table class="token-table">
           <thead><tr><th>Token</th><th>Size</th><th>Line Height</th><th>Preview</th></tr></thead>
           <tbody>
@@ -335,9 +353,15 @@ const PAGES = {
             `).join('')}
           </tbody>
         </table>
+        </div>
+        ${_jv('typography', Object.fromEntries(typeScale.map(([token, size, lh]) => [`--bt-${token}`, { fontSize: size, lineHeight: lh }])))}
 
         <h2 id="Colors">Colors</h2>
+        ${_seg('colors')}
+        <div id="token-view-preview-colors">
         ${colorHtml}
+        </div>
+        ${_jv('colors', Object.fromEntries(Object.entries(palettes).flatMap(([colorName, shades]) => shades.map(([step, hex]) => [`--bt-${colorName.toLowerCase()}-${step}`, hex]))))}
 
         <h2 id="Background">Background</h2>
         <div class="placeholder">
@@ -347,12 +371,8 @@ const PAGES = {
         </div>
 
         <h2 id="Text">Text</h2>
-        <div class="seg-ctrl" style="display:inline-flex;align-items:center;background:#f5f5f5;border-radius:8px;padding:4px;gap:0;margin-bottom:16px;">
-          <button class="seg-btn seg-btn--active" onclick="switchTextView('preview', this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:var(--bt-blue-700);color:#fff;transition:background 120ms,color 120ms;">Preview</button>
-          <button class="seg-btn" onclick="switchTextView('json', this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:transparent;color:var(--bt-text-default);transition:background 120ms,color 120ms;">Json</button>
-        </div>
-
-        <div id="text-view-preview">
+        ${_seg('text')}
+        <div id="token-view-preview-text">
         <table class="token-table">
           <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
           <tbody>
@@ -402,33 +422,23 @@ const PAGES = {
           </tbody>
         </table>
         </div>
-
-        <div id="text-view-json" style="display:none;">
-          <div style="position:relative;">
-            <button class="copy-btn" onclick="copyText(document.getElementById('text-json-code').textContent, this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:var(--bt-surface-subtle);border-radius:6px;color:var(--bt-text-emphasis);">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            </button>
-            <pre id="text-json-code" style="background:var(--bt-surface-subtle);color:var(--bt-text-default);border:1px solid var(--bt-border-muted);border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(
-              Object.fromEntries([
-                ['--bt-text-default',      'var(--bt-gray-900)'],
-                ['--bt-text-solid',        'var(--bt-gray-800)'],
-                ['--bt-text-heavy',        'var(--bt-gray-700)'],
-                ['--bt-text-strong',       'var(--bt-gray-600)'],
-                ['--bt-text-emphasis',     'var(--bt-gray-500)'],
-                ['--bt-text-muted',        'var(--bt-gray-400)'],
-                ['--bt-text-subtle',       'var(--bt-gray-300)'],
-                ['--bt-text-light',        'var(--bt-gray-200)'],
-                ['--bt-text-inverted',     'var(--bt-gray-0)'],
-                ['--bt-text-brand',        'var(--bt-blue-700)'],
-                ['--bt-text-brand-subtle', 'var(--bt-blue-600)'],
-                ['--bt-text-brand-light',  'var(--bt-blue-500)'],
-                ['--bt-text-success',      'var(--bt-green-700)'],
-                ['--bt-text-warning',      'var(--bt-yellow-700)'],
-                ['--bt-text-error',        'var(--bt-red-700)'],
-              ]), null, 2
-            )}</pre>
-          </div>
-        </div>
+        ${_jv('text', Object.fromEntries([
+          ['--bt-text-default',      'var(--bt-gray-900)'],
+          ['--bt-text-solid',        'var(--bt-gray-800)'],
+          ['--bt-text-heavy',        'var(--bt-gray-700)'],
+          ['--bt-text-strong',       'var(--bt-gray-600)'],
+          ['--bt-text-emphasis',     'var(--bt-gray-500)'],
+          ['--bt-text-muted',        'var(--bt-gray-400)'],
+          ['--bt-text-subtle',       'var(--bt-gray-300)'],
+          ['--bt-text-light',        'var(--bt-gray-200)'],
+          ['--bt-text-inverted',     'var(--bt-gray-0)'],
+          ['--bt-text-brand',        'var(--bt-blue-700)'],
+          ['--bt-text-brand-subtle', 'var(--bt-blue-600)'],
+          ['--bt-text-brand-light',  'var(--bt-blue-500)'],
+          ['--bt-text-success',      'var(--bt-green-700)'],
+          ['--bt-text-warning',      'var(--bt-yellow-700)'],
+          ['--bt-text-error',        'var(--bt-red-700)'],
+        ]))}
 
         <h2 id="Border">Border</h2>
         <div class="placeholder">
@@ -926,9 +936,9 @@ window.scrollToSection = function(id) {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
-window.switchTextView = function(view, btn) {
-  const preview = document.getElementById('text-view-preview');
-  const json    = document.getElementById('text-view-json');
+window.switchTokenView = function(sectionId, view, btn) {
+  const preview = document.getElementById(`token-view-preview-${sectionId}`);
+  const json    = document.getElementById(`token-view-json-${sectionId}`);
   if (!preview || !json) return;
   const isPreview = view === 'preview';
   preview.style.display = isPreview ? '' : 'none';
