@@ -410,21 +410,21 @@ const PAGES = {
             </button>
             <pre id="text-json-code" style="background:#1a1a1a;color:#e2edfc;border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(
               Object.fromEntries([
-                ['--bt-text-default',      '#1a1a1a'],
-                ['--bt-text-solid',        '#272727'],
-                ['--bt-text-heavy',        '#404040'],
-                ['--bt-text-strong',       '#535353'],
-                ['--bt-text-emphasis',     '#727272'],
-                ['--bt-text-muted',        '#a3a3a3'],
-                ['--bt-text-subtle',       '#d4d4d4'],
-                ['--bt-text-light',        '#e6e6e6'],
+                ['--bt-text-default',      'var(--bt-gray-900)'],
+                ['--bt-text-solid',        'var(--bt-gray-800)'],
+                ['--bt-text-heavy',        'var(--bt-gray-700)'],
+                ['--bt-text-strong',       'var(--bt-gray-600)'],
+                ['--bt-text-emphasis',     'var(--bt-gray-500)'],
+                ['--bt-text-muted',        'var(--bt-gray-400)'],
+                ['--bt-text-subtle',       'var(--bt-gray-300)'],
+                ['--bt-text-light',        'var(--bt-gray-200)'],
                 ['--bt-text-inverted',     '#ffffff'],
-                ['--bt-text-brand',        '#0d4e97'],
-                ['--bt-text-brand-subtle', '#0e62bb'],
-                ['--bt-text-brand-light',  '#1c7fdb'],
-                ['--bt-text-success',      '#2d584b'],
-                ['--bt-text-warning',      '#aa820a'],
-                ['--bt-text-error',        '#b31d38'],
+                ['--bt-text-brand',        'var(--bt-blue-700)'],
+                ['--bt-text-brand-subtle', 'var(--bt-blue-600)'],
+                ['--bt-text-brand-light',  'var(--bt-blue-500)'],
+                ['--bt-text-success',      'var(--bt-green-700)'],
+                ['--bt-text-warning',      'var(--bt-yellow-700)'],
+                ['--bt-text-error',        'var(--bt-red-700)'],
               ]), null, 2
             )}</pre>
           </div>
