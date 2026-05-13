@@ -613,6 +613,166 @@ const PAGES = {
     }
   },
 
+  'components/bottom-tab-bar': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Anatomy', 'States', 'FAB Action'],
+    render: (tab) => {
+      const title = 'Bottom Tab Bar';
+
+      const iconHome = `<svg width="20" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H15v-5h-6v5H4a1 1 0 01-1-1V9.5z"/></svg>`;
+      const iconRequests = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`;
+      const iconScan = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2"/><line x1="4" y1="12" x2="20" y2="12"/></svg>`;
+      const iconReceipt = `<svg width="18" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 10h8M8 14h5"/></svg>`;
+      const iconUser = `<svg width="20" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7"/></svg>`;
+
+      const tabItem = (icon, label, active) => `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;color:${active ? 'var(--bt-blue-700)' : 'var(--bt-gray-400)'};">
+          ${icon}
+          <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);text-align:center;color:inherit;">${label}</span>
+        </div>`;
+
+      const navPreview = (activeIdx) => `
+        <div style="position:relative;display:inline-flex;flex-direction:column;background:white;border-top:1px solid var(--bt-border-muted);border-radius:0 0 24px 24px;width:373px;box-shadow:0 -2px 12px rgba(0,0,0,0.06);">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 12px;position:relative;">
+            <div style="display:flex;gap:8px;">
+              ${tabItem(iconHome,     'Ana Sayfa', activeIdx===0)}
+              ${tabItem(iconRequests, 'Talepler',  activeIdx===1)}
+            </div>
+            <div style="position:absolute;left:50%;transform:translateX(-50%);top:-32px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <div style="width:62px;height:62px;border-radius:9999px;background:var(--bt-blue-700);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(13,78,151,0.35);">
+                ${iconScan}
+              </div>
+              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-gray-400);">Giriş Yap</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              ${tabItem(iconReceipt, 'Aidat',  activeIdx===3)}
+              ${tabItem(iconUser,    'Profil', activeIdx===4)}
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;padding:6px 0;">
+            <div style="width:140px;height:6px;background:var(--bt-gray-900);border-radius:3px;opacity:0.2;"></div>
+          </div>
+        </div>`;
+
+      const previewHtml = `
+        <div class="preview-box" style="padding:48px 32px 32px;display:flex;flex-direction:column;gap:48px;align-items:center;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:12px;font-weight:500;color:var(--bt-text-muted);margin-bottom:16px;font-family:var(--font);">Ana Sayfa aktif</div>
+            ${navPreview(0)}
+          </div>
+        </div>`;
+
+      const anatomyHtml = `
+        <h2 id="Anatomy">Anatomy</h2>
+        <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="position:relative;padding-top:56px;">
+            ${navPreview(0)}
+            <div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-around;font-size:11px;color:var(--bt-text-muted);font-family:var(--font);">
+              <span>① FAB</span><span>② Tab öğesi</span><span>③ Home Indicator</span>
+            </div>
+          </div>
+          <table class="token-table" style="flex:1;min-width:280px;">
+            <thead><tr><th>#</th><th>Öğe</th><th>Açıklama</th></tr></thead>
+            <tbody>
+              <tr><td>①</td><td><span class="token-name">FAB</span></td><td>Merkezdeki birincil aksiyon butonu. Barın 32px üstünde konumlanır.</td></tr>
+              <tr><td>②</td><td><span class="token-name">Tab öğesi</span></td><td>24×24 ikon + 10px label. Aktif öğe Blue/700 renk alır.</td></tr>
+              <tr><td>③</td><td><span class="token-name">Home Indicator</span></td><td>iOS sistem çubuğu. 140×6px, ekran alt kenarına 6px padding.</td></tr>
+            </tbody>
+          </table>
+        </div>`;
+
+      const statesHtml = `
+        <h2 id="States">States</h2>
+        <div class="preview-box" style="padding:48px 32px 32px;display:flex;gap:48px;align-items:flex-end;flex-wrap:wrap;justify-content:center;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <span style="font-size:12px;color:var(--bt-text-muted);font-family:var(--font);">Active</span>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;background:white;border:1px solid var(--bt-border-muted);border-radius:8px;color:var(--bt-blue-700);">
+              ${iconHome}
+              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-blue-700);">Ana Sayfa</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <span style="font-size:12px;color:var(--bt-text-muted);font-family:var(--font);">Inactive</span>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;background:white;border:1px solid var(--bt-border-muted);border-radius:8px;color:var(--bt-gray-400);">
+              ${iconUser}
+              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-gray-400);">Profil</span>
+            </div>
+          </div>
+        </div>
+        <table class="token-table" style="margin-top:16px;">
+          <thead><tr><th>State</th><th>Icon rengi</th><th>Label rengi</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Active</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-blue-700</code> · #0d4e97</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-blue-700</code> · #0d4e97</td></tr>
+            <tr><td><span class="token-name">Inactive</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-gray-400</code> · #a3a3a3</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-gray-400</code> · #a3a3a3</td></tr>
+          </tbody>
+        </table>`;
+
+      const fabHtml = `
+        <h2 id="FAB Action">FAB Action</h2>
+        <p class="page-desc">Merkezdeki FAB (Floating Action Button), barın 32px üzerinde yüzer ve birincil aksiyon olarak kullanılır.</p>
+        <div class="preview-box" style="padding:56px 32px 32px;display:flex;justify-content:center;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:62px;height:62px;border-radius:9999px;background:var(--bt-blue-700);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(13,78,151,0.35);">
+              ${iconScan}
+            </div>
+            <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-gray-400);">Giriş Yap</span>
+          </div>
+        </div>
+        <table class="token-table" style="margin-top:16px;">
+          <thead><tr><th>Özellik</th><th>Token</th><th>Değer</th></tr></thead>
+          <tbody>
+            <tr><td>Boyut</td><td>—</td><td>62×62px</td></tr>
+            <tr><td>Border radius</td><td><code style="font-size:12px;font-family:var(--mono);">radius/full</code></td><td>9999px</td></tr>
+            <tr><td>Arka plan</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-brand-contrast-default</code></td><td>Blue/700 · #0d4e97</td></tr>
+            <tr><td>İkon rengi</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-icon-inverted</code></td><td>#ffffff</td></tr>
+            <tr><td>İkon boyutu</td><td>—</td><td>24×24px</td></tr>
+            <tr><td>Dikey konum</td><td>—</td><td>Bar üstünde -32px</td></tr>
+          </tbody>
+        </table>`;
+
+      const designHtml = `
+        <h2 id="Token Reference">Token Reference</h2>
+        <table class="token-table">
+          <thead><tr><th>Özellik</th><th>Token</th><th>Değer</th></tr></thead>
+          <tbody>
+            <tr><td>Container arka plan</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code></td><td>#ffffff</td></tr>
+            <tr><td>Üst border</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-muted</code></td><td>Gray/200 · #e6e6e6</td></tr>
+            <tr><td>Alt köşe yarıçapı</td><td><code style="font-size:12px;font-family:var(--mono);">radius/6xl</code></td><td>24px</td></tr>
+            <tr><td>Tab öğe genişliği</td><td>—</td><td>64px</td></tr>
+            <tr><td>Tab öğe yüksekliği</td><td>—</td><td>52px</td></tr>
+            <tr><td>Yatay padding</td><td><code style="font-size:12px;font-family:var(--mono);">space/xs</code></td><td>4px</td></tr>
+            <tr><td>Dikey padding</td><td><code style="font-size:12px;font-family:var(--mono);">space/sm</code></td><td>6px</td></tr>
+            <tr><td>İkon boyutu</td><td>—</td><td>24×24px</td></tr>
+            <tr><td>İkon↔Label gap</td><td><code style="font-size:12px;font-family:var(--mono);">space/2xs</code></td><td>2px</td></tr>
+            <tr><td>Label font boyutu</td><td><code style="font-size:12px;font-family:var(--mono);">text-2xs</code></td><td>10px</td></tr>
+            <tr><td>Label font ağırlığı</td><td><code style="font-size:12px;font-family:var(--mono);">Font/Weight/Medium</code></td><td>500</td></tr>
+            <tr><td>Label satır yüksekliği</td><td><code style="font-size:12px;font-family:var(--mono);">text-lh-2xs</code></td><td>12px</td></tr>
+            <tr><td>Aktif renk</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-brand</code></td><td>Blue/700 · #0d4e97</td></tr>
+            <tr><td>Pasif renk</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-muted</code></td><td>Gray/400 · #a3a3a3</td></tr>
+            <tr><td>Home indicator genişlik</td><td>—</td><td>140px</td></tr>
+            <tr><td>Home indicator yükseklik</td><td>—</td><td>6px</td></tr>
+          </tbody>
+        </table>`;
+
+      if (tab === 'Usage') return { title, html: `
+        <p class="page-desc">Bottom Tab Bar kullanım kuralları.</p>
+        <div class="placeholder">
+          <div class="placeholder-title">Usage Guidelines</div>
+          <div class="placeholder-text">Yakında eklenecek.</div>
+        </div>
+      `};
+      if (tab === 'Design') return { title, html: designHtml };
+
+      return { title, html: `
+        <p class="page-desc">Bottom Tab Bar, uygulamanın ana navigasyon öğesidir. 4 sekme ve merkezdeki FAB aksiyonundan oluşur.</p>
+        ${previewHtml}
+        ${anatomyHtml}
+        ${statesHtml}
+        ${fabHtml}
+      `};
+    }
+  },
+
   'components/textbox': {
     tabs: ['Overview', 'Usage', 'Design'],
     toc: ['Variants', 'Sizes', 'States', 'Types'],
