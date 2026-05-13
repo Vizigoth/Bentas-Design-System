@@ -134,9 +134,11 @@ const PAGES = {
         ['base-sizing-sm',   '0.375rem', '6px'],
         ['base-sizing-md',   '0.5rem',   '8px'],
         ['base-sizing-lg',   '0.625rem', '10px'],
-        ['base-sizing-xl',   '0.75rem',  '12px'],
-        ['base-sizing-2xl',  '1rem',     '16px'],
-        ['base-sizing-3xl',  '1.25rem',  '20px'],
+        ['base-sizing-xl',      '0.75rem',  '12px'],
+        ['base-sizing-xl-half', '0.875rem', '14px'],
+        ['base-sizing-2xl',     '1rem',     '16px'],
+        ['base-sizing-2xl-half','1.125rem', '18px'],
+        ['base-sizing-3xl',     '1.25rem',  '20px'],
         ['base-sizing-4xl',  '1.5rem',   '24px'],
         ['base-sizing-5xl',  '1.75rem',  '28px'],
         ['base-sizing-6xl',  '2rem',     '32px'],
@@ -302,7 +304,31 @@ const PAGES = {
           </tbody>
         </table>
         </div>
-        ${_jv('spacing', Object.fromEntries(spacing.map(([name, rem]) => [`--bt-${name}`, rem])))}
+        ${_jv('spacing', Object.fromEntries([
+          ['--bt-space-none',  'var(--bt-base-sizing-none)'],
+          ['--bt-space-2xs',   'var(--bt-base-sizing-2xs)'],
+          ['--bt-space-xs',    'var(--bt-base-sizing-xs)'],
+          ['--bt-space-sm',    'var(--bt-base-sizing-sm)'],
+          ['--bt-space-md',    'var(--bt-base-sizing-md)'],
+          ['--bt-space-lg',    'var(--bt-base-sizing-lg)'],
+          ['--bt-space-xl',    'var(--bt-base-sizing-xl)'],
+          ['--bt-space-2xl',   'var(--bt-base-sizing-2xl)'],
+          ['--bt-space-3xl',   'var(--bt-base-sizing-3xl)'],
+          ['--bt-space-4xl',   'var(--bt-base-sizing-4xl)'],
+          ['--bt-space-5xl',   'var(--bt-base-sizing-5xl)'],
+          ['--bt-space-6xl',   'var(--bt-base-sizing-6xl)'],
+          ['--bt-space-7xl',   'var(--bt-base-sizing-7xl)'],
+          ['--bt-space-8xl',   'var(--bt-base-sizing-8xl)'],
+          ['--bt-space-9xl',   'var(--bt-base-sizing-9xl)'],
+          ['--bt-space-10xl',  'var(--bt-base-sizing-10xl)'],
+          ['--bt-space-11xl',  'var(--bt-base-sizing-11xl)'],
+          ['--bt-space-12xl',  'var(--bt-base-sizing-12xl)'],
+          ['--bt-space-13xl',  'var(--bt-base-sizing-13xl)'],
+          ['--bt-space-14xl',  'var(--bt-base-sizing-14xl)'],
+          ['--bt-space-15xl',  'var(--bt-base-sizing-15xl)'],
+          ['--bt-space-16xl',  'var(--bt-base-sizing-16xl)'],
+          ['--bt-space-17xl',  'var(--bt-base-sizing-18xl)'],
+        ]))}
 
         <h2 id="Radius">Radius</h2>
         ${_seg('radius')}
@@ -371,7 +397,19 @@ const PAGES = {
           </tbody>
         </table>
         </div>
-        ${_jv('typography', Object.fromEntries(typeScale.map(([token, size, lh]) => [`--bt-${token}`, { fontSize: size, lineHeight: lh }])))}
+        ${_jv('typography', Object.fromEntries([
+          ['--bt-text-2xs', { fontSize: 'var(--bt-base-sizing-lg)',        lineHeight: 'var(--bt-base-sizing-xl)' }],
+          ['--bt-text-xs',  { fontSize: 'var(--bt-base-sizing-xl)',        lineHeight: 'var(--bt-base-sizing-2xl)' }],
+          ['--bt-text-sm',  { fontSize: 'var(--bt-base-sizing-xl-half)',   lineHeight: 'var(--bt-base-sizing-2xl)' }],
+          ['--bt-text-md',  { fontSize: 'var(--bt-base-sizing-2xl)',       lineHeight: 'var(--bt-base-sizing-4xl)' }],
+          ['--bt-text-lg',  { fontSize: 'var(--bt-base-sizing-2xl-half)',  lineHeight: 'var(--bt-base-sizing-4xl)' }],
+          ['--bt-text-xl',  { fontSize: 'var(--bt-base-sizing-3xl)',       lineHeight: 'var(--bt-base-sizing-5xl)' }],
+          ['--bt-text-2xl', { fontSize: 'var(--bt-base-sizing-4xl)',       lineHeight: 'var(--bt-base-sizing-6xl)' }],
+          ['--bt-text-3xl', { fontSize: 'var(--bt-base-sizing-5xl)',       lineHeight: 'var(--bt-base-sizing-7xl)' }],
+          ['--bt-text-4xl', { fontSize: 'var(--bt-base-sizing-6xl)',       lineHeight: 'var(--bt-base-sizing-8xl)' }],
+          ['--bt-text-5xl', { fontSize: 'var(--bt-base-sizing-7xl)',       lineHeight: 'var(--bt-base-sizing-9xl)' }],
+          ['--bt-text-6xl', { fontSize: 'var(--bt-base-sizing-8xl)',       lineHeight: 'var(--bt-base-sizing-10xl)' }],
+        ]))}
 
         <h2 id="Colors">Colors</h2>
         ${_seg('colors')}
