@@ -1281,23 +1281,20 @@ const PAGES = {
   },
 
   'components/avatar': {
-    tabs: ['Overview', 'Usage', 'Design'],
-    toc: [
-      { group: 'Overview', items: ['Types', 'Themes', 'Sizes'] },
-      { group: 'Design',   items: ['Variants', 'Properties', 'Spacing'] },
-    ],
+    tabs: ['Overview', 'Usage'],
+    toc: ['Types', 'Themes', 'Sizes'],
     render: (tab) => {
       const title = 'Avatar';
 
       const iconUser = (size, color) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></svg>`;
 
       const SIZE_CFG = {
-        '2xs': { dim: 24, iconSize: 16, fs: 12 },
-        'xs':  { dim: 28, iconSize: 18, fs: 12 },
-        'sm':  { dim: 32, iconSize: 20, fs: 12 },
-        'md':  { dim: 40, iconSize: 22, fs: 14 },
-        'lg':  { dim: 48, iconSize: 24, fs: 14 },
-        'xl':  { dim: 56, iconSize: 26, fs: 14 },
+        '2xs': { dim: 24, iconSize: 16, fs: 12, token: '--bt-base-sizing-6xl' },
+        'xs':  { dim: 28, iconSize: 18, fs: 12, token: '--bt-base-sizing-7xl' },
+        'sm':  { dim: 32, iconSize: 20, fs: 12, token: '--bt-base-sizing-8xl' },
+        'md':  { dim: 40, iconSize: 22, fs: 14, token: '--bt-base-sizing-10xl' },
+        'lg':  { dim: 48, iconSize: 24, fs: 14, token: '--bt-base-sizing-12xl' },
+        'xl':  { dim: 56, iconSize: 26, fs: 14, token: '--bt-base-sizing-14xl' },
       };
 
       const avatarEl = ({ size = 'md', themeColor = 'default', type = 'initials', initials = 'EG' }) => {
@@ -1312,6 +1309,7 @@ const PAGES = {
       };
 
       const SIZES = ['2xs', 'xs', 'sm', 'md', 'lg', 'xl'];
+      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
       const overviewHtml = `
         <p class="page-desc">Avatar represents a user or entity with a circular container. It supports Initials or Icon type, in Default or Brand theme, across 6 sizes.</p>
@@ -1349,6 +1347,15 @@ const PAGES = {
             </tr>
           </tbody>
         </table>
+        <table class="token-table" style="margin-top:12px">
+          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Initials · 2xs / xs / sm</td><td>Font Size / Line Height</td><td>${tk('--bt-text-xs')}</td><td>12px / 16px</td></tr>
+            <tr><td>Initials · md / lg / xl</td><td>Font Size / Line Height</td><td>${tk('--bt-text-sm')}</td><td>14px / 16px</td></tr>
+            <tr><td>Initials</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
+            <tr><td>Icon</td><td>Name (Lucide)</td><td>circle-user-round</td><td>—</td></tr>
+          </tbody>
+        </table>
 
         <h2 id="Themes">Themes</h2>
         <table class="token-table">
@@ -1358,14 +1365,26 @@ const PAGES = {
               <td><span class="token-name">Default</span></td>
               <td>${avatarEl({ size: 'md', themeColor: 'default', type: 'initials' })}</td>
               <td>${avatarEl({ size: 'md', themeColor: 'default', type: 'icon' })}</td>
-              <td style="color:var(--bt-text-emphasis)">Gray background with dark text/icon. Used for generic or unassigned contexts.</td>
+              <td style="color:var(--bt-text-emphasis)">Gray background with dark text/muted icon. For generic or unassigned contexts.</td>
             </tr>
             <tr>
               <td><span class="token-name">Brand</span></td>
               <td>${avatarEl({ size: 'md', themeColor: 'brand', type: 'initials' })}</td>
               <td>${avatarEl({ size: 'md', themeColor: 'brand', type: 'icon' })}</td>
-              <td style="color:var(--bt-text-emphasis)">Brand blue background with white text/icon. Used for identified or active users.</td>
+              <td style="color:var(--bt-text-emphasis)">Brand blue background with white text/icon. For identified or active users.</td>
             </tr>
+          </tbody>
+        </table>
+        <table class="token-table" style="margin-top:12px">
+          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Container</td><td>Shape</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+            <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Container · Brand</td><td>Background</td><td>${tk('--bt-surface-brand-contrast-default')}</td><td>#0d4e97</td></tr>
+            <tr><td>Initials · Default</td><td>Text Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Initials · Brand</td><td>Text Color</td><td>${tk('--bt-text-inverted')}</td><td>#ffffff</td></tr>
+            <tr><td>Icon · Default</td><td>Stroke Color</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td>Icon · Brand</td><td>Stroke Color</td><td>${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
           </tbody>
         </table>
 
@@ -1382,56 +1401,20 @@ const PAGES = {
             </tr>`).join('')}
           </tbody>
         </table>
-      `;
-
-      const designHtml = `
-        <p class="page-desc">Design tokens and specifications extracted from Figma.</p>
-
-        <h2 id="Variants">Variants</h2>
-        <table class="token-table">
-          <thead><tr><th>Variant</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><span class="token-name">Initials</span></td><td style="color:var(--bt-text-emphasis)">Displays the user's initials (max 2 characters). Font size scales with avatar size.</td></tr>
-            <tr><td><span class="token-name">Icon</span></td><td style="color:var(--bt-text-emphasis)">Uses the circle-user-round icon as a generic user placeholder when no initials are available.</td></tr>
-            <tr><td><span class="token-name">Default</span></td><td style="color:var(--bt-text-emphasis)">Gray background (#e6e6e6) with dark text/icon. For generic or unassigned contexts.</td></tr>
-            <tr><td><span class="token-name">Brand</span></td><td style="color:var(--bt-text-emphasis)">Brand blue (#0d4e97) background with white text/icon. For identified or active users.</td></tr>
-          </tbody>
-        </table>
-
-        <h2 id="Properties">Properties</h2>
-        <table class="token-table">
-          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-          <tbody>
-            <tr><td>Container</td><td>Shape</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-radius-full</code></td><td>9999px (circle)</td></tr>
-            <tr><td>Container · Default</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-primary-muted</code></td><td>#e6e6e6</td></tr>
-            <tr><td>Container · Brand</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-brand-contrast-default</code></td><td>#0d4e97</td></tr>
-            <tr><td>Initials · Default</td><td>Text Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-default</code></td><td>#1a1a1a</td></tr>
-            <tr><td>Initials · Brand</td><td>Text Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-inverted</code></td><td>#ffffff</td></tr>
-            <tr><td>Initials · 2xs / xs / sm</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-xs</code></td><td>12px / 16px</td></tr>
-            <tr><td>Initials · md / lg / xl</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-sm</code></td><td>14px / 16px</td></tr>
-            <tr><td>Initials</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
-            <tr><td>Icon · Default</td><td>Stroke Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-icon-muted</code></td><td>#a3a3a3</td></tr>
-            <tr><td>Icon · Brand</td><td>Stroke Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-icon-inverted</code></td><td>#ffffff</td></tr>
-            <tr><td>Icon</td><td>Name</td><td>circle-user-round</td><td>Lucide icon</td></tr>
-          </tbody>
-        </table>
-
-        <h2 id="Spacing">Spacing</h2>
-        <table class="token-table">
+        <table class="token-table" style="margin-top:12px">
           <thead><tr><th>Size</th><th>Dimension</th><th>Token</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">2xs</span></td><td>24 × 24px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-6xl</code></td></tr>
-            <tr><td><span class="token-name">xs</span></td><td>28 × 28px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-7xl</code></td></tr>
-            <tr><td><span class="token-name">sm</span></td><td>32 × 32px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-8xl</code></td></tr>
-            <tr><td><span class="token-name">md</span></td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
-            <tr><td><span class="token-name">lg</span></td><td>48 × 48px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-12xl</code></td></tr>
-            <tr><td><span class="token-name">xl</span></td><td>56 × 56px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-14xl</code></td></tr>
+            ${SIZES.map(s => `
+            <tr>
+              <td><span class="token-name">${s}</span></td>
+              <td>${SIZE_CFG[s].dim} × ${SIZE_CFG[s].dim}px</td>
+              <td>${tk(SIZE_CFG[s].token)}</td>
+            </tr>`).join('')}
           </tbody>
         </table>
       `;
 
       if (tab === 'Usage') return { title, html: `<p class="page-desc">Avatar usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
-      if (tab === 'Design') return { title, html: designHtml };
       return { title, html: overviewHtml };
     }
   },
