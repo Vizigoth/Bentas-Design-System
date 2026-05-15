@@ -1116,7 +1116,10 @@ const PAGES = {
 
   'components/alert': {
     tabs: ['Overview', 'Usage', 'Design'],
-    toc: ['Types', 'Theme Colors', 'Close Button'],
+    toc: [
+      { group: 'Overview', items: ['Types', 'Theme Colors', 'Close Button'] },
+      { group: 'Design',   items: ['Variants', 'Themes', 'Properties', 'Spacing'] },
+    ],
     render: (tab) => {
       const title = 'Alert';
 
@@ -1188,7 +1191,66 @@ const PAGES = {
       `;
 
       if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert kullanım kuralları.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
-      if (tab === 'Design') return { title, html: `<div class="placeholder"><div class="placeholder-title">Design Guidelines</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
+      if (tab === 'Design') return { title, html: `
+        <p class="page-desc">Alert bileşeninin Figma'dan alınan token ve tasarım değerleri.</p>
+
+        <h2 id="Variants">Variants</h2>
+        <table class="token-table">
+          <thead><tr><th>Variant</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Error</span></td><td style="color:var(--bt-text-emphasis)">Kritik hataları ve engelleme durumlarını bildirir.</td></tr>
+            <tr><td><span class="token-name">Warning</span></td><td style="color:var(--bt-text-emphasis)">Dikkat gerektiren ama kritik olmayan durumlar için kullanılır.</td></tr>
+            <tr><td><span class="token-name">Information</span></td><td style="color:var(--bt-text-emphasis)">Yardımcı bilgi ve açıklamalar sunar.</td></tr>
+            <tr><td><span class="token-name">Success</span></td><td style="color:var(--bt-text-emphasis)">Başarılı işlemleri kullanıcıya onaylar.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Themes">Themes</h2>
+        <table class="token-table">
+          <thead><tr><th>Theme</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Stroke</span></td><td style="color:var(--bt-text-emphasis)">Varsayılan tema. Nötr arka plan, tipin rengiyle uyumlu kenarlık.</td></tr>
+            <tr><td><span class="token-name">Light</span></td><td style="color:var(--bt-text-emphasis)">Pastel arka plan, tipin rengiyle uyumlu.</td></tr>
+            <tr><td><span class="token-name">Filled</span></td><td style="color:var(--bt-text-emphasis)">Güçlü renk, yüksek kontrast. Koyu arka plan üzerinde beyaz metin.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Properties">Properties</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Container</td><td>Border Radius</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-radius-sm</code></td><td>4px</td></tr>
+            <tr><td>Container · Stroke</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-primary-subtle</code></td><td>#fafafa</td></tr>
+            <tr><td>Container · Stroke</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-default</code></td><td>#d4d4d4</td></tr>
+            <tr><td>Container · Light · Error</td><td>Background</td><td>—</td><td>#fef2f2</td></tr>
+            <tr><td>Container · Light · Error</td><td>Border</td><td>—</td><td>#fbd0d2</td></tr>
+            <tr><td>Container · Light · Warning</td><td>Background</td><td>—</td><td>#fdf9e8</td></tr>
+            <tr><td>Container · Light · Warning</td><td>Border</td><td>—</td><td>#f4e8aa</td></tr>
+            <tr><td>Container · Light · Information</td><td>Background</td><td>—</td><td>#f1f7fe</td></tr>
+            <tr><td>Container · Light · Information</td><td>Border</td><td>—</td><td>#bedbf9</td></tr>
+            <tr><td>Container · Light · Success</td><td>Background</td><td>—</td><td>#e8f3ee</td></tr>
+            <tr><td>Container · Light · Success</td><td>Border</td><td>—</td><td>#b4dbcb</td></tr>
+            <tr><td>Container · Filled · Error</td><td>Background</td><td>—</td><td>#b31d38</td></tr>
+            <tr><td>Container · Filled · Warning</td><td>Background</td><td>—</td><td>#aa820a</td></tr>
+            <tr><td>Container · Filled · Information</td><td>Background</td><td>—</td><td>#0d4e97</td></tr>
+            <tr><td>Container · Filled · Success</td><td>Background</td><td>—</td><td>#2d584b</td></tr>
+            <tr><td>Title</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-md</code></td><td>16px / 24px</td></tr>
+            <tr><td>Title</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
+            <tr><td>Description</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-sm</code></td><td>14px / 16px</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Spacing">Spacing</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Property</th><th>Value</th><th>Token</th></tr></thead>
+          <tbody>
+            <tr><td>Content Area</td><td>Padding</td><td>8px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-space-md</code></td></tr>
+            <tr><td>Content Area</td><td>Gap (title ↔ description)</td><td>2px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-2xs</code></td></tr>
+            <tr><td>Icon Container</td><td>Width × Height</td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
+            <tr><td>Close Button</td><td>Width × Height</td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
+          </tbody>
+        </table>
+      `};
       return { title, html: overviewHtml };
     }
   },
