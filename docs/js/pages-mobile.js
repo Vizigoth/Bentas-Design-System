@@ -1154,40 +1154,65 @@ const PAGES = {
 
       const TYPES      = ['error', 'warning', 'information', 'success'];
       const TYPE_LABEL = { error: 'Error', warning: 'Warning', information: 'Information', success: 'Success' };
+      const TYPE_DESC  = {
+        error:       'Displays critical errors and blocking situations.',
+        warning:     'For situations that require attention but are not critical.',
+        information: 'Provides helpful information and explanations.',
+        success:     'Confirms successful operations to the user.',
+      };
       const THEMES     = ['stroke', 'light', 'filled'];
-      const col        = inner => `<div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">${inner}</div>`;
 
       const overviewHtml = `
         <p class="page-desc">Alert, kullanıcıyı önemli bir durum hakkında bilgilendiren satır içi mesajlardır. 4 tip, 3 tema ve isteğe bağlı kapatma butonu ile gelir.</p>
 
+        <div class="preview-box">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            ${TYPES.map(t => alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })).join('')}
+          </div>
+        </div>
+
         <h2 id="Types">Types</h2>
-        ${col(TYPES.map(t => alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })).join(''))}
+        <table class="token-table">
+          <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
+          <tbody>
+            ${TYPES.map(t => `
+            <tr>
+              <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
+              <td>${alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })}</td>
+              <td style="color:var(--bt-text-emphasis)">${TYPE_DESC[t]}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
 
         <h2 id="Theme Colors">Theme Colors</h2>
         ${TYPES.map(t => `
-          <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin:20px 0 10px;text-transform:uppercase;letter-spacing:.04em;">${TYPE_LABEL[t]}</h3>
-          ${col(THEMES.map(th => `
-            <div style="display:flex;align-items:center;gap:12px;">
-              <span style="width:64px;font-size:12px;color:var(--bt-text-emphasis);flex-shrink:0;">${th.charAt(0).toUpperCase()+th.slice(1)}</span>
-              ${alertEl({ type: t, theme: th, alertTitle: `${TYPE_LABEL[t]} Alert` })}
-            </div>`).join(''))}
+          <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.04em;">${TYPE_LABEL[t]}</h3>
+          <table class="token-table">
+            <thead><tr><th>Theme</th><th>Preview</th></tr></thead>
+            <tbody>
+              ${THEMES.map(th => `
+              <tr>
+                <td><span class="token-name">${th.charAt(0).toUpperCase()+th.slice(1)}</span></td>
+                <td>${alertEl({ type: t, theme: th, alertTitle: `${TYPE_LABEL[t]} Alert` })}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
         `).join('')}
 
         <h2 id="Close Button">Close Button</h2>
-        ${col(['error', 'information'].map(t => `
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <span style="font-size:12px;color:var(--bt-text-emphasis);">${TYPE_LABEL[t]}</span>
-            <div style="display:flex;flex-direction:column;gap:6px;">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span style="width:28px;font-size:11px;color:var(--bt-text-muted);">Off</span>
-                ${alertEl({ type: t, closeBtn: false, alertTitle: `${TYPE_LABEL[t]} Alert` })}
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span style="width:28px;font-size:11px;color:var(--bt-text-muted);">On</span>
-                ${alertEl({ type: t, closeBtn: true, alertTitle: `${TYPE_LABEL[t]} Alert` })}
-              </div>
-            </div>
-          </div>`).join(''))}
+        <table class="token-table">
+          <thead><tr><th>State</th><th>Preview</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="token-name">Off</span></td>
+              <td>${alertEl({ type: 'error', closeBtn: false, alertTitle: 'Error Alert' })}</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">On</span></td>
+              <td>${alertEl({ type: 'error', closeBtn: true, alertTitle: 'Error Alert' })}</td>
+            </tr>
+          </tbody>
+        </table>
       `;
 
       if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert kullanım kuralları.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
@@ -1198,10 +1223,10 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Variant</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Error</span></td><td style="color:var(--bt-text-emphasis)">Kritik hataları ve engelleme durumlarını bildirir.</td></tr>
-            <tr><td><span class="token-name">Warning</span></td><td style="color:var(--bt-text-emphasis)">Dikkat gerektiren ama kritik olmayan durumlar için kullanılır.</td></tr>
-            <tr><td><span class="token-name">Information</span></td><td style="color:var(--bt-text-emphasis)">Yardımcı bilgi ve açıklamalar sunar.</td></tr>
-            <tr><td><span class="token-name">Success</span></td><td style="color:var(--bt-text-emphasis)">Başarılı işlemleri kullanıcıya onaylar.</td></tr>
+            <tr><td><span class="token-name">Error</span></td><td style="color:var(--bt-text-emphasis)">Displays critical errors and blocking situations.</td></tr>
+            <tr><td><span class="token-name">Warning</span></td><td style="color:var(--bt-text-emphasis)">For situations that require attention but are not critical.</td></tr>
+            <tr><td><span class="token-name">Information</span></td><td style="color:var(--bt-text-emphasis)">Provides helpful information and explanations.</td></tr>
+            <tr><td><span class="token-name">Success</span></td><td style="color:var(--bt-text-emphasis)">Confirms successful operations to the user.</td></tr>
           </tbody>
         </table>
 
@@ -1209,9 +1234,9 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Theme</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Stroke</span></td><td style="color:var(--bt-text-emphasis)">Varsayılan tema. Nötr arka plan, tipin rengiyle uyumlu kenarlık.</td></tr>
-            <tr><td><span class="token-name">Light</span></td><td style="color:var(--bt-text-emphasis)">Pastel arka plan, tipin rengiyle uyumlu.</td></tr>
-            <tr><td><span class="token-name">Filled</span></td><td style="color:var(--bt-text-emphasis)">Güçlü renk, yüksek kontrast. Koyu arka plan üzerinde beyaz metin.</td></tr>
+            <tr><td><span class="token-name">Stroke</span></td><td style="color:var(--bt-text-emphasis)">Default theme. Neutral background with a type-matched border.</td></tr>
+            <tr><td><span class="token-name">Light</span></td><td style="color:var(--bt-text-emphasis)">Pastel background tinted to match the alert type.</td></tr>
+            <tr><td><span class="token-name">Filled</span></td><td style="color:var(--bt-text-emphasis)">Strong color, high contrast. White text on a colored background.</td></tr>
           </tbody>
         </table>
 
