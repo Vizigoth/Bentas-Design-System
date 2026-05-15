@@ -83,6 +83,13 @@
   --bt-border-brand:       #0d4e97;
   --bt-border-brand-light: #f1f7fe;
 
+  /* Icon */
+  --bt-icon-default:       #1a1a1a;
+  --bt-icon-muted:         #a3a3a3;
+  --bt-icon-emphasis:      #727272;
+  --bt-icon-inverted:      #ffffff;
+  --bt-icon-brand:         #0d4e97;
+
   /* Status */
   --bt-surface-success:    #e8f3ee;
   --bt-text-success:       #2d584b;

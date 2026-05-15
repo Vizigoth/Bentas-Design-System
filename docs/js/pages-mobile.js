@@ -1301,12 +1301,13 @@ const PAGES = {
       };
 
       const avatarEl = ({ size = 'md', themeColor = 'default', type = 'initials', initials = 'EG' }) => {
-        const cfg = SIZE_CFG[size];
-        const bg    = themeColor === 'brand' ? '#0d4e97' : '#e6e6e6';
-        const color = themeColor === 'brand' ? '#ffffff' : '#1a1a1a';
+        const cfg       = SIZE_CFG[size];
+        const bg        = themeColor === 'brand' ? '#0d4e97' : '#e6e6e6';
+        const textColor = themeColor === 'brand' ? '#ffffff' : '#1a1a1a';
+        const iconColor = themeColor === 'brand' ? '#ffffff' : '#a3a3a3';
         const content = type === 'icon'
-          ? iconUser(cfg.iconSize, color)
-          : `<span style="font-size:${cfg.fs}px;font-weight:500;color:${color};font-family:var(--font);line-height:1;">${initials}</span>`;
+          ? iconUser(cfg.iconSize, iconColor)
+          : `<span style="font-size:${cfg.fs}px;font-weight:500;color:${textColor};font-family:var(--font);line-height:1;">${initials}</span>`;
         return `<div style="width:${cfg.dim}px;height:${cfg.dim}px;border-radius:9999px;background:${bg};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${content}</div>`;
       };
 
@@ -1409,7 +1410,7 @@ const PAGES = {
             <tr><td>Initials · 2xs / xs / sm</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-xs</code></td><td>12px / 16px</td></tr>
             <tr><td>Initials · md / lg / xl</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-sm</code></td><td>14px / 16px</td></tr>
             <tr><td>Initials</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
-            <tr><td>Icon · Default</td><td>Stroke Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-icon-default</code></td><td>#1a1a1a</td></tr>
+            <tr><td>Icon · Default</td><td>Stroke Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-icon-muted</code></td><td>#a3a3a3</td></tr>
             <tr><td>Icon · Brand</td><td>Stroke Color</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-icon-inverted</code></td><td>#ffffff</td></tr>
             <tr><td>Icon</td><td>Name</td><td>circle-user-round</td><td>Lucide icon</td></tr>
           </tbody>
