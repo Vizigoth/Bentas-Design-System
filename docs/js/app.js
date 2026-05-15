@@ -1136,12 +1136,19 @@ function makePage(id) {
   };
 }
 
+// ── Platform data ────────────────────────────────────────────
+const NAV_MOBILE = NAV;
+const NAV_WEB    = NAV; // same content for now
+
 // ── State ───────────────────────────────────────────────────
-let currentId  = 'welcome';
-let currentTab = 0;
-let openGroups = new Set();
+let currentId       = 'welcome';
+let currentTab      = 0;
+let openGroups      = new Set();
+let currentPlatform = 'mobile';
+let platformDropdownOpen = false;
 
 // ── Helpers ─────────────────────────────────────────────────
+function getCurrentNav() { return currentPlatform === 'mobile' ? NAV_MOBILE : NAV_WEB; }
 function getPage(id) { return PAGES[id] || makePage(id); }
 
 function findOpenGroups(id) {
@@ -1157,7 +1164,7 @@ function findOpenGroups(id) {
     }
     return false;
   }
-  search(NAV, []);
+  search(getCurrentNav(), []);
 }
 
 // ── Navigate ────────────────────────────────────────────────
@@ -1209,7 +1216,7 @@ function renderSidebar() {
     `;
   }
 
-  el.innerHTML = NAV.map(item => renderItem(item, 0)).join('');
+  el.innerHTML = getCurrentNav().map(item => renderItem(item, 0)).join('');
 }
 
 window.toggleGroup = function(label) {
@@ -1311,9 +1318,66 @@ window.copyText = function(text, btn) {
   });
 };
 
+// ── Platform Switcher ────────────────────────────────────────
+const _iconTabletSmartphone = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="10" height="14" x="3" y="8" rx="2"/><path d="M15 4h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2.5"/><path d="M8 19v.01"/></svg>`;
+const _iconAppWindow        = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></svg>`;
+const _iconChevronsUpDown   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>`;
+const _iconCircleCheck      = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
+
+function renderPlatformSwitcher() {
+  const el = document.getElementById('platform-switcher');
+  if (!el) return;
+  const isMobile = currentPlatform === 'mobile';
+  const platformIcon = isMobile ? _iconTabletSmartphone : _iconAppWindow;
+  const subLabel     = isMobile ? 'Mobile-v.1.0.0' : 'Web-v.1.0.0';
+
+  el.innerHTML = `
+    <button class="platform-trigger" onclick="togglePlatformDropdown()">
+      <div class="platform-icon-btn">
+        <div class="platform-icon-inner">${platformIcon}</div>
+      </div>
+      <div class="platform-text">
+        <div class="platform-text-title">Documentation</div>
+        <div class="platform-text-sub">${subLabel}</div>
+      </div>
+      <div class="platform-chevrons">${_iconChevronsUpDown}</div>
+    </button>
+    ${platformDropdownOpen ? `
+    <div class="platform-dropdown">
+      <div class="platform-option ${isMobile ? 'active' : ''}" onclick="switchPlatform('mobile')">
+        <span class="platform-option-label">Mobile-V1.0.0</span>
+        ${isMobile ? `<span class="platform-option-check">${_iconCircleCheck}</span>` : ''}
+      </div>
+      <div class="platform-option ${!isMobile ? 'active' : ''}" onclick="switchPlatform('web')">
+        <span class="platform-option-label">Web-V1.0.0</span>
+        ${!isMobile ? `<span class="platform-option-check">${_iconCircleCheck}</span>` : ''}
+      </div>
+    </div>` : ''}
+  `;
+}
+
+window.togglePlatformDropdown = function() {
+  platformDropdownOpen = !platformDropdownOpen;
+  renderPlatformSwitcher();
+};
+
+window.switchPlatform = function(platform) {
+  currentPlatform = platform;
+  platformDropdownOpen = false;
+  render();
+};
+
+document.addEventListener('click', e => {
+  if (platformDropdownOpen && !e.target.closest('#platform-switcher')) {
+    platformDropdownOpen = false;
+    renderPlatformSwitcher();
+  }
+});
+
 // ── Full render ─────────────────────────────────────────────
 function render() {
   const page = getPage(currentId);
+  renderPlatformSwitcher();
   renderSidebar();
   renderTabs(page);
   renderContent(page);
@@ -1327,5 +1391,6 @@ document.addEventListener('DOMContentLoaded', () => {
   currentId  = hash;
   currentTab = 0;
   findOpenGroups(hash);
+  renderPlatformSwitcher();
   render();
 });
