@@ -1114,4 +1114,83 @@ const PAGES = {
     }
   },
 
+  'components/alert': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Types', 'Theme Colors', 'Close Button'],
+    render: (tab) => {
+      const title = 'Alert';
+
+      const iconCircleAlert = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+      const iconX          = color => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+      const TYPE_CFG = {
+        error:       { icon: '#b31d38', lightBg: '#fef2f2', lightBorder: '#fbd0d2', filledBg: '#b31d38' },
+        warning:     { icon: '#aa820a', lightBg: '#fdf9e8', lightBorder: '#f4e8aa', filledBg: '#aa820a' },
+        information: { icon: '#0d4e97', lightBg: '#f1f7fe', lightBorder: '#bedbf9', filledBg: '#0d4e97' },
+        success:     { icon: '#2d584b', lightBg: '#e8f3ee', lightBorder: '#b4dbcb', filledBg: '#2d584b' },
+      };
+
+      const alertEl = ({ type = 'error', theme = 'stroke', closeBtn = false, alertTitle = 'Alert Title', desc = 'Açıklama metni buraya gelecek.' }) => {
+        const c = TYPE_CFG[type];
+        const isFilled  = theme === 'filled';
+        const bg        = isFilled ? c.filledBg : theme === 'light' ? c.lightBg : '#fafafa';
+        const border    = isFilled ? 'none' : `1px solid ${theme === 'light' ? c.lightBorder : '#d4d4d4'}`;
+        const iconColor = isFilled ? '#fff' : c.icon;
+        const textColor = isFilled ? '#fff' : '#1a1a1a';
+        const descAlpha = isFilled ? '0.85' : '1';
+        return `
+          <div style="display:flex;align-items:center;background:${bg};border:${border};border-radius:4px;flex:1;min-width:0;">
+            <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${iconCircleAlert(iconColor)}</div>
+            <div style="flex:1;padding:8px;min-width:0;">
+              <div style="font-size:16px;font-weight:500;color:${textColor};line-height:24px;">${alertTitle}</div>
+              <div style="font-size:14px;color:${textColor};opacity:${descAlpha};line-height:16px;margin-top:2px;">${desc}</div>
+            </div>
+            ${closeBtn ? `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">${iconX(textColor)}</div>` : ''}
+          </div>`;
+      };
+
+      const TYPES      = ['error', 'warning', 'information', 'success'];
+      const TYPE_LABEL = { error: 'Error', warning: 'Warning', information: 'Information', success: 'Success' };
+      const THEMES     = ['stroke', 'light', 'filled'];
+      const col        = inner => `<div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">${inner}</div>`;
+
+      const overviewHtml = `
+        <p class="page-desc">Alert, kullanıcıyı önemli bir durum hakkında bilgilendiren satır içi mesajlardır. 4 tip, 3 tema ve isteğe bağlı kapatma butonu ile gelir.</p>
+
+        <h2 id="Types">Types</h2>
+        ${col(TYPES.map(t => alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })).join(''))}
+
+        <h2 id="Theme Colors">Theme Colors</h2>
+        ${TYPES.map(t => `
+          <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin:20px 0 10px;text-transform:uppercase;letter-spacing:.04em;">${TYPE_LABEL[t]}</h3>
+          ${col(THEMES.map(th => `
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="width:64px;font-size:12px;color:var(--bt-text-emphasis);flex-shrink:0;">${th.charAt(0).toUpperCase()+th.slice(1)}</span>
+              ${alertEl({ type: t, theme: th, alertTitle: `${TYPE_LABEL[t]} Alert` })}
+            </div>`).join(''))}
+        `).join('')}
+
+        <h2 id="Close Button">Close Button</h2>
+        ${col(['error', 'information'].map(t => `
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:12px;color:var(--bt-text-emphasis);">${TYPE_LABEL[t]}</span>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="width:28px;font-size:11px;color:var(--bt-text-muted);">Off</span>
+                ${alertEl({ type: t, closeBtn: false, alertTitle: `${TYPE_LABEL[t]} Alert` })}
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="width:28px;font-size:11px;color:var(--bt-text-muted);">On</span>
+                ${alertEl({ type: t, closeBtn: true, alertTitle: `${TYPE_LABEL[t]} Alert` })}
+              </div>
+            </div>
+          </div>`).join(''))}
+      `;
+
+      if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert kullanım kuralları.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
+      if (tab === 'Design') return { title, html: `<div class="placeholder"><div class="placeholder-title">Design Guidelines</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
+      return { title, html: overviewHtml };
+    }
+  },
+
 };
