@@ -1332,7 +1332,7 @@ function renderPlatformSwitcher() {
   const subLabel     = isMobile ? 'Mobile-v.1.0.0' : 'Web-v.1.0.0';
 
   el.innerHTML = `
-    <button class="platform-trigger" onclick="togglePlatformDropdown()">
+    <button class="platform-trigger" onclick="togglePlatformDropdown(event)">
       <div class="platform-icon-btn">
         <div class="platform-icon-inner">${platformIcon}</div>
       </div>
@@ -1344,11 +1344,11 @@ function renderPlatformSwitcher() {
     </button>
     ${platformDropdownOpen ? `
     <div class="platform-dropdown">
-      <div class="platform-option ${isMobile ? 'active' : ''}" onclick="switchPlatform('mobile')">
+      <div class="platform-option ${isMobile ? 'active' : ''}" onclick="switchPlatform('mobile', event)">
         <span class="platform-option-label">Mobile-V1.0.0</span>
         ${isMobile ? `<span class="platform-option-check">${_iconCircleCheck}</span>` : ''}
       </div>
-      <div class="platform-option ${!isMobile ? 'active' : ''}" onclick="switchPlatform('web')">
+      <div class="platform-option ${!isMobile ? 'active' : ''}" onclick="switchPlatform('web', event)">
         <span class="platform-option-label">Web-V1.0.0</span>
         ${!isMobile ? `<span class="platform-option-check">${_iconCircleCheck}</span>` : ''}
       </div>
@@ -1356,12 +1356,14 @@ function renderPlatformSwitcher() {
   `;
 }
 
-window.togglePlatformDropdown = function() {
+window.togglePlatformDropdown = function(e) {
+  e.stopPropagation();
   platformDropdownOpen = !platformDropdownOpen;
   renderPlatformSwitcher();
 };
 
-window.switchPlatform = function(platform) {
+window.switchPlatform = function(platform, e) {
+  e.stopPropagation();
   currentPlatform = platform;
   platformDropdownOpen = false;
   render();
