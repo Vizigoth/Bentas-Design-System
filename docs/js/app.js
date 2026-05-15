@@ -1118,6 +1118,9 @@ const PAGES = {
 
 };
 
+// ── Web pages — same content as mobile, editable independently ──
+const PAGES_WEB = Object.assign({}, PAGES);
+
 // ── Generic placeholder ─────────────────────────────────────
 function makePage(id) {
   const parts = id.split('/');
@@ -1149,7 +1152,8 @@ let platformDropdownOpen = false;
 
 // ── Helpers ─────────────────────────────────────────────────
 function getCurrentNav() { return currentPlatform === 'mobile' ? NAV_MOBILE : NAV_WEB; }
-function getPage(id) { return PAGES[id] || makePage(id); }
+function getPages()      { return currentPlatform === 'mobile' ? PAGES : PAGES_WEB; }
+function getPage(id)     { return getPages()[id] || makePage(id); }
 
 function findOpenGroups(id) {
   function search(items, path) {
@@ -1330,6 +1334,9 @@ function renderPlatformSwitcher() {
   const isMobile = currentPlatform === 'mobile';
   const platformIcon = isMobile ? _iconTabletSmartphone : _iconAppWindow;
   const subLabel     = isMobile ? 'Mobile-v.1.0.0' : 'Web-v.1.0.0';
+
+  const headerTitle = document.getElementById('platform-header-title');
+  if (headerTitle) headerTitle.textContent = isMobile ? 'Mobile' : 'Web';
 
   el.innerHTML = `
     <button class="platform-trigger" onclick="togglePlatformDropdown(event)">
