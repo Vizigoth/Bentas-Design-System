@@ -7,13 +7,6 @@
 const NAV = [
   { label: 'Welcome', id: 'welcome' },
   {
-    label: 'Get Started', children: [
-      { label: 'Introduction',  id: 'get-started/introduction' },
-      { label: "What's New",    id: 'get-started/whats-new' },
-      { label: 'Contributing',  id: 'get-started/contributing' },
-    ]
-  },
-  {
     label: 'Foundations', children: [
       {
         label: 'Design Tokens', children: [
