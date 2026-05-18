@@ -1303,7 +1303,7 @@ const PAGES = {
         const titleC = isDisabled ? '#c7c7c7' : '#1a1a1a';
         const descC  = isDisabled ? '#d4d4d4' : '#a3a3a3';
         const iconC  = isDisabled ? '#d4d4d4' : '#1a1a1a';
-        const leftC  = isDisabled ? '#d4d4d4' : '#a3a3a3';
+        const leftC  = isDisabled ? '#a3a3a3' : '#1a1a1a';
         const cursor = isDisabled ? 'not-allowed' : 'pointer';
         const radMap = { single: '8px', first: '8px 8px 0 0', middle: '0', last: '0 0 8px 8px' };
         const borderR   = radMap[position] || '8px';
@@ -1389,7 +1389,8 @@ const PAGES = {
             <tr><td>Description</td><td>Font Size</td><td>${tk('--bt-text-xs')}</td><td>12px</td></tr>
             <tr><td>Content</td><td>Color</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td></tr>
             <tr><td>Right Icons · Default / Active</td><td>Color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Left Icon (scan)</td><td>Color</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td>Left Icon · Default / Active</td><td>Color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Left Icon · Disabled</td><td>Color</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
             <tr><td>Header</td><td>Padding V / H</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-2xl')}</td><td>12px / 16px</td></tr>
             <tr><td>Content area</td><td>Padding left</td><td>—</td><td>44px (16px + icon 16px + gap 12px)</td></tr>
           </tbody>
