@@ -16,6 +16,7 @@ const NAV_MOBILE = [
       { label: 'Accordion',        id: 'components/accordion' },
       { label: 'Alert',            id: 'components/alert' },
       { label: 'Avatar',           id: 'components/avatar' },
+      { label: 'Badge',            id: 'components/badge' },
       { label: 'Bottom Tab Bar',   id: 'components/bottom-tab-bar' },
       { label: 'Top App Bar',      id: 'components/top-app-bar' },
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
@@ -32,7 +33,6 @@ const NAV_MOBILE = [
       { label: 'Skeleton',          id: 'components/skeleton' },
       { label: 'Card',              id: 'components/card' },
       { label: 'List Item',         id: 'components/list-item' },
-      { label: 'Badge',             id: 'components/badge' },
       { label: 'Bottom Sheet',      id: 'components/bottom-sheet' },
       { label: 'Dialog',            id: 'components/dialog' },
     ]
