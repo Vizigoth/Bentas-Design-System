@@ -1655,154 +1655,185 @@ const PAGES = {
 
   'components/badge': {
     tabs: ['Overview', 'Usage'],
-    toc: ['Variants', 'Colors', 'With Icons'],
+    toc: ['Types', 'Custom Colors', 'With Icons'],
     render: (tab) => {
       const title = 'Badge';
 
-      // ── Lucide loader-2 icon ──────────────────────────────────
-      const iLoader = c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
+      // Loader icon (Lucide loader-2), matches Figma Icon/loader asset
+      const iLoader = (color, size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 
-      // ── Color map ─────────────────────────────────────────────
-      // Tokens from styles.css where available; hardcoded for colors not yet in the token set
-      const COLOR_MAP = {
-        blue:    { subtle:  { bg:'#f1f7fe', border:'#bedbf9', text:'#0d4e97' },   // --bt-blue-50 / --bt-blue-200 / --bt-blue-700
-                   outline: { bg:'#ffffff', border:'#85bdf4', text:'#0d4e97' } }, // --bt-blue-300 / --bt-blue-700
-        green:   { subtle:  { bg:'#e8f3ee', border:'#b8d9c8', text:'#2d584b' },   // --bt-green-50 / --bt-green-700
-                   outline: { bg:'#ffffff', border:'#7abf9b', text:'#2d584b' } },
-        yellow:  { subtle:  { bg:'#fdf9e8', border:'#f0dfaa', text:'#aa820a' },   // --bt-yellow-50 / --bt-yellow-700
-                   outline: { bg:'#ffffff', border:'#e5c96a', text:'#aa820a' } },
-        red:     { subtle:  { bg:'#fef2f2', border:'#ffc5cc', text:'#b31d38' },   // --bt-red-50 / --bt-red-700
-                   outline: { bg:'#ffffff', border:'#f0808e', text:'#b31d38' } },
-        purple:  { subtle:  { bg:'#f3e8ff', border:'#dbb5f5', text:'#6b21a8' },   // --bt-purple-100 / --bt-purple-800
-                   outline: { bg:'#ffffff', border:'#c4b5fd', text:'#6b21a8' } },
-        sky:     { subtle:  { bg:'#f0f9ff', border:'#bae6fd', text:'#0369a1' },
-                   outline: { bg:'#ffffff', border:'#7dd3fc', text:'#0369a1' } },
-        cyan:    { subtle:  { bg:'#ecfeff', border:'#a5f3fc', text:'#0e7490' },
-                   outline: { bg:'#ffffff', border:'#67e8f9', text:'#0e7490' } },
-        emerald: { subtle:  { bg:'#ecfdf5', border:'#a7f3d0', text:'#065f46' },
-                   outline: { bg:'#ffffff', border:'#6ee7b7', text:'#065f46' } },
-        orange:  { subtle:  { bg:'#fff7ed', border:'#fed7aa', text:'#c2410c' },
-                   outline: { bg:'#ffffff', border:'#fdba74', text:'#c2410c' } },
-        gray:    { subtle:  { bg:'#f5f5f5', border:'#e6e6e6', text:'#404040' },   // --bt-gray-100 / --bt-gray-200 / --bt-gray-700
-                   outline: { bg:'#ffffff', border:'#d4d4d4', text:'#404040' } }, // --bt-gray-300
+      // Figma properties: Type × Theme Color × State=Default
+      // Layout tokens: gap=var(--space/2xs,2px), px=var(--space/md,8px), py=var(--space/2xs,2px), radius=var(--radius/full,9999px)
+      // Typography: font/family/text, font-normal (400), font/size/text-xs (12px), font/line-height/text-lh-xs (16px)
+      const TYPE_CFG = {
+        solid:   { bg: '#0d4e97',    border: '',                    text: '#ffffff', icon: '#ffffff' }, // Surface Colors/Brand/--bt-surface-brand-contrast-default + --bt-text-inverted
+        flat:    { bg: '#f5f5f5',    border: '',                    text: '#1a1a1a', icon: '#1a1a1a' }, // --bt-surface-primary-subtle + --bt-text-default
+        outline: { bg: '#f5f5f5',    border: '1px solid #d4d4d4',   text: '#1a1a1a', icon: '#1a1a1a' }, // --bt-surface-primary-subtle + --bt-border-default + --bt-text-default
+        ghost:   { bg: 'transparent', border: '',                   text: '#1a1a1a', icon: '#1a1a1a' }, // no surface + --bt-text-default
       };
 
-      const COLOR_LABELS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange'];
-      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-      const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+      const BASE_STYLE = `display:inline-flex;align-items:center;gap:2px;padding:2px 8px;border-radius:9999px;font-size:12px;font-weight:400;line-height:16px;white-space:nowrap;font-family:var(--font);`;
 
-      // ── Badge element ─────────────────────────────────────────
-      const badgeEl = ({ label = 'Badge', color = 'blue', variant = 'subtle', leftIcon = false, rightIcon = false }) => {
-        const c = (COLOR_MAP[color] || COLOR_MAP.blue)[variant];
-        const iconHtml = iLoader(c.text);
-        return `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:${c.bg};border:1px solid ${c.border};color:${c.text};">${leftIcon ? iconHtml : ''}${label}${rightIcon ? iconHtml : ''}</span>`;
+      const badgeEl = ({ type = 'solid', label = 'Badge', leftIcon = false, rightIcon = false }) => {
+        const c = TYPE_CFG[type];
+        const border = c.border ? `border:${c.border};` : '';
+        return `<span style="${BASE_STYLE}background:${c.bg};${border}color:${c.text};">${leftIcon ? iLoader(c.icon) : ''}${label}${rightIcon ? iLoader(c.icon) : ''}</span>`;
+      };
+
+      // Figma: BadgeCustomColors — Type=Basic|Colored × ThemeColor=Blue|Green|Yellow|Red|Sky|Purple|Cyan|Emerald|Orange
+      // Basic:   color-100 bg + gray/300 border (#d4d4d4) + gray/900 text (#1a1a1a)
+      // Colored: color-100 bg + color-700 border + color-700 text
+      const COLOR_MAP = {
+        blue:    { bg: '#e2edfc', accent: '#0d4e97' }, // --blue/100, --blue/700
+        green:   { bg: '#daede5', accent: '#2d584b' }, // --green/100, --green/700
+        yellow:  { bg: '#f9f2ce', accent: '#aa820a' }, // --yellow/100, --yellow/700
+        red:     { bg: '#fde6e6', accent: '#b31d38' }, // --red/100, --red/700
+        sky:     { bg: '#e0f2fe', accent: '#0369a1' }, // --sky/100, --sky/700
+        purple:  { bg: '#f3e8ff', accent: '#7e22ce' }, // --purple/100, --purple/700
+        cyan:    { bg: '#cffafe', accent: '#0e7490' }, // --cyan/100, --cyan/700
+        emerald: { bg: '#d1fae5', accent: '#047857' }, // --emerald/100, --emerald/700
+        orange:  { bg: '#ffedd5', accent: '#c2410c' }, // --orange/100, --orange/700
+      };
+
+      const COLORS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange'];
+      const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+      const swatch = hex => `<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:${hex};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${hex}</code></span>`;
+      const secLbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
+
+      const colorBadgeEl = ({ color, type = 'basic', label }) => {
+        const c = COLOR_MAP[color];
+        const border = type === 'colored' ? `1px solid ${c.accent}` : '1px solid #d4d4d4';
+        const text   = type === 'colored' ? c.accent : '#1a1a1a';
+        return `<span style="${BASE_STYLE}background:${c.bg};border:${border};color:${text};">${label || capitalize(color)}</span>`;
       };
 
       const overviewHtml = `
-        <p class="page-desc">Compact labels for status, category, or metadata. Two variants — Subtle and Outline — across nine color options.</p>
+        <p class="page-desc">Compact labels for status, category, or metadata. Four type variants — Solid, Flat, Outline, Ghost — plus nine custom color options in Basic and Colored styles.</p>
 
         <div class="preview-box" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-          ${COLOR_LABELS.map(c => badgeEl({ label: capitalize(c), color: c, variant: 'subtle' })).join('')}
+          ${badgeEl({ type: 'solid',   label: 'Solid' })}
+          ${badgeEl({ type: 'flat',    label: 'Flat' })}
+          ${badgeEl({ type: 'outline', label: 'Outline' })}
+          ${badgeEl({ type: 'ghost',   label: 'Ghost' })}
+          ${colorBadgeEl({ color: 'blue',  type: 'basic' })}
+          ${colorBadgeEl({ color: 'green', type: 'colored' })}
+          ${colorBadgeEl({ color: 'red',   type: 'colored' })}
         </div>
 
-        <h2 id="Variants">Variants</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Subtle uses a light tinted background with a soft matching border. Outline uses a white background with a more prominent colored border.</p>
+        <h2 id="Types">Types</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Figma properties: <strong>Type</strong> × <strong>Theme Color</strong>. Only the Default state is available.</p>
         <table class="token-table">
-          <thead><tr><th>Variant</th><th style="min-width:220px">Preview</th><th>Description</th></tr></thead>
+          <thead><tr><th>Type</th><th>Theme Color</th><th style="min-width:120px">Preview</th><th>Description</th></tr></thead>
           <tbody>
             <tr>
-              <td><span class="token-name">Subtle</span></td>
-              <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Blue',  color: 'blue',  variant: 'subtle' })}
-                ${badgeEl({ label: 'Red',   color: 'red',   variant: 'subtle' })}
-                ${badgeEl({ label: 'Green', color: 'green', variant: 'subtle' })}
-              </div></td>
-              <td style="color:var(--bt-text-emphasis)">Light tinted background with a soft matching border and colored text. Low visual weight — for inline labels, tags, or status indicators.</td>
+              <td><span class="token-name">Solid</span></td>
+              <td>Primary</td>
+              <td>${badgeEl({ type: 'solid', label: 'Badge' })}</td>
+              <td style="color:var(--bt-text-emphasis)">Brand-filled background with inverted text. Highest visual weight.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Flat</span></td>
+              <td>Secondary</td>
+              <td>${badgeEl({ type: 'flat', label: 'Badge' })}</td>
+              <td style="color:var(--bt-text-emphasis)">Subtle gray fill, no border. Low visual weight for secondary labels.</td>
             </tr>
             <tr>
               <td><span class="token-name">Outline</span></td>
-              <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Blue',  color: 'blue',  variant: 'outline' })}
-                ${badgeEl({ label: 'Red',   color: 'red',   variant: 'outline' })}
-                ${badgeEl({ label: 'Green', color: 'green', variant: 'outline' })}
-              </div></td>
-              <td style="color:var(--bt-text-emphasis)">White background with a visible colored border and colored text. Slightly higher contrast than Subtle — use when the badge needs to stand out on a tinted surface.</td>
+              <td>Tertiary</td>
+              <td>${badgeEl({ type: 'outline', label: 'Badge' })}</td>
+              <td style="color:var(--bt-text-emphasis)">Gray fill with default border. Use when differentiation from the surface is needed.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Ghost</span></td>
+              <td>Ghost</td>
+              <td>${badgeEl({ type: 'ghost', label: 'Badge' })}</td>
+              <td style="color:var(--bt-text-emphasis)">No background, no border. Minimal presence — for dense or nested contexts.</td>
             </tr>
           </tbody>
         </table>
         <table class="token-table" style="margin-top:12px">
           <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Padding</td><td>—</td><td>2px 10px</td></tr>
-            <tr><td>Container</td><td>Border Radius</td><td>—</td><td>9999px (pill)</td></tr>
-            <tr><td>Container · Subtle</td><td>Background</td><td>—</td><td>Color-tinted (per color)</td></tr>
-            <tr><td>Container · Outline</td><td>Background</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
-            <tr><td>Container</td><td>Border</td><td>—</td><td>1px solid (color-matched)</td></tr>
-            <tr><td>Label</td><td>Font Size</td><td>${tk('--bt-text-xs')}</td><td>12px</td></tr>
-            <tr><td>Label</td><td>Font Weight</td><td>—</td><td>500 (medium)</td></tr>
-            <tr><td>Label</td><td>Line Height</td><td>—</td><td>18px</td></tr>
+            <tr><td>Container</td><td>Horizontal Padding</td><td>${tk('--space/md')}</td><td>8px</td></tr>
+            <tr><td>Container</td><td>Vertical Padding</td><td>${tk('--space/2xs')}</td><td>2px</td></tr>
+            <tr><td>Container</td><td>Gap</td><td>${tk('--space/2xs')}</td><td>2px</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--radius/full')}</td><td>9999px</td></tr>
+            <tr><td>Solid · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-contrast-default')}</td><td>#0d4e97</td></tr>
+            <tr><td>Flat · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Outline · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Outline · Border</td><td>Stroke</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Solid · Text / Icon</td><td>Color</td><td>${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
+            <tr><td>Flat / Outline / Ghost · Text / Icon</td><td>Color</td><td>${tk('--bt-text-default')} / ${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Label</td><td>Font Size</td><td>${tk('--font/size/text-xs')}</td><td>12px</td></tr>
+            <tr><td>Label</td><td>Font Weight</td><td>Regular</td><td>400</td></tr>
+            <tr><td>Label</td><td>Line Height</td><td>${tk('--font/line-height/text-lh-xs')}</td><td>16px</td></tr>
+            <tr><td>Icon</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
           </tbody>
         </table>
 
-        <h2 id="Colors">Colors</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Nine color options available for both variants. Icons are not shown.</p>
+        <h2 id="Custom Colors">Custom Colors</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Figma properties: <strong>Type</strong> (Basic / Colored) × <strong>Theme Color</strong>. Basic uses a gray border with dark text; Colored uses a color-matched border and text.</p>
 
         <div style="margin-bottom:12px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Subtle</div>
+          ${secLbl('Basic — color-100 bg · gray/300 border · gray/900 text')}
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            ${COLOR_LABELS.map(c => badgeEl({ label: capitalize(c), color: c, variant: 'subtle' })).join('')}
+            ${COLORS.map(c => colorBadgeEl({ color: c, type: 'basic' })).join('')}
           </div>
         </div>
         <div style="margin-bottom:24px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Outline</div>
+          ${secLbl('Colored — color-100 bg · color-700 border · color-700 text')}
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            ${COLOR_LABELS.map(c => badgeEl({ label: capitalize(c), color: c, variant: 'outline' })).join('')}
+            ${COLORS.map(c => colorBadgeEl({ color: c, type: 'colored' })).join('')}
           </div>
         </div>
 
         <table class="token-table">
-          <thead><tr><th>Color</th><th>Subtle BG</th><th>Subtle / Outline Border</th><th>Text</th></tr></thead>
+          <thead><tr><th>Color</th><th>BG (color-100)</th><th>Accent (color-700)</th><th>Basic preview</th><th>Colored preview</th></tr></thead>
           <tbody>
-            ${COLOR_LABELS.map(c => {
+            ${COLORS.map(c => {
               const cm = COLOR_MAP[c];
-              const swatch = hex => `<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:${hex};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${hex}</code></span>`;
               return `<tr>
                 <td><span class="token-name">${capitalize(c)}</span></td>
-                <td>${swatch(cm.subtle.bg)}</td>
-                <td>${swatch(cm.subtle.border)} / ${swatch(cm.outline.border)}</td>
-                <td>${swatch(cm.subtle.text)}</td>
+                <td>${swatch(cm.bg)}</td>
+                <td>${swatch(cm.accent)}</td>
+                <td>${colorBadgeEl({ color: c, type: 'basic' })}</td>
+                <td>${colorBadgeEl({ color: c, type: 'colored' })}</td>
               </tr>`;
             }).join('')}
           </tbody>
         </table>
 
         <h2 id="With Icons">With Icons</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Icons can be added on the left, right, or both sides via <code style="font-size:12px;font-family:var(--mono)">Show Left Icon</code> / <code style="font-size:12px;font-family:var(--mono)">Show Right Icon</code> properties.</p>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Controlled via <strong>Show Left Icon</strong> and <strong>Show Right Icon</strong> properties in Figma. Icon is 16×16px and inherits the text color.</p>
         <table class="token-table">
-          <thead><tr><th>Configuration</th><th style="min-width:280px">Preview</th></tr></thead>
+          <thead><tr><th>Configuration</th><th style="min-width:320px">Preview</th></tr></thead>
           <tbody>
             <tr>
               <td style="color:var(--bt-text-emphasis)">Left icon only</td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Badge', color: 'blue',   variant: 'subtle',  leftIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'green',  variant: 'subtle',  leftIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'blue',   variant: 'outline', leftIcon: true })}
+                ${badgeEl({ type: 'solid',   label: 'Badge', leftIcon: true })}
+                ${badgeEl({ type: 'flat',    label: 'Badge', leftIcon: true })}
+                ${badgeEl({ type: 'outline', label: 'Badge', leftIcon: true })}
+                ${badgeEl({ type: 'ghost',   label: 'Badge', leftIcon: true })}
               </div></td>
             </tr>
             <tr>
               <td style="color:var(--bt-text-emphasis)">Right icon only</td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Badge', color: 'red',    variant: 'subtle',  rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'orange', variant: 'subtle',  rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'red',    variant: 'outline', rightIcon: true })}
+                ${badgeEl({ type: 'solid',   label: 'Badge', rightIcon: true })}
+                ${badgeEl({ type: 'flat',    label: 'Badge', rightIcon: true })}
+                ${badgeEl({ type: 'outline', label: 'Badge', rightIcon: true })}
+                ${badgeEl({ type: 'ghost',   label: 'Badge', rightIcon: true })}
               </div></td>
             </tr>
             <tr>
               <td style="color:var(--bt-text-emphasis)">Both icons</td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Badge', color: 'purple', variant: 'subtle',  leftIcon: true, rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'cyan',   variant: 'subtle',  leftIcon: true, rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'purple', variant: 'outline', leftIcon: true, rightIcon: true })}
+                ${badgeEl({ type: 'solid',   label: 'Badge', leftIcon: true, rightIcon: true })}
+                ${badgeEl({ type: 'flat',    label: 'Badge', leftIcon: true, rightIcon: true })}
+                ${badgeEl({ type: 'outline', label: 'Badge', leftIcon: true, rightIcon: true })}
+                ${badgeEl({ type: 'ghost',   label: 'Badge', leftIcon: true, rightIcon: true })}
               </div></td>
             </tr>
           </tbody>
