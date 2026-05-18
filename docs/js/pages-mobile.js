@@ -1659,71 +1659,74 @@ const PAGES = {
     render: (tab) => {
       const title = 'Badge';
 
-      // ── Lucide icons ─────────────────────────────────────────
+      // ── Lucide loader-2 icon ──────────────────────────────────
       const iLoader = c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 
       // ── Color map ─────────────────────────────────────────────
+      // Tokens from styles.css where available; hardcoded for colors not yet in the token set
       const COLOR_MAP = {
-        blue:    { subtle: { bg:'#eff6ff', border:'#bfdbfe', text:'#1d4ed8' }, filled: { bg:'#3b82f6', text:'#ffffff' } },
-        green:   { subtle: { bg:'#f0fdf4', border:'#bbf7d0', text:'#15803d' }, filled: { bg:'#22c55e', text:'#ffffff' } },
-        yellow:  { subtle: { bg:'#fefce8', border:'#fde047', text:'#a16207' }, filled: { bg:'#eab308', text:'#ffffff' } },
-        red:     { subtle: { bg:'#fef2f2', border:'#fecaca', text:'#b91c1c' }, filled: { bg:'#ef4444', text:'#ffffff' } },
-        sky:     { subtle: { bg:'#f0f9ff', border:'#bae6fd', text:'#0369a1' }, filled: { bg:'#0ea5e9', text:'#ffffff' } },
-        purple:  { subtle: { bg:'#faf5ff', border:'#e9d5ff', text:'#7e22ce' }, filled: { bg:'#a855f7', text:'#ffffff' } },
-        cyan:    { subtle: { bg:'#ecfeff', border:'#a5f3fc', text:'#0e7490' }, filled: { bg:'#06b6d4', text:'#ffffff' } },
-        emerald: { subtle: { bg:'#ecfdf5', border:'#a7f3d0', text:'#065f46' }, filled: { bg:'#10b981', text:'#ffffff' } },
-        orange:  { subtle: { bg:'#fff7ed', border:'#fed7aa', text:'#c2410c' }, filled: { bg:'#f97316', text:'#ffffff' } },
-        gray:    { subtle: { bg:'#f5f5f5', border:'#e6e6e6', text:'#525252' }, filled: { bg:'#737373', text:'#ffffff' } },
+        blue:    { subtle:  { bg:'#f1f7fe', border:'#bedbf9', text:'#0d4e97' },   // --bt-blue-50 / --bt-blue-200 / --bt-blue-700
+                   outline: { bg:'#ffffff', border:'#85bdf4', text:'#0d4e97' } }, // --bt-blue-300 / --bt-blue-700
+        green:   { subtle:  { bg:'#e8f3ee', border:'#b8d9c8', text:'#2d584b' },   // --bt-green-50 / --bt-green-700
+                   outline: { bg:'#ffffff', border:'#7abf9b', text:'#2d584b' } },
+        yellow:  { subtle:  { bg:'#fdf9e8', border:'#f0dfaa', text:'#aa820a' },   // --bt-yellow-50 / --bt-yellow-700
+                   outline: { bg:'#ffffff', border:'#e5c96a', text:'#aa820a' } },
+        red:     { subtle:  { bg:'#fef2f2', border:'#ffc5cc', text:'#b31d38' },   // --bt-red-50 / --bt-red-700
+                   outline: { bg:'#ffffff', border:'#f0808e', text:'#b31d38' } },
+        purple:  { subtle:  { bg:'#f3e8ff', border:'#dbb5f5', text:'#6b21a8' },   // --bt-purple-100 / --bt-purple-800
+                   outline: { bg:'#ffffff', border:'#c4b5fd', text:'#6b21a8' } },
+        sky:     { subtle:  { bg:'#f0f9ff', border:'#bae6fd', text:'#0369a1' },
+                   outline: { bg:'#ffffff', border:'#7dd3fc', text:'#0369a1' } },
+        cyan:    { subtle:  { bg:'#ecfeff', border:'#a5f3fc', text:'#0e7490' },
+                   outline: { bg:'#ffffff', border:'#67e8f9', text:'#0e7490' } },
+        emerald: { subtle:  { bg:'#ecfdf5', border:'#a7f3d0', text:'#065f46' },
+                   outline: { bg:'#ffffff', border:'#6ee7b7', text:'#065f46' } },
+        orange:  { subtle:  { bg:'#fff7ed', border:'#fed7aa', text:'#c2410c' },
+                   outline: { bg:'#ffffff', border:'#fdba74', text:'#c2410c' } },
+        gray:    { subtle:  { bg:'#f5f5f5', border:'#e6e6e6', text:'#404040' },   // --bt-gray-100 / --bt-gray-200 / --bt-gray-700
+                   outline: { bg:'#ffffff', border:'#d4d4d4', text:'#404040' } }, // --bt-gray-300
       };
 
-      const COLOR_LABELS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange','gray'];
+      const COLOR_LABELS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange'];
+      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+      const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
       // ── Badge element ─────────────────────────────────────────
       const badgeEl = ({ label = 'Badge', color = 'blue', variant = 'subtle', leftIcon = false, rightIcon = false }) => {
         const c = (COLOR_MAP[color] || COLOR_MAP.blue)[variant];
-        const style = variant === 'subtle'
-          ? `background:${c.bg};border:1px solid ${c.border};color:${c.text};`
-          : `background:${c.bg};border:1px solid ${c.bg};color:${c.text};`;
         const iconHtml = iLoader(c.text);
-        return `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;${style}">
-          ${leftIcon ? iconHtml : ''}
-          ${label}
-          ${rightIcon ? iconHtml : ''}
-        </span>`;
+        return `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:${c.bg};border:1px solid ${c.border};color:${c.text};">${leftIcon ? iconHtml : ''}${label}${rightIcon ? iconHtml : ''}</span>`;
       };
 
-      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-      const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-
       const overviewHtml = `
-        <p class="page-desc">Badges are small, compact labels used to display status, category, or metadata. Two variants — Subtle and Filled — across ten color options.</p>
+        <p class="page-desc">Compact labels for status, category, or metadata. Two variants — Subtle and Outline — across nine color options.</p>
 
         <div class="preview-box" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-          ${COLOR_LABELS.slice(0,6).map(c => badgeEl({ label: capitalize(c), color: c, variant: 'subtle' })).join('')}
+          ${COLOR_LABELS.map(c => badgeEl({ label: capitalize(c), color: c, variant: 'subtle' })).join('')}
         </div>
 
         <h2 id="Variants">Variants</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Two visual styles: Subtle uses a tinted background with a matching border; Filled uses a solid background with white text.</p>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Subtle uses a light tinted background with a soft matching border. Outline uses a white background with a more prominent colored border.</p>
         <table class="token-table">
-          <thead><tr><th>Variant</th><th style="min-width:200px">Preview</th><th>Description</th></tr></thead>
+          <thead><tr><th>Variant</th><th style="min-width:220px">Preview</th><th>Description</th></tr></thead>
           <tbody>
             <tr>
               <td><span class="token-name">Subtle</span></td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Blue', color: 'blue', variant: 'subtle' })}
-                ${badgeEl({ label: 'Red', color: 'red', variant: 'subtle' })}
+                ${badgeEl({ label: 'Blue',  color: 'blue',  variant: 'subtle' })}
+                ${badgeEl({ label: 'Red',   color: 'red',   variant: 'subtle' })}
                 ${badgeEl({ label: 'Green', color: 'green', variant: 'subtle' })}
               </div></td>
-              <td style="color:var(--bt-text-emphasis)">Light tinted background with a matching border and colored text. Low visual weight — for inline labels, tags, or status.</td>
+              <td style="color:var(--bt-text-emphasis)">Light tinted background with a soft matching border and colored text. Low visual weight — for inline labels, tags, or status indicators.</td>
             </tr>
             <tr>
-              <td><span class="token-name">Filled</span></td>
+              <td><span class="token-name">Outline</span></td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Blue', color: 'blue', variant: 'filled' })}
-                ${badgeEl({ label: 'Red', color: 'red', variant: 'filled' })}
-                ${badgeEl({ label: 'Green', color: 'green', variant: 'filled' })}
+                ${badgeEl({ label: 'Blue',  color: 'blue',  variant: 'outline' })}
+                ${badgeEl({ label: 'Red',   color: 'red',   variant: 'outline' })}
+                ${badgeEl({ label: 'Green', color: 'green', variant: 'outline' })}
               </div></td>
-              <td style="color:var(--bt-text-emphasis)">Solid background with white text. High visual weight — use when the badge needs to stand out clearly.</td>
+              <td style="color:var(--bt-text-emphasis)">White background with a visible colored border and colored text. Slightly higher contrast than Subtle — use when the badge needs to stand out on a tinted surface.</td>
             </tr>
           </tbody>
         </table>
@@ -1732,7 +1735,9 @@ const PAGES = {
           <tbody>
             <tr><td>Container</td><td>Padding</td><td>—</td><td>2px 10px</td></tr>
             <tr><td>Container</td><td>Border Radius</td><td>—</td><td>9999px (pill)</td></tr>
-            <tr><td>Container · Subtle</td><td>Border</td><td>—</td><td>1px solid (color-matched)</td></tr>
+            <tr><td>Container · Subtle</td><td>Background</td><td>—</td><td>Color-tinted (per color)</td></tr>
+            <tr><td>Container · Outline</td><td>Background</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Container</td><td>Border</td><td>—</td><td>1px solid (color-matched)</td></tr>
             <tr><td>Label</td><td>Font Size</td><td>${tk('--bt-text-xs')}</td><td>12px</td></tr>
             <tr><td>Label</td><td>Font Weight</td><td>—</td><td>500 (medium)</td></tr>
             <tr><td>Label</td><td>Line Height</td><td>—</td><td>18px</td></tr>
@@ -1740,7 +1745,7 @@ const PAGES = {
         </table>
 
         <h2 id="Colors">Colors</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Ten color options available for both variants. Icons are not shown in these examples.</p>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Nine color options available for both variants. Icons are not shown.</p>
 
         <div style="margin-bottom:12px;">
           <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Subtle</div>
@@ -1749,57 +1754,55 @@ const PAGES = {
           </div>
         </div>
         <div style="margin-bottom:24px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Filled</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Outline</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            ${COLOR_LABELS.map(c => badgeEl({ label: capitalize(c), color: c, variant: 'filled' })).join('')}
+            ${COLOR_LABELS.map(c => badgeEl({ label: capitalize(c), color: c, variant: 'outline' })).join('')}
           </div>
         </div>
 
         <table class="token-table">
-          <thead><tr><th>Color</th><th>Subtle BG</th><th>Subtle Border</th><th>Subtle Text</th><th>Filled BG</th></tr></thead>
+          <thead><tr><th>Color</th><th>Subtle BG</th><th>Subtle / Outline Border</th><th>Text</th></tr></thead>
           <tbody>
             ${COLOR_LABELS.map(c => {
               const cm = COLOR_MAP[c];
-              const swatch = (hex) => `<span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:${hex};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${hex}</code></span>`;
+              const swatch = hex => `<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:${hex};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${hex}</code></span>`;
               return `<tr>
                 <td><span class="token-name">${capitalize(c)}</span></td>
                 <td>${swatch(cm.subtle.bg)}</td>
-                <td>${swatch(cm.subtle.border)}</td>
+                <td>${swatch(cm.subtle.border)} / ${swatch(cm.outline.border)}</td>
                 <td>${swatch(cm.subtle.text)}</td>
-                <td>${swatch(cm.filled.bg)}</td>
               </tr>`;
             }).join('')}
           </tbody>
         </table>
 
         <h2 id="With Icons">With Icons</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Icons can be added on the left, right, or both sides using the <code style="font-size:12px;font-family:var(--mono)">Show Left Icon</code> / <code style="font-size:12px;font-family:var(--mono)">Show Right Icon</code> properties.</p>
-
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Icons can be added on the left, right, or both sides via <code style="font-size:12px;font-family:var(--mono)">Show Left Icon</code> / <code style="font-size:12px;font-family:var(--mono)">Show Right Icon</code> properties.</p>
         <table class="token-table">
-          <thead><tr><th>Configuration</th><th style="min-width:260px">Preview</th></tr></thead>
+          <thead><tr><th>Configuration</th><th style="min-width:280px">Preview</th></tr></thead>
           <tbody>
             <tr>
               <td style="color:var(--bt-text-emphasis)">Left icon only</td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Badge', color: 'blue',  variant: 'subtle', leftIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'green', variant: 'subtle', leftIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'blue',  variant: 'filled', leftIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'blue',   variant: 'subtle',  leftIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'green',  variant: 'subtle',  leftIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'blue',   variant: 'outline', leftIcon: true })}
               </div></td>
             </tr>
             <tr>
               <td style="color:var(--bt-text-emphasis)">Right icon only</td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Badge', color: 'red',    variant: 'subtle', rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'orange', variant: 'subtle', rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'red',    variant: 'filled', rightIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'red',    variant: 'subtle',  rightIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'orange', variant: 'subtle',  rightIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'red',    variant: 'outline', rightIcon: true })}
               </div></td>
             </tr>
             <tr>
               <td style="color:var(--bt-text-emphasis)">Both icons</td>
               <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
-                ${badgeEl({ label: 'Badge', color: 'purple', variant: 'subtle', leftIcon: true, rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'cyan',   variant: 'subtle', leftIcon: true, rightIcon: true })}
-                ${badgeEl({ label: 'Badge', color: 'purple', variant: 'filled', leftIcon: true, rightIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'purple', variant: 'subtle',  leftIcon: true, rightIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'cyan',   variant: 'subtle',  leftIcon: true, rightIcon: true })}
+                ${badgeEl({ label: 'Badge', color: 'purple', variant: 'outline', leftIcon: true, rightIcon: true })}
               </div></td>
             </tr>
           </tbody>
