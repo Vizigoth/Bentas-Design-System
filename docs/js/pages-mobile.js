@@ -1308,7 +1308,7 @@ const PAGES = {
         const radMap = { single: '6px', first: '6px 6px 0 0', middle: '0', last: '0 0 6px 6px' };
         const borderR   = radMap[position] || '6px';
         const borderTop = (position === 'middle' || position === 'last') ? 'none' : '1px solid #d4d4d4';
-        const borderBot = (position === 'first') ? 'none' : '1px solid #d4d4d4';
+        const borderBot = (position === 'first' || position === 'middle') ? 'none' : '1px solid #d4d4d4';
         const hdrBg     = isOpen ? '#f5f5f5' : '#fff';
         const itemStyle = `background:#fff;border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #d4d4d4;border-right:1px solid #d4d4d4;border-radius:${borderR};overflow:hidden;`;
         const closedIco = iconType === 'chevron' ? iChevronDown(iconC) : iPlus(iconC);
