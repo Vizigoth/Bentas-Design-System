@@ -1309,14 +1309,14 @@ const PAGES = {
         const borderR   = radMap[position] || '8px';
         const borderTop = (position === 'middle' || position === 'last') ? 'none' : '1px solid #e6e6e6';
         const borderBot = (position === 'first')                         ? 'none' : '1px solid #e6e6e6';
-        const bg        = isOpen ? '#f5f5f5' : '#fff';
-        const itemStyle = `background:${bg};border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:${borderR};`;
+        const hdrBg     = isOpen ? '#f5f5f5' : '#fff';
+        const itemStyle = `background:#fff;border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:${borderR};overflow:hidden;`;
         const closedIco = iconType === 'chevron' ? iChevronDown(iconC) : iPlus(iconC);
         const openIco   = iconType === 'chevron' ? iChevronUp(iconC)   : iX(iconC);
         const click     = (isDisabled || !id) ? '' : `onclick="window.toggleAcc('${id}')"`;
         return `
           <div id="${id||''}" data-open="${isOpen?'1':'0'}" style="${itemStyle}">
-            <div ${click} style="display:flex;align-items:center;padding:12px 16px;gap:12px;cursor:${cursor};user-select:none;">
+            <div data-hdr ${click} style="display:flex;align-items:center;padding:12px 16px;gap:12px;cursor:${cursor};user-select:none;background:${hdrBg};">
               <span style="flex-shrink:0;">${iScan(leftC)}</span>
               <div style="flex:1;min-width:0;">
                 <div style="font-size:14px;font-weight:500;color:${titleC};line-height:20px;">${label}</div>
@@ -1325,7 +1325,7 @@ const PAGES = {
               <span data-ico-c style="${isOpen?'display:none':''}">${closedIco}</span>
               <span data-ico-o style="${isOpen?'':'display:none'}">${openIco}</span>
             </div>
-            <div data-body style="padding:0 16px 12px 44px;font-size:14px;color:#727272;line-height:20px;${isOpen?'':'display:none'}">${content}</div>
+            <div data-body style="padding:0 16px 12px 44px;font-size:14px;color:#727272;line-height:20px;background:#fff;${isOpen?'':'display:none'}">${content}</div>
           </div>`;
       };
 
@@ -1518,7 +1518,8 @@ const PAGES = {
             var body = el.querySelector('[data-body]');
             var icC  = el.querySelector('[data-ico-c]');
             var icO  = el.querySelector('[data-ico-o]');
-            el.style.background = open ? '#fff' : '#f5f5f5';
+            var hdr = el.querySelector('[data-hdr]');
+            if (hdr) hdr.style.background = open ? '#fff' : '#f5f5f5';
             if (body) body.style.display = open ? 'none' : '';
             if (icC)  icC.style.display  = open ? '' : 'none';
             if (icO)  icO.style.display  = open ? 'none' : '';
