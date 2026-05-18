@@ -1297,7 +1297,7 @@ const PAGES = {
       // state: 'default' | 'active' | 'disabled'
       // iconType: 'chevron' | 'plus'
       // position: 'single' | 'first' | 'middle' | 'last'
-      const accItem = ({ label='Title Text Here', desc='Description', content='', state='default', iconType='chevron', position='single', id }) => {
+      const accItem = ({ label='Title Text Here', desc='', content='', state='default', iconType='chevron', position='single', id }) => {
         const isOpen     = state === 'active';
         const isDisabled = state === 'disabled';
         const titleC = isDisabled ? '#c7c7c7' : '#1a1a1a';
@@ -1320,7 +1320,7 @@ const PAGES = {
               <span style="flex-shrink:0;">${iScan(leftC)}</span>
               <div style="flex:1;min-width:0;">
                 <div style="font-size:14px;font-weight:500;color:${titleC};line-height:20px;">${label}</div>
-                <div style="font-size:12px;color:${descC};line-height:16px;margin-top:1px;">${desc}</div>
+                ${desc ? `<div style="font-size:12px;color:${descC};line-height:16px;margin-top:1px;">${desc}</div>` : ''}
               </div>
               <span data-ico-c style="${isOpen?'display:none':''}">${closedIco}</span>
               <span data-ico-o style="${isOpen?'':'display:none'}">${openIco}</span>
@@ -1348,9 +1348,9 @@ const PAGES = {
         <div class="preview-box">
           <div style="max-width:420px">
             ${accGroup([
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'active',  iconType: 'chevron', id: 'pv1' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'pv2' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'pv3' },
+              { label: 'Title Text Here', content: CS, state: 'active',  iconType: 'chevron', id: 'pv1' },
+              { label: 'Title Text Here', content: CS, state: 'default', iconType: 'chevron', id: 'pv2' },
+              { label: 'Title Text Here', content: CS, state: 'default', iconType: 'chevron', id: 'pv3' },
             ])}
           </div>
         </div>
