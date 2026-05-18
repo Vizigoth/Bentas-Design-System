@@ -1124,30 +1124,34 @@ const PAGES = {
     render: (tab) => {
       const title = 'Alert';
 
+      // Lucide icons
       const iconCircleAlert = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-      const iconX          = color => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+      const iconCircleCheck = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
+      const iconInfo        = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+      const iconX           = color => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 
+      // Figma tokens: --bt-surface-{type}-light, --bt-border-{type}-default, --bt-surface-{type}-default
       const TYPE_CFG = {
-        error:       { icon: '#b31d38', lightBg: '#fef2f2', lightBorder: '#fbd0d2', filledBg: '#b31d38' },
-        warning:     { icon: '#aa820a', lightBg: '#fdf9e8', lightBorder: '#f4e8aa', filledBg: '#aa820a' },
-        information: { icon: '#0d4e97', lightBg: '#f1f7fe', lightBorder: '#bedbf9', filledBg: '#0d4e97' },
-        success:     { icon: '#2d584b', lightBg: '#e8f3ee', lightBorder: '#b4dbcb', filledBg: '#2d584b' },
+        error:       { lucideIcon: iconCircleAlert, accent: '#b31d38', lightBg: '#fef2f2', filledBg: '#b31d38' },
+        warning:     { lucideIcon: iconCircleAlert, accent: '#aa820a', lightBg: '#fdf9e8', filledBg: '#aa820a' },
+        information: { lucideIcon: iconInfo,        accent: '#0d4e97', lightBg: '#f1f7fe', filledBg: '#0d4e97' },
+        success:     { lucideIcon: iconCircleCheck, accent: '#2d584b', lightBg: '#daede5', filledBg: '#2d584b' },
       };
 
       const alertEl = ({ type = 'error', theme = 'stroke', closeBtn = false, alertTitle = 'Alert Title', desc = 'Açıklama metni buraya gelecek.' }) => {
         const c = TYPE_CFG[type];
         const isFilled  = theme === 'filled';
         const bg        = isFilled ? c.filledBg : theme === 'light' ? c.lightBg : '#fafafa';
-        const border    = isFilled ? 'none' : `1px solid ${theme === 'light' ? c.lightBorder : '#d4d4d4'}`;
-        const iconColor = isFilled ? '#fff' : c.icon;
+        const border    = isFilled ? 'none' : `1px solid ${theme === 'light' ? c.accent : '#d4d4d4'}`;
+        const iconColor = isFilled ? '#fff' : c.accent;
         const textColor = isFilled ? '#fff' : '#1a1a1a';
         const descAlpha = isFilled ? '0.85' : '1';
         return `
           <div style="display:flex;align-items:center;background:${bg};border:${border};border-radius:4px;flex:1;min-width:0;">
-            <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${iconCircleAlert(iconColor)}</div>
+            <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${c.lucideIcon(iconColor)}</div>
             <div style="flex:1;padding:8px;min-width:0;">
               <div style="font-size:16px;font-weight:500;color:${textColor};line-height:24px;">${alertTitle}</div>
-              <div style="font-size:14px;color:${textColor};opacity:${descAlpha};line-height:16px;margin-top:2px;">${desc}</div>
+              <div style="font-size:14px;color:${textColor};opacity:${descAlpha};line-height:16px;margin-top:4px;">${desc}</div>
             </div>
             ${closeBtn ? `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">${iconX(textColor)}</div>` : ''}
           </div>`;
@@ -1246,20 +1250,20 @@ const PAGES = {
           <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td>Container</td><td>Border Radius</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-radius-sm</code></td><td>4px</td></tr>
-            <tr><td>Container · Stroke</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-primary-subtle</code></td><td>#fafafa</td></tr>
+            <tr><td>Container · Stroke</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-primary-light</code></td><td>#fafafa</td></tr>
             <tr><td>Container · Stroke</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-default</code></td><td>#d4d4d4</td></tr>
-            <tr><td>Container · Light · Error</td><td>Background</td><td>—</td><td>#fef2f2</td></tr>
-            <tr><td>Container · Light · Error</td><td>Border</td><td>—</td><td>#fbd0d2</td></tr>
-            <tr><td>Container · Light · Warning</td><td>Background</td><td>—</td><td>#fdf9e8</td></tr>
-            <tr><td>Container · Light · Warning</td><td>Border</td><td>—</td><td>#f4e8aa</td></tr>
-            <tr><td>Container · Light · Information</td><td>Background</td><td>—</td><td>#f1f7fe</td></tr>
-            <tr><td>Container · Light · Information</td><td>Border</td><td>—</td><td>#bedbf9</td></tr>
-            <tr><td>Container · Light · Success</td><td>Background</td><td>—</td><td>#e8f3ee</td></tr>
-            <tr><td>Container · Light · Success</td><td>Border</td><td>—</td><td>#b4dbcb</td></tr>
-            <tr><td>Container · Filled · Error</td><td>Background</td><td>—</td><td>#b31d38</td></tr>
-            <tr><td>Container · Filled · Warning</td><td>Background</td><td>—</td><td>#aa820a</td></tr>
-            <tr><td>Container · Filled · Information</td><td>Background</td><td>—</td><td>#0d4e97</td></tr>
-            <tr><td>Container · Filled · Success</td><td>Background</td><td>—</td><td>#2d584b</td></tr>
+            <tr><td>Container · Light · Error</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-error-light</code></td><td>#fef2f2</td></tr>
+            <tr><td>Container · Light · Error</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-error-default</code></td><td>#b31d38</td></tr>
+            <tr><td>Container · Light · Warning</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-warning-light</code></td><td>#fdf9e8</td></tr>
+            <tr><td>Container · Light · Warning</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-warning-default</code></td><td>#aa820a</td></tr>
+            <tr><td>Container · Light · Information</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-information-light</code></td><td>#f1f7fe</td></tr>
+            <tr><td>Container · Light · Information</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-information-default</code></td><td>#0d4e97</td></tr>
+            <tr><td>Container · Light · Success</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-success-light</code></td><td>#daede5</td></tr>
+            <tr><td>Container · Light · Success</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-success-default</code></td><td>#2d584b</td></tr>
+            <tr><td>Container · Filled · Error</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-error-default</code></td><td>#b31d38</td></tr>
+            <tr><td>Container · Filled · Warning</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-warning-default</code></td><td>#aa820a</td></tr>
+            <tr><td>Container · Filled · Information</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-information-default</code></td><td>#0d4e97</td></tr>
+            <tr><td>Container · Filled · Success</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-success-default</code></td><td>#2d584b</td></tr>
             <tr><td>Title</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-md</code></td><td>16px / 24px</td></tr>
             <tr><td>Title</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
             <tr><td>Description</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-sm</code></td><td>14px / 16px</td></tr>
@@ -1271,7 +1275,7 @@ const PAGES = {
           <thead><tr><th>Element</th><th>Property</th><th>Value</th><th>Token</th></tr></thead>
           <tbody>
             <tr><td>Content Area</td><td>Padding</td><td>8px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-space-md</code></td></tr>
-            <tr><td>Content Area</td><td>Gap (title ↔ description)</td><td>2px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-2xs</code></td></tr>
+            <tr><td>Content Area</td><td>Gap (title ↔ description)</td><td>4px</td><td><code style="font-size:12px;font-family:var(--mono)">--space/xs</code></td></tr>
             <tr><td>Icon Container</td><td>Width × Height</td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
             <tr><td>Close Button</td><td>Width × Height</td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
           </tbody>
