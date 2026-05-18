@@ -1116,11 +1116,8 @@ const PAGES = {
   },
 
   'components/alert': {
-    tabs: ['Overview', 'Usage', 'Design'],
-    toc: [
-      { group: 'Overview', items: ['Types', 'Theme Colors', 'Close Button'] },
-      { group: 'Design',   items: ['Variants', 'Themes', 'Properties', 'Spacing'] },
-    ],
+    tabs: ['Overview', 'Usage'],
+    toc: ['Types', 'Theme Colors', 'Close Button'],
     render: (tab) => {
       const title = 'Alert';
 
@@ -1132,13 +1129,32 @@ const PAGES = {
 
       // Figma tokens: --bt-surface-{type}-light, --bt-border-{type}-default, --bt-surface-{type}-default
       const TYPE_CFG = {
-        error:       { lucideIcon: iconCircleAlert, accent: '#b31d38', lightBg: '#fef2f2', filledBg: '#b31d38' },
-        warning:     { lucideIcon: iconCircleAlert, accent: '#aa820a', lightBg: '#fdf9e8', filledBg: '#aa820a' },
-        information: { lucideIcon: iconInfo,        accent: '#0d4e97', lightBg: '#f1f7fe', filledBg: '#0d4e97' },
-        success:     { lucideIcon: iconCircleCheck, accent: '#2d584b', lightBg: '#daede5', filledBg: '#2d584b' },
+        error:       { lucideIcon: iconCircleAlert, lucideName: 'circle-alert', accent: '#b31d38', lightBg: '#fef2f2', filledBg: '#b31d38', surfaceLight: '--bt-surface-error-light',       borderToken: '--bt-border-error-default',       surfaceFilled: '--bt-surface-error-default'       },
+        warning:     { lucideIcon: iconCircleAlert, lucideName: 'circle-alert', accent: '#aa820a', lightBg: '#fdf9e8', filledBg: '#aa820a', surfaceLight: '--bt-surface-warning-light',     borderToken: '--bt-border-warning-default',     surfaceFilled: '--bt-surface-warning-default'     },
+        information: { lucideIcon: iconInfo,        lucideName: 'info',         accent: '#0d4e97', lightBg: '#f1f7fe', filledBg: '#0d4e97', surfaceLight: '--bt-surface-information-light', borderToken: '--bt-border-information-default', surfaceFilled: '--bt-surface-information-default' },
+        success:     { lucideIcon: iconCircleCheck, lucideName: 'circle-check', accent: '#2d584b', lightBg: '#daede5', filledBg: '#2d584b', surfaceLight: '--bt-surface-success-light',     borderToken: '--bt-border-success-default',     surfaceFilled: '--bt-surface-success-default'     },
       };
 
-      const alertEl = ({ type = 'error', theme = 'stroke', closeBtn = false, alertTitle = 'Alert Title', desc = 'Açıklama metni buraya gelecek.' }) => {
+      const TYPES      = ['error', 'warning', 'information', 'success'];
+      const TYPE_LABEL = { error: 'Error', warning: 'Warning', information: 'Information', success: 'Success' };
+      const TYPE_DESC  = {
+        error:       'Critical errors or blocking situations that require immediate action.',
+        warning:     'Situations that need attention but are not critical.',
+        information: 'Helpful context or neutral information for the user.',
+        success:     'Confirms a completed action or positive outcome.',
+      };
+      const THEMES     = ['stroke', 'light', 'filled'];
+      const THEME_DESC = {
+        stroke:  'Neutral background with a default gray border. Works on any surface.',
+        light:   'Tinted background with a type-matched accent border. Softer emphasis.',
+        filled:  'Solid accent background with inverted (white) text and icon. Highest emphasis.',
+      };
+
+      const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+      const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
+      const pw  = inner => `<div style="max-width:440px">${inner}</div>`;
+
+      const alertEl = ({ type = 'error', theme = 'stroke', closeBtn = false, alertTitle = 'Alert Title', desc = 'Short description goes here.' }) => {
         const c = TYPE_CFG[type];
         const isFilled  = theme === 'filled';
         const bg        = isFilled ? c.filledBg : theme === 'light' ? c.lightBg : '#fafafa';
@@ -1147,7 +1163,7 @@ const PAGES = {
         const textColor = isFilled ? '#fff' : '#1a1a1a';
         const descAlpha = isFilled ? '0.85' : '1';
         return `
-          <div style="display:flex;align-items:center;background:${bg};border:${border};border-radius:4px;flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;background:${bg};border:${border};border-radius:4px;width:100%;">
             <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${c.lucideIcon(iconColor)}</div>
             <div style="flex:1;padding:8px;min-width:0;">
               <div style="font-size:16px;font-weight:500;color:${textColor};line-height:24px;">${alertTitle}</div>
@@ -1157,130 +1173,119 @@ const PAGES = {
           </div>`;
       };
 
-      const TYPES      = ['error', 'warning', 'information', 'success'];
-      const TYPE_LABEL = { error: 'Error', warning: 'Warning', information: 'Information', success: 'Success' };
-      const TYPE_DESC  = {
-        error:       'Displays critical errors and blocking situations.',
-        warning:     'For situations that require attention but are not critical.',
-        information: 'Provides helpful information and explanations.',
-        success:     'Confirms successful operations to the user.',
-      };
-      const THEMES     = ['stroke', 'light', 'filled'];
-
       const overviewHtml = `
-        <p class="page-desc">Alert, kullanıcıyı önemli bir durum hakkında bilgilendiren satır içi mesajlardır. 4 tip, 3 tema ve isteğe bağlı kapatma butonu ile gelir.</p>
+        <p class="page-desc">Inline messages that inform the user about an important state. Four types, three theme colors, and an optional close button.</p>
 
         <div class="preview-box">
-          <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;flex-direction:column;gap:10px;max-width:440px;">
             ${TYPES.map(t => alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })).join('')}
           </div>
         </div>
 
         <h2 id="Types">Types</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four semantic types — each with a distinct icon (Lucide) and accent color. Shown here in Stroke theme.</p>
         <table class="token-table">
-          <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
+          <thead><tr><th>Type</th><th style="min-width:340px">Preview</th><th>Description</th></tr></thead>
           <tbody>
             ${TYPES.map(t => `
             <tr>
               <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
-              <td>${alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })}</td>
+              <td>${pw(alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` }))}</td>
               <td style="color:var(--bt-text-emphasis)">${TYPE_DESC[t]}</td>
             </tr>`).join('')}
           </tbody>
         </table>
+        <table class="token-table" style="margin-top:12px">
+          <thead><tr><th>Type</th><th>Icon (Lucide)</th><th>Accent token</th><th>Value</th></tr></thead>
+          <tbody>
+            ${TYPES.map(t => {
+              const c = TYPE_CFG[t];
+              return `<tr>
+                <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
+                <td>${tk(c.lucideName)}</td>
+                <td>${tk(c.borderToken)}</td>
+                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:${c.accent};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>${c.accent}</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
 
         <h2 id="Theme Colors">Theme Colors</h2>
-        ${TYPES.map(t => `
-          <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.04em;">${TYPE_LABEL[t]}</h3>
-          <table class="token-table">
-            <thead><tr><th>Theme</th><th>Preview</th></tr></thead>
-            <tbody>
-              ${THEMES.map(th => `
-              <tr>
-                <td><span class="token-name">${th.charAt(0).toUpperCase()+th.slice(1)}</span></td>
-                <td>${alertEl({ type: t, theme: th, alertTitle: `${TYPE_LABEL[t]} Alert` })}</td>
-              </tr>`).join('')}
-            </tbody>
-          </table>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Three themes control how much visual weight the alert carries.</p>
+        ${THEMES.map(th => `
+          <div style="margin-bottom:24px;">
+            ${lbl(th.charAt(0).toUpperCase() + th.slice(1))}
+            <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:12px;">${THEME_DESC[th]}</p>
+            <table class="token-table">
+              <thead><tr><th>Type</th><th style="min-width:340px">Preview</th></tr></thead>
+              <tbody>
+                ${TYPES.map(t => `
+                <tr>
+                  <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
+                  <td>${pw(alertEl({ type: t, theme: th, alertTitle: `${TYPE_LABEL[t]} Alert` }))}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
         `).join('')}
+        <table class="token-table" style="margin-top:4px">
+          <thead><tr><th>Theme</th><th>Type</th><th>Background token</th><th>Border token</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="1"><span class="token-name">Stroke</span></td><td>All</td><td>${tk('--bt-surface-primary-light')} · #fafafa</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
+            ${TYPES.map((t, i) => {
+              const c = TYPE_CFG[t];
+              return `<tr>
+                ${i === 0 ? `<td rowspan="4"><span class="token-name">Light</span></td>` : ''}
+                <td>${TYPE_LABEL[t]}</td>
+                <td>${tk(c.surfaceLight)} · ${c.lightBg}</td>
+                <td>${tk(c.borderToken)} · ${c.accent}</td>
+              </tr>`;
+            }).join('')}
+            ${TYPES.map((t, i) => {
+              const c = TYPE_CFG[t];
+              return `<tr>
+                ${i === 0 ? `<td rowspan="4"><span class="token-name">Filled</span></td>` : ''}
+                <td>${TYPE_LABEL[t]}</td>
+                <td>${tk(c.surfaceFilled)} · ${c.filledBg}</td>
+                <td>—</td>
+              </tr>`;
+            }).join('')}
+            <tr><td><span class="token-name">Filled</span> · Text / Icon</td><td colspan="3">${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')} · #ffffff</td></tr>
+          </tbody>
+        </table>
 
         <h2 id="Close Button">Close Button</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Controlled via the <strong>Close Button</strong> property. Renders a 40×40px hit area on the right edge with a Lucide ${tk('x')} icon.</p>
         <table class="token-table">
-          <thead><tr><th>State</th><th>Preview</th></tr></thead>
+          <thead><tr><th>State</th><th style="min-width:340px">Preview</th><th>Description</th></tr></thead>
           <tbody>
             <tr>
               <td><span class="token-name">Off</span></td>
-              <td>${alertEl({ type: 'error', closeBtn: false, alertTitle: 'Error Alert' })}</td>
+              <td>${pw(alertEl({ type: 'error', theme: 'stroke', closeBtn: false, alertTitle: 'Error Alert' }))}</td>
+              <td style="color:var(--bt-text-emphasis)">No close affordance. Use for persistent or mandatory alerts.</td>
             </tr>
             <tr>
               <td><span class="token-name">On</span></td>
-              <td>${alertEl({ type: 'error', closeBtn: true, alertTitle: 'Error Alert' })}</td>
+              <td>${pw(alertEl({ type: 'error', theme: 'stroke', closeBtn: true, alertTitle: 'Error Alert' }))}</td>
+              <td style="color:var(--bt-text-emphasis)">Dismissible. Use when the user may want to hide the alert.</td>
             </tr>
+          </tbody>
+        </table>
+        <table class="token-table" style="margin-top:12px">
+          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+            <tr><td>Icon container / Close button</td><td>Width × Height</td><td>—</td><td>40 × 40px</td></tr>
+            <tr><td>Content area</td><td>Padding</td><td>${tk('--space/md')}</td><td>8px</td></tr>
+            <tr><td>Title ↔ Description</td><td>Gap</td><td>${tk('--space/xs')}</td><td>4px</td></tr>
+            <tr><td>Title</td><td>Font Size / Weight / Line Height</td><td>${tk('--font/size/text-md')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td>Description</td><td>Font Size / Weight / Line Height</td><td>${tk('--font/size/text-sm')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Close icon</td><td>Lucide</td><td>${tk('x')}</td><td>14 × 14px</td></tr>
           </tbody>
         </table>
       `;
 
-      if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert kullanım kuralları.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Yakında eklenecek.</div></div>` };
-      if (tab === 'Design') return { title, html: `
-        <p class="page-desc">Alert bileşeninin Figma'dan alınan token ve tasarım değerleri.</p>
-
-        <h2 id="Variants">Variants</h2>
-        <table class="token-table">
-          <thead><tr><th>Variant</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><span class="token-name">Error</span></td><td style="color:var(--bt-text-emphasis)">Displays critical errors and blocking situations.</td></tr>
-            <tr><td><span class="token-name">Warning</span></td><td style="color:var(--bt-text-emphasis)">For situations that require attention but are not critical.</td></tr>
-            <tr><td><span class="token-name">Information</span></td><td style="color:var(--bt-text-emphasis)">Provides helpful information and explanations.</td></tr>
-            <tr><td><span class="token-name">Success</span></td><td style="color:var(--bt-text-emphasis)">Confirms successful operations to the user.</td></tr>
-          </tbody>
-        </table>
-
-        <h2 id="Themes">Themes</h2>
-        <table class="token-table">
-          <thead><tr><th>Theme</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><span class="token-name">Stroke</span></td><td style="color:var(--bt-text-emphasis)">Default theme. Neutral background with a type-matched border.</td></tr>
-            <tr><td><span class="token-name">Light</span></td><td style="color:var(--bt-text-emphasis)">Pastel background tinted to match the alert type.</td></tr>
-            <tr><td><span class="token-name">Filled</span></td><td style="color:var(--bt-text-emphasis)">Strong color, high contrast. White text on a colored background.</td></tr>
-          </tbody>
-        </table>
-
-        <h2 id="Properties">Properties</h2>
-        <table class="token-table">
-          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-          <tbody>
-            <tr><td>Container</td><td>Border Radius</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-radius-sm</code></td><td>4px</td></tr>
-            <tr><td>Container · Stroke</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-primary-light</code></td><td>#fafafa</td></tr>
-            <tr><td>Container · Stroke</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-default</code></td><td>#d4d4d4</td></tr>
-            <tr><td>Container · Light · Error</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-error-light</code></td><td>#fef2f2</td></tr>
-            <tr><td>Container · Light · Error</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-error-default</code></td><td>#b31d38</td></tr>
-            <tr><td>Container · Light · Warning</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-warning-light</code></td><td>#fdf9e8</td></tr>
-            <tr><td>Container · Light · Warning</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-warning-default</code></td><td>#aa820a</td></tr>
-            <tr><td>Container · Light · Information</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-information-light</code></td><td>#f1f7fe</td></tr>
-            <tr><td>Container · Light · Information</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-information-default</code></td><td>#0d4e97</td></tr>
-            <tr><td>Container · Light · Success</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-success-light</code></td><td>#daede5</td></tr>
-            <tr><td>Container · Light · Success</td><td>Border</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-border-success-default</code></td><td>#2d584b</td></tr>
-            <tr><td>Container · Filled · Error</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-error-default</code></td><td>#b31d38</td></tr>
-            <tr><td>Container · Filled · Warning</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-warning-default</code></td><td>#aa820a</td></tr>
-            <tr><td>Container · Filled · Information</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-information-default</code></td><td>#0d4e97</td></tr>
-            <tr><td>Container · Filled · Success</td><td>Background</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-surface-success-default</code></td><td>#2d584b</td></tr>
-            <tr><td>Title</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-md</code></td><td>16px / 24px</td></tr>
-            <tr><td>Title</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
-            <tr><td>Description</td><td>Font Size / Line Height</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-text-sm</code></td><td>14px / 16px</td></tr>
-          </tbody>
-        </table>
-
-        <h2 id="Spacing">Spacing</h2>
-        <table class="token-table">
-          <thead><tr><th>Element</th><th>Property</th><th>Value</th><th>Token</th></tr></thead>
-          <tbody>
-            <tr><td>Content Area</td><td>Padding</td><td>8px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-space-md</code></td></tr>
-            <tr><td>Content Area</td><td>Gap (title ↔ description)</td><td>4px</td><td><code style="font-size:12px;font-family:var(--mono)">--space/xs</code></td></tr>
-            <tr><td>Icon Container</td><td>Width × Height</td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
-            <tr><td>Close Button</td><td>Width × Height</td><td>40 × 40px</td><td><code style="font-size:12px;font-family:var(--mono)">--bt-base-sizing-10xl</code></td></tr>
-          </tbody>
-        </table>
-      `};
+      if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
       return { title, html: overviewHtml };
     }
   },
