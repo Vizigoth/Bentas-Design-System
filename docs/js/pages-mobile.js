@@ -1437,7 +1437,7 @@ const PAGES = {
               <td style="color:var(--bt-text-emphasis)">${tk('chevron-down')} → ${tk('chevron-up')}</td>
             </tr>
             <tr>
-              <td><span class="token-name">Plus / X</span></td>
+              <td><span class="token-name">With Plus</span></td>
               <td>${pw(accItem({ state: 'default', iconType: 'plus', position: 'single' }))}</td>
               <td>${pw(accItem({ state: 'active', iconType: 'plus', position: 'single', content: CS, id: 'it-pl' }))}</td>
               <td style="color:var(--bt-text-emphasis)">${tk('plus')} → ${tk('x')}</td>
@@ -1446,11 +1446,11 @@ const PAGES = {
         </table>
 
         <h2 id="Examples">Examples</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Six interactive examples from Figma. Click any item to toggle.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four interactive examples from Figma. Click any item to toggle.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
 
           <div>
-            ${lbl('Chevron · All Closed')}
+            ${lbl('With Chevron · All Closed')}
             ${accGroup([
               { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'e1a' },
               { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'e1b' },
@@ -1459,7 +1459,7 @@ const PAGES = {
           </div>
 
           <div>
-            ${lbl('Chevron · One Open')}
+            ${lbl('With Chevron · One Open')}
             ${accGroup([
               { label: 'Title Text Here', desc: 'Description', content: CL, state: 'active',  iconType: 'chevron', id: 'e2a' },
               { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'e2b' },
@@ -1468,18 +1468,9 @@ const PAGES = {
             ])}
           </div>
 
-          <div>
-            ${lbl('Chevron · Multiple Open')}
-            ${accGroup([
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'active',  iconType: 'chevron', id: 'e3a' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'active',  iconType: 'chevron', id: 'e3b' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'e3c' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'chevron', id: 'e3d' },
-            ])}
-          </div>
 
           <div>
-            ${lbl('Plus / X · All Closed')}
+            ${lbl('With Plus · All Closed')}
             ${accGroup([
               { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'plus', id: 'e4a' },
               { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'plus', id: 'e4b' },
@@ -1488,7 +1479,7 @@ const PAGES = {
           </div>
 
           <div>
-            ${lbl('Plus / X · One Open')}
+            ${lbl('With Plus · One Open')}
             ${accGroup([
               { label: 'Title Text Here', desc: 'Description', content: CL, state: 'active',  iconType: 'plus', id: 'e5a' },
               { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'plus', id: 'e5b' },
@@ -1497,15 +1488,6 @@ const PAGES = {
             ])}
           </div>
 
-          <div>
-            ${lbl('Plus / X · Multiple Open')}
-            ${accGroup([
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'active',  iconType: 'plus', id: 'e6a' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'active',  iconType: 'plus', id: 'e6b' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'plus', id: 'e6c' },
-              { label: 'Title Text Here', desc: 'Description', content: CS, state: 'default', iconType: 'plus', id: 'e6d' },
-            ])}
-          </div>
 
         </div>
 
@@ -1520,10 +1502,10 @@ const PAGES = {
             var icO  = el.querySelector('[data-ico-o]');
             var hdr = el.querySelector('[data-hdr]');
             if (hdr) hdr.style.background = open ? '#fff' : '#f5f5f5';
-            if (hdr) hdr.style.background = open ? '#fff' : '#f5f5f5';
             if (body) body.style.display = open ? 'none' : 'block';
             if (icC)  icC.style.display  = open ? 'inline-flex' : 'none';
             if (icO)  icO.style.display  = open ? 'none' : 'inline-flex';
+          };
         </script>
       `;
 
