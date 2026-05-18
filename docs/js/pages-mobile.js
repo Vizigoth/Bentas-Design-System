@@ -1300,32 +1300,32 @@ const PAGES = {
       const accItem = ({ label='Title Text Here', desc='', content='', state='default', iconType='chevron', position='single', id }) => {
         const isOpen     = state === 'active';
         const isDisabled = state === 'disabled';
-        const titleC = isDisabled ? '#c7c7c7' : '#1a1a1a';
-        const descC  = isDisabled ? '#d4d4d4' : '#a3a3a3';
-        const iconC  = isDisabled ? '#d4d4d4' : '#1a1a1a';
+        const titleC = isDisabled ? '#a3a3a3' : '#1a1a1a';
+        const descC  = isDisabled ? '#a3a3a3' : '#a3a3a3';
+        const iconC  = isDisabled ? '#a3a3a3' : '#1a1a1a';
         const leftC  = isDisabled ? '#a3a3a3' : '#1a1a1a';
         const cursor = isDisabled ? 'not-allowed' : 'pointer';
-        const radMap = { single: '8px', first: '8px 8px 0 0', middle: '0', last: '0 0 8px 8px' };
-        const borderR   = radMap[position] || '8px';
-        const borderTop = (position === 'middle' || position === 'last') ? 'none' : '1px solid #e6e6e6';
-        const borderBot = (position === 'first')                         ? 'none' : '1px solid #e6e6e6';
+        const radMap = { single: '6px', first: '6px 6px 0 0', middle: '0', last: '0 0 6px 6px' };
+        const borderR   = radMap[position] || '6px';
+        const borderTop = (position === 'middle' || position === 'last') ? 'none' : '1px solid #d4d4d4';
+        const borderBot = (position === 'first') ? 'none' : '1px solid #d4d4d4';
         const hdrBg     = isOpen ? '#f5f5f5' : '#fff';
-        const itemStyle = `background:#fff;border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:${borderR};overflow:hidden;`;
+        const itemStyle = `background:#fff;border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #d4d4d4;border-right:1px solid #d4d4d4;border-radius:${borderR};overflow:hidden;`;
         const closedIco = iconType === 'chevron' ? iChevronDown(iconC) : iPlus(iconC);
         const openIco   = iconType === 'chevron' ? iChevronUp(iconC)   : iX(iconC);
         const click     = (isDisabled || !id) ? '' : `onclick="window.toggleAcc('${id}')"`;
         return `
           <div id="${id||''}" data-open="${isOpen?'1':'0'}" style="${itemStyle}">
-            <div data-hdr ${click} style="display:flex;align-items:center;padding:12px 16px;gap:12px;cursor:${cursor};user-select:none;background:${hdrBg};">
-              <span style="flex-shrink:0;">${iScan(leftC)}</span>
+            <div data-hdr ${click} style="display:flex;align-items:center;padding:8px;gap:4px;cursor:${cursor};user-select:none;background:${hdrBg};">
+              <span style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${iScan(leftC)}</span>
               <div style="flex:1;min-width:0;">
-                <div style="font-size:14px;font-weight:500;color:${titleC};line-height:20px;">${label}</div>
+                <div style="font-size:14px;font-weight:500;color:${titleC};line-height:16px;">${label}</div>
                 ${desc ? `<div style="font-size:12px;color:${descC};line-height:16px;margin-top:1px;">${desc}</div>` : ''}
               </div>
-              <span data-ico-c style="${isOpen?'display:none':''}">${closedIco}</span>
-              <span data-ico-o style="${isOpen?'':'display:none'}">${openIco}</span>
+              <span data-ico-c style="display:${isOpen?'none':'inline-flex'};width:24px;height:24px;align-items:center;justify-content:center;">${closedIco}</span>
+              <span data-ico-o style="display:${isOpen?'inline-flex':'none'};width:24px;height:24px;align-items:center;justify-content:center;">${openIco}</span>
             </div>
-            <div data-body style="padding:0 16px 12px 44px;font-size:14px;color:#727272;line-height:20px;background:#fff;${isOpen?'':'display:none'}">${content}</div>
+            <div data-body style="padding:0 8px 8px 36px;font-size:14px;color:#727272;line-height:20px;background:#fff;${isOpen?'':'display:none'}">${content}</div>
           </div>`;
       };
 
@@ -1382,10 +1382,10 @@ const PAGES = {
           <tbody>
             <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
             <tr><td>Container · Active</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-            <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-muted')}</td><td>#e6e6e6</td></tr>
-            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-lg')}</td><td>8px</td></tr>
+            <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
             <tr><td>Title · Default / Active</td><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Title · Disabled</td><td>Color</td><td>${tk('--bt-text-subtle')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Title · Disabled</td><td>Color</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
             <tr><td>Title</td><td>Font Size / Weight</td><td>${tk('--bt-text-sm')}</td><td>14px / 500</td></tr>
             <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
             <tr><td>Description</td><td>Font Size</td><td>${tk('--bt-text-xs')}</td><td>12px</td></tr>
@@ -1393,8 +1393,8 @@ const PAGES = {
             <tr><td>Right Icons · Default / Active</td><td>Color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
             <tr><td>Left Icon · Default / Active</td><td>Color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
             <tr><td>Left Icon · Disabled</td><td>Color</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
-            <tr><td>Header</td><td>Padding V / H</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-2xl')}</td><td>12px / 16px</td></tr>
-            <tr><td>Content area</td><td>Padding left</td><td>—</td><td>44px (16px + icon 16px + gap 12px)</td></tr>
+            <tr><td>Header</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+            <tr><td>Content area</td><td>Padding left</td><td>—</td><td>36px (8px + 24px icon + 4px gap)</td></tr>
           </tbody>
         </table>
 
@@ -1520,10 +1520,10 @@ const PAGES = {
             var icO  = el.querySelector('[data-ico-o]');
             var hdr = el.querySelector('[data-hdr]');
             if (hdr) hdr.style.background = open ? '#fff' : '#f5f5f5';
-            if (body) body.style.display = open ? 'none' : '';
-            if (icC)  icC.style.display  = open ? '' : 'none';
-            if (icO)  icO.style.display  = open ? 'none' : '';
-          };
+            if (hdr) hdr.style.background = open ? '#fff' : '#f5f5f5';
+            if (body) body.style.display = open ? 'none' : 'block';
+            if (icC)  icC.style.display  = open ? 'inline-flex' : 'none';
+            if (icO)  icO.style.display  = open ? 'none' : 'inline-flex';
         </script>
       `;
 
