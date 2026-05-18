@@ -1309,7 +1309,8 @@ const PAGES = {
         const borderR   = radMap[position] || '8px';
         const borderTop = (position === 'middle' || position === 'last') ? 'none' : '1px solid #e6e6e6';
         const borderBot = (position === 'first')                         ? 'none' : '1px solid #e6e6e6';
-        const itemStyle = `background:#fff;border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:${borderR};`;
+        const bg        = isOpen ? '#f5f5f5' : '#fff';
+        const itemStyle = `background:${bg};border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:${borderR};`;
         const closedIco = iconType === 'chevron' ? iChevronDown(iconC) : iPlus(iconC);
         const openIco   = iconType === 'chevron' ? iChevronUp(iconC)   : iX(iconC);
         const click     = (isDisabled || !id) ? '' : `onclick="window.toggleAcc('${id}')"`;
@@ -1379,7 +1380,8 @@ const PAGES = {
         <table class="token-table" style="margin-top:12px">
           <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Background</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Container · Active</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
             <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-muted')}</td><td>#e6e6e6</td></tr>
             <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-lg')}</td><td>8px</td></tr>
             <tr><td>Title · Default / Active</td><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
@@ -1516,6 +1518,7 @@ const PAGES = {
             var body = el.querySelector('[data-body]');
             var icC  = el.querySelector('[data-ico-c]');
             var icO  = el.querySelector('[data-ico-o]');
+            el.style.background = open ? '#fff' : '#f5f5f5';
             if (body) body.style.display = open ? 'none' : '';
             if (icC)  icC.style.display  = open ? '' : 'none';
             if (icO)  icO.style.display  = open ? 'none' : '';
