@@ -1281,6 +1281,217 @@ const PAGES = {
     }
   },
 
+  'components/accordion': {
+    tabs: ['Overview', 'Usage'],
+    toc: ['Icon Types', 'States', 'Examples'],
+    render: (tab) => {
+      const title = 'Accordion';
+
+      const iChevronDown = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+      const iChevronUp   = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
+      const iPlus        = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>`;
+      const iX           = c => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+      const iItem        = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+
+      const accItem = ({ label='Title Text Here', desc='Description', content='', state='closed', iconType='chevron', id }) => {
+        const isOpen     = state === 'open';
+        const isDisabled = state === 'disabled';
+        const titleC  = isDisabled ? '#c7c7c7' : '#1a1a1a';
+        const descC   = isDisabled ? '#d4d4d4' : '#a3a3a3';
+        const iconC   = isDisabled ? '#d4d4d4' : '#1a1a1a';
+        const leftC   = isDisabled ? '#e0e0e0' : '#c7c7c7';
+        const divider = isDisabled ? '#f0f0f0' : '#e6e6e6';
+        const cursor  = isDisabled ? 'not-allowed' : 'pointer';
+        const closedIco = iconType === 'chevron' ? iChevronDown(iconC) : iPlus(iconC);
+        const openIco   = iconType === 'chevron' ? iChevronUp(iconC)   : iX(iconC);
+        const click     = isDisabled ? '' : `onclick="window.toggleAcc('${id}')"`;
+        return `
+          <div id="${id}" data-open="${isOpen ? '1' : '0'}" style="border-bottom:1px solid ${divider};">
+            <div ${click} style="display:flex;align-items:center;padding:12px 16px;gap:12px;cursor:${cursor};user-select:none;">
+              <span style="flex-shrink:0;">${iItem(leftC)}</span>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:500;color:${titleC};line-height:20px;">${label}</div>
+                <div style="font-size:12px;color:${descC};line-height:16px;margin-top:1px;">${desc}</div>
+              </div>
+              <span data-ico-c style="${isOpen ? 'display:none' : ''}">${closedIco}</span>
+              <span data-ico-o style="${isOpen ? '' : 'display:none'}">${openIco}</span>
+            </div>
+            <div data-body style="padding:0 16px 12px 44px;font-size:14px;color:#727272;line-height:20px;${isOpen ? '' : 'display:none'}">${content}</div>
+          </div>`;
+      };
+
+      const accGroup = (items, extraStyle='') =>
+        `<div style="border:1px solid #e6e6e6;border-radius:8px;overflow:hidden;background:#fff;${extraStyle}">${items.map(i => accItem(i)).join('')}</div>`;
+
+      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+      const overviewHtml = `
+        <p class="page-desc">Accordion lets users show and hide sections of content. Supports two icon types, three states, and is fully interactive — click any item to toggle it.</p>
+
+        <div class="preview-box">
+          ${accGroup([
+            { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'open',   iconType: 'chevron', id: 'pv-1' },
+            { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'pv-2' },
+            { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'pv-3' },
+          ], 'max-width:480px')}
+        </div>
+
+        <h2 id="Icon Types">Icon Types</h2>
+        <table class="token-table">
+          <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="token-name">Chevron</span></td>
+              <td>${accGroup([
+                { label: 'Title Text Here', desc: 'Description', state: 'closed', iconType: 'chevron', id: 'it-1' },
+                { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'open', iconType: 'chevron', id: 'it-2' },
+              ])}</td>
+              <td style="color:var(--bt-text-emphasis)">Uses chevron-down (closed) and chevron-up (open). Recommended for content-heavy lists.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Plus / X</span></td>
+              <td>${accGroup([
+                { label: 'Title Text Here', desc: 'Description', state: 'closed', iconType: 'plus', id: 'it-3' },
+                { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'open', iconType: 'plus', id: 'it-4' },
+              ])}</td>
+              <td style="color:var(--bt-text-emphasis)">Uses plus (closed) and × (open). Suits add/remove or FAQ patterns.</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="token-table" style="margin-top:12px">
+          <thead><tr><th>Icon</th><th>State</th><th>Lucide Name</th></tr></thead>
+          <tbody>
+            <tr><td>Chevron closed</td><td>Closed</td><td>${tk('chevron-down')}</td></tr>
+            <tr><td>Chevron open</td><td>Open</td><td>${tk('chevron-up')}</td></tr>
+            <tr><td>Plus</td><td>Closed</td><td>${tk('plus')}</td></tr>
+            <tr><td>X</td><td>Open</td><td>${tk('x')}</td></tr>
+            <tr><td>Left item icon</td><td>All</td><td>${tk('maximize-2')}</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="States">States</h2>
+        <table class="token-table">
+          <thead><tr><th>State</th><th>Preview</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="token-name">Closed</span></td>
+              <td>${accGroup([{ label: 'Title Text Here', desc: 'Description', state: 'closed', iconType: 'chevron', id: 'st-1' }])}</td>
+              <td style="color:var(--bt-text-emphasis)">Default state. Header visible; content panel hidden.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Open</span></td>
+              <td>${accGroup([{ label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'open', iconType: 'chevron', id: 'st-2' }])}</td>
+              <td style="color:var(--bt-text-emphasis)">Expanded state. Content panel visible below the header.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Disabled</span></td>
+              <td>${accGroup([{ label: 'Title Text Here', desc: 'Description', state: 'disabled', iconType: 'chevron', id: 'st-3' }])}</td>
+              <td style="color:var(--bt-text-emphasis)">Not interactive. All elements are visually muted; cursor is not-allowed.</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="token-table" style="margin-top:12px">
+          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Container</td><td>Background</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-lg')}</td><td>8px</td></tr>
+            <tr><td>Divider</td><td>Border</td><td>${tk('--bt-border-muted')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Title · Default</td><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Title · Disabled</td><td>Color</td><td>${tk('--bt-text-subtle')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Description · Default</td><td>Color</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td>Content</td><td>Color</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td></tr>
+            <tr><td>Icon · Default</td><td>Color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Icon · Disabled</td><td>Color</td><td>${tk('--bt-text-subtle')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Header</td><td>Padding V / H</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-2xl')}</td><td>12px / 16px</td></tr>
+            <tr><td>Content</td><td>Padding left</td><td>—</td><td>44px (icon + gap)</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Examples">Examples</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Six interactive examples based on Figma designs — click any item to toggle.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Chevron · All Closed</div>
+            ${accGroup([
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'e1a' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'e1b' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'e1c' },
+            ])}
+          </div>
+
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Chevron · One Open</div>
+            ${accGroup([
+              { label: 'Title Text Here', desc: 'Description', content: 'Head to the "Quick start" guide in the docs. If you\'ve used unstyled libraries before, you\'ll feel at home.', state: 'open', iconType: 'chevron', id: 'e2a' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'e2b' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'e2c' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'chevron', id: 'e2d' },
+            ])}
+          </div>
+
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Chevron · Multiple Open</div>
+            ${accGroup([
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'open',   iconType: 'chevron', id: 'e3a' },
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'open',   iconType: 'chevron', id: 'e3b' },
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'closed', iconType: 'chevron', id: 'e3c' },
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'closed', iconType: 'chevron', id: 'e3d' },
+            ])}
+          </div>
+
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Plus / X · All Closed</div>
+            ${accGroup([
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'plus', id: 'e4a' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'plus', id: 'e4b' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'plus', id: 'e4c' },
+            ])}
+          </div>
+
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Plus / X · One Open</div>
+            ${accGroup([
+              { label: 'Title Text Here', desc: 'Description', content: 'Head to the "Quick start" guide in the docs. If you\'ve used unstyled libraries before, you\'ll feel at home.', state: 'open', iconType: 'plus', id: 'e5a' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'plus', id: 'e5b' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'plus', id: 'e5c' },
+              { label: 'Title Text Here', desc: 'Description', content: 'Content goes here.', state: 'closed', iconType: 'plus', id: 'e5d' },
+            ])}
+          </div>
+
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">Plus / X · Multiple Open</div>
+            ${accGroup([
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'open',   iconType: 'plus', id: 'e6a' },
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'open',   iconType: 'plus', id: 'e6b' },
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'closed', iconType: 'plus', id: 'e6c' },
+              { label: 'Title Text Here', desc: 'Description', content: 'This is the content shown inside the accordion when it\'s active.', state: 'closed', iconType: 'plus', id: 'e6d' },
+            ])}
+          </div>
+
+        </div>
+
+        <script>
+          window.toggleAcc = function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var open = el.getAttribute('data-open') === '1';
+            el.setAttribute('data-open', open ? '0' : '1');
+            var body = el.querySelector('[data-body]');
+            var icC  = el.querySelector('[data-ico-c]');
+            var icO  = el.querySelector('[data-ico-o]');
+            if (body) body.style.display = open ? 'none' : '';
+            if (icC)  icC.style.display  = open ? '' : 'none';
+            if (icO)  icO.style.display  = open ? 'none' : '';
+          };
+        </script>
+      `;
+
+      if (tab === 'Usage') return { title, html: `<p class="page-desc">Accordion usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
+      return { title, html: overviewHtml };
+    }
+  },
+
   'components/avatar': {
     tabs: ['Overview', 'Usage'],
     toc: ['Types', 'Themes', 'Sizes'],
