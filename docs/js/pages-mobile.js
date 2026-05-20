@@ -1477,13 +1477,30 @@ const PAGES = {
     render: (tab) => {
       const title = 'Dialog';
 
-      // ── Icon/Placeholder — Lucide scan icon (matches Figma Icon/Placeholder convention) ──
-      // 24px icon inside 40px button with Space/md=8px padding
-      const iScan = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+      // ── Toolbar icons — true Figma vector sizes ─────────────────────────────
+      // Icon/Placeholder: 24×24 container → 18×18 vector (scan Lucide icon)
+      //   viewBox cropped to path bounds (paths span 3-21 in 24 viewBox)
+      const iScan = c =>
+        `<svg width="18" height="18" viewBox="3 3 18 18" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
 
+      // Icon/X: 24×24 container → 11.75×11.75 vector ≈ 12×12
+      //   viewBox cropped to X path bounds (paths span 6-18 in 24 viewBox)
+      const iX = c =>
+        `<svg width="12" height="12" viewBox="5 5 14 14" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+
+      // 40px Dialog Controls button → 24×24 Icon container → icon SVG
       const iconPlaceholder = () =>
         `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           ${iScan('#1a1a1a')}
+           <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+             ${iScan('#1a1a1a')}
+           </div>
+         </div>`;
+
+      const iconX = () =>
+        `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+           <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+             ${iX('#1a1a1a')}
+           </div>
          </div>`;
 
       // Input right-control icons — rendered at true Figma vector dimensions inside 24×24 container
@@ -1528,16 +1545,18 @@ const PAGES = {
       // Left/2 → left "Title Text Here" | [Icon/Placeholder]
       // Left/Default → left "Title Text Here" (no icon slots)
       const toolbar = (headerPos) => {
-        // Gray/100 = --bt-surface-primary-subtle (added to Figma component)
+        // Gray/100 = --bt-surface-primary-subtle
         const base = `display:flex;align-items:center;height:40px;padding:0 16px;border-bottom:1px solid #d4d4d4;background:#f5f5f5;box-sizing:border-box;`;
         if (headerPos === 'flex-3') {
+          // Figma: IconPlaceholder (scan) left + IconX right, title centered
           return `<div style="${base}justify-content:space-between;">
             ${iconPlaceholder()}
             <div style="flex:1 0 0;min-width:1px;text-align:center;padding:0 8px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
-            ${iconPlaceholder()}
+            ${iconX()}
           </div>`;
         }
         if (headerPos === 'left-2') {
+          // Figma: left-aligned title + IconPlaceholder (scan) right only
           return `<div style="${base}justify-content:space-between;">
             <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
             ${iconPlaceholder()}
@@ -1549,34 +1568,14 @@ const PAGES = {
         </div>`;
       };
 
-      // ── Input fields — Md size from Figma ──────────────────────────────────
-      // Radius/lg=8px · height=48px · pl=16px · right icon padding=Space/xl=12px
-      // Stacked: Label Text (12px) + Placeholder Text (16px) inside Text Container
-      const inputField = (rightIcon) =>
-        `<div style="width:100%;background:#fff;border:1px solid #d4d4d4;border-radius:8px;display:flex;align-items:center;height:48px;box-sizing:border-box;overflow:hidden;flex-shrink:0;">
-           <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;justify-content:center;padding-left:16px;overflow:hidden;">
-             <div style="font-size:12px;font-weight:400;line-height:16px;color:#727272;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Label Text</div>
-             <div style="font-size:16px;font-weight:400;line-height:24px;color:#727272;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</div>
-           </div>
-           <div style="display:flex;align-items:center;justify-content:center;padding:12px;flex-shrink:0;">
-             <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-               ${rightIcon}
-             </div>
-           </div>
-         </div>`;
 
-      const dropdownField = () => inputField(iChevDown('#727272'));
-      const dateField    = () => inputField(iCalendar('#727272'));
-
-      // ── Full dialog card ────────────────────────────────────────────────────
+      // ── Full dialog card — body matches Figma example (description only) ───
       // Radius/lg=8px · Shadow/lg · Body: p=Space/3xl=20px · gap=Space/2xl=16px
       const dialogEl = ({ headerPos = 'flex-3', layout = 'vertical-1' }) => `
         <div style="background:#fff;border-radius:8px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
           ${toolbar(headerPos)}
           <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
             <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
-            ${dropdownField()}
-            ${dateField()}
           </div>
           ${btnArea(layout)}
         </div>`;
@@ -1605,7 +1604,7 @@ const PAGES = {
         <p class="page-desc">A modal overlay for focused content with a persistent toolbar. Three header variants (Flex, Left/2, Left/Default) × three button layouts.</p>
 
         <div class="preview-box" style="background:#e8eaed;flex-direction:column;align-items:center;gap:48px;padding:40px 24px;">
-          ${HEADER_POSITIONS.map(headerPos => dialogEl({ headerPos, layout: 'vertical-1' })).join('')}
+          ${BTN_LAYOUTS.map(layout => dialogEl({ headerPos: 'flex-3', layout })).join('')}
         </div>
 
         <h2 id="Header Positions">Header Positions</h2>
