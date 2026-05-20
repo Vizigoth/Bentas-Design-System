@@ -1302,6 +1302,15 @@ const PAGES = {
       const iconCircleCheck = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
       const iconInfo        = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
 
+      // ── Figma local variable values ─────────────────────────────────────────
+      // Space/xs=4  Space/md=8  Space/2xl=16  Space/3xl=20  Space/4xl=24
+      // Radius/md=6  Radius/6xl=28  Radius/full=9999
+      // Shadow/lg: 0 4px 6px rgba(16,24,40,.031) + 0 12px 16px rgba(16,24,40,.078)
+      // Font/size/text-md=16  Font/size/text-sm=14
+      // Font/lh/text-lh-md=24  Font/lh/text-lh-sm=20
+
+      const SHADOW = '0 4px 6px rgba(16,24,40,.031),0 12px 16px rgba(16,24,40,.078)';
+
       // ── Type configuration ──────────────────────────────────────────────────
       const TYPE_CFG = {
         error:       { icon: iconCircleAlert, accent: '#b31d38', lightBg: '#fef2f2', surfaceToken: '--bt-surface-error-light',       borderToken: '--bt-border-error-default'       },
@@ -1330,65 +1339,66 @@ const PAGES = {
       const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
       const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
 
-      // ── Primary & Ghost button builders ────────────────────────────────────
-      const btnPrimary = (label = 'Confirm', flex = '1 0 0') =>
-        `<div style="flex:${flex};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0d4e97;border-radius:6px;cursor:pointer;min-width:0;">
-          <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">${label}</span>
+      // ── Button builders — labels match Figma exactly ────────────────────────
+      // Space/2xl=16px horizontal, Space/md=8px vertical · Radius/md=6px
+      const btnPrimary = (flex = '1 0 0') =>
+        `<div style="flex:${flex};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0d4e97;border-radius:6px;min-width:0;">
+           <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">Button</span>
          </div>`;
 
-      const btnGhost = (label = 'Cancel', flex = '1 0 0') =>
-        `<div style="flex:${flex};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:transparent;border-radius:6px;cursor:pointer;min-width:0;">
-          <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">${label}</span>
+      const btnGhost = (flex = '1 0 0') =>
+        `<div style="flex:${flex};display:flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;min-width:0;">
+           <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
          </div>`;
 
-      // ── Button area ─────────────────────────────────────────────────────────
-      const btnArea = (layout) => {
+      // ── Button area — Space/3xl=20px H · Space/2xl=16px V padding ───────────
+      // gap: horizontal-2 → Space/2xl=16px · vertical-2 → Space/2xl=16px
+      const btnArea = layout => {
         if (layout === 'vertical-1') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;">
-            ${btnPrimary('Confirm', 'none')}
+          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;">
+            ${btnPrimary('none')}
           </div>`;
         if (layout === 'horizontal-2') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;gap:0;">
-            ${btnGhost('Cancel')}${btnPrimary('Confirm')}
+          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;gap:16px;">
+            ${btnGhost()}${btnPrimary()}
           </div>`;
-        if (layout === 'vertical-2') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:0;">
-            ${btnPrimary('Confirm', 'none')}${btnGhost('Cancel', 'none')}
+        return `
+          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">
+            ${btnPrimary('none')}${btnGhost('none')}
           </div>`;
       };
 
       // ── Full dialog card ────────────────────────────────────────────────────
-      const alertDialogEl = ({ type = 'error', layout = 'vertical-1' }) => {
+      // Radius/6xl=28px · Shadow/lg · Body: p=20px gap=4px · Pictogram: 40px radius-full
+      const alertDialogEl = ({ type = 'information', layout = 'vertical-1' }) => {
         const c = TYPE_CFG[type];
         return `
-          <div style="background:#fff;border-radius:28px;box-shadow:0 4px 6px rgba(16,24,40,.08),0 12px 16px rgba(16,24,40,.08);display:flex;flex-direction:column;align-items:center;width:100%;max-width:320px;">
-            <div style="width:100%;display:flex;flex-direction:column;align-items:center;border-radius:28px;">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px;width:100%;box-sizing:border-box;">
-                <div style="width:40px;height:40px;border-radius:9999px;background:${c.lightBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  ${c.icon(c.accent)}
-                </div>
-                <div style="display:flex;flex-direction:column;gap:4px;width:100%;">
-                  <div style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;text-align:center;">Title Text Here</div>
-                  <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;text-align:center;">Description for additional information displayed below the title.</div>
-                </div>
+          <div style="background:#fff;border-radius:28px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px;">
+              <div style="width:40px;height:40px;border-radius:9999px;background:${c.lightBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ${c.icon(c.accent)}
               </div>
-              ${btnArea(layout)}
+              <div style="display:flex;flex-direction:column;gap:4px;width:100%;">
+                <div style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;text-align:center;">Title Text Here</div>
+                <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;text-align:center;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+              </div>
             </div>
+            ${btnArea(layout)}
           </div>`;
       };
 
       // ── Overview ────────────────────────────────────────────────────────────
       const overviewHtml = `
-        <p class="page-desc">A full-screen overlay dialog used to interrupt the user with critical information that requires a decision before proceeding. Supports four semantic types and three button layout variants.</p>
+        <p class="page-desc">A modal dialog used to interrupt the user with information that requires a decision before proceeding. Four semantic types, three button layout variants.</p>
 
-        <div class="preview-box" style="background:#e8eaed;gap:24px;flex-wrap:wrap;align-items:flex-start;padding:40px 24px;">
-          ${TYPES.map(t => alertDialogEl({ type: t, layout: 'vertical-1' })).join('')}
+        <div class="preview-box" style="background:#e8eaed;flex-direction:column;align-items:center;gap:48px;padding:40px 24px;">
+          ${BTN_LAYOUTS.map(layout => alertDialogEl({ type: 'information', layout })).join('')}
         </div>
 
         <h2 id="Types">Types</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four semantic types — each with a distinct icon (Lucide) and accent color on the pictogram circle.</p>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four semantic types — each with a distinct icon and accent color on the pictogram circle.</p>
         <table class="token-table">
-          <thead><tr><th>Type</th><th style="min-width:280px">Preview</th><th>Description</th></tr></thead>
+          <thead><tr><th>Type</th><th style="min-width:300px">Preview</th><th>When to use</th></tr></thead>
           <tbody>
             ${TYPES.map(t => `
             <tr>
@@ -1400,51 +1410,56 @@ const PAGES = {
         </table>
 
         <table class="token-table" style="margin-top:12px">
-          <thead><tr><th>Type</th><th>Icon (Lucide)</th><th>Pictogram background</th><th>Accent color</th></tr></thead>
+          <thead><tr><th>Type</th><th>Icon (Lucide)</th><th>Pictogram bg token</th><th>Accent</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Error</span></td><td>${tk('circle-alert')}</td><td>${tk('--bt-surface-error-light')} · #fef2f2</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#b31d38;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#b31d38</span></td></tr>
-            <tr><td><span class="token-name">Warning</span></td><td>${tk('circle-alert')}</td><td>${tk('--bt-surface-warning-light')} · #fdf9e8</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#aa820a;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#aa820a</span></td></tr>
-            <tr><td><span class="token-name">Success</span></td><td>${tk('circle-check')}</td><td>${tk('--bt-surface-success-light')} · #e8f3ee</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#2d584b;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#2d584b</span></td></tr>
-            <tr><td><span class="token-name">Information</span></td><td>${tk('info')}</td><td>${tk('--bt-surface-information-light')} · #f1f7fe</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#0d4e97;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#0d4e97</span></td></tr>
+            <tr><td><span class="token-name">Error</span></td><td>${tk('circle-alert')}</td><td>${tk('--bt-surface-error-light')}</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#b31d38;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#b31d38</span></td></tr>
+            <tr><td><span class="token-name">Warning</span></td><td>${tk('circle-alert')}</td><td>${tk('--bt-surface-warning-light')}</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#aa820a;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#aa820a</span></td></tr>
+            <tr><td><span class="token-name">Success</span></td><td>${tk('circle-check')}</td><td>${tk('--bt-surface-success-light')}</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#2d584b;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#2d584b</span></td></tr>
+            <tr><td><span class="token-name">Information</span></td><td>${tk('info')}</td><td>${tk('--bt-surface-information-light')}</td><td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:#0d4e97;border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>#0d4e97</span></td></tr>
           </tbody>
         </table>
 
         <h2 id="Button Layout">Button Layout</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Three button arrangements cover all common action patterns. Shown here with the Error type.</p>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Three button arrangements cover all common action patterns.</p>
         ${BTN_LAYOUTS.map(layout => `
           <div style="margin-bottom:28px;">
             ${lbl(BTN_LAYOUT_LABEL[layout])}
             <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:12px;">${BTN_LAYOUT_DESC[layout]}</p>
-            <div style="padding:24px;background:#e8eaed;border-radius:10px;display:flex;justify-content:center;">
-              ${alertDialogEl({ type: 'error', layout })}
+            <div style="padding:32px 24px;background:#e8eaed;border-radius:10px;display:flex;justify-content:center;">
+              ${alertDialogEl({ type: 'information', layout })}
             </div>
           </div>
         `).join('')}
         <table class="token-table">
-          <thead><tr><th>Layout</th><th>Figma props</th><th>Button order</th></tr></thead>
+          <thead><tr><th>Layout</th><th>Figma props</th><th>Button order</th><th>Gap token</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Vertical · 1</span></td><td>Position=Vertical, Segments=1</td><td>Primary only — full width</td></tr>
-            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Position=Horizontal, Segments=2</td><td>Ghost (left) + Primary (right)</td></tr>
-            <tr><td><span class="token-name">Vertical · 2</span></td><td>Position=Vertical, Segments=2</td><td>Primary (top) + Ghost (bottom)</td></tr>
+            <tr><td><span class="token-name">Vertical · 1</span></td><td>Position=Vertical, Segments=1</td><td>Primary only — full width</td><td>—</td></tr>
+            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Position=Horizontal, Segments=2</td><td>Ghost (left) + Primary (right)</td><td>${tk('Space/2xl')} · 16px</td></tr>
+            <tr><td><span class="token-name">Vertical · 2</span></td><td>Position=Vertical, Segments=2</td><td>Primary (top) + Ghost (bottom)</td><td>${tk('Space/2xl')} · 16px</td></tr>
           </tbody>
         </table>
 
         <h2 id="Anatomy">Anatomy</h2>
         <table class="token-table">
-          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-6xl')}</td><td>28px</td></tr>
-            <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,.08) + 0 12px 16px rgba(16,24,40,.08)</td></tr>
-            <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
-            <tr><td>Body</td><td>Gap (icon ↔ text)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('Radius/6xl')}</td><td>28px</td></tr>
+            <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
+            <tr><td>Body</td><td>Padding</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
+            <tr><td>Body</td><td>Gap (pictogram ↔ text)</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
+            <tr><td>Title ↔ Description</td><td>Gap</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
             <tr><td>Pictogram circle</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
-            <tr><td>Pictogram circle</td><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+            <tr><td>Pictogram circle</td><td>Border Radius</td><td>${tk('Radius/full')}</td><td>9999px</td></tr>
             <tr><td>Icon</td><td>Size</td><td>—</td><td>20 × 20px</td></tr>
-            <tr><td>Title</td><td>Font</td><td>${tk('Title/md/Medium')}</td><td>16px / 500 / 24px · centered</td></tr>
-            <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 20px · centered</td></tr>
-            <tr><td>Button area</td><td>Padding</td><td>${tk('--bt-space-3xl')} × ${tk('--bt-space-2xl')}</td><td>20px horizontal · 16px vertical</td></tr>
-            <tr><td>Primary button</td><td>Background</td><td>${tk('--bt-blue-700')}</td><td>#0d4e97</td></tr>
-            <tr><td>Primary button</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+            <tr><td>Title</td><td>Font</td><td>${tk('Title/md/Medium')}</td><td>16px / 500 / 24px · center</td></tr>
+            <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 20px · center</td></tr>
+            <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
+            <tr><td>Button area</td><td>Padding V</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+            <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
+            <tr><td>Primary button text</td><td>Color</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
           </tbody>
         </table>
       `;
