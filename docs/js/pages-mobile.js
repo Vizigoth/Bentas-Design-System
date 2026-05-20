@@ -1594,7 +1594,6 @@ const PAGES = {
           ${toolbar(headerPos)}
           <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
             <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
-            ${inputField('Label Text', 'Placeholder Text')}
             ${inputField('Label Text', 'Placeholder Text', iChevDown('#a3a3a3'))}
             ${inputField('Label Text', 'Placeholder Text', iCalendar('#a3a3a3'))}
           </div>
@@ -1624,10 +1623,10 @@ const PAGES = {
       const overviewHtml = `
         <p class="page-desc">A modal overlay for focused content with a persistent toolbar. Three header variants (Flex, Left/2, Left/Default) × three button layouts.</p>
 
-        <div class="preview-box" style="background:#e8eaed;flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:24px;padding:32px 24px;">
-          <div style="flex:1;min-width:200px;">${dialogEl({ headerPos: 'flex-3', layout: 'vertical-1' })}</div>
-          <div style="flex:1;min-width:200px;">${dialogEl({ headerPos: 'left-2', layout: 'horizontal-2' })}</div>
-          <div style="flex:1;min-width:200px;">${dialogEl({ headerPos: 'left-default', layout: 'vertical-2' })}</div>
+        <div class="preview-box" style="background:#e8eaed;flex-direction:column;align-items:center;gap:32px;padding:40px 24px;">
+          ${dialogEl({ headerPos: 'flex-3', layout: 'vertical-1' })}
+          ${dialogEl({ headerPos: 'left-2', layout: 'horizontal-2' })}
+          ${dialogEl({ headerPos: 'left-default', layout: 'vertical-2' })}
         </div>
 
         <h2 id="Header Positions">Header Positions</h2>
