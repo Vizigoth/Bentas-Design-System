@@ -1700,6 +1700,176 @@ const PAGES = {
     }
   },
 
+  'components/bottom-sheet': {
+    tabs: ['Overview', 'Usage'],
+    toc: ['Toolbar', 'Button Layout', 'Anatomy'],
+    render: (tab) => {
+      const title = 'Bottom Sheet';
+      const SHADOW = '0 4px 6px rgba(16,24,40,.031),0 12px 16px rgba(16,24,40,.078)';
+      const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+      const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
+
+      const iX = c => `<svg width="12" height="12" viewBox="5 5 14 14" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+      const iScan = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+
+      const iconBtn = svg =>
+        `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+           <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${svg}</div>
+         </div>`;
+
+      const grabber = () =>
+        `<div style="display:flex;justify-content:center;align-items:flex-end;padding:8px 0;width:100%;box-sizing:border-box;">
+           <div style="width:72px;height:6px;border-radius:3px;background:#d4d4d4;"></div>
+         </div>`;
+
+      const homeIndicator = () =>
+        `<div style="display:flex;justify-content:center;align-items:center;padding:8px 0;width:100%;box-sizing:border-box;">
+           <div style="width:140px;height:5px;border-radius:3px;background:#1a1a1a;"></div>
+         </div>`;
+
+      const toolbar = ({ showGrabber=true, showLeftBtn=true, showRightBtn=true, showSubtitle=false }) => `
+        <div>
+          ${showGrabber ? grabber() : ''}
+          <div style="display:flex;align-items:center;height:40px;justify-content:space-between;padding:0;">
+            <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              ${showLeftBtn ? iconBtn(iScan('#1a1a1a')) : '<div style="width:40px;"></div>'}
+            </div>
+            <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;">
+              <div style="font-size:20px;font-weight:500;line-height:28px;color:#1a1a1a;white-space:nowrap;">Title</div>
+              ${showSubtitle ? `<div style="font-size:14px;font-weight:400;line-height:16px;color:#727272;white-space:nowrap;">Subtitle</div>` : ''}
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              ${showRightBtn ? iconBtn(iX('#1a1a1a')) : '<div style="width:40px;"></div>'}
+            </div>
+          </div>
+        </div>`;
+
+      const btnPrimary = (mode='v') =>
+        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:12px 16px;background:#0d4e97;border-radius:6px;">
+           <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">Button</span>
+         </div>`;
+
+      const btnGhost = (mode='v') =>
+        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:6px;">
+           <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
+         </div>`;
+
+      const btnArea = (layout) => {
+        if (layout === 'vertical-1')   return `<div style="padding:16px 20px 40px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;">${btnPrimary('v')}</div>`;
+        if (layout === 'horizontal-2') return `<div style="padding:16px 20px 40px;width:100%;box-sizing:border-box;display:flex;flex-direction:row;gap:12px;">${btnGhost('h')}${btnPrimary('h')}</div>`;
+        return                                `<div style="padding:16px 20px 40px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;">${btnPrimary('v')}${btnGhost('v')}</div>`;
+      };
+
+      const sheetEl = ({ showGrabber=true, showLeftBtn=true, showRightBtn=true, showSubtitle=false, layout='vertical-1' }) => `
+        <div style="background:#fff;border-radius:16px 16px 0 0;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:394px;box-sizing:border-box;overflow:hidden;">
+          ${toolbar({ showGrabber, showLeftBtn, showRightBtn, showSubtitle })}
+          <div style="display:flex;flex-direction:column;gap:16px;padding:16px 16px 32px;box-sizing:border-box;">
+            <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Lorem ipsum dolor sit amet, consetetur sadipscing elitr.</div>
+          </div>
+          ${btnArea(layout)}
+          ${homeIndicator()}
+        </div>`;
+
+      const TOOLBAR_VARIANTS = [
+        { key: 'default',     label: 'Default',           props: {},                                          desc: 'Grabber + sol ve sağ icon buton. Standart yapı.' },
+        { key: 'subtitle',    label: 'With Subtitle',     props: { showSubtitle: true },                     desc: 'Başlık altında subtitle gösterilir.' },
+        { key: 'no-grabber',  label: 'No Grabber',        props: { showGrabber: false },                     desc: 'Grabber gizli. Kapatma sadece buton ile.' },
+        { key: 'no-left',     label: 'No Left Button',    props: { showLeftBtn: false },                     desc: 'Sol kontrol gizli, sadece sağ X buton.' },
+      ];
+
+      const BTN_LAYOUTS = [
+        { key: 'vertical-1',   label: 'Vertical · 1 button',   desc: 'Tek tam genişlik primary buton.' },
+        { key: 'horizontal-2', label: 'Horizontal · 2 buttons', desc: 'Ghost (sol) + Primary (sağ) yan yana.' },
+        { key: 'vertical-2',   label: 'Vertical · 2 buttons',  desc: 'Primary (üst) + Ghost (alt) üst üste.' },
+      ];
+
+      const overviewHtml = `
+        <p class="page-desc">Ekranın altından süzülen modal — persistent toolbar, opsiyonel grabber ve home indicator içerir. Üç toolbar varyantı × üç buton düzeni.</p>
+
+        <div class="preview-box" style="background:#e8eaed;flex-direction:column;align-items:center;gap:32px;padding:40px 24px;">
+          ${sheetEl({ showGrabber: true,  showSubtitle: false, layout: 'vertical-1'   })}
+          ${sheetEl({ showGrabber: true,  showSubtitle: true,  layout: 'horizontal-2' })}
+          ${sheetEl({ showGrabber: false, showSubtitle: false, layout: 'vertical-2'   })}
+        </div>
+
+        <h2 id="Toolbar">Toolbar</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Toolbar dört boolean prop ile kontrol edilir: <strong>showGrabber</strong>, <strong>showLeftButton</strong>, <strong>showRightButton</strong>, <strong>showSubtitle</strong>.</p>
+        <table class="token-table">
+          <thead><tr><th>Varyant</th><th style="min-width:280px">Preview</th><th>Açıklama</th></tr></thead>
+          <tbody>
+            ${TOOLBAR_VARIANTS.map(v => `
+            <tr>
+              <td><span class="token-name">${v.label}</span></td>
+              <td>
+                <div style="padding:16px 0;max-width:280px;">
+                  <div style="background:#fff;border-radius:16px 16px 0 0;box-shadow:${SHADOW};overflow:hidden;">
+                    ${toolbar(v.props)}
+                  </div>
+                </div>
+              </td>
+              <td style="color:var(--bt-text-emphasis)">${v.desc}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <h2 id="Button Layout">Button Layout</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Button area üç layout destekler — Dialog ile aynı mantık.</p>
+        ${BTN_LAYOUTS.map(bl => `
+          <div style="margin-bottom:28px;">
+            ${lbl(bl.label)}
+            <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:12px;">${bl.desc}</p>
+            <div style="padding:32px 24px;background:#e8eaed;border-radius:10px;display:flex;justify-content:center;">
+              ${sheetEl({ layout: bl.key })}
+            </div>
+          </div>
+        `).join('')}
+        <table class="token-table">
+          <thead><tr><th>Layout</th><th>Figma props</th><th>Buton sırası</th><th>Gap</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Vertical · 1</span></td><td>Direction=Vertical, Segments=1</td><td>Primary — tam genişlik</td><td>—</td></tr>
+            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Direction=Horizontal, Segments=2</td><td>Ghost (sol) + Primary (sağ)</td><td>12px</td></tr>
+            <tr><td><span class="token-name">Vertical · 2</span></td><td>Direction=Vertical, Segments=2</td><td>Primary (üst) + Ghost (alt)</td><td>12px</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Anatomy">Anatomy</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Özellik</th><th>Figma token</th><th>Değer</th></tr></thead>
+          <tbody>
+            <tr><td>Container</td><td>Border Radius (üst)</td><td>—</td><td>16px 16px 0 0</td></tr>
+            <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
+            <tr><td>Grabber</td><td>Width</td><td>—</td><td>72px</td></tr>
+            <tr><td>Grabber</td><td>Height</td><td>—</td><td>6px</td></tr>
+            <tr><td>Grabber</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>Toolbar bar</td><td>Height</td><td>—</td><td>40px</td></tr>
+            <tr><td>Toolbar icon btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
+            <tr><td>Toolbar icon btn</td><td>Padding</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>Title</td><td>Font</td><td>${tk('Title/xl/Medium')}</td><td>20px / 500 / 28px</td></tr>
+            <tr><td>Title</td><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Subtitle</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Subtitle</td><td>Color</td><td>${tk('Gray/500')}</td><td>#727272</td></tr>
+            <tr><td>Body</td><td>Padding</td><td>${tk('Space/2xl')}</td><td>16px (top/sides) · 32px (bottom)</td></tr>
+            <tr><td>Body</td><td>Gap</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Button area</td><td>Padding top</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
+            <tr><td>Button area</td><td>Padding bottom</td><td>${tk('Space/8xl')}</td><td>40px (safe area)</td></tr>
+            <tr><td>Button area gap</td><td>Gap</td><td>—</td><td>12px</td></tr>
+            <tr><td>Button</td><td>Padding V</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
+            <tr><td>Button</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+            <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
+            <tr><td>Home Indicator</td><td>Width</td><td>—</td><td>140px</td></tr>
+            <tr><td>Home Indicator</td><td>Height</td><td>—</td><td>5px</td></tr>
+            <tr><td>Home Indicator</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      if (tab === 'Usage') return { title, html: `<p class="page-desc">Bottom Sheet usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
+      return { title, html: overviewHtml };
+    }
+  },
+
   'components/accordion': {
     tabs: ['Overview', 'Usage'],
     toc: ['Basic', 'Bordered', 'Icon Types', 'Examples'],
