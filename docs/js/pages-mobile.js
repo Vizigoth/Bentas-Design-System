@@ -13,29 +13,29 @@ const NAV_MOBILE = [
   },
   {
     label: 'Components', children: [
-      { label: 'Accordion',        id: 'components/accordion' },
-      { label: 'Alert',            id: 'components/alert' },
-      { label: 'Alert Dialog',     id: 'components/alert-dialog' },
-      { label: 'Avatar',           id: 'components/avatar' },
-      { label: 'Badge',            id: 'components/badge' },
-      { label: 'Bottom Tab Bar',   id: 'components/bottom-tab-bar' },
-      { label: 'Top App Bar',      id: 'components/top-app-bar' },
-      { label: 'Navigation Drawer', id: 'components/nav-drawer' },
+      { label: 'Accordion',         id: 'components/accordion' },
+      { label: 'Alert',             id: 'components/alert' },
+      { label: 'Alert Dialog',      id: 'components/alert-dialog' },
+      { label: 'Avatar',            id: 'components/avatar' },
+      { label: 'Badge',             id: 'components/badge' },
+      { label: 'Bottom Sheet',      id: 'components/bottom-sheet' },
+      { label: 'Bottom Tab Bar',    id: 'components/bottom-tab-bar' },
       { label: 'Button',            id: 'components/button' },
-      { label: 'TextBox',           id: 'components/textbox' },
+      { label: 'Card',              id: 'components/card' },
+      { label: 'Checkbox',          id: 'components/checkbox' },
+      { label: 'Dialog',            id: 'components/dialog' },
       { label: 'FAB',               id: 'components/fab' },
       { label: 'Icon Button',       id: 'components/icon-button' },
-      { label: 'Text Field',        id: 'components/text-field' },
-      { label: 'Checkbox',          id: 'components/checkbox' },
-      { label: 'Radio Button',      id: 'components/radio-button' },
-      { label: 'Toggle',            id: 'components/toggle' },
-      { label: 'Snackbar',          id: 'components/snackbar' },
-      { label: 'Progress',          id: 'components/progress' },
-      { label: 'Skeleton',          id: 'components/skeleton' },
-      { label: 'Card',              id: 'components/card' },
       { label: 'List Item',         id: 'components/list-item' },
-      { label: 'Bottom Sheet',      id: 'components/bottom-sheet' },
-      { label: 'Dialog',            id: 'components/dialog' },
+      { label: 'Navigation Drawer', id: 'components/nav-drawer' },
+      { label: 'Progress',          id: 'components/progress' },
+      { label: 'Radio Button',      id: 'components/radio-button' },
+      { label: 'Skeleton',          id: 'components/skeleton' },
+      { label: 'Snackbar',          id: 'components/snackbar' },
+      { label: 'Text Field',        id: 'components/text-field' },
+      { label: 'TextBox',           id: 'components/textbox' },
+      { label: 'Toggle',            id: 'components/toggle' },
+      { label: 'Top App Bar',       id: 'components/top-app-bar' },
     ]
   },
   {
@@ -1555,10 +1555,10 @@ const PAGES = {
           </div>`;
         }
         if (headerPos === 'left-2') {
-          // Figma: left-aligned title + IconPlaceholder (scan) right only
+          // Figma: left-aligned title + X (close) icon on right
           return `<div style="${base}justify-content:space-between;">
             <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
-            ${iconPlaceholder()}
+            ${iconX()}
           </div>`;
         }
         // left-default: title only, no icon slots
@@ -1624,8 +1624,10 @@ const PAGES = {
       const overviewHtml = `
         <p class="page-desc">A modal overlay for focused content with a persistent toolbar. Three header variants (Flex, Left/2, Left/Default) × three button layouts.</p>
 
-        <div class="preview-box" style="background:#e8eaed;flex-direction:column;align-items:center;gap:48px;padding:40px 24px;">
-          ${BTN_LAYOUTS.map(layout => dialogEl({ headerPos: 'flex-3', layout })).join('')}
+        <div class="preview-box" style="background:#e8eaed;flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:24px;padding:32px 24px;">
+          <div style="flex:1;min-width:200px;">${dialogEl({ headerPos: 'flex-3', layout: 'vertical-1' })}</div>
+          <div style="flex:1;min-width:200px;">${dialogEl({ headerPos: 'left-2', layout: 'horizontal-2' })}</div>
+          <div style="flex:1;min-width:200px;">${dialogEl({ headerPos: 'left-default', layout: 'vertical-2' })}</div>
         </div>
 
         <h2 id="Header Positions">Header Positions</h2>
