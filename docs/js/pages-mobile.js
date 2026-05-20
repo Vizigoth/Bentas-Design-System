@@ -1477,11 +1477,10 @@ const PAGES = {
     render: (tab) => {
       const title = 'Dialog';
 
-      // ── Toolbar icons — true Figma vector sizes ─────────────────────────────
-      // Icon/Placeholder: 24×24 container → 18×18 vector (scan Lucide icon)
-      //   viewBox cropped to path bounds (paths span 3-21 in 24 viewBox)
+      // ── Toolbar icons ────────────────────────────────────────────────────────
+      // Icon/Placeholder: 24×24 container → 16×16 SVG (matches Accordion)
       const iScan = c =>
-        `<svg width="18" height="18" viewBox="3 3 18 18" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+        `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
 
       // Icon/X: 24×24 container → 11.75×11.75 vector ≈ 12×12
       //   viewBox cropped to X path bounds (paths span 6-18 in 24 viewBox)
@@ -1569,13 +1568,35 @@ const PAGES = {
       };
 
 
-      // ── Full dialog card — body matches Figma example (description only) ───
-      // Radius/lg=8px · Shadow/lg · Body: p=Space/3xl=20px · gap=Space/2xl=16px
+      // ── Input field helper ──────────────────────────────────────────────────
+      const inputField = (label, placeholder, icon = null) => `
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:14px;font-weight:500;line-height:20px;color:#1a1a1a;">${label}</div>
+          <div style="display:flex;align-items:center;height:48px;border:1px solid #d4d4d4;border-radius:8px;padding:0 12px 0 16px;box-sizing:border-box;background:#fff;">
+            <div style="flex:1 0 0;min-width:1px;font-size:16px;font-weight:400;line-height:24px;color:#a3a3a3;">${placeholder}</div>
+            ${icon ? `<div style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${icon}</div>` : ''}
+          </div>
+        </div>`;
+
+      // ── Preview dialog card — description only (for top preview box) ────────
       const dialogEl = ({ headerPos = 'flex-3', layout = 'vertical-1' }) => `
         <div style="background:#fff;border-radius:8px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
           ${toolbar(headerPos)}
           <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
             <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+          </div>
+          ${btnArea(layout)}
+        </div>`;
+
+      // ── Full dialog card — description + form fields (for documentation sections) ──
+      const dialogFullEl = ({ headerPos = 'flex-3', layout = 'vertical-1' }) => `
+        <div style="background:#fff;border-radius:8px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
+          ${toolbar(headerPos)}
+          <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
+            <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+            ${inputField('Label Text', 'Placeholder Text')}
+            ${inputField('Label Text', 'Placeholder Text', iChevDown('#a3a3a3'))}
+            ${inputField('Label Text', 'Placeholder Text', iCalendar('#a3a3a3'))}
           </div>
           ${btnArea(layout)}
         </div>`;
@@ -1616,7 +1637,7 @@ const PAGES = {
             <tr>
               <td><span class="token-name">${HEADER_LABEL[hp]}</span></td>
               <td style="white-space:nowrap">${hp === 'flex-3' ? 'Position=Flex, Segments=3' : hp === 'left-2' ? 'Position=Left, Segments=2' : 'Position=Left, Default'}</td>
-              <td><div style="padding:16px 0;">${dialogEl({ headerPos: hp, layout: 'vertical-1' })}</div></td>
+              <td><div style="padding:16px 0;">${dialogFullEl({ headerPos: hp, layout: 'vertical-1' })}</div></td>
               <td style="color:var(--bt-text-emphasis)">${HEADER_DESC[hp]}</td>
             </tr>`).join('')}
           </tbody>
@@ -1629,7 +1650,7 @@ const PAGES = {
             ${lbl(BTN_LAYOUT_LABEL[layout])}
             <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:12px;">${BTN_LAYOUT_DESC[layout]}</p>
             <div style="padding:32px 24px;background:#e8eaed;border-radius:10px;display:flex;justify-content:center;">
-              ${dialogEl({ headerPos: 'left-default', layout })}
+              ${dialogFullEl({ headerPos: 'left-default', layout })}
             </div>
           </div>
         `).join('')}
