@@ -1524,7 +1524,8 @@ const PAGES = {
       // Left/2 → left "Title Text Here" | [Icon/Placeholder]
       // Left/Default → left "Title Text Here" (no icon slots)
       const toolbar = (headerPos) => {
-        const base = `display:flex;align-items:center;height:40px;padding:0 16px;border-bottom:1px solid #d4d4d4;box-sizing:border-box;`;
+        // Gray/100 = --bt-surface-primary-subtle (added to Figma component)
+        const base = `display:flex;align-items:center;height:40px;padding:0 16px;border-bottom:1px solid #d4d4d4;background:#f5f5f5;box-sizing:border-box;`;
         if (headerPos === 'flex-3') {
           return `<div style="${base}justify-content:space-between;">
             ${iconPlaceholder()}
@@ -1644,6 +1645,7 @@ const PAGES = {
             <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
             <tr><td>Toolbar</td><td>Height</td><td>—</td><td>40px</td></tr>
             <tr><td>Toolbar</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Toolbar</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
             <tr><td>Toolbar</td><td>Bottom border</td><td>${tk('Gray/300')}</td><td>#d4d4d4</td></tr>
             <tr><td>Toolbar title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>18px / 500 / 24px</td></tr>
             <tr><td>Icon/Placeholder btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
