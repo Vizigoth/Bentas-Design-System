@@ -1764,10 +1764,7 @@ const PAGES = {
         <div style="background:#f5f5f5;border-radius:28px 28px 0 0;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:394px;box-sizing:border-box;overflow:hidden;">
           ${toolbar({ showGrabber, showLeftBtn, showRightBtn, showSubtitle })}
           <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px 16px 32px;box-sizing:border-box;flex:1;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;text-align:center;">
-              <div style="font-size:16px;font-weight:500;line-height:24px;color:#000;width:100%;">Title Text Here</div>
-              <div style="font-size:14px;font-weight:400;line-height:16px;color:#1a1a1a;width:100%;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
-            </div>
+            <div style="font-size:14px;font-weight:400;line-height:16px;color:#1a1a1a;width:100%;text-align:center;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
           </div>
           ${btnArea(layout)}
           ${homeIndicator()}
