@@ -1486,9 +1486,11 @@ const PAGES = {
            ${iScan('#1a1a1a')}
          </div>`;
 
-      // Icons used inside input right controls
-      const iChevDown = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
-      const iCalendar = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+      // Input right-control icons — rendered at true Figma vector dimensions inside 24×24 container
+      // Chevron: Figma vector 11.5×6.5px → viewBox cropped to path bounds, rendered at 12×7
+      const iChevDown = c => `<svg width="12" height="7" viewBox="5 8 14 8" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+      // Calendar: Figma vector 16.5×18.167px → viewBox cropped to content bounds, rendered at 17×18
+      const iCalendar = c => `<svg width="17" height="18" viewBox="2 1 20 22" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
 
       const SHADOW = '0 4px 6px rgba(16,24,40,.031),0 12px 16px rgba(16,24,40,.078)';
 
@@ -1557,7 +1559,9 @@ const PAGES = {
              <div style="font-size:16px;font-weight:400;line-height:24px;color:#727272;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</div>
            </div>
            <div style="display:flex;align-items:center;justify-content:center;padding:12px;flex-shrink:0;">
-             ${rightIcon}
+             <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+               ${rightIcon}
+             </div>
            </div>
          </div>`;
 
