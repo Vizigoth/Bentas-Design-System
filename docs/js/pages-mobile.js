@@ -1477,11 +1477,13 @@ const PAGES = {
     render: (tab) => {
       const title = 'Dialog';
 
-      // ── Icon/Placeholder — generic slot indicator (matches Figma Icon/Placeholder) ──
-      // 18px shape inside 24px container inside 40px button with Space/md=8px padding
+      // ── Icon/Placeholder — Lucide scan icon (matches Figma Icon/Placeholder convention) ──
+      // 24px icon inside 40px button with Space/md=8px padding
+      const iScan = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+
       const iconPlaceholder = () =>
         `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           <div style="width:18px;height:18px;border-radius:2px;border:1.5px solid #1a1a1a;"></div>
+           ${iScan('#1a1a1a')}
          </div>`;
 
       // Icons used inside input right controls
