@@ -1515,87 +1515,79 @@ const PAGES = {
 
       // ── Button builders (same as Alert Dialog) ──────────────────────────────
       const btnPrimary = (mode = 'h') =>
-        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0d4e97;border-radius:6px;">
-           <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">Button</span>
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-md) var(--bt-space-2xl);background:var(--bt-blue-700);border-radius:var(--bt-radius-md);">
+           <span style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-inverted);white-space:nowrap;">Button</span>
          </div>`;
 
       const btnGhost = (mode = 'h') =>
-        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;">
-           <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-md) var(--bt-space-2xl);border-radius:var(--bt-radius-md);">
+           <span style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-default);white-space:nowrap;">Button</span>
          </div>`;
 
       const btnArea = layout => {
         if (layout === 'vertical-1') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;">
+          <div style="padding:var(--bt-space-2xl) var(--bt-space-3xl);width:100%;box-sizing:border-box;display:flex;">
             ${btnPrimary('v')}
           </div>`;
         if (layout === 'horizontal-2') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;gap:16px;">
+          <div style="padding:var(--bt-space-2xl) var(--bt-space-3xl);width:100%;box-sizing:border-box;display:flex;gap:var(--bt-space-2xl);">
             ${btnGhost('h')}${btnPrimary('h')}
           </div>`;
         return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">
+          <div style="padding:var(--bt-space-2xl) var(--bt-space-3xl);width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--bt-space-2xl);">
             ${btnPrimary('v')}${btnGhost('v')}
           </div>`;
       };
 
       // ── Toolbar variants ────────────────────────────────────────────────────
-      // Flex/3 → [Icon/Placeholder] | centered "Title Text Here" | [Icon/Placeholder]
-      // Left/2 → left "Title Text Here" | [Icon/Placeholder]
-      // Left/Default → left "Title Text Here" (no icon slots)
       const toolbar = (headerPos) => {
-        // Gray/100 = --bt-surface-primary-subtle
-        const base = `display:flex;align-items:center;height:40px;padding:0 16px;border-bottom:1px solid #d4d4d4;background:#f5f5f5;box-sizing:border-box;`;
+        const base = `display:flex;align-items:center;height:40px;padding:0 var(--bt-space-2xl);border-bottom:1px solid var(--bt-border-default);background:var(--bt-surface-subtle);box-sizing:border-box;`;
         if (headerPos === 'flex-3') {
-          // Figma: IconPlaceholder (scan) left + IconX right, title centered
           return `<div style="${base}justify-content:space-between;">
             ${iconPlaceholder()}
-            <div style="flex:1 0 0;min-width:1px;text-align:center;padding:0 8px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
+            <div style="flex:1 0 0;min-width:1px;text-align:center;padding:0 var(--bt-space-md);font-size:var(--bt-text-lg-size);font-weight:500;line-height:var(--bt-text-lg-lh);color:var(--bt-text-default);">Title Text Here</div>
             ${iconX()}
           </div>`;
         }
         if (headerPos === 'left-2') {
-          // Figma: left-aligned title + X (close) icon on right
           return `<div style="${base}justify-content:space-between;">
-            <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
+            <div style="flex:1 0 0;min-width:1px;font-size:var(--bt-text-lg-size);font-weight:500;line-height:var(--bt-text-lg-lh);color:var(--bt-text-default);">Title Text Here</div>
             ${iconX()}
           </div>`;
         }
-        // left-default: title only, no icon slots
         return `<div style="${base}">
-          <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
+          <div style="flex:1 0 0;min-width:1px;font-size:var(--bt-text-lg-size);font-weight:500;line-height:var(--bt-text-lg-lh);color:var(--bt-text-default);">Title Text Here</div>
         </div>`;
       };
 
-
       // ── Input field helper ──────────────────────────────────────────────────
       const inputField = (label, placeholder, icon = null) => `
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="font-size:14px;font-weight:500;line-height:20px;color:#1a1a1a;">${label}</div>
-          <div style="display:flex;align-items:center;height:48px;border:1px solid #d4d4d4;border-radius:8px;padding:0 12px 0 16px;box-sizing:border-box;background:#fff;">
-            <div style="flex:1 0 0;min-width:1px;font-size:16px;font-weight:400;line-height:24px;color:#a3a3a3;">${placeholder}</div>
+        <div style="display:flex;flex-direction:column;gap:var(--bt-space-sm);">
+          <div style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-default);">${label}</div>
+          <div style="display:flex;align-items:center;height:48px;border:1px solid var(--bt-border-default);border-radius:var(--bt-radius-lg);padding:0 var(--bt-space-xl) 0 var(--bt-space-2xl);box-sizing:border-box;background:var(--bt-surface-default);">
+            <div style="flex:1 0 0;min-width:1px;font-size:var(--bt-text-md-size);font-weight:400;line-height:var(--bt-text-md-lh);color:var(--bt-text-muted);">${placeholder}</div>
             ${icon ? `<div style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${icon}</div>` : ''}
           </div>
         </div>`;
 
       // ── Preview dialog card — description only (for top preview box) ────────
       const dialogEl = ({ headerPos = 'flex-3', layout = 'vertical-1' }) => `
-        <div style="background:#fff;border-radius:8px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
+        <div style="background:var(--bt-surface-default);border-radius:var(--bt-radius-lg);box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
           ${toolbar(headerPos)}
-          <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
-            <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+          <div style="display:flex;flex-direction:column;gap:var(--bt-space-2xl);padding:var(--bt-space-3xl);box-sizing:border-box;">
+            <div style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:var(--bt-text-default);">Description for additional information displayed below the title to clarify the purpose of the section.</div>
           </div>
           ${btnArea(layout)}
         </div>`;
 
       // ── Full dialog card — description + form fields (for documentation sections) ──
       const dialogFullEl = ({ headerPos = 'flex-3', layout = 'vertical-1' }) => `
-        <div style="background:#fff;border-radius:8px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
+        <div style="background:var(--bt-surface-default);border-radius:var(--bt-radius-lg);box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
           ${toolbar(headerPos)}
-          <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
-            <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
-            ${inputField('Label Text', 'Placeholder Text', iChevDown('#a3a3a3'))}
-            ${inputField('Label Text', 'Placeholder Text', iCalendar('#a3a3a3'))}
+          <div style="display:flex;flex-direction:column;gap:var(--bt-space-2xl);padding:var(--bt-space-3xl);box-sizing:border-box;">
+            <div style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:var(--bt-text-default);">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+            ${inputField('Label Text', 'Placeholder Text', iChevDown('var(--bt-text-muted)'))}
+            ${inputField('Label Text', 'Placeholder Text', iCalendar('var(--bt-text-muted)'))}
           </div>
           ${btnArea(layout)}
         </div>`;
@@ -1718,13 +1710,13 @@ const PAGES = {
          </div>`;
 
       const grabber = () =>
-        `<div style="display:flex;justify-content:center;align-items:flex-end;padding:8px 0;width:100%;box-sizing:border-box;">
-           <div style="width:72px;height:6px;border-radius:3px;background:#d4d4d4;"></div>
+        `<div style="display:flex;justify-content:center;align-items:flex-end;padding:var(--bt-space-md) 0;width:100%;box-sizing:border-box;">
+           <div style="width:72px;height:var(--bt-base-sizing-sm);border-radius:var(--bt-radius-full);background:var(--bt-border-default);"></div>
          </div>`;
 
       const homeIndicator = () =>
-        `<div style="display:flex;justify-content:center;align-items:center;padding:8px 0;width:100%;box-sizing:border-box;">
-           <div style="width:140px;height:5px;border-radius:3px;background:#1a1a1a;"></div>
+        `<div style="display:flex;justify-content:center;align-items:center;padding:var(--bt-space-md) 0;width:100%;box-sizing:border-box;">
+           <div style="width:140px;height:var(--bt-base-sizing-sm);border-radius:var(--bt-radius-full);background:var(--bt-text-default);"></div>
          </div>`;
 
       const toolbar = ({ showGrabber=true, showLeftBtn=true, showRightBtn=true, showSubtitle=false }) => `
@@ -1732,39 +1724,39 @@ const PAGES = {
           ${showGrabber ? grabber() : ''}
           <div style="display:flex;align-items:center;height:40px;justify-content:space-between;padding:0;">
             <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              ${showLeftBtn ? iconBtn(iScan('#1a1a1a')) : '<div style="width:40px;"></div>'}
+              ${showLeftBtn ? iconBtn(iScan('var(--bt-icon-default)')) : '<div style="width:40px;"></div>'}
             </div>
-            <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;">
-              <div style="font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Title Text Here</div>
-              ${showSubtitle ? `<div style="font-size:14px;font-weight:400;line-height:16px;color:#727272;white-space:nowrap;">Subtitle</div>` : ''}
+            <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 var(--bt-space-md);">
+              <div style="font-size:var(--bt-text-lg-size);font-weight:500;line-height:var(--bt-text-lg-lh);color:var(--bt-text-default);white-space:nowrap;">Title Text Here</div>
+              ${showSubtitle ? `<div style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:var(--bt-text-emphasis);white-space:nowrap;">Subtitle</div>` : ''}
             </div>
             <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              ${showRightBtn ? iconBtn(iX('#1a1a1a')) : '<div style="width:40px;"></div>'}
+              ${showRightBtn ? iconBtn(iX('var(--bt-icon-default)')) : '<div style="width:40px;"></div>'}
             </div>
           </div>
         </div>`;
 
       const btnPrimary = (mode='v') =>
-        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:12px 16px;background:#0d4e97;border-radius:6px;">
-           <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">Button</span>
+        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-xl) var(--bt-space-2xl);background:var(--bt-blue-700);border-radius:var(--bt-radius-md);">
+           <span style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-inverted);white-space:nowrap;">Button</span>
          </div>`;
 
       const btnGhost = (mode='v') =>
-        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:12px 16px;background:#f5f5f5;border-radius:6px;">
-           <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
+        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-xl) var(--bt-space-2xl);background:var(--bt-surface-subtle);border-radius:var(--bt-radius-md);">
+           <span style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-default);white-space:nowrap;">Button</span>
          </div>`;
 
       const btnArea = (layout) => {
-        if (layout === 'vertical-1')   return `<div style="padding:16px 20px 40px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;">${btnPrimary('v')}</div>`;
-        if (layout === 'horizontal-2') return `<div style="padding:16px 20px 40px;width:100%;box-sizing:border-box;display:flex;flex-direction:row;gap:12px;">${btnGhost('h')}${btnPrimary('h')}</div>`;
-        return                                `<div style="padding:16px 20px 40px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;">${btnPrimary('v')}${btnGhost('v')}</div>`;
+        if (layout === 'vertical-1')   return `<div style="padding:var(--bt-space-2xl) var(--bt-space-3xl) var(--bt-space-8xl);width:100%;box-sizing:border-box;display:flex;flex-direction:column;">${btnPrimary('v')}</div>`;
+        if (layout === 'horizontal-2') return `<div style="padding:var(--bt-space-2xl) var(--bt-space-3xl) var(--bt-space-8xl);width:100%;box-sizing:border-box;display:flex;flex-direction:row;gap:var(--bt-space-xl);">${btnGhost('h')}${btnPrimary('h')}</div>`;
+        return                                `<div style="padding:var(--bt-space-2xl) var(--bt-space-3xl) var(--bt-space-8xl);width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--bt-space-xl);">${btnPrimary('v')}${btnGhost('v')}</div>`;
       };
 
       const sheetEl = ({ showGrabber=true, showLeftBtn=true, showRightBtn=true, showSubtitle=false, layout='vertical-1' }) => `
-        <div style="background:#f5f5f5;border-radius:28px 28px 0 0;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:394px;box-sizing:border-box;overflow:hidden;">
+        <div style="background:var(--bt-surface-subtle);border-radius:var(--bt-radius-6xl) var(--bt-radius-6xl) 0 0;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:394px;box-sizing:border-box;overflow:hidden;">
           ${toolbar({ showGrabber, showLeftBtn, showRightBtn, showSubtitle })}
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px 16px 32px;box-sizing:border-box;flex:1;min-height:200px;">
-            <div style="font-size:14px;font-weight:400;line-height:16px;color:#1a1a1a;width:100%;text-align:center;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--bt-space-2xl);padding:var(--bt-space-2xl) var(--bt-space-2xl) var(--bt-space-6xl);box-sizing:border-box;flex:1;min-height:200px;">
+            <div style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:var(--bt-text-default);width:100%;text-align:center;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
           </div>
           ${btnArea(layout)}
           ${homeIndicator()}
@@ -1802,7 +1794,7 @@ const PAGES = {
               <td><span class="token-name">${v.label}</span></td>
               <td>
                 <div style="padding:16px 0;max-width:280px;">
-                  <div style="background:#f5f5f5;border-radius:28px 28px 0 0;box-shadow:${SHADOW};overflow:hidden;">
+                  <div style="background:var(--bt-surface-subtle);border-radius:var(--bt-radius-6xl) var(--bt-radius-6xl) 0 0;box-shadow:${SHADOW};overflow:hidden;">
                     ${toolbar(v.props)}
                   </div>
                 </div>

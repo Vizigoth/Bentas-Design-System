@@ -98,6 +98,113 @@
   --bt-surface-error:      #fef2f2;
   --bt-text-error:         #b31d38;
 
+  /* ── Base Sizing ───────────────────────────────────────────── */
+  --bt-base-sizing-none: 0px;
+  --bt-base-sizing-3xs:  1px;
+  --bt-base-sizing-2xs:  2px;
+  --bt-base-sizing-xs:   4px;
+  --bt-base-sizing-sm:   6px;
+  --bt-base-sizing-md:   8px;
+  --bt-base-sizing-lg:   10px;
+  --bt-base-sizing-xl:   12px;
+  --bt-base-sizing-2xl:  14px;
+  --bt-base-sizing-3xl:  16px;
+  --bt-base-sizing-4xl:  18px;
+  --bt-base-sizing-5xl:  20px;
+  --bt-base-sizing-6xl:  24px;
+  --bt-base-sizing-7xl:  28px;
+  --bt-base-sizing-8xl:  32px;
+  --bt-base-sizing-9xl:  36px;
+  --bt-base-sizing-10xl: 40px;
+  --bt-base-sizing-11xl: 44px;
+  --bt-base-sizing-12xl: 48px;
+  --bt-base-sizing-13xl: 52px;
+  --bt-base-sizing-14xl: 56px;
+  --bt-base-sizing-15xl: 60px;
+  --bt-base-sizing-16xl: 64px;
+  --bt-base-sizing-17xl: 68px;
+  --bt-base-sizing-18xl: 72px;
+  --bt-base-sizing-19xl: 76px;
+  --bt-base-sizing-20xl: 80px;
+  --bt-base-sizing-21xl: 84px;
+  --bt-base-sizing-22xl: 88px;
+  --bt-base-sizing-23xl: 92px;
+  --bt-base-sizing-24xl: 96px;
+  --bt-base-sizing-25xl: 100px;
+  --bt-base-sizing-26xl: 112px;
+  --bt-base-sizing-27xl: 120px;
+  --bt-base-sizing-28xl: 128px;
+  --bt-base-sizing-29xl: 132px;
+  --bt-base-sizing-30xl: 144px;
+  --bt-base-sizing-31xl: 160px;
+  --bt-base-sizing-32xl: 176px;
+  --bt-base-sizing-33xl: 180px;
+  --bt-base-sizing-34xl: 192px;
+  --bt-base-sizing-full: 9999px;
+
+  /* ── Spacing ────────────────────────────────────────────────── */
+  --bt-space-none: var(--bt-base-sizing-none);
+  --bt-space-2xs:  var(--bt-base-sizing-2xs);
+  --bt-space-xs:   var(--bt-base-sizing-xs);
+  --bt-space-sm:   var(--bt-base-sizing-sm);
+  --bt-space-md:   var(--bt-base-sizing-md);
+  --bt-space-lg:   var(--bt-base-sizing-lg);
+  --bt-space-xl:   var(--bt-base-sizing-xl);
+  --bt-space-2xl:  var(--bt-base-sizing-3xl);
+  --bt-space-3xl:  var(--bt-base-sizing-5xl);
+  --bt-space-4xl:  var(--bt-base-sizing-6xl);
+  --bt-space-5xl:  var(--bt-base-sizing-7xl);
+  --bt-space-6xl:  var(--bt-base-sizing-8xl);
+  --bt-space-7xl:  var(--bt-base-sizing-9xl);
+  --bt-space-8xl:  var(--bt-base-sizing-10xl);
+  --bt-space-9xl:  var(--bt-base-sizing-11xl);
+  --bt-space-10xl: var(--bt-base-sizing-12xl);
+  --bt-space-11xl: var(--bt-base-sizing-13xl);
+  --bt-space-12xl: var(--bt-base-sizing-14xl);
+  --bt-space-13xl: var(--bt-base-sizing-15xl);
+  --bt-space-14xl: var(--bt-base-sizing-16xl);
+  --bt-space-15xl: var(--bt-base-sizing-17xl);
+  --bt-space-16xl: var(--bt-base-sizing-18xl);
+  --bt-space-17xl: var(--bt-base-sizing-20xl);
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  --bt-radius-none: var(--bt-base-sizing-none);
+  --bt-radius-xs:   var(--bt-base-sizing-2xs);
+  --bt-radius-sm:   var(--bt-base-sizing-xs);
+  --bt-radius-md:   var(--bt-base-sizing-sm);
+  --bt-radius-lg:   var(--bt-base-sizing-md);
+  --bt-radius-xl:   var(--bt-base-sizing-lg);
+  --bt-radius-2xl:  var(--bt-base-sizing-xl);
+  --bt-radius-3xl:  var(--bt-base-sizing-2xl);
+  --bt-radius-4xl:  var(--bt-base-sizing-3xl);
+  --bt-radius-5xl:  var(--bt-base-sizing-5xl);
+  --bt-radius-6xl:  var(--bt-base-sizing-6xl);
+  --bt-radius-full: var(--bt-base-sizing-full);
+
+  /* ── Typography Scale ───────────────────────────────────────── */
+  --bt-text-2xs-size: var(--bt-base-sizing-lg);
+  --bt-text-2xs-lh:   var(--bt-base-sizing-xl);
+  --bt-text-xs-size:  var(--bt-base-sizing-xl);
+  --bt-text-xs-lh:    var(--bt-base-sizing-3xl);
+  --bt-text-sm-size:  var(--bt-base-sizing-2xl);
+  --bt-text-sm-lh:    var(--bt-base-sizing-3xl);
+  --bt-text-md-size:  var(--bt-base-sizing-3xl);
+  --bt-text-md-lh:    var(--bt-base-sizing-6xl);
+  --bt-text-lg-size:  var(--bt-base-sizing-4xl);
+  --bt-text-lg-lh:    var(--bt-base-sizing-6xl);
+  --bt-text-xl-size:  var(--bt-base-sizing-5xl);
+  --bt-text-xl-lh:    var(--bt-base-sizing-7xl);
+  --bt-text-2xl-size: var(--bt-base-sizing-6xl);
+  --bt-text-2xl-lh:   var(--bt-base-sizing-8xl);
+  --bt-text-3xl-size: var(--bt-base-sizing-7xl);
+  --bt-text-3xl-lh:   var(--bt-base-sizing-9xl);
+  --bt-text-4xl-size: var(--bt-base-sizing-8xl);
+  --bt-text-4xl-lh:   var(--bt-base-sizing-10xl);
+  --bt-text-5xl-size: var(--bt-base-sizing-9xl);
+  --bt-text-5xl-lh:   var(--bt-base-sizing-11xl);
+  --bt-text-6xl-size: var(--bt-base-sizing-10xl);
+  --bt-text-6xl-lh:   var(--bt-base-sizing-12xl);
+
   /* ── Layout ────────────────────────────────────────────────── */
   --sidebar-w:    240px;
   --toc-w:        200px;
