@@ -1735,7 +1735,7 @@ const PAGES = {
               ${showLeftBtn ? iconBtn(iScan('#1a1a1a')) : '<div style="width:40px;"></div>'}
             </div>
             <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;">
-              <div style="font-size:20px;font-weight:500;line-height:28px;color:#1a1a1a;white-space:nowrap;">Title</div>
+              <div style="font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Title Text Here</div>
               ${showSubtitle ? `<div style="font-size:14px;font-weight:400;line-height:16px;color:#727272;white-space:nowrap;">Subtitle</div>` : ''}
             </div>
             <div style="display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -1750,7 +1750,7 @@ const PAGES = {
          </div>`;
 
       const btnGhost = (mode='v') =>
-        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:6px;">
+        `<div style="${mode==='h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:12px 16px;background:#f5f5f5;border-radius:6px;">
            <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
          </div>`;
 
@@ -1761,10 +1761,13 @@ const PAGES = {
       };
 
       const sheetEl = ({ showGrabber=true, showLeftBtn=true, showRightBtn=true, showSubtitle=false, layout='vertical-1' }) => `
-        <div style="background:#fff;border-radius:16px 16px 0 0;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:394px;box-sizing:border-box;overflow:hidden;">
+        <div style="background:#f5f5f5;border-radius:28px 28px 0 0;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:394px;box-sizing:border-box;overflow:hidden;">
           ${toolbar({ showGrabber, showLeftBtn, showRightBtn, showSubtitle })}
-          <div style="display:flex;flex-direction:column;gap:16px;padding:16px 16px 32px;box-sizing:border-box;">
-            <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Lorem ipsum dolor sit amet, consetetur sadipscing elitr.</div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px 16px 32px;box-sizing:border-box;flex:1;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;text-align:center;">
+              <div style="font-size:16px;font-weight:500;line-height:24px;color:#000;width:100%;">Title Text Here</div>
+              <div style="font-size:14px;font-weight:400;line-height:16px;color:#1a1a1a;width:100%;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+            </div>
           </div>
           ${btnArea(layout)}
           ${homeIndicator()}
@@ -1802,7 +1805,7 @@ const PAGES = {
               <td><span class="token-name">${v.label}</span></td>
               <td>
                 <div style="padding:16px 0;max-width:280px;">
-                  <div style="background:#fff;border-radius:16px 16px 0 0;box-shadow:${SHADOW};overflow:hidden;">
+                  <div style="background:#f5f5f5;border-radius:28px 28px 0 0;box-shadow:${SHADOW};overflow:hidden;">
                     ${toolbar(v.props)}
                   </div>
                 </div>
@@ -1836,7 +1839,8 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Özellik</th><th>Figma token</th><th>Değer</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Border Radius (üst)</td><td>—</td><td>16px 16px 0 0</td></tr>
+            <tr><td>Container</td><td>Background</td><td>${tk('Gray/100')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Container</td><td>Border Radius (üst)</td><td>${tk('Radius/6xl')}</td><td>28px 28px 0 0</td></tr>
             <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
             <tr><td>Grabber</td><td>Width</td><td>—</td><td>72px</td></tr>
             <tr><td>Grabber</td><td>Height</td><td>—</td><td>6px</td></tr>
@@ -1844,12 +1848,15 @@ const PAGES = {
             <tr><td>Toolbar bar</td><td>Height</td><td>—</td><td>40px</td></tr>
             <tr><td>Toolbar icon btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
             <tr><td>Toolbar icon btn</td><td>Padding</td><td>${tk('Space/md')}</td><td>8px</td></tr>
-            <tr><td>Title</td><td>Font</td><td>${tk('Title/xl/Medium')}</td><td>20px / 500 / 28px</td></tr>
-            <tr><td>Title</td><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Toolbar Title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>18px / 500 / 24px</td></tr>
+            <tr><td>Toolbar Title</td><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
             <tr><td>Subtitle</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
             <tr><td>Subtitle</td><td>Color</td><td>${tk('Gray/500')}</td><td>#727272</td></tr>
-            <tr><td>Body</td><td>Padding</td><td>${tk('Space/2xl')}</td><td>16px (top/sides) · 32px (bottom)</td></tr>
+            <tr><td>Body</td><td>Padding top/sides</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Body</td><td>Padding bottom</td><td>${tk('Space/6xl')}</td><td>32px</td></tr>
             <tr><td>Body</td><td>Gap</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Body title</td><td>Font</td><td>${tk('Text/md/Medium')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td>Body description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
             <tr><td>Button area</td><td>Padding top</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
             <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
             <tr><td>Button area</td><td>Padding bottom</td><td>${tk('Space/8xl')}</td><td>40px (safe area)</td></tr>
@@ -1858,8 +1865,9 @@ const PAGES = {
             <tr><td>Button</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
             <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
             <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
+            <tr><td>Ghost button bg</td><td>Color</td><td>${tk('Gray/100')}</td><td>#f5f5f5</td></tr>
             <tr><td>Home Indicator</td><td>Width</td><td>—</td><td>140px</td></tr>
-            <tr><td>Home Indicator</td><td>Height</td><td>—</td><td>5px</td></tr>
+            <tr><td>Home Indicator</td><td>Height</td><td>—</td><td>6px</td></tr>
             <tr><td>Home Indicator</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
           </tbody>
         </table>
