@@ -1340,14 +1340,16 @@ const PAGES = {
       const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
 
       // ── Button builders — labels match Figma exactly ────────────────────────
-      // Space/2xl=16px horizontal, Space/md=8px vertical · Radius/md=6px
-      const btnPrimary = (flex = '1 0 0') =>
-        `<div style="flex:${flex};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0d4e97;border-radius:6px;min-width:0;">
+      // Space/2xl=16px H pad, Space/md=8px V pad · Radius/md=6px
+      // horizontal → flex:1 0 0 + min-width:1px (Fill along row)
+      // vertical   → width:100% + flex-shrink:0  (Fill cross axis)
+      const btnPrimary = (mode = 'h') =>
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0d4e97;border-radius:6px;">
            <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">Button</span>
          </div>`;
 
-      const btnGhost = (flex = '1 0 0') =>
-        `<div style="flex:${flex};display:flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;min-width:0;">
+      const btnGhost = (mode = 'h') =>
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;">
            <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
          </div>`;
 
@@ -1356,15 +1358,15 @@ const PAGES = {
       const btnArea = layout => {
         if (layout === 'vertical-1') return `
           <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;">
-            ${btnPrimary('none')}
+            ${btnPrimary('v')}
           </div>`;
         if (layout === 'horizontal-2') return `
           <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;gap:16px;">
-            ${btnGhost()}${btnPrimary()}
+            ${btnGhost('h')}${btnPrimary('h')}
           </div>`;
         return `
           <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">
-            ${btnPrimary('none')}${btnGhost('none')}
+            ${btnPrimary('v')}${btnGhost('v')}
           </div>`;
       };
 
