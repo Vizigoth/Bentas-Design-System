@@ -1477,11 +1477,16 @@ const PAGES = {
     render: (tab) => {
       const title = 'Dialog';
 
-      // ── Icons (Lucide) ──────────────────────────────────────────────────────
-      const iX         = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
-      const iMenu      = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`;
-      const iChevDown  = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
-      const iCalendar  = c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+      // ── Icon/Placeholder — generic slot indicator (matches Figma Icon/Placeholder) ──
+      // 18px shape inside 24px container inside 40px button with Space/md=8px padding
+      const iconPlaceholder = () =>
+        `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+           <div style="width:18px;height:18px;border-radius:2px;border:1.5px solid #1a1a1a;"></div>
+         </div>`;
+
+      // Icons used inside input right controls
+      const iChevDown = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+      const iCalendar = c => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
 
       const SHADOW = '0 4px 6px rgba(16,24,40,.031),0 12px 16px rgba(16,24,40,.078)';
 
@@ -1499,7 +1504,6 @@ const PAGES = {
            <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
          </div>`;
 
-      // Space/3xl=20px H · Space/2xl=16px V · gap=Space/2xl=16px
       const btnArea = layout => {
         if (layout === 'vertical-1') return `
           <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;">
@@ -1516,104 +1520,96 @@ const PAGES = {
       };
 
       // ── Toolbar variants ────────────────────────────────────────────────────
-      // Flex/1  → icon | [centered Heading] | icon
-      // Left/2  → [left Heading] | icon | icon
-      // Left/Default → [left Heading] (no right icons)
-      const iconBtn = () =>
-        `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           ${iX('#1a1a1a')}
-         </div>`;
-
-      const menuBtn = () =>
-        `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           ${iMenu('#1a1a1a')}
-         </div>`;
-
+      // Flex/3 → [Icon/Placeholder] | centered "Title Text Here" | [Icon/Placeholder]
+      // Left/2 → left "Title Text Here" | [Icon/Placeholder]
+      // Left/Default → left "Title Text Here" (no icon slots)
       const toolbar = (headerPos) => {
-        const base = `height:40px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #d4d4d4;box-sizing:border-box;`;
-        if (headerPos === 'flex-1') {
-          return `<div style="${base}">
-            ${iconBtn()}
-            <div style="flex:1 0 0;min-width:1px;text-align:center;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Heading</div>
-            ${iconBtn()}
+        const base = `display:flex;align-items:center;height:40px;padding:0 16px;border-bottom:1px solid #d4d4d4;box-sizing:border-box;`;
+        if (headerPos === 'flex-3') {
+          return `<div style="${base}justify-content:space-between;">
+            ${iconPlaceholder()}
+            <div style="flex:1 0 0;min-width:1px;text-align:center;padding:0 8px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
+            ${iconPlaceholder()}
           </div>`;
         }
         if (headerPos === 'left-2') {
-          return `<div style="${base}">
-            <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Heading</div>
-            ${menuBtn()}${iconBtn()}
+          return `<div style="${base}justify-content:space-between;">
+            <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
+            ${iconPlaceholder()}
           </div>`;
         }
-        // left-default
+        // left-default: title only, no icon slots
         return `<div style="${base}">
-          <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Heading</div>
-          ${iconBtn()}
+          <div style="flex:1 0 0;min-width:1px;font-size:18px;font-weight:500;line-height:24px;color:#1a1a1a;">Title Text Here</div>
         </div>`;
       };
 
-      // ── Form field placeholders ─────────────────────────────────────────────
-      const dropdownField = () =>
-        `<div style="display:flex;flex-direction:column;gap:4px;width:100%;">
-           <div style="font-size:14px;font-weight:500;line-height:20px;color:#1a1a1a;">Label</div>
-           <div style="display:flex;align-items:center;padding:8px 12px;border:1px solid #d4d4d4;border-radius:6px;background:#fff;gap:8px;box-sizing:border-box;">
-             <span style="flex:1;font-size:14px;color:#a3a3a3;line-height:20px;">Placeholder</span>
-             ${iChevDown('#a3a3a3')}
+      // ── Input fields — Md size from Figma ──────────────────────────────────
+      // Radius/lg=8px · height=48px · pl=16px · right icon padding=Space/xl=12px
+      // Stacked: Label Text (12px) + Placeholder Text (16px) inside Text Container
+      const inputField = (rightIcon) =>
+        `<div style="width:100%;background:#fff;border:1px solid #d4d4d4;border-radius:8px;display:flex;align-items:center;height:48px;box-sizing:border-box;overflow:hidden;flex-shrink:0;">
+           <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;justify-content:center;padding-left:16px;overflow:hidden;">
+             <div style="font-size:12px;font-weight:400;line-height:16px;color:#727272;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Label Text</div>
+             <div style="font-size:16px;font-weight:400;line-height:24px;color:#727272;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</div>
+           </div>
+           <div style="display:flex;align-items:center;justify-content:center;padding:12px;flex-shrink:0;">
+             ${rightIcon}
            </div>
          </div>`;
 
-      const dateField = () =>
-        `<div style="display:flex;flex-direction:column;gap:4px;width:100%;">
-           <div style="font-size:14px;font-weight:500;line-height:20px;color:#1a1a1a;">Label</div>
-           <div style="display:flex;align-items:center;padding:8px 12px;border:1px solid #d4d4d4;border-radius:6px;background:#fff;gap:8px;box-sizing:border-box;">
-             <span style="flex:1;font-size:14px;color:#a3a3a3;line-height:20px;">Placeholder</span>
-             ${iCalendar('#a3a3a3')}
-           </div>
-         </div>`;
+      const dropdownField = () => inputField(iChevDown('#727272'));
+      const dateField    = () => inputField(iCalendar('#727272'));
 
       // ── Full dialog card ────────────────────────────────────────────────────
-      // Radius/lg=8px · Shadow/lg · Body: p=20px gap=16px
-      const dialogEl = ({ headerPos = 'flex-1', layout = 'vertical-1' }) => `
+      // Radius/lg=8px · Shadow/lg · Body: p=Space/3xl=20px · gap=Space/2xl=16px
+      const dialogEl = ({ headerPos = 'flex-3', layout = 'vertical-1' }) => `
         <div style="background:#fff;border-radius:8px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
           ${toolbar(headerPos)}
           <div style="display:flex;flex-direction:column;gap:16px;padding:20px;box-sizing:border-box;">
-            <div style="font-size:14px;font-weight:400;line-height:20px;color:#727272;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+            <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
             ${dropdownField()}
             ${dateField()}
           </div>
           ${btnArea(layout)}
         </div>`;
 
-      const HEADER_POSITIONS      = ['flex-1', 'left-2', 'left-default'];
-      const HEADER_LABEL = { 'flex-1': 'Flex · 1 icon each side', 'left-2': 'Left · 2 icons (right)', 'left-default': 'Left · Default (close only)' };
-      const HEADER_DESC  = {
-        'flex-1':        'Title centered with one icon button on each side. Use for symmetrical, modal-priority dialogs.',
-        'left-2':        'Title left-aligned with two icon controls stacked on the right. Use when secondary actions are needed.',
-        'left-default':  'Title left-aligned with only a close icon. The minimal and most common dialog header.',
+      const HEADER_POSITIONS = ['flex-3', 'left-2', 'left-default'];
+      const HEADER_LABEL = {
+        'flex-3':        'Flex · Segments=3',
+        'left-2':        'Left · Segments=2',
+        'left-default':  'Left · Default',
+      };
+      const HEADER_DESC = {
+        'flex-3':        'One icon placeholder on each side, title centered. Use for symmetrical dialogs where both sides have controls.',
+        'left-2':        'Title left-aligned with a single icon slot on the right. Use when only one toolbar action is needed.',
+        'left-default':  'Title left-aligned, no icon controls. The minimal toolbar — use when the dialog has no secondary toolbar actions.',
       };
 
       const BTN_LAYOUTS      = ['vertical-1', 'horizontal-2', 'vertical-2'];
       const BTN_LAYOUT_LABEL = { 'vertical-1': 'Vertical · 1 button', 'horizontal-2': 'Horizontal · 2 buttons', 'vertical-2': 'Vertical · 2 buttons' };
       const BTN_LAYOUT_DESC  = {
-        'vertical-1':   'Single full-width primary action. Use when only one action is needed.',
-        'horizontal-2': 'Ghost and primary buttons side-by-side. Default two-action layout.',
-        'vertical-2':   'Primary action on top, ghost below. Use when button labels are long.',
+        'vertical-1':   'Single full-width primary action.',
+        'horizontal-2': 'Ghost (left) + Primary (right) side-by-side.',
+        'vertical-2':   'Primary (top) + Ghost (bottom), stacked.',
       };
 
       const overviewHtml = `
-        <p class="page-desc">A modal overlay used to present focused content with a persistent header toolbar. Supports three header position variants and three button layout options.</p>
+        <p class="page-desc">A modal overlay for focused content with a persistent toolbar. Three header variants (Flex, Left/2, Left/Default) × three button layouts.</p>
 
         <div class="preview-box" style="background:#e8eaed;flex-direction:column;align-items:center;gap:48px;padding:40px 24px;">
           ${HEADER_POSITIONS.map(headerPos => dialogEl({ headerPos, layout: 'vertical-1' })).join('')}
         </div>
 
         <h2 id="Header Positions">Header Positions</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Three toolbar configurations control how the title is aligned and which icon controls appear.</p>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">The toolbar uses <strong>Icon/Placeholder</strong> slots — generic indicators for whatever icon the implementation places there.</p>
         <table class="token-table">
-          <thead><tr><th>Variant</th><th style="min-width:300px">Preview</th><th>When to use</th></tr></thead>
+          <thead><tr><th>Variant</th><th>Figma props</th><th style="min-width:300px">Preview</th><th>When to use</th></tr></thead>
           <tbody>
             ${HEADER_POSITIONS.map(hp => `
             <tr>
               <td><span class="token-name">${HEADER_LABEL[hp]}</span></td>
+              <td style="white-space:nowrap">${hp === 'flex-3' ? 'Position=Flex, Segments=3' : hp === 'left-2' ? 'Position=Left, Segments=2' : 'Position=Left, Default'}</td>
               <td><div style="padding:16px 0;">${dialogEl({ headerPos: hp, layout: 'vertical-1' })}</div></td>
               <td style="color:var(--bt-text-emphasis)">${HEADER_DESC[hp]}</td>
             </tr>`).join('')}
@@ -1650,21 +1646,22 @@ const PAGES = {
             <tr><td>Toolbar</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
             <tr><td>Toolbar</td><td>Bottom border</td><td>${tk('Gray/300')}</td><td>#d4d4d4</td></tr>
             <tr><td>Toolbar title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>18px / 500 / 24px</td></tr>
-            <tr><td>Icon button</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
-            <tr><td>Icon button</td><td>Padding</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>Icon/Placeholder btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
+            <tr><td>Icon/Placeholder btn</td><td>Padding</td><td>${tk('Space/md')}</td><td>8px</td></tr>
             <tr><td>Icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
             <tr><td>Body</td><td>Padding</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
             <tr><td>Body</td><td>Gap</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Description</td><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
             <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 20px</td></tr>
-            <tr><td>Form field</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
-            <tr><td>Form field</td><td>Border</td><td>${tk('Gray/300')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Input field (Md)</td><td>Height</td><td>—</td><td>48px</td></tr>
+            <tr><td>Input field</td><td>Padding left</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Input field</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
+            <tr><td>Input field</td><td>Border</td><td>${tk('Gray/300')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Input right icon</td><td>Padding</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
             <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
             <tr><td>Button area</td><td>Padding V</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
             <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
             <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
-            <tr><td>Primary button text</td><td>Color</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
           </tbody>
         </table>
       `;
