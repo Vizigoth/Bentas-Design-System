@@ -21,11 +21,12 @@ const NAV_MOBILE = [
       { label: 'Bottom Sheet',      id: 'components/bottom-sheet' },
       { label: 'Bottom Tab Bar',    id: 'components/bottom-tab-bar' },
       { label: 'Button',            id: 'components/button' },
+      { label: 'Button Dock',       id: 'components/button-dock' },
+      { label: 'Button Icon',       id: 'components/icon-button' },
       { label: 'Card',              id: 'components/card' },
       { label: 'Checkbox',          id: 'components/checkbox' },
       { label: 'Dialog',            id: 'components/dialog' },
       { label: 'FAB',               id: 'components/fab' },
-      { label: 'Icon Button',       id: 'components/icon-button' },
       { label: 'List Item',         id: 'components/list-item' },
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Progress',          id: 'components/progress' },
@@ -1113,6 +1114,649 @@ const PAGES = {
           </tbody>
         </table>
       `};
+    }
+  },
+
+  'components/button-dock': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Variants', 'Anatomy', 'Buttons'],
+    render: (tab) => {
+      const title = 'Button Dock';
+
+      const dockWrap  = `background:var(--bt-surface-default);border-top:1px solid var(--bt-border-muted);border-radius:0 0 var(--bt-radius-6xl) var(--bt-radius-6xl);display:flex;flex-direction:column;width:373px;`;
+      const ctrlBase  = `padding:var(--bt-space-2xl) var(--bt-space-3xl) var(--bt-space-3xl);display:flex;`;
+      const homeWrap  = `display:flex;justify-content:center;align-items:flex-end;padding:var(--bt-space-sm) 0;`;
+      const homeBar   = `width:140px;height:6px;background:var(--bt-gray-900);border-radius:var(--bt-radius-full);`;
+      const btnBase   = `display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--font);font-weight:500;border-radius:var(--bt-radius-md);white-space:nowrap;font-size:var(--bt-text-md-size);line-height:var(--bt-text-md-lh);transition:opacity 120ms;`;
+      const btnPrimXL = `${btnBase}background:var(--bt-surface-brand);color:var(--bt-text-inverted);padding:var(--bt-space-2xl) var(--bt-space-4xl);width:100%;`;
+      const btnPrimLG = `${btnBase}background:var(--bt-surface-brand);color:var(--bt-text-inverted);padding:var(--bt-space-xl) var(--bt-space-2xl);flex:1;`;
+      const btnSecXL  = `${btnBase}background:var(--bt-surface-subtle);color:var(--bt-text-default);padding:var(--bt-space-2xl) var(--bt-space-4xl);width:100%;`;
+      const btnSecLG  = `${btnBase}background:var(--bt-surface-subtle);color:var(--bt-text-default);padding:var(--bt-space-xl) var(--bt-space-2xl);flex:1;`;
+
+      const homeIndicator = `<div style="${homeWrap}"><div style="${homeBar}"></div></div>`;
+
+      const variant1 = `
+        <div style="${dockWrap}">
+          <div style="${ctrlBase}flex-direction:column;">
+            <button style="${btnPrimXL}">Button</button>
+          </div>
+          ${homeIndicator}
+        </div>`;
+
+      const variant2 = `
+        <div style="${dockWrap}">
+          <div style="${ctrlBase}flex-direction:row;gap:var(--bt-space-2xl);">
+            <button style="${btnSecLG}">Button</button>
+            <button style="${btnPrimLG}">Button</button>
+          </div>
+          ${homeIndicator}
+        </div>`;
+
+      const variant3 = `
+        <div style="${dockWrap}">
+          <div style="${ctrlBase}flex-direction:column;gap:var(--bt-space-2xl);">
+            <button style="${btnPrimXL}">Button</button>
+            <button style="${btnSecXL}">Button</button>
+          </div>
+          ${homeIndicator}
+        </div>`;
+
+      const variants = [
+        { id: 'v1-single',     label: 'Vertical · 1 Segment',   desc: 'Single full-width primary action. Most common layout.', node: variant1 },
+        { id: 'v2-horizontal', label: 'Horizontal · 2 Segment', desc: 'Secondary and primary buttons side by side — secondary left, primary right.', node: variant2 },
+        { id: 'v3-vertical',   label: 'Vertical · 2 Segment',   desc: 'Two stacked full-width buttons — primary on top, secondary below.', node: variant3 },
+      ];
+
+      if (tab === 'Usage') return { title, html: `
+        <p class="page-desc">Button Dock usage guidelines — when to use each variant and how to compose actions correctly.</p>
+        <h2 id="Do">Do</h2>
+        <ul>
+          <li>Use one Button Dock per screen</li>
+          <li>Always place the primary action in the dominant position — right in Horizontal, top in Vertical</li>
+          <li>Keep the Home Indicator visible at all times; never overlap it with content</li>
+          <li>Keep button labels short and action-oriented</li>
+        </ul>
+        <h2>Don't</h2>
+        <ul>
+          <li>Don't add a second Button Dock to the same screen</li>
+          <li>Don't place more than two buttons — move extra actions into a menu or bottom sheet</li>
+          <li>Don't embed the dock inside scrollable content; it must remain fixed at the bottom</li>
+          <li>Don't remove or hide the Home Indicator</li>
+        </ul>
+      `};
+
+      if (tab === 'Design') return { title, html: `
+        <p class="page-desc">Token values extracted from Figma — use these to implement Button Dock in code.</p>
+        <h2 id="Tokens">Tokens</h2>
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">--bt-surface-default</span></td><td>#ffffff</td><td>Dock background</td></tr>
+            <tr><td><span class="token-name">--bt-border-muted</span></td><td>#e6e6e6</td><td>Top border</td></tr>
+            <tr><td><span class="token-name">--bt-radius-6xl</span></td><td>24px</td><td>Bottom corner radius</td></tr>
+            <tr><td><span class="token-name">--bt-surface-brand</span></td><td>#0d4e97</td><td>Primary button background</td></tr>
+            <tr><td><span class="token-name">--bt-surface-subtle</span></td><td>#f5f5f5</td><td>Secondary button background</td></tr>
+            <tr><td><span class="token-name">--bt-text-inverted</span></td><td>#ffffff</td><td>Primary button label</td></tr>
+            <tr><td><span class="token-name">--bt-text-default</span></td><td>#1a1a1a</td><td>Secondary button label</td></tr>
+            <tr><td><span class="token-name">--bt-gray-900</span></td><td>#1a1a1a</td><td>Home Indicator bar</td></tr>
+            <tr><td><span class="token-name">--bt-radius-md</span></td><td>6px</td><td>Button border radius</td></tr>
+            <tr><td><span class="token-name">--bt-space-sm</span></td><td>6px</td><td>Home Indicator vertical padding</td></tr>
+            <tr><td><span class="token-name">--bt-space-2xl</span></td><td>16px</td><td>Control top padding · button gap</td></tr>
+            <tr><td><span class="token-name">--bt-space-3xl</span></td><td>20px</td><td>Control bottom + horizontal padding</td></tr>
+            <tr><td><span class="token-name">--bt-space-xl</span></td><td>12px</td><td>LG button vertical padding</td></tr>
+            <tr><td><span class="token-name">--bt-space-4xl</span></td><td>24px</td><td>XL button horizontal padding</td></tr>
+            <tr><td><span class="token-name">--bt-text-md-size</span></td><td>16px</td><td>Button font size</td></tr>
+            <tr><td><span class="token-name">--bt-text-md-lh</span></td><td>24px</td><td>Button line height</td></tr>
+          </tbody>
+        </table>
+      `};
+
+      return { title, html: `
+        <p class="page-desc">A fixed bottom container that groups primary and secondary actions on iOS screens. Always includes a Home Indicator. Three layout variants cover all common action patterns.</p>
+
+        <div class="preview-box" style="gap:32px;flex-wrap:wrap;align-items:flex-end;">
+          ${variant1}
+          ${variant2}
+          ${variant3}
+        </div>
+
+        <h2 id="Variants">Variants</h2>
+        <table class="token-table">
+          <thead><tr><th>Variant</th><th>Preview</th><th>When to use</th></tr></thead>
+          <tbody>
+            ${variants.map(v => `
+            <tr>
+              <td><span class="token-name">${v.label}</span></td>
+              <td><div style="display:flex;align-items:flex-end;">${v.node}</div></td>
+              <td style="color:var(--bt-text-emphasis)">${v.desc}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <h2 id="Anatomy">Anatomy</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Dock Container</span></td><td style="color:var(--bt-text-emphasis)">White background, top border, bottom corners rounded at 24px.</td></tr>
+            <tr><td><span class="token-name">Control</span></td><td style="color:var(--bt-text-emphasis)">Inner area holding the buttons. Padding: top 16px, bottom 20px, sides 20px.</td></tr>
+            <tr><td><span class="token-name">Home Indicator</span></td><td style="color:var(--bt-text-emphasis)">140 × 6px black pill centered at the bottom. Vertical padding 6px. Required in all variants.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Buttons">Buttons</h2>
+        <table class="token-table">
+          <thead><tr><th>Type</th><th>Preview</th><th>Padding (V / H)</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="token-name">Primary · XL</span></td>
+              <td><button style="${btnPrimXL}width:auto;">Button</button></td>
+              <td>16px / 24px</td>
+              <td style="color:var(--bt-text-emphasis)">Full-width in Vertical variants</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Primary · LG</span></td>
+              <td><button style="${btnPrimLG}flex:none;">Button</button></td>
+              <td>12px / 16px</td>
+              <td style="color:var(--bt-text-emphasis)">flex-1 on the right in Horizontal variant</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Secondary · XL</span></td>
+              <td><button style="${btnSecXL}width:auto;">Button</button></td>
+              <td>16px / 24px</td>
+              <td style="color:var(--bt-text-emphasis)">Bottom button in Vertical · 2 variant</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Secondary · LG</span></td>
+              <td><button style="${btnSecLG}flex:none;">Button</button></td>
+              <td>12px / 16px</td>
+              <td style="color:var(--bt-text-emphasis)">flex-1 on the left in Horizontal variant</td>
+            </tr>
+          </tbody>
+        </table>
+      `};
+    }
+  },
+
+  'components/icon-button': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Fill Modes', 'Sizes', 'States', 'Anatomy'],
+    render: (tab) => {
+      const title = 'Button Icon';
+
+      const ico = (color = 'currentColor') => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+
+      const base = `display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;border-radius:var(--bt-radius-md);transition:opacity 120ms;flex-shrink:0;`;
+
+      const fillModes = [
+        { name: 'Solid',   desc: 'High-emphasis action. Use for the primary icon action on a surface.',                   style: `${base}background:var(--bt-surface-brand);`,         iconColor: '#ffffff' },
+        { name: 'Outline', desc: 'Medium-emphasis. Border adds visible affordance without a filled background.',           style: `${base}background:transparent;border:1px solid var(--bt-border-default);`, iconColor: 'var(--bt-icon-default)' },
+        { name: 'Flat',    desc: 'Medium-emphasis. Subtle background provides grouping without strong contrast.',          style: `${base}background:var(--bt-surface-subtle);`,        iconColor: 'var(--bt-icon-default)' },
+        { name: 'Ghost',   desc: 'Low-emphasis. No background or border. Use in toolbars and dense layouts.',             style: `${base}background:transparent;`,                    iconColor: 'var(--bt-icon-default)' },
+      ];
+
+      const sizes = [
+        { name: 'xl', px: '56px', padding: '16px', token: '--bt-space-2xl' },
+        { name: 'lg', px: '48px', padding: '12px', token: '--bt-space-xl'  },
+        { name: 'md', px: '40px', padding: '8px',  token: '--bt-space-md'  },
+        { name: 'sm', px: '32px', padding: '4px',  token: '--bt-space-xs'  },
+        { name: 'xs', px: '28px', padding: '2px',  token: '--bt-base-sizing-2xs' },
+      ];
+
+      const sizePad = { xl: 'var(--bt-space-2xl)', lg: 'var(--bt-space-xl)', md: 'var(--bt-space-md)', sm: 'var(--bt-space-xs)', xs: 'var(--bt-base-sizing-2xs)' };
+
+      const btn = (fillStyle, iconColor, pad = 'var(--bt-space-2xl)') =>
+        `<div style="${fillStyle}padding:${pad};">${ico(iconColor)}</div>`;
+
+      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+      // ── Overview ──────────────────────────────────────────────────────────────
+      const overviewHtml = `
+        <p class="page-desc">A square button that contains a single icon with no label. Four fill modes and five sizes cover all common use cases across toolbars, cards, and action areas.</p>
+
+        <div class="preview-box" style="gap:12px;flex-wrap:wrap;">
+          ${fillModes.map(f => btn(f.style, f.iconColor)).join('')}
+        </div>
+
+        <h2 id="Fill Modes">Fill Modes</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four fill modes, each signalling a different level of emphasis.</p>
+        <table class="token-table">
+          <thead><tr><th>Mode</th><th>Preview</th><th>When to use</th></tr></thead>
+          <tbody>
+            ${fillModes.map(f => `
+            <tr>
+              <td><span class="token-name">${f.name}</span></td>
+              <td>${btn(f.style, f.iconColor)}</td>
+              <td style="color:var(--bt-text-emphasis)">${f.desc}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <h2 id="Sizes">Sizes</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">All sizes share a 24 × 24 px icon container; only the outer padding changes.</p>
+        <table class="token-table">
+          <thead><tr><th>Size</th><th>Total</th><th>Padding</th><th>Padding token</th><th>Preview</th></tr></thead>
+          <tbody>
+            ${sizes.map(s => `
+            <tr>
+              <td><span class="token-name">${s.name}</span></td>
+              <td>${s.px}</td>
+              <td>${s.padding}</td>
+              <td>${tk(s.token)}</td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);`, '#ffffff', sizePad[s.name])}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <h2 id="States">States</h2>
+        <table class="token-table">
+          <thead><tr><th>State</th><th>Solid</th><th>Outline</th><th>Flat</th><th>Ghost</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="token-name">Default</span></td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);`, '#ffffff')}</td>
+              <td>${btn(`${base}background:transparent;border:1px solid var(--bt-border-default);`, 'var(--bt-icon-default)')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-subtle);`, 'var(--bt-icon-default)')}</td>
+              <td>${btn(`${base}background:transparent;`, 'var(--bt-icon-default)')}</td>
+              <td style="color:var(--bt-text-emphasis)">Normal interactive state.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Hover</span></td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);opacity:0.88;`, '#ffffff')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-subtle);border:1px solid var(--bt-border-default);`, 'var(--bt-icon-default)')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-muted);`, 'var(--bt-icon-default)')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-subtle);`, 'var(--bt-icon-default)')}</td>
+              <td style="color:var(--bt-text-emphasis)">Cursor over the button.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Pressed</span></td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);opacity:0.76;`, '#ffffff')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-muted);border:1px solid var(--bt-border-default);`, 'var(--bt-icon-default)')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-emphasis);`, 'var(--bt-icon-default)')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-muted);`, 'var(--bt-icon-default)')}</td>
+              <td style="color:var(--bt-text-emphasis)">Active / tap state.</td>
+            </tr>
+            <tr>
+              <td><span class="token-name">Disabled</span></td>
+              <td>${btn(`${base}background:var(--bt-surface-muted);cursor:not-allowed;`, 'var(--bt-icon-muted)')}</td>
+              <td>${btn(`${base}background:transparent;border:1px solid var(--bt-border-muted);cursor:not-allowed;`, 'var(--bt-icon-muted)')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-subtle);cursor:not-allowed;`, 'var(--bt-icon-muted)')}</td>
+              <td>${btn(`${base}background:transparent;cursor:not-allowed;`, 'var(--bt-icon-muted)')}</td>
+              <td style="color:var(--bt-text-emphasis)">Non-interactive. Use only when an action is temporarily unavailable.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="Anatomy">Anatomy</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="7">Container</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+            <tr><td>Size — xl</td><td>—</td><td>56 × 56px</td></tr>
+            <tr><td>Size — lg</td><td>—</td><td>48 × 48px</td></tr>
+            <tr><td>Size — md</td><td>—</td><td>40 × 40px</td></tr>
+            <tr><td>Size — sm</td><td>—</td><td>32 × 32px</td></tr>
+            <tr><td>Size — xs</td><td>—</td><td>28 × 28px</td></tr>
+            <tr><td>Transition</td><td>—</td><td>opacity 120ms</td></tr>
+            <tr><td rowspan="5">Padding (uniform)</td><td>xl</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>lg</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
+            <tr><td>md</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>sm</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
+            <tr><td>xs</td><td>${tk('Base-sizing/2xs')}</td><td>2px</td></tr>
+            <tr><td rowspan="2">Background — Solid</td><td>Default / Hover / Pressed</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
+            <tr><td>Disabled</td><td>${tk('Gray/200')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Background — Flat</td><td>Default</td><td>${tk('Gray/100')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Background — Outline</td><td>Default</td><td>—</td><td>transparent</td></tr>
+            <tr><td>Background — Ghost</td><td>Default</td><td>—</td><td>transparent</td></tr>
+            <tr><td>Border — Outline</td><td>Width · Color</td><td>${tk('Gray/300')}</td><td>1px solid #d4d4d4</td></tr>
+            <tr><td>Opacity — Solid Hover</td><td>Opacity</td><td>—</td><td>0.88</td></tr>
+            <tr><td>Opacity — Solid Pressed</td><td>Opacity</td><td>—</td><td>0.76</td></tr>
+            <tr><td rowspan="2">Icon container</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
+            <tr><td>Overflow</td><td>—</td><td>clip</td></tr>
+            <tr><td>Icon (SVG)</td><td>Size</td><td>—</td><td>18 × 18px</td></tr>
+            <tr><td rowspan="2">Icon color — Solid</td><td>Default / Hover / Pressed</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
+            <tr><td>Disabled</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="2">Icon color — Outline / Flat / Ghost</td><td>Default / Hover / Pressed</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Disabled</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      if (tab === 'Usage') return { title, html: `
+        <p class="page-desc">Icon Button usage guidelines — when to choose each fill mode and how to size correctly.</p>
+        <h2 id="Do">Do</h2>
+        <ul>
+          <li>Use a recognisable icon that clearly communicates the action without a label</li>
+          <li>Add a tooltip on hover so the action is accessible to users unfamiliar with the icon</li>
+          <li>Choose the fill mode that matches the emphasis hierarchy — Solid for primary, Ghost for low-priority toolbar actions</li>
+          <li>Maintain consistent size within a single toolbar or action group</li>
+        </ul>
+        <h2>Don't</h2>
+        <ul>
+          <li>Don't use Icon Button as a navigation element — use Tab Bar or Navigation items instead</li>
+          <li>Don't mix multiple Solid icon buttons in the same row; only one action should be primary</li>
+          <li>Don't use ambiguous icons without a tooltip fallback</li>
+          <li>Don't manually set width/height — let padding and the 24px icon define the button size</li>
+        </ul>
+      `};
+
+      if (tab === 'Design') return { title, html: `
+        <p class="page-desc">Token values extracted from Figma for all fill modes, sizes, and states.</p>
+        <h2 id="Fill Mode Tokens">Fill Mode Tokens</h2>
+        <table class="token-table">
+          <thead><tr><th>Mode</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="2"><span class="token-name">Solid</span></td><td>Background</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td>Icon color</td><td>${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
+            <tr><td rowspan="2"><span class="token-name">Outline</span></td><td>Border</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Icon color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td rowspan="2"><span class="token-name">Flat</span></td><td>Background</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Icon color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td rowspan="1"><span class="token-name">Ghost</span></td><td>Icon color</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Size Tokens">Size Tokens</h2>
+        <table class="token-table">
+          <thead><tr><th>Size</th><th>Total</th><th>Padding token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">xl</span></td><td>56 × 56px</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td><span class="token-name">lg</span></td><td>48 × 48px</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+            <tr><td><span class="token-name">md</span></td><td>40 × 40px</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+            <tr><td><span class="token-name">sm</span></td><td>32 × 32px</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td><span class="token-name">xs</span></td><td>28 × 28px</td><td>${tk('--bt-base-sizing-2xs')}</td><td>2px</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="State Tokens">State Tokens</h2>
+        <table class="token-table">
+          <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="2"><span class="token-name">Disabled</span></td><td>Background (Solid)</td><td>${tk('--bt-surface-muted')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Icon color</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td><span class="token-name">Hover (Solid)</span></td><td>Opacity</td><td>—</td><td>0.88</td></tr>
+            <tr><td><span class="token-name">Pressed (Solid)</span></td><td>Opacity</td><td>—</td><td>0.76</td></tr>
+            <tr><td><span class="token-name">Shared</span></td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+            <tr><td><span class="token-name">Shared</span></td><td>Icon container</td><td>—</td><td>24 × 24px</td></tr>
+          </tbody>
+        </table>
+      `};
+
+      return { title, html: overviewHtml };
+    }
+  },
+
+  'components/card': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Types', 'States', 'Card With Header', 'Anatomy'],
+    render: (tab) => {
+      const title = 'Card';
+
+      const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+      const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
+
+      // ── Shared styles ────────────────────────────────────────────────────────
+      const cardWrap = (borderColor = 'var(--bt-border-default)') =>
+        `background:var(--bt-surface-default);border:1px solid ${borderColor};border-radius:var(--bt-radius-2xl);display:flex;flex-direction:column;width:280px;box-sizing:border-box;font-family:var(--font);`;
+
+      const innerPad = `padding:var(--bt-space-lg);display:flex;align-items:flex-start;justify-content:space-between;width:100%;box-sizing:border-box;`;
+
+      const titleStyle  = `font-size:var(--bt-text-xs-size);font-weight:500;line-height:var(--bt-text-xs-lh);color:var(--bt-text-default);`;
+      const subtitleStyle = (color = 'var(--bt-text-default)') =>
+        `font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:${color};`;
+      const descStyle   = `font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:var(--bt-text-default);`;
+
+      const iconPlaceholder = (muted = false) =>
+        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${muted ? 'var(--bt-icon-muted)' : 'var(--bt-icon-default)'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+
+      const iconContainer = (muted = false) =>
+        `<div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${iconPlaceholder(muted)}</div>`;
+
+      const badge = (muted = false) =>
+        `<div style="display:inline-flex;align-items:center;gap:2px;padding:2px 8px;background:${muted ? 'transparent' : 'var(--bt-surface-subtle)'};border:1px solid ${muted ? 'var(--bt-border-muted)' : 'var(--bt-border-default)'};border-radius:var(--bt-radius-full);font-size:var(--bt-text-xs-size);font-weight:400;line-height:var(--bt-text-xs-lh);color:${muted ? 'var(--bt-text-muted)' : 'var(--bt-text-default)'};white-space:nowrap;">Label Here</div>`;
+
+      // ── Card builders ────────────────────────────────────────────────────────
+      const cardSubtitle = (state = 'default') => {
+        const border    = state === 'active'  ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
+        const subColor  = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
+        const iconMuted = state === 'disabled';
+        return `<div style="${cardWrap(border)}">
+          <div style="${innerPad}min-height:68px;">
+            <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs);">
+              <span style="${titleStyle}">Title Here</span>
+              <span style="${subtitleStyle(subColor)}">Subtitle Here</span>
+            </div>
+            ${iconContainer(iconMuted)}
+          </div>
+        </div>`;
+      };
+
+      const cardBadge = (state = 'default') => {
+        const border    = state === 'active' ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
+        const iconMuted = state === 'disabled';
+        const bdgMuted  = state === 'disabled';
+        return `<div style="${cardWrap(border)}">
+          <div style="${innerPad}min-height:68px;">
+            <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs);">
+              <span style="${titleStyle}">Title Here</span>
+              ${badge(bdgMuted)}
+            </div>
+            ${iconContainer(iconMuted)}
+          </div>
+        </div>`;
+      };
+
+      const cardDescription = (state = 'default') => {
+        const border    = state === 'active' ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
+        const iconMuted = state === 'disabled';
+        const txtColor  = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
+        return `<div style="${cardWrap(border)}">
+          <div style="${innerPad}">
+            <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs);">
+              <span style="${titleStyle}">Title Here</span>
+              <span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${txtColor};">Description</span>
+              <span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${txtColor};">Description</span>
+              <span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${txtColor};">Description</span>
+            </div>
+            ${iconContainer(iconMuted)}
+          </div>
+        </div>`;
+      };
+
+      // ── Card With Header builder ──────────────────────────────────────────────
+      const iconEllipsis = (muted = false) =>
+        `<svg width="16" height="4" viewBox="0 0 20 4" fill="${muted ? 'var(--bt-icon-muted)' : 'var(--bt-icon-default)'}" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="2"/><circle cx="10" cy="2" r="2"/><circle cx="18" cy="2" r="2"/></svg>`;
+
+      const labelRow = (muted = false, lastIsBadge = false) =>
+        `<div style="display:flex;align-items:center;justify-content:space-between;padding:var(--bt-space-2xs) 0;">
+          <span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${muted ? 'var(--bt-text-muted)' : 'var(--bt-text-default)'};">Label</span>
+          ${lastIsBadge
+            ? badge(muted)
+            : `<span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${muted ? 'var(--bt-text-muted)' : 'var(--bt-text-default)'};">Value</span>`}
+        </div>`;
+
+      const cardWithHeader = (state = 'default') => {
+        const border  = state === 'active' ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
+        const muted   = state === 'disabled';
+        const ttlColor = muted ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
+        return `<div style="display:flex;flex-direction:column;width:360px;font-family:var(--font);">
+          <div style="background:var(--bt-surface-light);border:1px solid ${border};border-radius:var(--bt-radius-lg) var(--bt-radius-lg) 0 0;display:flex;align-items:center;justify-content:space-between;padding:var(--bt-space-sm) var(--bt-space-lg);box-sizing:border-box;">
+            <span style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:${ttlColor};">Title Here</span>
+            <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${iconEllipsis(muted)}</div>
+          </div>
+          <div style="background:var(--bt-surface-default);border:1px solid ${border};border-top:none;border-radius:0 0 var(--bt-radius-lg) var(--bt-radius-lg);padding:var(--bt-space-lg);display:flex;flex-direction:column;gap:var(--bt-space-xs);box-sizing:border-box;">
+            ${labelRow(muted)}
+            ${labelRow(muted)}
+            ${labelRow(muted)}
+            ${labelRow(muted)}
+            ${labelRow(muted, true)}
+          </div>
+        </div>`;
+      };
+
+      // ── State chip ────────────────────────────────────────────────────────────
+      const stateChip = s => {
+        const cfg = {
+          default:  { bg:'var(--bt-surface-subtle)',        color:'var(--bt-text-default)', label:'Default'  },
+          active:   { bg:'var(--bt-surface-brand-subtle)',  color:'var(--bt-text-brand)',   label:'Active'   },
+          disabled: { bg:'var(--bt-surface-muted)',          color:'var(--bt-text-muted)',   label:'Disabled' },
+        }[s];
+        return `<span style="display:inline-block;padding:2px 10px;border-radius:var(--bt-radius-full);background:${cfg.bg};color:${cfg.color};font-size:11px;font-weight:600;letter-spacing:0.04em;line-height:18px;">${cfg.label}</span>`;
+      };
+
+      // ── State group block ─────────────────────────────────────────────────────
+      const stateGroup = (label, cards) =>
+        `<div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:16px;">
+          <div style="padding:10px 16px;border-bottom:1px solid var(--bt-border-muted);background:var(--bt-surface-default);">
+            <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">${label}</span>
+          </div>
+          <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+            ${['default','active','disabled'].map(s =>
+              `<div style="display:flex;flex-direction:column;gap:8px;">${stateChip(s)}${cards[s]}</div>`
+            ).join('')}
+          </div>
+        </div>`;
+
+      // ── Overview HTML ─────────────────────────────────────────────────────────
+      const overviewHtml = `
+        <p class="page-desc">Two card variants — Card and Card With Header — display structured content in a bordered, rounded container. Three content types and three interactive states cover all common data display patterns.</p>
+
+        <h2 id="Types">Types</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Three content types — choose based on what secondary information needs to be shown alongside the title.</p>
+
+        <div style="display:flex;gap:20px;overflow-x:auto;padding-bottom:4px;margin-bottom:40px;">
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:0;">
+            <div style="background:var(--bt-surface-subtle);border-radius:10px 10px 0 0;padding:20px;display:flex;justify-content:center;border:1px solid var(--bt-border-muted);border-bottom:none;">
+              ${cardSubtitle()}
+            </div>
+            <div style="padding:14px 16px;border:1px solid var(--bt-border-muted);border-radius:0 0 10px 10px;">
+              <div style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin-bottom:4px;">Subtitle</div>
+              <div style="font-size:12.5px;line-height:1.6;color:var(--bt-text-emphasis);max-width:280px;">When a single numeric or short value summarises the card content.</div>
+            </div>
+          </div>
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:0;">
+            <div style="background:var(--bt-surface-subtle);border-radius:10px 10px 0 0;padding:20px;display:flex;justify-content:center;border:1px solid var(--bt-border-muted);border-bottom:none;">
+              ${cardBadge()}
+            </div>
+            <div style="padding:14px 16px;border:1px solid var(--bt-border-muted);border-radius:0 0 10px 10px;">
+              <div style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin-bottom:4px;">Badge</div>
+              <div style="font-size:12.5px;line-height:1.6;color:var(--bt-text-emphasis);max-width:280px;">When a status label or category tag needs to accompany the title.</div>
+            </div>
+          </div>
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:0;">
+            <div style="background:var(--bt-surface-subtle);border-radius:10px 10px 0 0;padding:20px;display:flex;justify-content:center;border:1px solid var(--bt-border-muted);border-bottom:none;">
+              ${cardDescription()}
+            </div>
+            <div style="padding:14px 16px;border:1px solid var(--bt-border-muted);border-radius:0 0 10px 10px;">
+              <div style="font-size:13px;font-weight:600;color:var(--bt-text-default);margin-bottom:4px;">Description</div>
+              <div style="font-size:12.5px;line-height:1.6;color:var(--bt-text-emphasis);max-width:280px;">When multiple lines of supporting text are needed below the title.</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="States">States</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">All three types share the same three states — only the border color and content color change.</p>
+
+        ${stateGroup('Subtitle',     { default: cardSubtitle('default'),     active: cardSubtitle('active'),     disabled: cardSubtitle('disabled')     })}
+        ${stateGroup('Badge',        { default: cardBadge('default'),        active: cardBadge('active'),        disabled: cardBadge('disabled')        })}
+        ${stateGroup('Description',  { default: cardDescription('default'),  active: cardDescription('active'),  disabled: cardDescription('disabled')  })}
+
+        <table class="token-table" style="margin-bottom:40px;">
+          <thead><tr><th>State</th><th>Border</th><th>Content change</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Default</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>—</td></tr>
+            <tr><td><span class="token-name">Active</span></td><td>${tk('Blue/700')} · #0d4e97</td><td>—</td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>Subtitle / description color → ${tk('Gray/400')}</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Card With Header">Card With Header</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">An extended card variant with a distinct header row and a body of label–value pairs. Shares the same three states.</p>
+
+        <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:40px;">
+          <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+            ${['default','active','disabled'].map(s =>
+              `<div style="display:flex;flex-direction:column;gap:8px;">${stateChip(s)}${cardWithHeader(s)}</div>`
+            ).join('')}
+          </div>
+        </div>
+
+        <h2 id="Anatomy">Anatomy</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="3">Card container</td><td>Background</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
+            <tr><td>Border — Default / Disabled</td><td>${tk('Gray/300')}</td><td>1px solid #d4d4d4</td></tr>
+            <tr><td>Border — Active</td><td>${tk('Blue/700')}</td><td>1px solid #0d4e97</td></tr>
+            <tr><td>Card container (Card)</td><td>Border Radius</td><td>${tk('Radius/2xl')}</td><td>12px</td></tr>
+            <tr><td>Card container (Card With Header)</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
+            <tr><td rowspan="2">Inner padding</td><td>All sides</td><td>${tk('Space/lg')}</td><td>10px</td></tr>
+            <tr><td>Row gap (title ↔ subtitle/badge/desc)</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
+            <tr><td rowspan="2">Title</td><td>Font size / weight / line-height</td><td>${tk('Title/xs/Medium')}</td><td>12px / 500 / 16px</td></tr>
+            <tr><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
+            <tr><td rowspan="2">Subtitle — Default / Active</td><td>Font size / weight / line-height</td><td>${tk('Text/md/Medium')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Subtitle — Disabled</td><td>Color</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="2">Description lines</td><td>Font size / weight / line-height</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Color — Disabled</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="3">Badge (Type=Badge)</td><td>Padding</td><td>${tk('Space/md')} · ${tk('Space/2xs')}</td><td>px 8px · py 2px</td></tr>
+            <tr><td>Border Radius</td><td>${tk('Radius/full')}</td><td>9999px</td></tr>
+            <tr><td>Font size / weight</td><td>${tk('Text/xs/Regular')}</td><td>12px / 400</td></tr>
+            <tr><td>Right Control icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
+            <tr><td rowspan="3">CWH — Header</td><td>Background</td><td>${tk('Gray/50')}</td><td>#fafafa</td></tr>
+            <tr><td>Padding H / V</td><td>${tk('Space/lg')} · ${tk('Space/sm')}</td><td>10px / 6px</td></tr>
+            <tr><td>Title font</td><td>${tk('Text/md/Medium')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td rowspan="2">CWH — Body rows</td><td>Font size / weight</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Row vertical padding</td><td>${tk('Space/2xs')}</td><td>2px</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      if (tab === 'Usage') return { title, html: `
+        <p class="page-desc">Card usage guidelines — when to use each type and how to handle states correctly.</p>
+        <h2 id="Do">Do</h2>
+        <ul>
+          <li>Choose the type that best matches the data — Subtitle for a single key value, Badge for a status, Description for multi-line context</li>
+          <li>Use Active state only for genuinely selected or focused cards in a list</li>
+          <li>Use Card With Header when the content has a logical section title and multiple label–value pairs</li>
+          <li>Keep card width consistent within a list or grid</li>
+        </ul>
+        <h2>Don't</h2>
+        <ul>
+          <li>Don't nest cards inside other cards</li>
+          <li>Don't use the Disabled state simply to de-emphasise — only use it when the card interaction is genuinely unavailable</li>
+          <li>Don't add more than three description lines — use a detail screen instead</li>
+          <li>Don't mix Card types within the same list</li>
+        </ul>
+      `};
+
+      if (tab === 'Design') return { title, html: `
+        <p class="page-desc">Token values extracted from Figma for the Card and Card With Header components.</p>
+        <h2 id="Tokens">Tokens</h2>
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">--bt-surface-default</span></td><td>#ffffff</td><td>Card background / CWH body background</td></tr>
+            <tr><td><span class="token-name">--bt-surface-light</span></td><td>#fafafa</td><td>CWH header background</td></tr>
+            <tr><td><span class="token-name">--bt-surface-subtle</span></td><td>#f5f5f5</td><td>Badge background (Tertiary/Outline)</td></tr>
+            <tr><td><span class="token-name">--bt-border-default</span></td><td>#d4d4d4</td><td>Card border — Default / Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-blue-700</span></td><td>#0d4e97</td><td>Card border — Active state</td></tr>
+            <tr><td><span class="token-name">--bt-text-default</span></td><td>#1a1a1a</td><td>All text — Default / Active</td></tr>
+            <tr><td><span class="token-name">--bt-text-muted</span></td><td>#a3a3a3</td><td>Subtitle / description text — Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-icon-default</span></td><td>#1a1a1a</td><td>Right control icon — Default / Active</td></tr>
+            <tr><td><span class="token-name">--bt-icon-muted</span></td><td>#a3a3a3</td><td>Right control icon — Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-radius-2xl</span></td><td>12px</td><td>Card border radius</td></tr>
+            <tr><td><span class="token-name">--bt-radius-lg</span></td><td>8px</td><td>Card With Header border radius</td></tr>
+            <tr><td><span class="token-name">--bt-radius-full</span></td><td>9999px</td><td>Badge border radius</td></tr>
+            <tr><td><span class="token-name">--bt-space-lg</span></td><td>10px</td><td>Card padding / CWH header horizontal padding</td></tr>
+            <tr><td><span class="token-name">--bt-space-sm</span></td><td>6px</td><td>CWH header vertical padding</td></tr>
+            <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>Title ↔ content gap</td></tr>
+            <tr><td><span class="token-name">--bt-space-2xs</span></td><td>2px</td><td>CWH body row vertical padding / Badge py</td></tr>
+            <tr><td><span class="token-name">--bt-space-md</span></td><td>8px</td><td>Badge horizontal padding</td></tr>
+          </tbody>
+        </table>
+      `};
+
+      return { title, html: overviewHtml };
     }
   },
 
