@@ -3118,7 +3118,7 @@ const PAGES = {
         const thumbY = (c.h - c.thumb) / 2;
         return `<div style="display:inline-flex;align-items:center;flex-shrink:0;">
           <div style="width:${c.w}px;height:${c.h}px;border-radius:9999px;background:${track};position:relative;${ring ? `box-shadow:${ring};` : ''}">
-            <div style="position:absolute;top:${thumbY}px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:9999px;background:${thumb};box-shadow:${thumbShadow};"></div>
+            <div style="position:absolute;top:${thumbY}px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:4px;background:${thumb};box-shadow:${thumbShadow};"></div>
           </div>
         </div>`;
       };
@@ -3141,11 +3141,10 @@ const PAGES = {
           </div>
           <span style="font-size:14px;font-weight:400;line-height:16px;color:${descColor};font-family:var(--font);">Description for additional information here.</span>
         </div>`;
-        const gap = `gap:var(--bt-space-xs);`;
         const items = side === 'left'
-          ? [labelBlock, `<div style="flex-shrink:0;margin-left:auto;">${sw}</div>`]
+          ? [labelBlock, `<div style="flex-shrink:0;">${sw}</div>`]
           : [`<div style="flex-shrink:0;">${sw}</div>`, labelBlock];
-        return `<div style="display:flex;align-items:center;${gap}width:340px;">${items.join('')}</div>`;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;gap:var(--bt-space-xs);width:369px;">${items.join('')}</div>`;
       };
 
       const stateChip = (label, bg) =>
