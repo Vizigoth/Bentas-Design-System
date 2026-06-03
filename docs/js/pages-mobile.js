@@ -3083,11 +3083,14 @@ const PAGES = {
       const title = 'Switch';
       const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
-      // ── Size configs (from Figma node 1891:20410) ───────────────────────────
+      // ── Size configs — read directly from Figma plugin (figma_execute) ──────
+      // Track cornerRadius = 4 (Radius/sm), padding = 2px all sides
+      // Thumb is a square: size = trackH - 4, cornerRadius = 4 (Radius/sm)
+      // thumbOff = 2 (paddingLeft), thumbOn = trackW - 2 - thumbSize (paddingRight)
       const trackCfg = {
-        sm: { w: 32, h: 20, thumb: 14, thumbOff: 3, thumbOn: 15 },
-        md: { w: 40, h: 24, thumb: 18, thumbOff: 3, thumbOn: 19 },
-        lg: { w: 48, h: 28, thumb: 22, thumbOff: 3, thumbOn: 23 },
+        sm: { w: 32, h: 20, thumb: 16, thumbOff: 2, thumbOn: 14 },
+        md: { w: 40, h: 24, thumb: 20, thumbOff: 2, thumbOn: 18 },
+        lg: { w: 48, h: 28, thumb: 24, thumbOff: 2, thumbOn: 22 },
       };
 
       // ── Token map — Figma variable → CSS custom property ───────────────────
@@ -3108,17 +3111,17 @@ const PAGES = {
         'unselected-disabled': { track: 'var(--bt-surface-muted)',     thumb: 'var(--bt-surface-muted)' },
       };
 
-      const thumbShadow = '0 1px 2px rgba(16,24,40,0.06),0 2px 4px rgba(16,24,40,0.10)'; // Shadow/md
+      // Shadow/md: offset(0,2) radius:4 + offset(0,4) radius:8
+      const thumbShadow = '0 2px 4px rgba(16,24,40,0.06),0 4px 8px rgba(16,24,40,0.10)';
 
       const switchEl = (size, mode, state) => {
         const c = trackCfg[size];
         const { track, thumb, ring } = trackColors[`${mode}-${state}`] || trackColors['unselected-default'];
         const isOn   = mode === 'selected';
         const thumbX = isOn ? c.thumbOn : c.thumbOff;
-        const thumbY = (c.h - c.thumb) / 2;
         return `<div style="display:inline-flex;align-items:center;flex-shrink:0;">
-          <div style="width:${c.w}px;height:${c.h}px;border-radius:9999px;background:${track};position:relative;${ring ? `box-shadow:${ring};` : ''}">
-            <div style="position:absolute;top:${thumbY}px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:4px;background:${thumb};box-shadow:${thumbShadow};"></div>
+          <div style="width:${c.w}px;height:${c.h}px;border-radius:4px;background:${track};position:relative;padding:2px;box-sizing:border-box;${ring ? `box-shadow:${ring};` : ''}">
+            <div style="position:absolute;top:2px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:4px;background:${thumb};box-shadow:${thumbShadow};"></div>
           </div>
         </div>`;
       };
@@ -3172,9 +3175,9 @@ const PAGES = {
         <table class="token-table" style="margin-bottom:40px;">
           <thead><tr><th>Size</th><th>Track W × H</th><th>Thumb Ø</th><th>Thumb X (Off / On)</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">sm</span></td><td>32 × 20px</td><td>14px</td><td>3px / 15px</td></tr>
-            <tr><td><span class="token-name">md</span></td><td>40 × 24px</td><td>18px</td><td>3px / 19px</td></tr>
-            <tr><td><span class="token-name">lg</span></td><td>48 × 28px</td><td>22px</td><td>3px / 23px</td></tr>
+            <tr><td><span class="token-name">sm</span></td><td>32 × 20px</td><td>16 × 16px</td><td>2px / 14px</td></tr>
+            <tr><td><span class="token-name">md</span></td><td>40 × 24px</td><td>20 × 20px</td><td>2px / 18px</td></tr>
+            <tr><td><span class="token-name">lg</span></td><td>48 × 28px</td><td>24 × 24px</td><td>2px / 22px</td></tr>
           </tbody>
         </table>
 
@@ -3239,12 +3242,16 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Property</th><th>Figma Variable</th><th>CSS Token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td rowspan="2">Track — Selected</td><td>Background</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td rowspan="3">Track — Selected</td><td>Background</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
             <tr><td>Background — Disabled</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-muted')}</td><td>${tk('--bt-blue-200')}</td><td>#bedbf9</td></tr>
-            <tr><td rowspan="2">Track — Unselected</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-emphasis')}</td><td>${tk('--bt-surface-emphasis')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Border Radius</td><td>${tk('Radius/sm')}</td><td>—</td><td>4px</td></tr>
+            <tr><td rowspan="3">Track — Unselected</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-emphasis')}</td><td>${tk('--bt-surface-emphasis')}</td><td>#d4d4d4</td></tr>
             <tr><td>Background — Disabled</td><td>${tk('Surface Colors Primary/--bt-surface-primary-muted')}</td><td>${tk('--bt-surface-muted')}</td><td>#e6e6e6</td></tr>
-            <tr><td>Thumb</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
-            <tr><td>Thumb</td><td>Shadow</td><td>${tk('Shadow/md')}</td><td>—</td><td>0 1px 2px #1018280F, 0 2px 4px #1018281A</td></tr>
+            <tr><td>Border Radius</td><td>${tk('Radius/sm')}</td><td>—</td><td>4px</td></tr>
+            <tr><td>Track Padding</td><td>All sides</td><td>${tk('Space/2xs')}</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+            <tr><td rowspan="3">Thumb</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Border Radius</td><td>${tk('Radius/sm')}</td><td>—</td><td>4px</td></tr>
+            <tr><td>Shadow</td><td>${tk('Shadow/md')}</td><td>—</td><td>0 2px 4px #1018280F, 0 4px 8px #1018281A</td></tr>
             <tr><td>Focus Ring — Selected</td><td>Box Shadow</td><td>${tk('Focus Ring/primary')}</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.24)</td></tr>
             <tr><td>Focus Ring — Unselected</td><td>Box Shadow</td><td>${tk('Focus Ring/neutral')}</td><td>—</td><td>0 0 0 3px rgba(212,212,212,0.24)</td></tr>
             <tr><td rowspan="2">Label</td><td>Font</td><td>${tk('Label/md/Regular')}</td><td>—</td><td>Geist 16px / 400 / 24px</td></tr>
@@ -3313,9 +3320,9 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Size</th><th>Track W</th><th>Track H</th><th>Thumb Ø</th><th>Thumb X (Off / On)</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">sm</span></td><td>32px</td><td>20px</td><td>14px</td><td>3px / 15px</td></tr>
-            <tr><td><span class="token-name">md</span></td><td>40px</td><td>24px</td><td>18px</td><td>3px / 19px</td></tr>
-            <tr><td><span class="token-name">lg</span></td><td>48px</td><td>28px</td><td>22px</td><td>3px / 23px</td></tr>
+            <tr><td><span class="token-name">sm</span></td><td>32px</td><td>20px</td><td>16 × 16px</td><td>2px / 14px</td></tr>
+            <tr><td><span class="token-name">md</span></td><td>40px</td><td>24px</td><td>20 × 20px</td><td>2px / 18px</td></tr>
+            <tr><td><span class="token-name">lg</span></td><td>48px</td><td>28px</td><td>24 × 24px</td><td>2px / 22px</td></tr>
           </tbody>
         </table>
       `};
