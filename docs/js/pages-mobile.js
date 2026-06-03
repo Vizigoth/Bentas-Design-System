@@ -2209,12 +2209,20 @@ const PAGES = {
       };
 
       // ── Input field helper ──────────────────────────────────────────────────
+      // Matches Figma Text/Dropdown/Date Input (Md):
+      //   Frame: 363×48, r=Radius/lg(8px), paddingLeft=Space/2xl(16px) ONLY
+      //   Text Container (VERTICAL):
+      //     Label:       12px / 400 / 16px — Gray/500 = --bt-text-emphasis  (VariableID:75:617)
+      //     Placeholder: 16px / 400 / 24px — Gray/500 = --bt-text-emphasis
+      //   Right Control: 48×48px container (always present, centered icon)
       const inputField = (label, placeholder, icon = null) => `
-        <div style="display:flex;flex-direction:column;gap:var(--bt-space-sm);">
-          <div style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-default);">${label}</div>
-          <div style="display:flex;align-items:center;height:48px;border:1px solid var(--bt-border-default);border-radius:var(--bt-radius-lg);padding:0 var(--bt-space-xl) 0 var(--bt-space-2xl);box-sizing:border-box;background:var(--bt-surface-default);">
-            <div style="flex:1 0 0;min-width:1px;font-size:var(--bt-text-md-size);font-weight:400;line-height:var(--bt-text-md-lh);color:var(--bt-text-muted);">${placeholder}</div>
-            ${icon ? `<div style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${icon}</div>` : ''}
+        <div style="height:48px;border:1px solid var(--bt-border-default);border-radius:var(--bt-radius-lg);padding-left:var(--bt-space-2xl);background:var(--bt-surface-default);display:flex;align-items:center;overflow:hidden;box-sizing:border-box;">
+          <div style="flex:1 0 0;min-width:1px;display:flex;flex-direction:column;justify-content:center;gap:0;">
+            <span style="font-size:12px;font-weight:400;line-height:16px;color:var(--bt-text-emphasis);font-family:var(--font);">${label}</span>
+            <span style="font-size:var(--bt-text-md-size);font-weight:400;line-height:var(--bt-text-md-lh);color:var(--bt-text-emphasis);font-family:var(--font);">${placeholder}</span>
+          </div>
+          <div style="flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
+            ${icon || ''}
           </div>
         </div>`;
 
@@ -2332,10 +2340,18 @@ const PAGES = {
             <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>Geist 14px / 400 / 16px</td></tr>
             <tr><td>Description</td><td>Color</td><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')} · #1a1a1a</td></tr>
             <tr><td>Input field</td><td>Height</td><td>—</td><td>48px</td></tr>
-            <tr><td>Input field</td><td>Padding left</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Input field</td><td>Padding right</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
+            <tr><td>Input field</td><td>Padding left</td><td>${tk('Space/2xl')}</td><td>16px (tek taraf — sağ, Right Control frame'den gelir)</td></tr>
             <tr><td>Input field</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
-            <tr><td>Input field</td><td>Border</td><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
+            <tr><td>Input field</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')} · #ffffff</td></tr>
+            <tr><td>Input field</td><td>Border — Default</td><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
+            <tr><td>Input field</td><td>Border — Active</td><td>${tk('Blue/700')}</td><td>${tk('--bt-border-brand')} · #0d4e97</td></tr>
+            <tr><td>Input field</td><td>Border — Error</td><td>${tk('Red/700')}</td><td>${tk('--bt-text-error')} · #b31d38</td></tr>
+            <tr><td>Input field</td><td>Background — Disabled</td><td>${tk('Gray/100')}</td><td>${tk('--bt-surface-subtle')} · #f5f5f5</td></tr>
+            <tr><td>Input label (inside)</td><td>Font</td><td>${tk('Text/xs/Regular')}</td><td>Geist 12px / 400 / 16px</td></tr>
+            <tr><td>Input label (inside)</td><td>Color</td><td>${tk('Gray/500')}</td><td>${tk('--bt-text-emphasis')} · #727272</td></tr>
+            <tr><td>Input placeholder</td><td>Font</td><td>${tk('Text/md/Regular')}</td><td>Geist 16px / 400 / 24px</td></tr>
+            <tr><td>Input placeholder</td><td>Color</td><td>${tk('Gray/500')}</td><td>${tk('--bt-text-emphasis')} · #727272</td></tr>
+            <tr><td>Right Control</td><td>Size</td><td>—</td><td>48 × 48px</td></tr>
             <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
             <tr><td>Button area</td><td>Padding V</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
             <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
@@ -2369,6 +2385,9 @@ const PAGES = {
             <tr><td>${tk('Space/2xl')}</td><td>${tk('--bt-space-2xl')}</td><td>16px</td><td>Toolbar padding H · Body gap · Button area padding V</td></tr>
             <tr><td>${tk('Space/xl')}</td><td>${tk('--bt-space-xl')}</td><td>12px</td><td>Input field padding right</td></tr>
             <tr><td>${tk('Space/md')}</td><td>${tk('--bt-space-md')}</td><td>8px</td><td>Button padding V</td></tr>
+            <tr><td>${tk('Gray/500')}</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td><td>Input label (içinde) · Input placeholder</td></tr>
+            <tr><td>${tk('Gray/100')}</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td><td>Input background — Disabled</td></tr>
+            <tr><td>${tk('Red/700')}</td><td>${tk('--bt-text-error')}</td><td>#b31d38</td><td>Input border — Error state</td></tr>
           </tbody>
         </table>
 
