@@ -3083,22 +3083,32 @@ const PAGES = {
       const title = 'Switch';
       const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
-      // ── Size configs ────────────────────────────────────────────────────────
+      // ── Size configs (from Figma node 1891:20410) ───────────────────────────
       const trackCfg = {
-        sm: { w: 32, h: 20, r: 10, thumb: 14, thumbOff: 3, thumbOn: 15 },
-        md: { w: 40, h: 24, r: 12, thumb: 18, thumbOff: 3, thumbOn: 19 },
-        lg: { w: 48, h: 28, r: 14, thumb: 22, thumbOff: 3, thumbOn: 23 },
+        sm: { w: 32, h: 20, thumb: 14, thumbOff: 3, thumbOn: 15 },
+        md: { w: 40, h: 24, thumb: 18, thumbOff: 3, thumbOn: 19 },
+        lg: { w: 48, h: 28, thumb: 22, thumbOff: 3, thumbOn: 23 },
       };
 
-      // ── Track / thumb color tokens ──────────────────────────────────────────
+      // ── Token map — Figma variable → CSS custom property ───────────────────
+      // Selected track:   Surface Colors/Brand/--bt-surface-brand-contrast-default  → --bt-surface-brand   (#0d4e97)
+      // Sel Disabled:     Surface Colors/Brand/--bt-surface-brand-contrast-muted    → --bt-blue-200        (#bedbf9)
+      // Unselected track: Surface Colors Primary/--bt-surface-primary-emphasis      → --bt-surface-emphasis(#d4d4d4)
+      // Unsel Disabled:   Surface Colors Primary/--bt-surface-primary-muted         → --bt-surface-muted   (#e6e6e6)
+      // Thumb:            Surface Colors Primary/--bt-surface-primary-default       → --bt-surface-default (#ffffff)
+      // Focus/primary:    Focus Ring/primary  → box-shadow 0 0 0 3px #0D4E973D
+      // Focus/neutral:    Focus Ring/neutral  → box-shadow 0 0 0 3px #D4D4D43D
+      // Thumb shadow:     Shadow/md           → double drop-shadow
       const trackColors = {
-        'selected-default':    { track: 'var(--bt-blue-700)',  thumb: '#ffffff' },
-        'selected-focused':    { track: 'var(--bt-blue-700)',  thumb: '#ffffff', ring: 'rgba(13,78,151,0.22)' },
-        'selected-disabled':   { track: 'var(--bt-blue-300)',  thumb: '#ffffff' },
-        'unselected-default':  { track: 'var(--bt-gray-300)',  thumb: '#ffffff' },
-        'unselected-focused':  { track: 'var(--bt-gray-300)',  thumb: '#ffffff', ring: 'rgba(0,0,0,0.10)' },
-        'unselected-disabled': { track: 'var(--bt-gray-100)',  thumb: 'var(--bt-gray-200)' },
+        'selected-default':    { track: 'var(--bt-surface-brand)',     thumb: 'var(--bt-surface-default)' },
+        'selected-focused':    { track: 'var(--bt-surface-brand)',     thumb: 'var(--bt-surface-default)', ring: '0 0 0 3px rgba(13,78,151,0.24)' },
+        'selected-disabled':   { track: 'var(--bt-blue-200)',          thumb: 'var(--bt-surface-default)' },
+        'unselected-default':  { track: 'var(--bt-surface-emphasis)',  thumb: 'var(--bt-surface-default)' },
+        'unselected-focused':  { track: 'var(--bt-surface-emphasis)',  thumb: 'var(--bt-surface-default)', ring: '0 0 0 3px rgba(212,212,212,0.24)' },
+        'unselected-disabled': { track: 'var(--bt-surface-muted)',     thumb: 'var(--bt-surface-muted)' },
       };
+
+      const thumbShadow = '0 1px 2px rgba(16,24,40,0.06),0 2px 4px rgba(16,24,40,0.10)'; // Shadow/md
 
       const switchEl = (size, mode, state) => {
         const c = trackCfg[size];
@@ -3106,120 +3116,120 @@ const PAGES = {
         const isOn   = mode === 'selected';
         const thumbX = isOn ? c.thumbOn : c.thumbOff;
         const thumbY = (c.h - c.thumb) / 2;
-        const ringStyle = ring ? `box-shadow:0 0 0 4px ${ring};` : '';
         return `<div style="display:inline-flex;align-items:center;flex-shrink:0;">
-          <div style="width:${c.w}px;height:${c.h}px;border-radius:var(--bt-radius-full);background:${track};position:relative;transition:background 160ms;${ringStyle}">
-            <div style="position:absolute;top:${thumbY}px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:var(--bt-radius-full);background:${thumb};box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:left 160ms;"></div>
+          <div style="width:${c.w}px;height:${c.h}px;border-radius:9999px;background:${track};position:relative;${ring ? `box-shadow:${ring};` : ''}">
+            <div style="position:absolute;top:${thumbY}px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:9999px;background:${thumb};box-shadow:${thumbShadow};"></div>
           </div>
         </div>`;
       };
 
-      // ── Full switch row (with label) ─────────────────────────────────────────
+      // ── Full switch row with label (Label/md/Regular = 16px/400/24px) ───────
+      // Text/sm/Regular = 14px/400/16px for description
+      // Text Colors/--bt-text-default  → --bt-text-default  (#1a1a1a)
+      // Text Colors/Brand/--bt-text-brand-contrast-default → --bt-text-brand (#0d4e97)
+      // Text Colors/--bt-text-emphasis → --bt-text-emphasis (#727272)
       const switchRow = (mode, state, side = 'right') => {
         const sw = switchEl('md', mode, state);
-        const labelColor = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
-        const reqColor   = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-blue-600)';
+        const isDisabled = state === 'disabled';
+        const labelColor = isDisabled ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
+        const reqColor   = isDisabled ? 'var(--bt-text-muted)' : 'var(--bt-text-brand)';
+        const descColor  = isDisabled ? 'var(--bt-text-muted)' : 'var(--bt-text-emphasis)';
         const labelBlock = `<div style="display:flex;flex-direction:column;gap:2px;flex:1;">
           <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-            <span style="font-size:var(--bt-text-sm-size,14px);font-weight:500;line-height:var(--bt-text-sm-lh,16px);color:${labelColor};font-family:var(--font);">Label Here</span>
-            <span style="font-size:var(--bt-text-xs-size,12px);font-weight:400;color:${reqColor};font-family:var(--font);">(Required Field)</span>
+            <span style="font-size:16px;font-weight:400;line-height:24px;color:${labelColor};font-family:var(--font);">Label Here</span>
+            <span style="font-size:14px;font-weight:400;color:${reqColor};font-family:var(--font);">(Required Field)</span>
           </div>
-          <span style="font-size:var(--bt-text-xs-size,12px);font-weight:400;line-height:var(--bt-text-xs-lh,16px);color:var(--bt-text-muted);font-family:var(--font);">Description for additional information here.</span>
+          <span style="font-size:14px;font-weight:400;line-height:16px;color:${descColor};font-family:var(--font);">Description for additional information here.</span>
         </div>`;
+        const gap = `gap:var(--bt-space-xs);`;
         const items = side === 'left'
-          ? [labelBlock, `<div style="flex-shrink:0;">${sw}</div>`]
+          ? [labelBlock, `<div style="flex-shrink:0;margin-left:auto;">${sw}</div>`]
           : [`<div style="flex-shrink:0;">${sw}</div>`, labelBlock];
-        return `<div style="display:flex;align-items:center;gap:var(--bt-space-3xl,12px);width:320px;">${items.join('')}</div>`;
+        return `<div style="display:flex;align-items:center;${gap}width:340px;">${items.join('')}</div>`;
       };
 
-      // ── State chip ────────────────────────────────────────────────────────────
       const stateChip = (label, bg) =>
-        `<span style="display:inline-block;padding:2px 10px;border-radius:var(--bt-radius-full);background:${bg};font-size:11px;font-weight:600;letter-spacing:.04em;line-height:18px;color:#fff;font-family:var(--font);">${label}</span>`;
+        `<span style="display:inline-block;padding:2px 10px;border-radius:9999px;background:${bg};font-size:11px;font-weight:600;letter-spacing:.04em;line-height:18px;color:#fff;font-family:var(--font);">${label}</span>`;
 
       // ── Overview ──────────────────────────────────────────────────────────────
       const overviewHtml = `
-        <p class="page-desc">Switch, tek bir ayarı açık/kapalı konumuna getiren toggle kontrolüdür. Üç boyut, üç durum ve iki etiket konumu ile gelir.</p>
+        <p class="page-desc">Switch, tek bir ayarı açık/kapalı konumuna getiren toggle kontrolüdür. Üç boyut (sm/md/lg), üç durum (Default/Focused/Disabled) ve iki etiket konumu ile gelir.</p>
 
         <h2 id="Sizes">Sizes</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Switch üç boyutta gelir — sm, md ve lg. Boyut seçimi kullanıldığı form yoğunluğuna göre yapılır.</p>
-
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Switch üç boyutta gelir — sm, md ve lg. Soldaki her çiftte ilki Unselected, ikincisi Selected durumunu gösterir.</p>
         <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:32px;">
           <div style="background:var(--bt-surface-subtle);padding:24px;display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
             ${['sm','md','lg'].map(s => `
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                <div style="display:flex;gap:16px;align-items:center;">
+                <div style="display:flex;gap:12px;align-items:center;">
                   ${switchEl(s,'unselected','default')}
                   ${switchEl(s,'selected','default')}
                 </div>
-                <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);font-family:var(--font);">${s}</span>
+                <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-emphasis);font-family:var(--font);">${s}</span>
               </div>
             `).join('')}
           </div>
         </div>
         <table class="token-table" style="margin-bottom:40px;">
-          <thead><tr><th>Size</th><th>Track (W × H)</th><th>Thumb Ø</th><th>Border Radius</th></tr></thead>
+          <thead><tr><th>Size</th><th>Track W × H</th><th>Thumb Ø</th><th>Thumb X (Off / On)</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">sm</span></td><td>32 × 20px</td><td>14px</td><td>${tk('radius/full')}</td></tr>
-            <tr><td><span class="token-name">md</span></td><td>40 × 24px</td><td>18px</td><td>${tk('radius/full')}</td></tr>
-            <tr><td><span class="token-name">lg</span></td><td>48 × 28px</td><td>22px</td><td>${tk('radius/full')}</td></tr>
+            <tr><td><span class="token-name">sm</span></td><td>32 × 20px</td><td>14px</td><td>3px / 15px</td></tr>
+            <tr><td><span class="token-name">md</span></td><td>40 × 24px</td><td>18px</td><td>3px / 19px</td></tr>
+            <tr><td><span class="token-name">lg</span></td><td>48 × 28px</td><td>22px</td><td>3px / 23px</td></tr>
           </tbody>
         </table>
 
         <h2 id="States">States</h2>
         <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Her mod (Unselected / Selected) üç durumu destekler: Default, Focused ve Disabled.</p>
-
         <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:16px;">
           <div style="padding:10px 16px;border-bottom:1px solid var(--bt-border-muted);background:var(--bt-surface-default);">
             <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">Unselected (Off)</span>
           </div>
           <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
-            ${[['Default','default','var(--bt-gray-600)'],['Focused','focused','var(--bt-blue-600)'],['Disabled','disabled','var(--bt-gray-400)']].map(([label,state,bg]) => `
+            ${[['Default','default','#535353'],['Focused','focused','#0e62bb'],['Disabled','disabled','#a3a3a3']].map(([lbl,state,bg]) => `
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                ${stateChip(label, bg)}
+                ${stateChip(lbl, bg)}
                 ${switchEl('md','unselected',state)}
               </div>
             `).join('')}
           </div>
         </div>
-
         <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:32px;">
           <div style="padding:10px 16px;border-bottom:1px solid var(--bt-border-muted);background:var(--bt-surface-default);">
             <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">Selected (On)</span>
           </div>
           <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
-            ${[['Default','default','var(--bt-gray-600)'],['Focused','focused','var(--bt-blue-600)'],['Disabled','disabled','var(--bt-gray-400)']].map(([label,state,bg]) => `
+            ${[['Default','default','#535353'],['Focused','focused','#0e62bb'],['Disabled','disabled','#a3a3a3']].map(([lbl,state,bg]) => `
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                ${stateChip(label, bg)}
+                ${stateChip(lbl, bg)}
                 ${switchEl('md','selected',state)}
               </div>
             `).join('')}
           </div>
         </div>
-
         <table class="token-table" style="margin-bottom:40px;">
-          <thead><tr><th>State</th><th>Track (Unselected)</th><th>Track (Selected)</th><th>Thumb</th></tr></thead>
+          <thead><tr><th>State</th><th>Track — Unselected</th><th>Track — Selected</th><th>Thumb</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Default</span></td><td>${tk('--bt-gray-300')} · #d4d4d4</td><td>${tk('--bt-blue-700')} · #0d4e97</td><td>#ffffff</td></tr>
-            <tr><td><span class="token-name">Focused</span></td><td>${tk('--bt-gray-300')} + focus ring</td><td>${tk('--bt-blue-700')} + focus ring</td><td>#ffffff</td></tr>
-            <tr><td><span class="token-name">Disabled</span></td><td>${tk('--bt-gray-100')} · #f5f5f5</td><td>${tk('--bt-blue-300')} · #85bdf4</td><td>${tk('--bt-gray-200')} / #ffffff</td></tr>
+            <tr><td><span class="token-name">Default</span></td><td>${tk('--bt-surface-emphasis')} #d4d4d4</td><td>${tk('--bt-surface-brand')} #0d4e97</td><td>${tk('--bt-surface-default')} #ffffff</td></tr>
+            <tr><td><span class="token-name">Focused</span></td><td>${tk('--bt-surface-emphasis')} + Focus Ring/neutral</td><td>${tk('--bt-surface-brand')} + Focus Ring/primary</td><td>${tk('--bt-surface-default')} #ffffff</td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td>${tk('--bt-surface-muted')} #e6e6e6</td><td>${tk('--bt-blue-200')} #bedbf9</td><td>${tk('--bt-surface-muted')} #e6e6e6</td></tr>
           </tbody>
         </table>
 
         <h2 id="Label Position">Label Position</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Etiket switchin soluna (Label Side=Left) ya da sağına (Label Side=Right) yerleştirilebilir.</p>
-
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Etiket switchin soluna (Label Side=Left) ya da sağına (Label Side=Right) yerleştirilebilir. Label fontu ${tk('Label/md/Regular')} (16px/400/24px), description fontu ${tk('Text/sm/Regular')} (14px/400/16px).</p>
         <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:40px;">
           <div style="background:var(--bt-surface-subtle);padding:24px;display:flex;flex-direction:column;gap:0;">
             ${[
-              ['Unselected — Label Right', 'unselected', 'default',  'right'],
-              ['Selected — Label Right',   'selected',   'default',  'right'],
-              ['Disabled — Label Right',   'selected',   'disabled', 'right'],
-              ['Unselected — Label Left',  'unselected', 'default',  'left'],
-              ['Selected — Label Left',    'selected',   'default',  'left'],
-              ['Disabled — Label Left',    'unselected', 'disabled', 'left'],
-            ].map(([label, mode, state, side], i) => `
+              ['Unselected · Label Right', 'unselected', 'default',  'right'],
+              ['Selected · Label Right',   'selected',   'default',  'right'],
+              ['Disabled · Label Right',   'selected',   'disabled', 'right'],
+              ['Unselected · Label Left',  'unselected', 'default',  'left'],
+              ['Selected · Label Left',    'selected',   'default',  'left'],
+              ['Disabled · Label Left',    'unselected', 'disabled', 'left'],
+            ].map(([lbl,mode,state,side],i) => `
               <div style="padding:12px 0;${i > 0 ? 'border-top:1px solid var(--bt-border-muted);' : ''}">
-                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;font-family:var(--font);">${label}</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-emphasis);margin-bottom:8px;font-family:var(--font);">${lbl}</div>
                 ${switchRow(mode, state, side)}
               </div>
             `).join('')}
@@ -3228,23 +3238,24 @@ const PAGES = {
 
         <h2 id="Anatomy">Anatomy</h2>
         <table class="token-table">
-          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <thead><tr><th>Element</th><th>Property</th><th>Figma Variable</th><th>CSS Token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td rowspan="3">Track — Selected</td><td>Background</td><td>${tk('--bt-blue-700')}</td><td>#0d4e97</td></tr>
-            <tr><td>Background — Disabled</td><td>${tk('--bt-blue-300')}</td><td>#85bdf4</td></tr>
-            <tr><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
-            <tr><td rowspan="3">Track — Unselected</td><td>Background</td><td>${tk('--bt-gray-300')}</td><td>#d4d4d4</td></tr>
-            <tr><td>Background — Disabled</td><td>${tk('--bt-gray-100')}</td><td>#f5f5f5</td></tr>
-            <tr><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
-            <tr><td rowspan="2">Thumb</td><td>Background</td><td>—</td><td>#ffffff</td></tr>
-            <tr><td>Background — Disabled Unselected</td><td>${tk('--bt-gray-200')}</td><td>#e6e6e6</td></tr>
-            <tr><td>Focus Ring</td><td>Box Shadow</td><td>—</td><td>0 0 0 4px rgba(13,78,151,0.22)</td></tr>
-            <tr><td rowspan="2">Label</td><td>Font</td><td>${tk('Text/sm/Medium')}</td><td>14px / 500 / 16px</td></tr>
-            <tr><td>Color — Disabled</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
-            <tr><td>Required Field</td><td>Color</td><td>${tk('--bt-blue-600')}</td><td>#0e62bb</td></tr>
-            <tr><td>Description</td><td>Font / Color</td><td>${tk('Text/xs/Regular')}</td><td>12px / ${tk('--bt-text-muted')}</td></tr>
-            <tr><td>Label ↔ Switch gap</td><td>Gap</td><td>${tk('--bt-space-3xl')}</td><td>12px</td></tr>
-            <tr><td>Row height (full component)</td><td>Height</td><td>—</td><td>44px</td></tr>
+            <tr><td rowspan="2">Track — Selected</td><td>Background</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td>Background — Disabled</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-muted')}</td><td>${tk('--bt-blue-200')}</td><td>#bedbf9</td></tr>
+            <tr><td rowspan="2">Track — Unselected</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-emphasis')}</td><td>${tk('--bt-surface-emphasis')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Background — Disabled</td><td>${tk('Surface Colors Primary/--bt-surface-primary-muted')}</td><td>${tk('--bt-surface-muted')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Thumb</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Thumb</td><td>Shadow</td><td>${tk('Shadow/md')}</td><td>—</td><td>0 1px 2px #1018280F, 0 2px 4px #1018281A</td></tr>
+            <tr><td>Focus Ring — Selected</td><td>Box Shadow</td><td>${tk('Focus Ring/primary')}</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.24)</td></tr>
+            <tr><td>Focus Ring — Unselected</td><td>Box Shadow</td><td>${tk('Focus Ring/neutral')}</td><td>—</td><td>0 0 0 3px rgba(212,212,212,0.24)</td></tr>
+            <tr><td rowspan="2">Label</td><td>Font</td><td>${tk('Label/md/Regular')}</td><td>—</td><td>Geist 16px / 400 / 24px</td></tr>
+            <tr><td>Color</td><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Required Field</td><td>Color</td><td>${tk('Text Colors/Brand/--bt-text-brand-contrast-default')}</td><td>${tk('--bt-text-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td rowspan="2">Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>—</td><td>Geist 14px / 400 / 16px</td></tr>
+            <tr><td>Color</td><td>${tk('Text Colors/--bt-text-emphasis')}</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td></tr>
+            <tr><td>Label ↔ Switch gap</td><td>Gap</td><td>${tk('Space/xs')}</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td>Track border radius</td><td>Border Radius</td><td>—</td><td>—</td><td>9999px (pill)</td></tr>
+            <tr><td>Row height</td><td>Height</td><td>—</td><td>—</td><td>44px</td></tr>
           </tbody>
         </table>
       `;
@@ -3277,26 +3288,28 @@ const PAGES = {
       `};
 
       if (tab === 'Design') return { title, html: `
-        <p class="page-desc">Figma'dan çıkarılan Switch token değerleri.</p>
-        <h2 id="Tokens">Tokens</h2>
+        <p class="page-desc">Figma ASSK App variable'larından çıkarılan Switch token değerleri.</p>
+        <h2 id="Tokens">Token Reference</h2>
         <table class="token-table">
-          <thead><tr><th>Token</th><th>Value</th><th>Kullanım</th></tr></thead>
+          <thead><tr><th>Figma Variable</th><th>CSS Token</th><th>Value</th><th>Kullanım</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">--bt-blue-700</span></td><td>#0d4e97</td><td>Track — Selected Default</td></tr>
-            <tr><td><span class="token-name">--bt-blue-300</span></td><td>#85bdf4</td><td>Track — Selected Disabled</td></tr>
-            <tr><td><span class="token-name">--bt-gray-300</span></td><td>#d4d4d4</td><td>Track — Unselected Default</td></tr>
-            <tr><td><span class="token-name">--bt-gray-100</span></td><td>#f5f5f5</td><td>Track — Unselected Disabled</td></tr>
-            <tr><td><span class="token-name">--bt-gray-200</span></td><td>#e6e6e6</td><td>Thumb — Unselected Disabled</td></tr>
-            <tr><td><span class="token-name">--bt-text-default</span></td><td>#1a1a1a</td><td>Label — Default / Focused</td></tr>
-            <tr><td><span class="token-name">--bt-text-muted</span></td><td>#a3a3a3</td><td>Label / Description — Disabled</td></tr>
-            <tr><td><span class="token-name">--bt-blue-600</span></td><td>#0e62bb</td><td>Required Field text</td></tr>
-            <tr><td><span class="token-name">--bt-radius-full</span></td><td>9999px</td><td>Track & Thumb border radius</td></tr>
-            <tr><td><span class="token-name">--bt-space-3xl</span></td><td>12px</td><td>Label ↔ Switch gap</td></tr>
-            <tr><td><span class="token-name">--bt-text-sm-size</span></td><td>14px</td><td>Label font size</td></tr>
-            <tr><td><span class="token-name">--bt-text-xs-size</span></td><td>12px</td><td>Required Field / Description font size</td></tr>
+            <tr><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td><td>Track — Selected Default/Focused</td></tr>
+            <tr><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-muted')}</td><td>${tk('--bt-blue-200')}</td><td>#bedbf9</td><td>Track — Selected Disabled</td></tr>
+            <tr><td>${tk('Surface Colors Primary/--bt-surface-primary-emphasis')}</td><td>${tk('--bt-surface-emphasis')}</td><td>#d4d4d4</td><td>Track — Unselected Default/Focused</td></tr>
+            <tr><td>${tk('Surface Colors Primary/--bt-surface-primary-muted')}</td><td>${tk('--bt-surface-muted')}</td><td>#e6e6e6</td><td>Track — Unselected Disabled</td></tr>
+            <tr><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td><td>Thumb tüm durumlar</td></tr>
+            <tr><td>${tk('Shadow/md')}</td><td>—</td><td>double drop-shadow</td><td>Thumb gölgesi</td></tr>
+            <tr><td>${tk('Focus Ring/primary')}</td><td>—</td><td>0 0 0 3px #0D4E973D</td><td>Focus ring — Selected</td></tr>
+            <tr><td>${tk('Focus Ring/neutral')}</td><td>—</td><td>0 0 0 3px #D4D4D43D</td><td>Focus ring — Unselected</td></tr>
+            <tr><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td><td>Label metni</td></tr>
+            <tr><td>${tk('Text Colors/Brand/--bt-text-brand-contrast-default')}</td><td>${tk('--bt-text-brand')}</td><td>#0d4e97</td><td>Required Field metni</td></tr>
+            <tr><td>${tk('Text Colors/--bt-text-emphasis')}</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td><td>Description metni</td></tr>
+            <tr><td>${tk('Label/md/Regular')}</td><td>—</td><td>Geist 16px/400/24px</td><td>Label tipografisi</td></tr>
+            <tr><td>${tk('Text/sm/Regular')}</td><td>—</td><td>Geist 14px/400/16px</td><td>Description tipografisi</td></tr>
+            <tr><td>${tk('Space/xs')}</td><td>${tk('--bt-space-xs')}</td><td>4px</td><td>Label ↔ Switch gap</td></tr>
+            <tr><td>${tk('Space/2xs')}</td><td>${tk('--bt-space-2xs')}</td><td>2px</td><td>Label ↔ Description gap</td></tr>
           </tbody>
         </table>
-
         <h2 id="Size Specs">Size Specs</h2>
         <table class="token-table">
           <thead><tr><th>Size</th><th>Track W</th><th>Track H</th><th>Thumb Ø</th><th>Thumb X (Off / On)</th></tr></thead>
