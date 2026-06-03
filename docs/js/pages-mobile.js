@@ -1516,40 +1516,43 @@ const PAGES = {
         `<div style="display:inline-flex;align-items:center;gap:2px;padding:2px 8px;background:${muted ? 'transparent' : 'var(--bt-surface-subtle)'};border:1px solid ${muted ? 'var(--bt-border-muted)' : 'var(--bt-border-default)'};border-radius:var(--bt-radius-full);font-size:var(--bt-text-xs-size);font-weight:400;line-height:var(--bt-text-xs-lh);color:${muted ? 'var(--bt-text-muted)' : 'var(--bt-text-default)'};white-space:nowrap;">Label Here</div>`;
 
       // ── Card builders ────────────────────────────────────────────────────────
+      // Verified via Figma Desktop Bridge (figma_execute):
+      // Active border  → VariableID:75:398 = Blue/700 = --bt-border-brand (#0d4e97)
+      // Default border → VariableID:75:615 = Gray/300 = --bt-border-default (#d4d4d4)
+      // Icon fill      → VariableID:75:621 = Gray/900 = --bt-icon-default in ALL states (never muted)
+      // Title color    → VariableID:75:621 = Gray/900 = --bt-text-default in ALL states
+      // Subtitle/Badge/Desc disabled → VariableID:75:616 = Gray/400 = --bt-text-muted
       const cardSubtitle = (state = 'default') => {
-        const border    = state === 'active'  ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
-        const subColor  = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
-        const iconMuted = state === 'disabled';
+        const border   = state === 'active' ? 'var(--bt-border-brand)' : 'var(--bt-border-default)';
+        const subColor = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
         return `<div style="${cardWrap(border)}">
           <div style="${innerPad}min-height:68px;">
             <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs);">
               <span style="${titleStyle}">Title Here</span>
               <span style="${subtitleStyle(subColor)}">Subtitle Here</span>
             </div>
-            ${iconContainer(iconMuted)}
+            ${iconContainer()}
           </div>
         </div>`;
       };
 
       const cardBadge = (state = 'default') => {
-        const border    = state === 'active' ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
-        const iconMuted = state === 'disabled';
-        const bdgMuted  = state === 'disabled';
+        const border   = state === 'active' ? 'var(--bt-border-brand)' : 'var(--bt-border-default)';
+        const bdgMuted = state === 'disabled';
         return `<div style="${cardWrap(border)}">
           <div style="${innerPad}min-height:68px;">
             <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs);">
               <span style="${titleStyle}">Title Here</span>
               ${badge(bdgMuted)}
             </div>
-            ${iconContainer(iconMuted)}
+            ${iconContainer()}
           </div>
         </div>`;
       };
 
       const cardDescription = (state = 'default') => {
-        const border    = state === 'active' ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
-        const iconMuted = state === 'disabled';
-        const txtColor  = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
+        const border   = state === 'active' ? 'var(--bt-border-brand)' : 'var(--bt-border-default)';
+        const txtColor = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
         return `<div style="${cardWrap(border)}">
           <div style="${innerPad}">
             <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs);">
@@ -1558,7 +1561,7 @@ const PAGES = {
               <span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${txtColor};">Description</span>
               <span style="font-size:var(--bt-text-sm-size);font-weight:400;line-height:var(--bt-text-sm-lh);color:${txtColor};">Description</span>
             </div>
-            ${iconContainer(iconMuted)}
+            ${iconContainer()}
           </div>
         </div>`;
       };
@@ -1576,7 +1579,7 @@ const PAGES = {
         </div>`;
 
       const cardWithHeader = (state = 'default') => {
-        const border  = state === 'active' ? 'var(--bt-blue-700)' : 'var(--bt-border-default)';
+        const border  = state === 'active' ? 'var(--bt-border-brand)' : 'var(--bt-border-default)';
         const muted   = state === 'disabled';
         const ttlColor = muted ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
         return `<div style="display:flex;flex-direction:column;width:360px;font-family:var(--font);">
@@ -1666,7 +1669,7 @@ const PAGES = {
           <tbody>
             <tr><td><span class="token-name">Default</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>—</td></tr>
             <tr><td><span class="token-name">Active</span></td><td>${tk('Blue/700')} · #0d4e97</td><td>—</td></tr>
-            <tr><td><span class="token-name">Disabled</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>Subtitle / description color → ${tk('Gray/400')}</td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>Subtitle / badge / description → ${tk('Gray/400')} · #a3a3a3 · Icon değişmez</td></tr>
           </tbody>
         </table>
 
@@ -1736,15 +1739,14 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">--bt-surface-default</span></td><td>#ffffff</td><td>Card background / CWH body background</td></tr>
-            <tr><td><span class="token-name">--bt-surface-light</span></td><td>#fafafa</td><td>CWH header background</td></tr>
+            <tr><td><span class="token-name">--bt-surface-default</span></td><td>#ffffff</td><td>Card background / CWH body background · <em>VariableID:75:611 = Gray/0</em></td></tr>
+            <tr><td><span class="token-name">--bt-surface-light</span></td><td>#fafafa</td><td>CWH header background · <em>Surface Colors Primary/--bt-surface-primary-light</em></td></tr>
             <tr><td><span class="token-name">--bt-surface-subtle</span></td><td>#f5f5f5</td><td>Badge background (Tertiary/Outline)</td></tr>
-            <tr><td><span class="token-name">--bt-border-default</span></td><td>#d4d4d4</td><td>Card border — Default / Disabled</td></tr>
-            <tr><td><span class="token-name">--bt-blue-700</span></td><td>#0d4e97</td><td>Card border — Active state</td></tr>
-            <tr><td><span class="token-name">--bt-text-default</span></td><td>#1a1a1a</td><td>All text — Default / Active</td></tr>
-            <tr><td><span class="token-name">--bt-text-muted</span></td><td>#a3a3a3</td><td>Subtitle / description text — Disabled</td></tr>
-            <tr><td><span class="token-name">--bt-icon-default</span></td><td>#1a1a1a</td><td>Right control icon — Default / Active</td></tr>
-            <tr><td><span class="token-name">--bt-icon-muted</span></td><td>#a3a3a3</td><td>Right control icon — Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-border-default</span></td><td>#d4d4d4</td><td>Card border — Default / Disabled · <em>VariableID:75:615 = Gray/300</em></td></tr>
+            <tr><td><span class="token-name">--bt-border-brand</span></td><td>#0d4e97</td><td>Card border — Active state · <em>VariableID:75:398 = Blue/700</em></td></tr>
+            <tr><td><span class="token-name">--bt-text-default</span></td><td>#1a1a1a</td><td>Title (tüm durumlar) · <em>VariableID:75:621 = Gray/900</em></td></tr>
+            <tr><td><span class="token-name">--bt-text-muted</span></td><td>#a3a3a3</td><td>Subtitle / badge / description — Disabled · <em>VariableID:75:616 = Gray/400</em></td></tr>
+            <tr><td><span class="token-name">--bt-icon-default</span></td><td>#1a1a1a</td><td>Right control icon — tüm durumlar (değişmez)</td></tr>
             <tr><td><span class="token-name">--bt-radius-2xl</span></td><td>12px</td><td>Card border radius</td></tr>
             <tr><td><span class="token-name">--bt-radius-lg</span></td><td>8px</td><td>Card With Header border radius</td></tr>
             <tr><td><span class="token-name">--bt-radius-full</span></td><td>9999px</td><td>Badge border radius</td></tr>
