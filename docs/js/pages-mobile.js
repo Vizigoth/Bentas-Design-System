@@ -31,6 +31,7 @@ const NAV_MOBILE = [
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Progress',          id: 'components/progress' },
       { label: 'Radio Button',      id: 'components/radio-button' },
+      { label: 'Switch',            id: 'components/switch' },
       { label: 'Skeleton',          id: 'components/skeleton' },
       { label: 'Snackbar',          id: 'components/snackbar' },
       { label: 'Text Field',        id: 'components/text-field' },
@@ -3075,5 +3076,240 @@ const PAGES = {
     }
   },
 
+  'components/switch': {
+    tabs: ['Overview', 'Usage', 'Design'],
+    toc: ['Sizes', 'States', 'Label Position', 'Anatomy'],
+    render: (tab) => {
+      const title = 'Switch';
+      const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+      // ── Size configs ────────────────────────────────────────────────────────
+      const trackCfg = {
+        sm: { w: 32, h: 20, r: 10, thumb: 14, thumbOff: 3, thumbOn: 15 },
+        md: { w: 40, h: 24, r: 12, thumb: 18, thumbOff: 3, thumbOn: 19 },
+        lg: { w: 48, h: 28, r: 14, thumb: 22, thumbOff: 3, thumbOn: 23 },
+      };
+
+      // ── Track / thumb color tokens ──────────────────────────────────────────
+      const trackColors = {
+        'selected-default':    { track: 'var(--bt-blue-700)',  thumb: '#ffffff' },
+        'selected-focused':    { track: 'var(--bt-blue-700)',  thumb: '#ffffff', ring: 'rgba(13,78,151,0.22)' },
+        'selected-disabled':   { track: 'var(--bt-blue-300)',  thumb: '#ffffff' },
+        'unselected-default':  { track: 'var(--bt-gray-300)',  thumb: '#ffffff' },
+        'unselected-focused':  { track: 'var(--bt-gray-300)',  thumb: '#ffffff', ring: 'rgba(0,0,0,0.10)' },
+        'unselected-disabled': { track: 'var(--bt-gray-100)',  thumb: 'var(--bt-gray-200)' },
+      };
+
+      const switchEl = (size, mode, state) => {
+        const c = trackCfg[size];
+        const { track, thumb, ring } = trackColors[`${mode}-${state}`] || trackColors['unselected-default'];
+        const isOn   = mode === 'selected';
+        const thumbX = isOn ? c.thumbOn : c.thumbOff;
+        const thumbY = (c.h - c.thumb) / 2;
+        const ringStyle = ring ? `box-shadow:0 0 0 4px ${ring};` : '';
+        return `<div style="display:inline-flex;align-items:center;flex-shrink:0;">
+          <div style="width:${c.w}px;height:${c.h}px;border-radius:var(--bt-radius-full);background:${track};position:relative;transition:background 160ms;${ringStyle}">
+            <div style="position:absolute;top:${thumbY}px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:var(--bt-radius-full);background:${thumb};box-shadow:0 1px 3px rgba(0,0,0,0.2);transition:left 160ms;"></div>
+          </div>
+        </div>`;
+      };
+
+      // ── Full switch row (with label) ─────────────────────────────────────────
+      const switchRow = (mode, state, side = 'right') => {
+        const sw = switchEl('md', mode, state);
+        const labelColor = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
+        const reqColor   = state === 'disabled' ? 'var(--bt-text-muted)' : 'var(--bt-blue-600)';
+        const labelBlock = `<div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+            <span style="font-size:var(--bt-text-sm-size,14px);font-weight:500;line-height:var(--bt-text-sm-lh,16px);color:${labelColor};font-family:var(--font);">Label Here</span>
+            <span style="font-size:var(--bt-text-xs-size,12px);font-weight:400;color:${reqColor};font-family:var(--font);">(Required Field)</span>
+          </div>
+          <span style="font-size:var(--bt-text-xs-size,12px);font-weight:400;line-height:var(--bt-text-xs-lh,16px);color:var(--bt-text-muted);font-family:var(--font);">Description for additional information here.</span>
+        </div>`;
+        const items = side === 'left'
+          ? [labelBlock, `<div style="flex-shrink:0;">${sw}</div>`]
+          : [`<div style="flex-shrink:0;">${sw}</div>`, labelBlock];
+        return `<div style="display:flex;align-items:center;gap:var(--bt-space-3xl,12px);width:320px;">${items.join('')}</div>`;
+      };
+
+      // ── State chip ────────────────────────────────────────────────────────────
+      const stateChip = (label, bg) =>
+        `<span style="display:inline-block;padding:2px 10px;border-radius:var(--bt-radius-full);background:${bg};font-size:11px;font-weight:600;letter-spacing:.04em;line-height:18px;color:#fff;font-family:var(--font);">${label}</span>`;
+
+      // ── Overview ──────────────────────────────────────────────────────────────
+      const overviewHtml = `
+        <p class="page-desc">Switch, tek bir ayarı açık/kapalı konumuna getiren toggle kontrolüdür. Üç boyut, üç durum ve iki etiket konumu ile gelir.</p>
+
+        <h2 id="Sizes">Sizes</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Switch üç boyutta gelir — sm, md ve lg. Boyut seçimi kullanıldığı form yoğunluğuna göre yapılır.</p>
+
+        <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:32px;">
+          <div style="background:var(--bt-surface-subtle);padding:24px;display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+            ${['sm','md','lg'].map(s => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                <div style="display:flex;gap:16px;align-items:center;">
+                  ${switchEl(s,'unselected','default')}
+                  ${switchEl(s,'selected','default')}
+                </div>
+                <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);font-family:var(--font);">${s}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <table class="token-table" style="margin-bottom:40px;">
+          <thead><tr><th>Size</th><th>Track (W × H)</th><th>Thumb Ø</th><th>Border Radius</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">sm</span></td><td>32 × 20px</td><td>14px</td><td>${tk('radius/full')}</td></tr>
+            <tr><td><span class="token-name">md</span></td><td>40 × 24px</td><td>18px</td><td>${tk('radius/full')}</td></tr>
+            <tr><td><span class="token-name">lg</span></td><td>48 × 28px</td><td>22px</td><td>${tk('radius/full')}</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="States">States</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Her mod (Unselected / Selected) üç durumu destekler: Default, Focused ve Disabled.</p>
+
+        <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:16px;">
+          <div style="padding:10px 16px;border-bottom:1px solid var(--bt-border-muted);background:var(--bt-surface-default);">
+            <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">Unselected (Off)</span>
+          </div>
+          <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
+            ${[['Default','default','var(--bt-gray-600)'],['Focused','focused','var(--bt-blue-600)'],['Disabled','disabled','var(--bt-gray-400)']].map(([label,state,bg]) => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                ${stateChip(label, bg)}
+                ${switchEl('md','unselected',state)}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:32px;">
+          <div style="padding:10px 16px;border-bottom:1px solid var(--bt-border-muted);background:var(--bt-surface-default);">
+            <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">Selected (On)</span>
+          </div>
+          <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
+            ${[['Default','default','var(--bt-gray-600)'],['Focused','focused','var(--bt-blue-600)'],['Disabled','disabled','var(--bt-gray-400)']].map(([label,state,bg]) => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                ${stateChip(label, bg)}
+                ${switchEl('md','selected',state)}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <table class="token-table" style="margin-bottom:40px;">
+          <thead><tr><th>State</th><th>Track (Unselected)</th><th>Track (Selected)</th><th>Thumb</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">Default</span></td><td>${tk('--bt-gray-300')} · #d4d4d4</td><td>${tk('--bt-blue-700')} · #0d4e97</td><td>#ffffff</td></tr>
+            <tr><td><span class="token-name">Focused</span></td><td>${tk('--bt-gray-300')} + focus ring</td><td>${tk('--bt-blue-700')} + focus ring</td><td>#ffffff</td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td>${tk('--bt-gray-100')} · #f5f5f5</td><td>${tk('--bt-blue-300')} · #85bdf4</td><td>${tk('--bt-gray-200')} / #ffffff</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Label Position">Label Position</h2>
+        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:20px;">Etiket switchin soluna (Label Side=Left) ya da sağına (Label Side=Right) yerleştirilebilir.</p>
+
+        <div style="border:1px solid var(--bt-border-muted);border-radius:10px;overflow:hidden;margin-bottom:40px;">
+          <div style="background:var(--bt-surface-subtle);padding:24px;display:flex;flex-direction:column;gap:0;">
+            ${[
+              ['Unselected — Label Right', 'unselected', 'default',  'right'],
+              ['Selected — Label Right',   'selected',   'default',  'right'],
+              ['Disabled — Label Right',   'selected',   'disabled', 'right'],
+              ['Unselected — Label Left',  'unselected', 'default',  'left'],
+              ['Selected — Label Left',    'selected',   'default',  'left'],
+              ['Disabled — Label Left',    'unselected', 'disabled', 'left'],
+            ].map(([label, mode, state, side], i) => `
+              <div style="padding:12px 0;${i > 0 ? 'border-top:1px solid var(--bt-border-muted);' : ''}">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;font-family:var(--font);">${label}</div>
+                ${switchRow(mode, state, side)}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <h2 id="Anatomy">Anatomy</h2>
+        <table class="token-table">
+          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="3">Track — Selected</td><td>Background</td><td>${tk('--bt-blue-700')}</td><td>#0d4e97</td></tr>
+            <tr><td>Background — Disabled</td><td>${tk('--bt-blue-300')}</td><td>#85bdf4</td></tr>
+            <tr><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+            <tr><td rowspan="3">Track — Unselected</td><td>Background</td><td>${tk('--bt-gray-300')}</td><td>#d4d4d4</td></tr>
+            <tr><td>Background — Disabled</td><td>${tk('--bt-gray-100')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+            <tr><td rowspan="2">Thumb</td><td>Background</td><td>—</td><td>#ffffff</td></tr>
+            <tr><td>Background — Disabled Unselected</td><td>${tk('--bt-gray-200')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Focus Ring</td><td>Box Shadow</td><td>—</td><td>0 0 0 4px rgba(13,78,151,0.22)</td></tr>
+            <tr><td rowspan="2">Label</td><td>Font</td><td>${tk('Text/sm/Medium')}</td><td>14px / 500 / 16px</td></tr>
+            <tr><td>Color — Disabled</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td>Required Field</td><td>Color</td><td>${tk('--bt-blue-600')}</td><td>#0e62bb</td></tr>
+            <tr><td>Description</td><td>Font / Color</td><td>${tk('Text/xs/Regular')}</td><td>12px / ${tk('--bt-text-muted')}</td></tr>
+            <tr><td>Label ↔ Switch gap</td><td>Gap</td><td>${tk('--bt-space-3xl')}</td><td>12px</td></tr>
+            <tr><td>Row height (full component)</td><td>Height</td><td>—</td><td>44px</td></tr>
+          </tbody>
+        </table>
+      `;
+
+      if (tab === 'Usage') return { title, html: `
+        <p class="page-desc">Switch kullanım kuralları — ne zaman toggle, ne zaman checkbox kullanılmalı?</p>
+        <h2 id="Do">Do</h2>
+        <ul>
+          <li>Switch'i anlık efektli ayarlar için kullan (Wi-Fi, bildirimler, karanlık mod gibi).</li>
+          <li>Etiket her zaman açık ve net olsun — switch durumunu açıklayan bir fiil ya da isim kullan.</li>
+          <li>Label Side'ı ekran genişliğine ve form düzenine göre seç.</li>
+          <li>Disabled durumunda neden devre dışı olduğunu yakınında açıkla.</li>
+        </ul>
+        <h2 id="Dont">Don't</h2>
+        <ul>
+          <li>Formlarda birden fazla seçim gerektiren durumlarda switch kullanma — Checkbox tercih et.</li>
+          <li>Switch değişikliği kaydet/onayla aksiyonu gerektirmemeli; değişiklik anlık uygulanmalı.</li>
+          <li>Switch etiketini "On/Off" gibi durumu tekrar eden ifadelerle doldurma.</li>
+          <li>Aynı formda sm, md ve lg boyutlarını birlikte kullanma — boyutu sabit tut.</li>
+        </ul>
+        <h2 id="Switch vs Checkbox">Switch vs Checkbox</h2>
+        <table class="token-table">
+          <thead><tr><th>Kriter</th><th>Switch</th><th>Checkbox</th></tr></thead>
+          <tbody>
+            <tr><td>Etki zamanı</td><td>Anlık</td><td>Form submit sonrası</td></tr>
+            <tr><td>Seçim sayısı</td><td>Tekil (açık/kapalı)</td><td>Çoklu olabilir</td></tr>
+            <tr><td>Kullanım bağlamı</td><td>Ayarlar, tercihler</td><td>Formlar, listeler</td></tr>
+          </tbody>
+        </table>
+      `};
+
+      if (tab === 'Design') return { title, html: `
+        <p class="page-desc">Figma'dan çıkarılan Switch token değerleri.</p>
+        <h2 id="Tokens">Tokens</h2>
+        <table class="token-table">
+          <thead><tr><th>Token</th><th>Value</th><th>Kullanım</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">--bt-blue-700</span></td><td>#0d4e97</td><td>Track — Selected Default</td></tr>
+            <tr><td><span class="token-name">--bt-blue-300</span></td><td>#85bdf4</td><td>Track — Selected Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-gray-300</span></td><td>#d4d4d4</td><td>Track — Unselected Default</td></tr>
+            <tr><td><span class="token-name">--bt-gray-100</span></td><td>#f5f5f5</td><td>Track — Unselected Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-gray-200</span></td><td>#e6e6e6</td><td>Thumb — Unselected Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-text-default</span></td><td>#1a1a1a</td><td>Label — Default / Focused</td></tr>
+            <tr><td><span class="token-name">--bt-text-muted</span></td><td>#a3a3a3</td><td>Label / Description — Disabled</td></tr>
+            <tr><td><span class="token-name">--bt-blue-600</span></td><td>#0e62bb</td><td>Required Field text</td></tr>
+            <tr><td><span class="token-name">--bt-radius-full</span></td><td>9999px</td><td>Track & Thumb border radius</td></tr>
+            <tr><td><span class="token-name">--bt-space-3xl</span></td><td>12px</td><td>Label ↔ Switch gap</td></tr>
+            <tr><td><span class="token-name">--bt-text-sm-size</span></td><td>14px</td><td>Label font size</td></tr>
+            <tr><td><span class="token-name">--bt-text-xs-size</span></td><td>12px</td><td>Required Field / Description font size</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Size Specs">Size Specs</h2>
+        <table class="token-table">
+          <thead><tr><th>Size</th><th>Track W</th><th>Track H</th><th>Thumb Ø</th><th>Thumb X (Off / On)</th></tr></thead>
+          <tbody>
+            <tr><td><span class="token-name">sm</span></td><td>32px</td><td>20px</td><td>14px</td><td>3px / 15px</td></tr>
+            <tr><td><span class="token-name">md</span></td><td>40px</td><td>24px</td><td>18px</td><td>3px / 19px</td></tr>
+            <tr><td><span class="token-name">lg</span></td><td>48px</td><td>28px</td><td>22px</td><td>3px / 23px</td></tr>
+          </tbody>
+        </table>
+      `};
+
+      return { title, html: overviewHtml };
+    }
+  },
 
 };
