@@ -2119,7 +2119,7 @@ const PAGES = {
   },
 
   'components/dialog': {
-    tabs: ['Overview', 'Usage'],
+    tabs: ['Overview', 'Usage', 'Design'],
     toc: ['Header Positions', 'Button Layout', 'Anatomy'],
     render: (tab) => {
       const title = 'Dialog';
@@ -2160,9 +2160,10 @@ const PAGES = {
       const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
       const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
 
-      // ── Button builders (same as Alert Dialog) ──────────────────────────────
+      // ── Button builders ──────────────────────────────────────────────────────
+      // Primary bg: Surface Colors Brand/--bt-surface-brand-contrast-default → --bt-surface-brand (#0d4e97)
       const btnPrimary = (mode = 'h') =>
-        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-md) var(--bt-space-2xl);background:var(--bt-blue-700);border-radius:var(--bt-radius-md);">
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-md) var(--bt-space-2xl);background:var(--bt-surface-brand);border-radius:var(--bt-radius-md);">
            <span style="font-size:var(--bt-text-md-size);font-weight:500;line-height:var(--bt-text-md-lh);color:var(--bt-text-inverted);white-space:nowrap;">Button</span>
          </div>`;
 
@@ -2241,9 +2242,15 @@ const PAGES = {
 
       const HEADER_POSITIONS = ['flex-3', 'left-2', 'left-default'];
       const HEADER_LABEL = {
-        'flex-3':        'Flex · Segments=3',
+        'flex-3':        'Flex · Segments=1',
         'left-2':        'Left · Segments=2',
-        'left-default':  'Left · Default',
+        'left-default':  'Left · Segments=1',
+      };
+      // Figma: Header Position=Flex/Left, Header Segments=1/2
+      const HEADER_FIGMA_PROPS = {
+        'flex-3':       'Header Position=Flex, Header Segments=1',
+        'left-2':       'Header Position=Left, Header Segments=2',
+        'left-default': 'Header Position=Left, Header Segments=1',
       };
       const HEADER_DESC = {
         'flex-3':        'One icon placeholder on each side, title centered. Use for symmetrical dialogs where both sides have controls.',
@@ -2276,7 +2283,7 @@ const PAGES = {
             ${HEADER_POSITIONS.map(hp => `
             <tr>
               <td><span class="token-name">${HEADER_LABEL[hp]}</span></td>
-              <td style="white-space:nowrap">${hp === 'flex-3' ? 'Position=Flex, Segments=3' : hp === 'left-2' ? 'Position=Left, Segments=2' : 'Position=Left, Default'}</td>
+              <td style="white-space:nowrap">${HEADER_FIGMA_PROPS[hp]}</td>
               <td><div style="padding:16px 0;">${dialogFullEl({ headerPos: hp, layout: 'vertical-1' })}</div></td>
               <td style="color:var(--bt-text-emphasis)">${HEADER_DESC[hp]}</td>
             </tr>`).join('')}
@@ -2307,34 +2314,77 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
           <tbody>
+            <tr><td>Container</td><td>Width</td><td>—</td><td>369px</td></tr>
             <tr><td>Container</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
-            <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
+            <tr><td>Container</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')} · #ffffff</td></tr>
+            <tr><td>Container</td><td>Shadow</td><td>—</td><td>0 4px 6px rgba(16,24,40,0.03) · 0 12px 16px rgba(16,24,40,0.08)</td></tr>
             <tr><td>Toolbar</td><td>Height</td><td>—</td><td>40px</td></tr>
             <tr><td>Toolbar</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Toolbar</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-            <tr><td>Toolbar</td><td>Bottom border</td><td>${tk('Gray/300')}</td><td>#d4d4d4</td></tr>
-            <tr><td>Toolbar title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>18px / 500 / 24px</td></tr>
+            <tr><td>Toolbar</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-subtle')}</td><td>${tk('--bt-surface-subtle')} · #f5f5f5</td></tr>
+            <tr><td>Toolbar</td><td>Bottom border</td><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
+            <tr><td>Toolbar title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>Geist 18px / 500 / 24px</td></tr>
+            <tr><td>Toolbar title</td><td>Color</td><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')} · #1a1a1a</td></tr>
             <tr><td>Icon/Placeholder btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
-            <tr><td>Icon/Placeholder btn</td><td>Padding</td><td>${tk('Space/md')}</td><td>8px</td></tr>
             <tr><td>Icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
+            <tr><td>Icon</td><td>Color</td><td>${tk('Icon Colors/--bt-icon-default')}</td><td>${tk('--bt-icon-default')} · #1a1a1a</td></tr>
             <tr><td>Body</td><td>Padding</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
             <tr><td>Body</td><td>Gap</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Description</td><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 20px</td></tr>
-            <tr><td>Input field (Md)</td><td>Height</td><td>—</td><td>48px</td></tr>
+            <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>Geist 14px / 400 / 16px</td></tr>
+            <tr><td>Description</td><td>Color</td><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')} · #1a1a1a</td></tr>
+            <tr><td>Input field</td><td>Height</td><td>—</td><td>48px</td></tr>
             <tr><td>Input field</td><td>Padding left</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Input field</td><td>Padding right</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
             <tr><td>Input field</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
-            <tr><td>Input field</td><td>Border</td><td>${tk('Gray/300')}</td><td>#d4d4d4</td></tr>
-            <tr><td>Input right icon</td><td>Padding</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
+            <tr><td>Input field</td><td>Border</td><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
             <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
             <tr><td>Button area</td><td>Padding V</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
             <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
-            <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
+            <tr><td>Primary button bg</td><td>Color</td><td>${tk('Surface Colors Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')} · #0d4e97</td></tr>
+            <tr><td>Primary button text</td><td>Color</td><td>${tk('Text Colors/--bt-text-inverted')}</td><td>${tk('--bt-text-inverted')} · #ffffff</td></tr>
           </tbody>
         </table>
       `;
 
       if (tab === 'Usage') return { title, html: `<p class="page-desc">Dialog usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
+
+      if (tab === 'Design') return { title, html: `
+        <p class="page-desc">Figma Desktop Bridge ile doğrudan ASSK App'ten okunan Dialog token değerleri.</p>
+        <h2 id="Token Reference">Token Reference</h2>
+        <table class="token-table">
+          <thead><tr><th>Figma Variable</th><th>CSS Token</th><th>Value</th><th>Kullanım</th></tr></thead>
+          <tbody>
+            <tr><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td><td>Dialog container background</td></tr>
+            <tr><td>${tk('Surface Colors Primary/--bt-surface-primary-subtle')}</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td><td>Toolbar background</td></tr>
+            <tr><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td><td>Toolbar border · Input field border</td></tr>
+            <tr><td>${tk('Surface Colors Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td><td>Primary button background</td></tr>
+            <tr><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td><td>Toolbar title · Description text</td></tr>
+            <tr><td>${tk('Text Colors/--bt-text-inverted')}</td><td>${tk('--bt-text-inverted')}</td><td>#ffffff</td><td>Primary button text</td></tr>
+            <tr><td>${tk('Icon Colors/--bt-icon-default')}</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td><td>Toolbar icon rengi</td></tr>
+            <tr><td>${tk('Title/lg/Medium')}</td><td>—</td><td>Geist 18px / 500 / 24px</td><td>Toolbar title tipografisi</td></tr>
+            <tr><td>${tk('Text/sm/Regular')}</td><td>—</td><td>Geist 14px / 400 / 16px</td><td>Description tipografisi</td></tr>
+            <tr><td>${tk('Text/md/Regular')}</td><td>—</td><td>Geist 16px / 400 / 24px</td><td>Input label tipografisi</td></tr>
+            <tr><td>${tk('Radius/lg')}</td><td>${tk('--bt-radius-lg')}</td><td>8px</td><td>Container · Input field border radius</td></tr>
+            <tr><td>${tk('Radius/md')}</td><td>${tk('--bt-radius-md')}</td><td>6px</td><td>Button border radius</td></tr>
+            <tr><td>${tk('Space/3xl')}</td><td>${tk('--bt-space-3xl')}</td><td>20px</td><td>Body padding · Button area padding H</td></tr>
+            <tr><td>${tk('Space/2xl')}</td><td>${tk('--bt-space-2xl')}</td><td>16px</td><td>Toolbar padding H · Body gap · Button area padding V</td></tr>
+            <tr><td>${tk('Space/xl')}</td><td>${tk('--bt-space-xl')}</td><td>12px</td><td>Input field padding right</td></tr>
+            <tr><td>${tk('Space/md')}</td><td>${tk('--bt-space-md')}</td><td>8px</td><td>Button padding V</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="Variants">Variants</h2>
+        <table class="token-table">
+          <thead><tr><th>Property</th><th>Values</th></tr></thead>
+          <tbody>
+            <tr><td>Size</td><td>Mobile (369px)</td></tr>
+            <tr><td>Header Position</td><td>Flex · Left</td></tr>
+            <tr><td>Header Segments</td><td>1 · 2</td></tr>
+            <tr><td>Button Position</td><td>Vertical · Horizontal</td></tr>
+            <tr><td>Button Segments</td><td>1 · 2</td></tr>
+          </tbody>
+        </table>
+      `};
+
       return { title, html: overviewHtml };
     }
   },
