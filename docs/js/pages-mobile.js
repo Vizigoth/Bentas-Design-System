@@ -114,7 +114,7 @@ const PAGES = {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
     toc: [
       { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Colors'] },
-      { group: 'Theme Tokens',      items: ['Background', 'Text', 'Border', 'Visual Assets'] },
+      { group: 'Theme Tokens',      items: ['Background', 'Text', 'Border', 'Icon'] },
     ],
     render: (tab) => {
       const title = 'Foundation Tokens';
@@ -223,15 +223,23 @@ const PAGES = {
         ['text-6xl', '40px', '48px'],
       ];
 
-      // ── Colors (Figma: Color Palettes / Primitives)
+      // ── Colors (Figma: Primitive Colors)
       const palettes = {
-        Blue:   [['50','#f1f7fe'],['100','#e2edfc'],['200','#bedbf9'],['300','#85bdf4'],['400','#449bec'],['500','#1c7fdb'],['600','#0e62bb'],['700','#0d4e97'],['800','#0f447d'],['900','#123968'],['950','#0c2445']],
-        Gray:   [['50','#fafafa'],['100','#f5f5f5'],['200','#e6e6e6'],['300','#d4d4d4'],['400','#a3a3a3'],['500','#727272'],['600','#535353'],['700','#404040'],['800','#272727'],['900','#1a1a1a'],['950','#0b0b0b']],
-        Green:  [['50','#e8f3ee'],['100','#daede5'],['200','#b4dbcb'],['300','#87c1ab'],['400','#5ea38b'],['500','#448871'],['600','#356c5b'],['700','#2d584b'],['800','#28473e'],['900','#243d36'],['950','#1a2e26']],
-        Yellow: [['50','#fdf9e8'],['100','#f9f2ce'],['200','#f4e8aa'],['300','#edd882'],['400','#e2c455'],['500','#d4af2c'],['600','#c49a12'],['700','#aa820a'],['800','#8c6a05'],['900','#6b5103'],['950','#523e02']],
-        Red:    [['50','#fef2f2'],['100','#fde6e6'],['200','#fbd0d2'],['300','#f7aaae'],['400','#f27a83'],['500','#e84b5b'],['600','#d83a52'],['700','#b31d38'],['800','#961b35'],['900','#801b33'],['950','#470a17']],
-        Teal:   [['50','#f0fdfa'],['100','#ccfbf1'],['200','#99f6e4'],['300','#5eead4'],['400','#2dd4bf'],['500','#14b8a6'],['600','#0d9488'],['700','#0f766e'],['800','#115e59'],['900','#134e4a'],['950','#042f2e']],
-        Purple: [['50','#faf5ff'],['100','#f3e8ff'],['200','#e9d5ff'],['300','#d8b4fe'],['400','#c084fc'],['500','#a855f7'],['600','#9333ea'],['700','#7e22ce'],['800','#6b21a8'],['900','#581c87'],['950','#3b0764']],
+        Blue:    [['0','#ffffff'],['50','#f1f7fe'],['100','#e2edfc'],['200','#bedbf9'],['300','#85bdf4'],['400','#449bec'],['500','#1c7fdb'],['600','#0e62bb'],['700','#0d4e97'],['800','#0f447d'],['900','#123968'],['950','#0c2445']],
+        Gray:    [['0','#ffffff'],['50','#fafafa'],['100','#f5f5f5'],['200','#e6e6e6'],['300','#d4d4d4'],['400','#a3a3a3'],['500','#727272'],['600','#535353'],['700','#404040'],['800','#272727'],['900','#1a1a1a'],['950','#0b0b0b']],
+        Yellow:  [['0','#ffffff'],['50','#fdf9e8'],['100','#f9f2ce'],['200','#f4e8aa'],['300','#edd882'],['400','#e2c455'],['500','#d4af2c'],['600','#c49a12'],['700','#aa820a'],['800','#8c6a05'],['900','#6b5103'],['950','#523e02']],
+        Green:   [['0','#ffffff'],['50','#e8f3ee'],['100','#daede5'],['200','#b4dbcb'],['300','#87c1ab'],['400','#5ea38b'],['500','#448871'],['600','#356c5b'],['700','#2d584b'],['800','#28473e'],['900','#243d36'],['950','#243d36']],
+        Red:     [['0','#ffffff'],['50','#fef2f2'],['100','#fde6e6'],['200','#fbd0d2'],['300','#f7aaae'],['400','#f27a83'],['500','#e84b5b'],['600','#d83a52'],['700','#b31d38'],['800','#961b35'],['900','#801b33'],['950','#470a17']],
+        Teal:    [['0','#ffffff'],['50','#f0fdfa'],['100','#ccfbf1'],['200','#99f6e4'],['300','#5eead4'],['400','#2dd4bf'],['500','#14b8a6'],['600','#0d9488'],['700','#0f766e'],['800','#115e59'],['900','#134e4a'],['950','#042f2e']],
+        Lime:    [['0','#ffffff'],['50','#f7fee7'],['100','#ecfccb'],['200','#d9f99d'],['300','#bef264'],['400','#a3e635'],['500','#84cc16'],['600','#65a30d'],['700','#4d7c0f'],['800','#3f6212'],['900','#365314'],['950','#1a2e05']],
+        Cyan:    [['0','#ffffff'],['50','#ecfeff'],['100','#cffafe'],['200','#a5f3fc'],['300','#67e8f9'],['400','#22d3ee'],['500','#06b6d4'],['600','#0891b2'],['700','#0e7490'],['800','#155e75'],['900','#164e63'],['950','#083344']],
+        Purple:  [['0','#ffffff'],['50','#faf5ff'],['100','#f3e8ff'],['200','#e9d5ff'],['300','#d8b4fe'],['400','#c084fc'],['500','#a855f7'],['600','#9333ea'],['700','#7e22ce'],['800','#6b21a8'],['900','#581c87'],['950','#3b0764']],
+        Violet:  [['0','#ffffff'],['50','#f5f3ff'],['100','#ede9fe'],['200','#ddd6fe'],['300','#c4b5fd'],['400','#a78bfa'],['500','#8b5cf6'],['600','#7c3aed'],['700','#6d28d9'],['800','#5b21b6'],['900','#4c1d95'],['950','#2e1065']],
+        Indigo:  [['0','#ffffff'],['50','#eef2ff'],['100','#e0e7ff'],['200','#c7d2fe'],['300','#a5b4fc'],['400','#818cf8'],['500','#6366f1'],['600','#4f46e5'],['700','#4338ca'],['800','#3730a3'],['900','#312e81'],['950','#1e1b4b']],
+        Sky:     [['0','#ffffff'],['50','#f0f9ff'],['100','#e0f2fe'],['200','#bae6fd'],['300','#7dd3fc'],['400','#38bdf8'],['500','#0ea5e9'],['600','#0284c7'],['700','#0369a1'],['800','#075985'],['900','#0c4a6e'],['950','#082f49']],
+        Emerald: [['0','#ffffff'],['50','#ecfdf5'],['100','#d1fae5'],['200','#a7f3d0'],['300','#6ee7b7'],['400','#34d399'],['500','#10b981'],['600','#059669'],['700','#047857'],['800','#065f46'],['900','#064e3b'],['950','#022c22']],
+        Amber:   [['0','#ffffff'],['50','#fffbeb'],['100','#fef3c7'],['200','#fde68a'],['300','#fcd34d'],['400','#fbbf24'],['500','#f59e0b'],['600','#d97706'],['700','#b45309'],['800','#92400e'],['900','#78350f'],['950','#451a03']],
+        Orange:  [['0','#ffffff'],['50','#fff7ed'],['100','#ffedd5'],['200','#fed7aa'],['300','#fdba74'],['400','#fb923c'],['500','#f97316'],['600','#ea580c'],['700','#c2410c'],['800','#9a3412'],['900','#7c2d12'],['950','#431407']],
       };
 
       const colorHtml = Object.entries(palettes).map(([name, shades]) => `
@@ -421,38 +429,158 @@ const PAGES = {
         ${_jv('colors', Object.fromEntries(Object.entries(palettes).flatMap(([colorName, shades]) => shades.map(([step, hex]) => [`--bt-${colorName.toLowerCase()}-${step}`, hex]))))}
 
         <h2 id="Background">Background</h2>
-        <div class="placeholder">
-          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-          <div class="placeholder-title">Background Tokens</div>
-          <div class="placeholder-text">Yakında eklenecek.</div>
+        ${_seg('bg')}
+        <div id="token-view-preview-bg">
+        ${(() => {
+          const _cpBtn = (val) => `<button class="copy-btn" onclick="copyText('${val}',this)" title="Copy"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>`;
+          const _swatch = (hex) => `<div style="width:40px;height:24px;border-radius:4px;background:${hex};border:1px solid rgba(0,0,0,0.10);display:inline-block;vertical-align:middle;"></div>`;
+          const _rows = (tokens) => tokens.map(([token, prim, hex]) => `
+            <tr>
+              <td>${_swatch(hex)}</td>
+              <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span>${_cpBtn(token)}</div></td>
+              <td>${prim}</td>
+              <td><div style="display:inline-flex;align-items:center;gap:6px;"><span>${hex}</span>${_cpBtn(hex)}</div></td>
+            </tr>`).join('');
+          const _table = (label, tokens) => `
+            <p class="section-label" style="margin-top:${label==='Primary'?'0':'32px'};margin-bottom:8px;">${label}</p>
+            <table class="token-table"><thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
+            <tbody>${_rows(tokens)}</tbody></table>`;
+          return [
+            ['Primary', [
+              ['--bt-surface-primary-default',  'Blue/0',   '#ffffff'],
+              ['--bt-surface-primary-light',    'Gray/50',  '#fafafa'],
+              ['--bt-surface-primary-subtle',   'Gray/100', '#f5f5f5'],
+              ['--bt-surface-primary-muted',    'Gray/200', '#e6e6e6'],
+              ['--bt-surface-primary-emphasis', 'Gray/300', '#d4d4d4'],
+              ['--bt-surface-primary-strong',   'Gray/400', '#a3a3a3'],
+              ['--bt-surface-primary-heavy',    'Gray/500', '#727272'],
+              ['--bt-surface-primary-solid',    'Gray/600', '#535353'],
+              ['--bt-surface-primary-intense',  'Gray/800', '#272727'],
+            ]],
+            ['Secondary', [
+              ['--bt-surface-secondary-default',  'Gray/50',  '#fafafa'],
+              ['--bt-surface-secondary-light',    'Gray/100', '#f5f5f5'],
+              ['--bt-surface-secondary-subtle',   'Gray/200', '#e6e6e6'],
+              ['--bt-surface-secondary-muted',    'Gray/300', '#d4d4d4'],
+              ['--bt-surface-secondary-emphasis', 'Gray/400', '#a3a3a3'],
+              ['--bt-surface-secondary-strong',   'Gray/500', '#727272'],
+              ['--bt-surface-secondary-heavy',    'Gray/600', '#535353'],
+              ['--bt-surface-secondary-solid',    'Gray/700', '#404040'],
+            ]],
+            ['Brand', [
+              ['--bt-surface-brand-light',    'Blue/50',  '#f1f7fe'],
+              ['--bt-surface-brand-subtle',   'Blue/100', '#e2edfc'],
+              ['--bt-surface-brand-muted',    'Blue/200', '#bedbf9'],
+              ['--bt-surface-brand-emphasis', 'Blue/300', '#85bdf4'],
+              ['--bt-surface-brand-strong',   'Blue/400', '#449bec'],
+              ['--bt-surface-brand-heavy',    'Blue/500', '#1c7fdb'],
+              ['--bt-surface-brand-solid',    'Blue/600', '#0e62bb'],
+              ['--bt-surface-brand-default',  'Blue/700', '#0d4e97'],
+              ['--bt-surface-brand-intense',  'Blue/800', '#0f447d'],
+            ]],
+            ['Error', [
+              ['--bt-surface-error-light',    'Red/50',   '#fef2f2'],
+              ['--bt-surface-error-subtle',   'Red/100',  '#fde6e6'],
+              ['--bt-surface-error-muted',    'Red/200',  '#fbd0d2'],
+              ['--bt-surface-error-emphasis', 'Red/300',  '#f7aaae'],
+              ['--bt-surface-error-strong',   'Red/400',  '#f27a83'],
+              ['--bt-surface-error-heavy',    'Red/500',  '#e84b5b'],
+              ['--bt-surface-error-solid',    'Red/600',  '#d83a52'],
+              ['--bt-surface-error-default',  'Red/700',  '#b31d38'],
+              ['--bt-surface-error-intense',  'Red/800',  '#961b35'],
+            ]],
+            ['Success', [
+              ['--bt-surface-success-light',    'Green/50',  '#e8f3ee'],
+              ['--bt-surface-success-subtle',   'Green/100', '#daede5'],
+              ['--bt-surface-success-muted',    'Green/200', '#b4dbcb'],
+              ['--bt-surface-success-emphasis', 'Green/300', '#87c1ab'],
+              ['--bt-surface-success-strong',   'Green/400', '#5ea38b'],
+              ['--bt-surface-success-heavy',    'Green/500', '#448871'],
+              ['--bt-surface-success-solid',    'Green/600', '#356c5b'],
+              ['--bt-surface-success-default',  'Green/700', '#2d584b'],
+              ['--bt-surface-success-intense',  'Green/800', '#28473e'],
+            ]],
+            ['Warning', [
+              ['--bt-surface-warning-light',    'Yellow/50',  '#fdf9e8'],
+              ['--bt-surface-warning-subtle',   'Yellow/100', '#f9f2ce'],
+              ['--bt-surface-warning-muted',    'Yellow/200', '#f4e8aa'],
+              ['--bt-surface-warning-emphasis', 'Yellow/300', '#edd882'],
+              ['--bt-surface-warning-strong',   'Yellow/400', '#e2c455'],
+              ['--bt-surface-warning-heavy',    'Yellow/500', '#d4af2c'],
+              ['--bt-surface-warning-solid',    'Yellow/600', '#c49a12'],
+              ['--bt-surface-warning-default',  'Yellow/700', '#aa820a'],
+              ['--bt-surface-warning-intense',  'Yellow/800', '#8c6a05'],
+            ]],
+            ['Information', [
+              ['--bt-surface-information-light',    'Blue/50',  '#f1f7fe'],
+              ['--bt-surface-information-subtle',   'Blue/100', '#e2edfc'],
+              ['--bt-surface-information-muted',    'Blue/200', '#bedbf9'],
+              ['--bt-surface-information-emphasis', 'Blue/300', '#85bdf4'],
+              ['--bt-surface-information-strong',   'Blue/400', '#449bec'],
+              ['--bt-surface-information-heavy',    'Blue/500', '#1c7fdb'],
+              ['--bt-surface-information-solid',    'Blue/600', '#0e62bb'],
+              ['--bt-surface-information-default',  'Blue/700', '#0d4e97'],
+              ['--bt-surface-information-intense',  'Blue/800', '#0f447d'],
+            ]],
+          ].map(([label, tokens]) => _table(label, tokens)).join('');
+        })()}
         </div>
+        ${_jv('bg', {
+          primary: Object.fromEntries([
+            ['--bt-surface-primary-default','var(--bt-blue-0)'],['--bt-surface-primary-light','var(--bt-gray-50)'],['--bt-surface-primary-subtle','var(--bt-gray-100)'],
+            ['--bt-surface-primary-muted','var(--bt-gray-200)'],['--bt-surface-primary-emphasis','var(--bt-gray-300)'],['--bt-surface-primary-strong','var(--bt-gray-400)'],
+            ['--bt-surface-primary-heavy','var(--bt-gray-500)'],['--bt-surface-primary-solid','var(--bt-gray-600)'],['--bt-surface-primary-intense','var(--bt-gray-800)'],
+          ]),
+          secondary: Object.fromEntries([
+            ['--bt-surface-secondary-default','var(--bt-gray-50)'],['--bt-surface-secondary-light','var(--bt-gray-100)'],['--bt-surface-secondary-subtle','var(--bt-gray-200)'],
+            ['--bt-surface-secondary-muted','var(--bt-gray-300)'],['--bt-surface-secondary-emphasis','var(--bt-gray-400)'],['--bt-surface-secondary-strong','var(--bt-gray-500)'],
+            ['--bt-surface-secondary-heavy','var(--bt-gray-600)'],['--bt-surface-secondary-solid','var(--bt-gray-700)'],
+          ]),
+          brand: Object.fromEntries([
+            ['--bt-surface-brand-light','var(--bt-blue-50)'],['--bt-surface-brand-subtle','var(--bt-blue-100)'],['--bt-surface-brand-muted','var(--bt-blue-200)'],
+            ['--bt-surface-brand-emphasis','var(--bt-blue-300)'],['--bt-surface-brand-strong','var(--bt-blue-400)'],['--bt-surface-brand-heavy','var(--bt-blue-500)'],
+            ['--bt-surface-brand-solid','var(--bt-blue-600)'],['--bt-surface-brand-default','var(--bt-blue-700)'],['--bt-surface-brand-intense','var(--bt-blue-800)'],
+          ]),
+          error: Object.fromEntries([
+            ['--bt-surface-error-light','var(--bt-red-50)'],['--bt-surface-error-subtle','var(--bt-red-100)'],['--bt-surface-error-muted','var(--bt-red-200)'],
+            ['--bt-surface-error-emphasis','var(--bt-red-300)'],['--bt-surface-error-strong','var(--bt-red-400)'],['--bt-surface-error-heavy','var(--bt-red-500)'],
+            ['--bt-surface-error-solid','var(--bt-red-600)'],['--bt-surface-error-default','var(--bt-red-700)'],['--bt-surface-error-intense','var(--bt-red-800)'],
+          ]),
+          success: Object.fromEntries([
+            ['--bt-surface-success-light','var(--bt-green-50)'],['--bt-surface-success-subtle','var(--bt-green-100)'],['--bt-surface-success-muted','var(--bt-green-200)'],
+            ['--bt-surface-success-emphasis','var(--bt-green-300)'],['--bt-surface-success-strong','var(--bt-green-400)'],['--bt-surface-success-heavy','var(--bt-green-500)'],
+            ['--bt-surface-success-solid','var(--bt-green-600)'],['--bt-surface-success-default','var(--bt-green-700)'],['--bt-surface-success-intense','var(--bt-green-800)'],
+          ]),
+          warning: Object.fromEntries([
+            ['--bt-surface-warning-light','var(--bt-yellow-50)'],['--bt-surface-warning-subtle','var(--bt-yellow-100)'],['--bt-surface-warning-muted','var(--bt-yellow-200)'],
+            ['--bt-surface-warning-emphasis','var(--bt-yellow-300)'],['--bt-surface-warning-strong','var(--bt-yellow-400)'],['--bt-surface-warning-heavy','var(--bt-yellow-500)'],
+            ['--bt-surface-warning-solid','var(--bt-yellow-600)'],['--bt-surface-warning-default','var(--bt-yellow-700)'],['--bt-surface-warning-intense','var(--bt-yellow-800)'],
+          ]),
+          information: Object.fromEntries([
+            ['--bt-surface-information-light','var(--bt-blue-50)'],['--bt-surface-information-subtle','var(--bt-blue-100)'],['--bt-surface-information-muted','var(--bt-blue-200)'],
+            ['--bt-surface-information-emphasis','var(--bt-blue-300)'],['--bt-surface-information-strong','var(--bt-blue-400)'],['--bt-surface-information-heavy','var(--bt-blue-500)'],
+            ['--bt-surface-information-solid','var(--bt-blue-600)'],['--bt-surface-information-default','var(--bt-blue-700)'],['--bt-surface-information-intense','var(--bt-blue-800)'],
+          ]),
+        })}
 
         <h2 id="Text">Text</h2>
         ${_seg('text')}
         <div id="token-view-preview-text">
 
-        <p class="section-label" style="margin-bottom:8px;">Base</p>
+        <p class="section-label" style="margin-bottom:8px;">Primary Scale</p>
         <table class="token-table">
           <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
           <tbody>
             ${[
-              ['--bt-text-default',         'Gray/900',   '#1a1a1a'],
-              ['--bt-text-solid',           'Gray/800',   '#272727'],
-              ['--bt-text-heavy',           'Gray/700',   '#404040'],
-              ['--bt-text-strong',          'Gray/600',   '#535353'],
-              ['--bt-text-emphasis',        'Gray/500',   '#727272'],
-              ['--bt-text-muted',           'Gray/400',   '#a3a3a3'],
-              ['--bt-text-subtle',          'Gray/300',   '#d4d4d4'],
-              ['--bt-text-light',           'Gray/200',   '#e6e6e6'],
-              ['--bt-text-inverted',        'Gray/0',     '#ffffff'],
-              ['--bt-text-brand',           'Blue/700',   '#0d4e97'],
-              ['--bt-text-brand-subtle',    'Blue/600',   '#0e62bb'],
-              ['--bt-text-brand-light',     'Blue/500',   '#1c7fdb'],
-              ['--bt-text-success-emphasis','Green/700',  '#2d584b'],
-              ['--bt-text-success-muted',   'Green/50',   '#e8f3ee'],
-              ['--bt-text-warning-muted',   'Yellow/50',  '#fdf9e8'],
-              ['--bt-text-error-emphasis',  'Red/700',    '#b31d38'],
-              ['--bt-text-error-muted',     'Red/50',     '#fef2f2'],
+              ['--bt-text-primary-default',  'Gray/900', '#1a1a1a'],
+              ['--bt-text-primary-solid',    'Gray/800', '#272727'],
+              ['--bt-text-primary-heavy',    'Gray/700', '#404040'],
+              ['--bt-text-primary-strong',   'Gray/600', '#535353'],
+              ['--bt-text-primary-emphasis', 'Gray/500', '#727272'],
+              ['--bt-text-primary-muted',    'Gray/400', '#a3a3a3'],
+              ['--bt-text-primary-subtle',   'Gray/300', '#d4d4d4'],
+              ['--bt-text-primary-light',    'Gray/200', '#e6e6e6'],
+              ['--bt-text-primary-inverted', 'Gray/0',   '#ffffff'],
             ].map(([token, colorToken, hex]) => `
               <tr>
                 <td>
@@ -484,6 +612,17 @@ const PAGES = {
         </table>
 
         ${[
+          { label: 'Brand Scale', tokens: [
+            ['--bt-text-brand-light',    'Blue/50',  '#f1f7fe'],
+            ['--bt-text-brand-subtle',   'Blue/100', '#e2edfc'],
+            ['--bt-text-brand-muted',    'Blue/200', '#bedbf9'],
+            ['--bt-text-brand-emphasis', 'Blue/300', '#85bdf4'],
+            ['--bt-text-brand-strong',   'Blue/400', '#449bec'],
+            ['--bt-text-brand-heavy',    'Blue/500', '#1c7fdb'],
+            ['--bt-text-brand-solid',    'Blue/600', '#0e62bb'],
+            ['--bt-text-brand-default',  'Blue/700', '#0d4e97'],
+            ['--bt-text-brand-intense',  'Blue/800', '#0f447d'],
+          ]},
           { label: 'Error Scale', tokens: [
             ['--bt-text-error-light',    'Red/50',   '#fef2f2'],
             ['--bt-text-error-subtle',   'Red/100',  '#fde6e6'],
@@ -528,17 +667,6 @@ const PAGES = {
             ['--bt-text-information-default',  'Blue/700', '#0d4e97'],
             ['--bt-text-information-intense',  'Blue/800', '#0f447d'],
           ]},
-          { label: 'Brand Contrast Scale', tokens: [
-            ['--bt-text-brand-contrast-light',    'Blue/50',  '#f1f7fe'],
-            ['--bt-text-brand-contrast-subtle',   'Blue/100', '#e2edfc'],
-            ['--bt-text-brand-contrast-muted',    'Blue/200', '#bedbf9'],
-            ['--bt-text-brand-contrast-emphasis', 'Blue/300', '#85bdf4'],
-            ['--bt-text-brand-contrast-strong',   'Blue/400', '#449bec'],
-            ['--bt-text-brand-contrast-heavy',    'Blue/500', '#1c7fdb'],
-            ['--bt-text-brand-contrast-solid',    'Blue/600', '#0e62bb'],
-            ['--bt-text-brand-contrast-default',  'Blue/700', '#0d4e97'],
-            ['--bt-text-brand-contrast-intense',  'Blue/800', '#0f447d'],
-          ]},
         ].map(({ label, tokens }) => `
           <p class="section-label" style="margin-top:32px;margin-bottom:8px;">${label}</p>
           <table class="token-table">
@@ -558,24 +686,27 @@ const PAGES = {
 
         </div>
         ${_jv('text', {
-          base: Object.fromEntries([
-            ['--bt-text-default',         'var(--bt-gray-900)'],
-            ['--bt-text-solid',           'var(--bt-gray-800)'],
-            ['--bt-text-heavy',           'var(--bt-gray-700)'],
-            ['--bt-text-strong',          'var(--bt-gray-600)'],
-            ['--bt-text-emphasis',        'var(--bt-gray-500)'],
-            ['--bt-text-muted',           'var(--bt-gray-400)'],
-            ['--bt-text-subtle',          'var(--bt-gray-300)'],
-            ['--bt-text-light',           'var(--bt-gray-200)'],
-            ['--bt-text-inverted',        'var(--bt-gray-0)'],
-            ['--bt-text-brand',           'var(--bt-blue-700)'],
-            ['--bt-text-brand-subtle',    'var(--bt-blue-600)'],
-            ['--bt-text-brand-light',     'var(--bt-blue-500)'],
-            ['--bt-text-success-emphasis','var(--bt-green-700)'],
-            ['--bt-text-success-muted',   'var(--bt-green-50)'],
-            ['--bt-text-warning-muted',   'var(--bt-yellow-50)'],
-            ['--bt-text-error-emphasis',  'var(--bt-red-700)'],
-            ['--bt-text-error-muted',     'var(--bt-red-50)'],
+          'primary-scale': Object.fromEntries([
+            ['--bt-text-primary-default',  'var(--bt-gray-900)'],
+            ['--bt-text-primary-solid',    'var(--bt-gray-800)'],
+            ['--bt-text-primary-heavy',    'var(--bt-gray-700)'],
+            ['--bt-text-primary-strong',   'var(--bt-gray-600)'],
+            ['--bt-text-primary-emphasis', 'var(--bt-gray-500)'],
+            ['--bt-text-primary-muted',    'var(--bt-gray-400)'],
+            ['--bt-text-primary-subtle',   'var(--bt-gray-300)'],
+            ['--bt-text-primary-light',    'var(--bt-gray-200)'],
+            ['--bt-text-primary-inverted', 'var(--bt-gray-0)'],
+          ]),
+          'brand-scale': Object.fromEntries([
+            ['--bt-text-brand-light',    'var(--bt-blue-50)'],
+            ['--bt-text-brand-subtle',   'var(--bt-blue-100)'],
+            ['--bt-text-brand-muted',    'var(--bt-blue-200)'],
+            ['--bt-text-brand-emphasis', 'var(--bt-blue-300)'],
+            ['--bt-text-brand-strong',   'var(--bt-blue-400)'],
+            ['--bt-text-brand-heavy',    'var(--bt-blue-500)'],
+            ['--bt-text-brand-solid',    'var(--bt-blue-600)'],
+            ['--bt-text-brand-default',  'var(--bt-blue-700)'],
+            ['--bt-text-brand-intense',  'var(--bt-blue-800)'],
           ]),
           'error-scale': Object.fromEntries([
             ['--bt-text-error-light',    'var(--bt-red-50)'],
@@ -621,32 +752,247 @@ const PAGES = {
             ['--bt-text-information-default',  'var(--bt-blue-700)'],
             ['--bt-text-information-intense',  'var(--bt-blue-800)'],
           ]),
-          'brand-contrast-scale': Object.fromEntries([
-            ['--bt-text-brand-contrast-light',    'var(--bt-blue-50)'],
-            ['--bt-text-brand-contrast-subtle',   'var(--bt-blue-100)'],
-            ['--bt-text-brand-contrast-muted',    'var(--bt-blue-200)'],
-            ['--bt-text-brand-contrast-emphasis', 'var(--bt-blue-300)'],
-            ['--bt-text-brand-contrast-strong',   'var(--bt-blue-400)'],
-            ['--bt-text-brand-contrast-heavy',    'var(--bt-blue-500)'],
-            ['--bt-text-brand-contrast-solid',    'var(--bt-blue-600)'],
-            ['--bt-text-brand-contrast-default',  'var(--bt-blue-700)'],
-            ['--bt-text-brand-contrast-intense',  'var(--bt-blue-800)'],
-          ]),
         })}
 
         <h2 id="Border">Border</h2>
-        <div class="placeholder">
-          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-          <div class="placeholder-title">Border Tokens</div>
-          <div class="placeholder-text">Yakında eklenecek.</div>
+        ${_seg('border')}
+        <div id="token-view-preview-border">
+        ${(() => {
+          const _cpBtn = (val) => `<button class="copy-btn" onclick="copyText('${val}',this)" title="Copy"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>`;
+          const _swatch = (hex) => `<div style="width:40px;height:24px;border-radius:4px;border:2px solid ${hex};display:inline-block;vertical-align:middle;"></div>`;
+          const _rows = (tokens) => tokens.map(([token, prim, hex]) => `
+            <tr>
+              <td>${_swatch(hex)}</td>
+              <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span>${_cpBtn(token)}</div></td>
+              <td>${prim}</td>
+              <td><div style="display:inline-flex;align-items:center;gap:6px;"><span>${hex}</span>${_cpBtn(hex)}</div></td>
+            </tr>`).join('');
+          const _table = (label, tokens) => `
+            <p class="section-label" style="margin-top:${label==='Primary'?'0':'32px'};margin-bottom:8px;">${label}</p>
+            <table class="token-table"><thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
+            <tbody>${_rows(tokens)}</tbody></table>`;
+          return [
+            ['Primary', [
+              ['--bt-border-primary-default',  'Gray/300', '#d4d4d4'],
+              ['--bt-border-primary-light',    'Gray/50',  '#fafafa'],
+              ['--bt-border-primary-subtle',   'Gray/100', '#f5f5f5'],
+              ['--bt-border-primary-muted',    'Gray/200', '#e6e6e6'],
+              ['--bt-border-primary-emphasis', 'Gray/400', '#a3a3a3'],
+              ['--bt-border-primary-strong',   'Gray/500', '#727272'],
+              ['--bt-border-primary-heavy',    'Gray/600', '#535353'],
+              ['--bt-border-primary-solid',    'Gray/700', '#404040'],
+              ['--bt-border-intense',          'Gray/800', '#272727'],
+            ]],
+            ['Brand', [
+              ['--bt-border-brand-light',    'Blue/50',  '#f1f7fe'],
+              ['--bt-border-brand-subtle',   'Blue/100', '#e2edfc'],
+              ['--bt-border-brand-muted',    'Blue/200', '#bedbf9'],
+              ['--bt-border-brand-emphasis', 'Blue/300', '#85bdf4'],
+              ['--bt-border-brand-strong',   'Blue/400', '#449bec'],
+              ['--bt-border-brand-heavy',    'Blue/500', '#1c7fdb'],
+              ['--bt-border-brand-solid',    'Blue/600', '#0e62bb'],
+              ['--bt-border-brand-default',  'Blue/700', '#0d4e97'],
+              ['--bt-border-brand-intense',  'Blue/800', '#0f447d'],
+            ]],
+            ['Error', [
+              ['--bt-border-error-light',    'Red/50',  '#fef2f2'],
+              ['--bt-border-error-subtle',   'Red/100', '#fde6e6'],
+              ['--bt-border-error-muted',    'Red/200', '#fbd0d2'],
+              ['--bt-border-error-emphasis', 'Red/300', '#f7aaae'],
+              ['--bt-border-error-strong',   'Red/400', '#f27a83'],
+              ['--bt-border-error-heavy',    'Red/500', '#e84b5b'],
+              ['--bt-border-error-solid',    'Red/600', '#d83a52'],
+              ['--bt-border-error-default',  'Red/700', '#b31d38'],
+              ['--bt-border-error-intense',  'Red/800', '#961b35'],
+            ]],
+            ['Success', [
+              ['--bt-border-success-light',    'Green/50',  '#e8f3ee'],
+              ['--bt-border-success-subtle',   'Green/100', '#daede5'],
+              ['--bt-border-success-muted',    'Green/200', '#b4dbcb'],
+              ['--bt-border-success-emphasis', 'Green/300', '#87c1ab'],
+              ['--bt-border-success-strong',   'Green/400', '#5ea38b'],
+              ['--bt-border-success-heavy',    'Green/500', '#448871'],
+              ['--bt-border-success-solid',    'Green/600', '#356c5b'],
+              ['--bt-border-success-default',  'Green/700', '#2d584b'],
+              ['--bt-border-success-intense',  'Green/800', '#28473e'],
+            ]],
+            ['Warning', [
+              ['--bt-border-warning-light',    'Yellow/50',  '#fdf9e8'],
+              ['--bt-border-warning-subtle',   'Yellow/100', '#f9f2ce'],
+              ['--bt-border-warning-muted',    'Yellow/200', '#f4e8aa'],
+              ['--bt-border-warning-emphasis', 'Yellow/300', '#edd882'],
+              ['--bt-border-warning-strong',   'Yellow/400', '#e2c455'],
+              ['--bt-border-warning-heavy',    'Yellow/500', '#d4af2c'],
+              ['--bt-border-warning-solid',    'Yellow/600', '#c49a12'],
+              ['--bt-border-warning-default',  'Yellow/700', '#aa820a'],
+              ['--bt-border-warning-intense',  'Yellow/800', '#8c6a05'],
+            ]],
+            ['Information', [
+              ['--bt-border-information-light',    'Blue/50',  '#f1f7fe'],
+              ['--bt-border-information-subtle',   'Blue/100', '#e2edfc'],
+              ['--bt-border-information-muted',    'Blue/200', '#bedbf9'],
+              ['--bt-border-information-emphasis', 'Blue/300', '#85bdf4'],
+              ['--bt-border-information-strong',   'Blue/400', '#449bec'],
+              ['--bt-border-information-heavy',    'Blue/500', '#1c7fdb'],
+              ['--bt-border-information-solid',    'Blue/600', '#0e62bb'],
+              ['--bt-border-information-default',  'Blue/700', '#0d4e97'],
+              ['--bt-border-information-intense',  'Blue/800', '#0f447d'],
+            ]],
+          ].map(([label, tokens]) => _table(label, tokens)).join('');
+        })()}
         </div>
+        ${_jv('border', {
+          primary: Object.fromEntries([
+            ['--bt-border-primary-default','var(--bt-gray-300)'],['--bt-border-primary-light','var(--bt-gray-50)'],['--bt-border-primary-subtle','var(--bt-gray-100)'],
+            ['--bt-border-primary-muted','var(--bt-gray-200)'],['--bt-border-primary-emphasis','var(--bt-gray-400)'],['--bt-border-primary-strong','var(--bt-gray-500)'],
+            ['--bt-border-primary-heavy','var(--bt-gray-600)'],['--bt-border-primary-solid','var(--bt-gray-700)'],['--bt-border-intense','var(--bt-gray-800)'],
+          ]),
+          brand: Object.fromEntries([
+            ['--bt-border-brand-light','var(--bt-blue-50)'],['--bt-border-brand-subtle','var(--bt-blue-100)'],['--bt-border-brand-muted','var(--bt-blue-200)'],
+            ['--bt-border-brand-emphasis','var(--bt-blue-300)'],['--bt-border-brand-strong','var(--bt-blue-400)'],['--bt-border-brand-heavy','var(--bt-blue-500)'],
+            ['--bt-border-brand-solid','var(--bt-blue-600)'],['--bt-border-brand-default','var(--bt-blue-700)'],['--bt-border-brand-intense','var(--bt-blue-800)'],
+          ]),
+          error: Object.fromEntries([
+            ['--bt-border-error-light','var(--bt-red-50)'],['--bt-border-error-subtle','var(--bt-red-100)'],['--bt-border-error-muted','var(--bt-red-200)'],
+            ['--bt-border-error-emphasis','var(--bt-red-300)'],['--bt-border-error-strong','var(--bt-red-400)'],['--bt-border-error-heavy','var(--bt-red-500)'],
+            ['--bt-border-error-solid','var(--bt-red-600)'],['--bt-border-error-default','var(--bt-red-700)'],['--bt-border-error-intense','var(--bt-red-800)'],
+          ]),
+          success: Object.fromEntries([
+            ['--bt-border-success-light','var(--bt-green-50)'],['--bt-border-success-subtle','var(--bt-green-100)'],['--bt-border-success-muted','var(--bt-green-200)'],
+            ['--bt-border-success-emphasis','var(--bt-green-300)'],['--bt-border-success-strong','var(--bt-green-400)'],['--bt-border-success-heavy','var(--bt-green-500)'],
+            ['--bt-border-success-solid','var(--bt-green-600)'],['--bt-border-success-default','var(--bt-green-700)'],['--bt-border-success-intense','var(--bt-green-800)'],
+          ]),
+          warning: Object.fromEntries([
+            ['--bt-border-warning-light','var(--bt-yellow-50)'],['--bt-border-warning-subtle','var(--bt-yellow-100)'],['--bt-border-warning-muted','var(--bt-yellow-200)'],
+            ['--bt-border-warning-emphasis','var(--bt-yellow-300)'],['--bt-border-warning-strong','var(--bt-yellow-400)'],['--bt-border-warning-heavy','var(--bt-yellow-500)'],
+            ['--bt-border-warning-solid','var(--bt-yellow-600)'],['--bt-border-warning-default','var(--bt-yellow-700)'],['--bt-border-warning-intense','var(--bt-yellow-800)'],
+          ]),
+          information: Object.fromEntries([
+            ['--bt-border-information-light','var(--bt-blue-50)'],['--bt-border-information-subtle','var(--bt-blue-100)'],['--bt-border-information-muted','var(--bt-blue-200)'],
+            ['--bt-border-information-emphasis','var(--bt-blue-300)'],['--bt-border-information-strong','var(--bt-blue-400)'],['--bt-border-information-heavy','var(--bt-blue-500)'],
+            ['--bt-border-information-solid','var(--bt-blue-600)'],['--bt-border-information-default','var(--bt-blue-700)'],['--bt-border-information-intense','var(--bt-blue-800)'],
+          ]),
+        })}
 
-        <h2 id="Visual Assets">Visual Assets</h2>
-        <div class="placeholder">
-          <div class="placeholder-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-          <div class="placeholder-title">Visual Assets</div>
-          <div class="placeholder-text">Yakında eklenecek.</div>
+        <h2 id="Icon">Icon</h2>
+        ${_seg('icon')}
+        <div id="token-view-preview-icon">
+        ${(() => {
+          const _cpBtn = (val) => `<button class="copy-btn" onclick="copyText('${val}',this)" title="Copy"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>`;
+          const _swatch = (hex) => `<div style="width:40px;height:24px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;"><svg width="20" height="20" viewBox="0 0 24 24" fill="${hex}" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5"/><path stroke="${hex}" stroke-width="2" d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div>`;
+          const _rows = (tokens) => tokens.map(([token, prim, hex]) => `
+            <tr>
+              <td>${_swatch(hex)}</td>
+              <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span>${_cpBtn(token)}</div></td>
+              <td>${prim}</td>
+              <td><div style="display:inline-flex;align-items:center;gap:6px;"><span>${hex}</span>${_cpBtn(hex)}</div></td>
+            </tr>`).join('');
+          const _table = (label, tokens) => `
+            <p class="section-label" style="margin-top:${label==='Primary'?'0':'32px'};margin-bottom:8px;">${label}</p>
+            <table class="token-table"><thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
+            <tbody>${_rows(tokens)}</tbody></table>`;
+          return [
+            ['Primary', [
+              ['--bt-icon-primary-default',  'Gray/900', '#1a1a1a'],
+              ['--bt-icon-primary-light',    'Gray/200', '#e6e6e6'],
+              ['--bt-icon-primary-subtle',   'Gray/300', '#d4d4d4'],
+              ['--bt-icon-primary-muted',    'Gray/400', '#a3a3a3'],
+              ['--bt-icon-primary-emphasis', 'Gray/500', '#727272'],
+              ['--bt-icon-primary-strong',   'Gray/600', '#535353'],
+              ['--bt-icon-primary-heavy',    'Gray/700', '#404040'],
+              ['--bt-icon-primary-solid',    'Gray/800', '#272727'],
+              ['--bt-icon-primary-inverted', 'Gray/0',   '#ffffff'],
+            ]],
+            ['Brand', [
+              ['--bt-icon-brand-light',    'Blue/50',  '#f1f7fe'],
+              ['--bt-icon-brand-subtle',   'Blue/100', '#e2edfc'],
+              ['--bt-icon-brand-muted',    'Blue/200', '#bedbf9'],
+              ['--bt-icon-brand-emphasis', 'Blue/300', '#85bdf4'],
+              ['--bt-icon-brand-strong',   'Blue/400', '#449bec'],
+              ['--bt-icon-brand-heavy',    'Blue/500', '#1c7fdb'],
+              ['--bt-icon-brand-solid',    'Blue/600', '#0e62bb'],
+              ['--bt-icon-brand-default',  'Blue/700', '#0d4e97'],
+              ['--bt-icon-brand-intense',  'Blue/800', '#0f447d'],
+            ]],
+            ['Error', [
+              ['--bt-icon-error-light',    'Red/50',  '#fef2f2'],
+              ['--bt-icon-error-subtle',   'Red/100', '#fde6e6'],
+              ['--bt-icon-error-muted',    'Red/200', '#fbd0d2'],
+              ['--bt-icon-error-emphasis', 'Red/300', '#f7aaae'],
+              ['--bt-icon-error-strong',   'Red/400', '#f27a83'],
+              ['--bt-icon-error-heavy',    'Red/500', '#e84b5b'],
+              ['--bt-icon-error-solid',    'Red/600', '#d83a52'],
+              ['--bt-icon-error-default',  'Red/700', '#b31d38'],
+              ['--bt-icon-error-intense',  'Red/800', '#961b35'],
+            ]],
+            ['Success', [
+              ['--bt-icon-success-light',    'Green/50',  '#e8f3ee'],
+              ['--bt-icon-success-subtle',   'Green/100', '#daede5'],
+              ['--bt-icon-success-muted',    'Green/200', '#b4dbcb'],
+              ['--bt-icon-success-emphasis', 'Green/300', '#87c1ab'],
+              ['--bt-icon-success-strong',   'Green/400', '#5ea38b'],
+              ['--bt-icon-success-heavy',    'Green/500', '#448871'],
+              ['--bt-icon-success-solid',    'Green/600', '#356c5b'],
+              ['--bt-icon-success-default',  'Green/700', '#2d584b'],
+              ['--bt-icon-success-intense',  'Green/800', '#28473e'],
+            ]],
+            ['Warning', [
+              ['--bt-icon-warning-light',    'Yellow/50',  '#fdf9e8'],
+              ['--bt-icon-warning-subtle',   'Yellow/100', '#f9f2ce'],
+              ['--bt-icon-warning-muted',    'Yellow/200', '#f4e8aa'],
+              ['--bt-icon-warning-emphasis', 'Yellow/300', '#edd882'],
+              ['--bt-icon-warning-strong',   'Yellow/400', '#e2c455'],
+              ['--bt-icon-warning-heavy',    'Yellow/500', '#d4af2c'],
+              ['--bt-icon-warning-solid',    'Yellow/600', '#c49a12'],
+              ['--bt-icon-warning-default',  'Yellow/700', '#aa820a'],
+              ['--bt-icon-warning-intense',  'Yellow/800', '#8c6a05'],
+            ]],
+            ['Information', [
+              ['--bt-icon-information-light',    'Blue/50',  '#f1f7fe'],
+              ['--bt-icon-information-subtle',   'Blue/100', '#e2edfc'],
+              ['--bt-icon-information-muted',    'Blue/200', '#bedbf9'],
+              ['--bt-icon-information-emphasis', 'Blue/300', '#85bdf4'],
+              ['--bt-icon-information-strong',   'Blue/400', '#449bec'],
+              ['--bt-icon-information-heavy',    'Blue/500', '#1c7fdb'],
+              ['--bt-icon-information-solid',    'Blue/600', '#0e62bb'],
+              ['--bt-icon-information-default',  'Blue/700', '#0d4e97'],
+              ['--bt-icon-information-intense',  'Blue/800', '#0f447d'],
+            ]],
+          ].map(([label, tokens]) => _table(label, tokens)).join('');
+        })()}
         </div>
+        ${_jv('icon', {
+          primary: Object.fromEntries([
+            ['--bt-icon-primary-default','var(--bt-gray-900)'],['--bt-icon-primary-light','var(--bt-gray-200)'],['--bt-icon-primary-subtle','var(--bt-gray-300)'],
+            ['--bt-icon-primary-muted','var(--bt-gray-400)'],['--bt-icon-primary-emphasis','var(--bt-gray-500)'],['--bt-icon-primary-strong','var(--bt-gray-600)'],
+            ['--bt-icon-primary-heavy','var(--bt-gray-700)'],['--bt-icon-primary-solid','var(--bt-gray-800)'],['--bt-icon-primary-inverted','var(--bt-gray-0)'],
+          ]),
+          brand: Object.fromEntries([
+            ['--bt-icon-brand-light','var(--bt-blue-50)'],['--bt-icon-brand-subtle','var(--bt-blue-100)'],['--bt-icon-brand-muted','var(--bt-blue-200)'],
+            ['--bt-icon-brand-emphasis','var(--bt-blue-300)'],['--bt-icon-brand-strong','var(--bt-blue-400)'],['--bt-icon-brand-heavy','var(--bt-blue-500)'],
+            ['--bt-icon-brand-solid','var(--bt-blue-600)'],['--bt-icon-brand-default','var(--bt-blue-700)'],['--bt-icon-brand-intense','var(--bt-blue-800)'],
+          ]),
+          error: Object.fromEntries([
+            ['--bt-icon-error-light','var(--bt-red-50)'],['--bt-icon-error-subtle','var(--bt-red-100)'],['--bt-icon-error-muted','var(--bt-red-200)'],
+            ['--bt-icon-error-emphasis','var(--bt-red-300)'],['--bt-icon-error-strong','var(--bt-red-400)'],['--bt-icon-error-heavy','var(--bt-red-500)'],
+            ['--bt-icon-error-solid','var(--bt-red-600)'],['--bt-icon-error-default','var(--bt-red-700)'],['--bt-icon-error-intense','var(--bt-red-800)'],
+          ]),
+          success: Object.fromEntries([
+            ['--bt-icon-success-light','var(--bt-green-50)'],['--bt-icon-success-subtle','var(--bt-green-100)'],['--bt-icon-success-muted','var(--bt-green-200)'],
+            ['--bt-icon-success-emphasis','var(--bt-green-300)'],['--bt-icon-success-strong','var(--bt-green-400)'],['--bt-icon-success-heavy','var(--bt-green-500)'],
+            ['--bt-icon-success-solid','var(--bt-green-600)'],['--bt-icon-success-default','var(--bt-green-700)'],['--bt-icon-success-intense','var(--bt-green-800)'],
+          ]),
+          warning: Object.fromEntries([
+            ['--bt-icon-warning-light','var(--bt-yellow-50)'],['--bt-icon-warning-subtle','var(--bt-yellow-100)'],['--bt-icon-warning-muted','var(--bt-yellow-200)'],
+            ['--bt-icon-warning-emphasis','var(--bt-yellow-300)'],['--bt-icon-warning-strong','var(--bt-yellow-400)'],['--bt-icon-warning-heavy','var(--bt-yellow-500)'],
+            ['--bt-icon-warning-solid','var(--bt-yellow-600)'],['--bt-icon-warning-default','var(--bt-yellow-700)'],['--bt-icon-warning-intense','var(--bt-yellow-800)'],
+          ]),
+          information: Object.fromEntries([
+            ['--bt-icon-information-light','var(--bt-blue-50)'],['--bt-icon-information-subtle','var(--bt-blue-100)'],['--bt-icon-information-muted','var(--bt-blue-200)'],
+            ['--bt-icon-information-emphasis','var(--bt-blue-300)'],['--bt-icon-information-strong','var(--bt-blue-400)'],['--bt-icon-information-heavy','var(--bt-blue-500)'],
+            ['--bt-icon-information-solid','var(--bt-blue-600)'],['--bt-icon-information-default','var(--bt-blue-700)'],['--bt-icon-information-intense','var(--bt-blue-800)'],
+          ]),
+        })}
       `;
 
       const applyingHtml = `
