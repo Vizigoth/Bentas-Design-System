@@ -436,17 +436,13 @@ const PAGES = {
           const _sw2 = (hex) => `<div style="width:40px;height:24px;border-radius:4px;background:${hex};border:1px solid rgba(0,0,0,0.10);display:inline-block;vertical-align:middle;"></div>`;
           const cols = [
             ['Base', [
-              ['--bt-base-default',  'Gray/0',   '#ffffff'],
               ['--bt-base-light',    'Gray/50',  '#fafafa'],
               ['--bt-base-subtle',   'Gray/100', '#f5f5f5'],
               ['--bt-base-muted',    'Gray/200', '#e6e6e6'],
               ['--bt-base-emphasis', 'Gray/300', '#d4d4d4'],
-              ['--bt-base-strong',   'Gray/400', '#a3a3a3'],
-              ['--bt-base-heavy',    'Gray/500', '#727272'],
-              ['--bt-base-solid',    'Gray/600', '#535353'],
-              ['--bt-base-intense',  'Gray/800', '#272727'],
             ]],
             ['Primary', [
+              ['--bt-primary-default',  'Blue/700', '#0d4e97'],
               ['--bt-primary-light',    'Blue/50',  '#f1f7fe'],
               ['--bt-primary-subtle',   'Blue/100', '#e2edfc'],
               ['--bt-primary-muted',    'Blue/200', '#bedbf9'],
@@ -454,10 +450,10 @@ const PAGES = {
               ['--bt-primary-strong',   'Blue/400', '#449bec'],
               ['--bt-primary-heavy',    'Blue/500', '#1c7fdb'],
               ['--bt-primary-solid',    'Blue/600', '#0e62bb'],
-              ['--bt-primary-default',  'Blue/700', '#0d4e97'],
               ['--bt-primary-intense',  'Blue/800', '#0f447d'],
             ]],
             ['Secondary', [
+              ['--bt-secondary-default',  'Gray/700', '#404040'],
               ['--bt-secondary-light',    'Gray/50',  '#fafafa'],
               ['--bt-secondary-subtle',   'Gray/100', '#f5f5f5'],
               ['--bt-secondary-muted',    'Gray/200', '#e6e6e6'],
@@ -465,10 +461,10 @@ const PAGES = {
               ['--bt-secondary-strong',   'Gray/400', '#a3a3a3'],
               ['--bt-secondary-heavy',    'Gray/500', '#727272'],
               ['--bt-secondary-solid',    'Gray/600', '#535353'],
-              ['--bt-secondary-default',  'Gray/700', '#404040'],
               ['--bt-secondary-intense',  'Gray/800', '#272727'],
             ]],
             ['Brand', [
+              ['--bt-brand-default',  'Blue/700', '#0d4e97'],
               ['--bt-brand-light',    'Blue/50',  '#f1f7fe'],
               ['--bt-brand-subtle',   'Blue/100', '#e2edfc'],
               ['--bt-brand-muted',    'Blue/200', '#bedbf9'],
@@ -476,10 +472,10 @@ const PAGES = {
               ['--bt-brand-strong',   'Blue/400', '#449bec'],
               ['--bt-brand-heavy',    'Blue/500', '#1c7fdb'],
               ['--bt-brand-solid',    'Blue/600', '#0e62bb'],
-              ['--bt-brand-default',  'Blue/700', '#0d4e97'],
               ['--bt-brand-intense',  'Blue/800', '#0f447d'],
             ]],
             ['Error', [
+              ['--bt-error-default',  'Red/700', '#b31d38'],
               ['--bt-error-light',    'Red/50',  '#fef2f2'],
               ['--bt-error-subtle',   'Red/100', '#fde6e6'],
               ['--bt-error-muted',    'Red/200', '#fbd0d2'],
@@ -487,10 +483,10 @@ const PAGES = {
               ['--bt-error-strong',   'Red/400', '#f27a83'],
               ['--bt-error-heavy',    'Red/500', '#e84b5b'],
               ['--bt-error-solid',    'Red/600', '#d83a52'],
-              ['--bt-error-default',  'Red/700', '#b31d38'],
               ['--bt-error-intense',  'Red/800', '#961b35'],
             ]],
             ['Success', [
+              ['--bt-success-default',  'Green/700', '#2d584b'],
               ['--bt-success-light',    'Green/50',  '#e8f3ee'],
               ['--bt-success-subtle',   'Green/100', '#daede5'],
               ['--bt-success-muted',    'Green/200', '#b4dbcb'],
@@ -498,10 +494,10 @@ const PAGES = {
               ['--bt-success-strong',   'Green/400', '#5ea38b'],
               ['--bt-success-heavy',    'Green/500', '#448871'],
               ['--bt-success-solid',    'Green/600', '#356c5b'],
-              ['--bt-success-default',  'Green/700', '#2d584b'],
               ['--bt-success-intense',  'Green/800', '#28473e'],
             ]],
             ['Warning', [
+              ['--bt-warning-default',  'Yellow/700', '#aa820a'],
               ['--bt-warning-light',    'Yellow/50',  '#fdf9e8'],
               ['--bt-warning-subtle',   'Yellow/100', '#f9f2ce'],
               ['--bt-warning-muted',    'Yellow/200', '#f4e8aa'],
@@ -509,10 +505,10 @@ const PAGES = {
               ['--bt-warning-strong',   'Yellow/400', '#e2c455'],
               ['--bt-warning-heavy',    'Yellow/500', '#d4af2c'],
               ['--bt-warning-solid',    'Yellow/600', '#c49a12'],
-              ['--bt-warning-default',  'Yellow/700', '#aa820a'],
               ['--bt-warning-intense',  'Yellow/800', '#8c6a05'],
             ]],
             ['Information', [
+              ['--bt-information-default',  'Blue/700', '#0d4e97'],
               ['--bt-information-light',    'Blue/50',  '#f1f7fe'],
               ['--bt-information-subtle',   'Blue/100', '#e2edfc'],
               ['--bt-information-muted',    'Blue/200', '#bedbf9'],
@@ -520,7 +516,6 @@ const PAGES = {
               ['--bt-information-strong',   'Blue/400', '#449bec'],
               ['--bt-information-heavy',    'Blue/500', '#1c7fdb'],
               ['--bt-information-solid',    'Blue/600', '#0e62bb'],
-              ['--bt-information-default',  'Blue/700', '#0d4e97'],
               ['--bt-information-intense',  'Blue/800', '#0f447d'],
             ]],
           ];
@@ -540,7 +535,7 @@ const PAGES = {
         })()}
         </div>
         ${_jv('semantic-colors', {
-          base:        { '--bt-base-default': 'var(--bt-gray-0)', '--bt-base-light': 'var(--bt-gray-50)', '--bt-base-subtle': 'var(--bt-gray-100)', '--bt-base-muted': 'var(--bt-gray-200)', '--bt-base-emphasis': 'var(--bt-gray-300)', '--bt-base-strong': 'var(--bt-gray-400)', '--bt-base-heavy': 'var(--bt-gray-500)', '--bt-base-solid': 'var(--bt-gray-600)', '--bt-base-intense': 'var(--bt-gray-800)' },
+          base:        { '--bt-base-light': 'var(--bt-gray-50)', '--bt-base-subtle': 'var(--bt-gray-100)', '--bt-base-muted': 'var(--bt-gray-200)', '--bt-base-emphasis': 'var(--bt-gray-300)' },
           primary:     { '--bt-primary-light': 'var(--bt-blue-50)', '--bt-primary-subtle': 'var(--bt-blue-100)', '--bt-primary-muted': 'var(--bt-blue-200)', '--bt-primary-emphasis': 'var(--bt-blue-300)', '--bt-primary-strong': 'var(--bt-blue-400)', '--bt-primary-heavy': 'var(--bt-blue-500)', '--bt-primary-solid': 'var(--bt-blue-600)', '--bt-primary-default': 'var(--bt-blue-700)', '--bt-primary-intense': 'var(--bt-blue-800)' },
           secondary:   { '--bt-secondary-light': 'var(--bt-gray-50)', '--bt-secondary-subtle': 'var(--bt-gray-100)', '--bt-secondary-muted': 'var(--bt-gray-200)', '--bt-secondary-emphasis': 'var(--bt-gray-300)', '--bt-secondary-strong': 'var(--bt-gray-400)', '--bt-secondary-heavy': 'var(--bt-gray-500)', '--bt-secondary-solid': 'var(--bt-gray-600)', '--bt-secondary-default': 'var(--bt-gray-700)', '--bt-secondary-intense': 'var(--bt-gray-800)' },
           brand:       { '--bt-brand-light': 'var(--bt-blue-50)', '--bt-brand-subtle': 'var(--bt-blue-100)', '--bt-brand-muted': 'var(--bt-blue-200)', '--bt-brand-emphasis': 'var(--bt-blue-300)', '--bt-brand-strong': 'var(--bt-blue-400)', '--bt-brand-heavy': 'var(--bt-blue-500)', '--bt-brand-solid': 'var(--bt-blue-600)', '--bt-brand-default': 'var(--bt-blue-700)', '--bt-brand-intense': 'var(--bt-blue-800)' },

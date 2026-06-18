@@ -221,18 +221,14 @@
 
   /* ── Color Collections (Figma: Color/*) ───────────────────── */
 
-  /* Base → Gray */
-  --bt-base-default:  var(--bt-gray-0);    /* Gray/0   */
+  /* Base → Gray (Figma: 4 tokens) */
   --bt-base-light:    var(--bt-gray-50);   /* Gray/50  */
   --bt-base-subtle:   var(--bt-gray-100);  /* Gray/100 */
   --bt-base-muted:    var(--bt-gray-200);  /* Gray/200 */
   --bt-base-emphasis: var(--bt-gray-300);  /* Gray/300 */
-  --bt-base-strong:   var(--bt-gray-400);  /* Gray/400 */
-  --bt-base-heavy:    var(--bt-gray-500);  /* Gray/500 */
-  --bt-base-solid:    var(--bt-gray-600);  /* Gray/600 */
-  --bt-base-intense:  var(--bt-gray-800);  /* Gray/800 */
 
   /* Primary → Blue */
+  --bt-primary-default:  var(--bt-blue-700);  /* Blue/700 */
   --bt-primary-light:    var(--bt-blue-50);   /* Blue/50  */
   --bt-primary-subtle:   var(--bt-blue-100);  /* Blue/100 */
   --bt-primary-muted:    var(--bt-blue-200);  /* Blue/200 */
@@ -240,10 +236,10 @@
   --bt-primary-strong:   var(--bt-blue-400);  /* Blue/400 */
   --bt-primary-heavy:    var(--bt-blue-500);  /* Blue/500 */
   --bt-primary-solid:    var(--bt-blue-600);  /* Blue/600 */
-  --bt-primary-default:  var(--bt-blue-700);  /* Blue/700 */
   --bt-primary-intense:  var(--bt-blue-800);  /* Blue/800 */
 
   /* Secondary → Gray */
+  --bt-secondary-default:  var(--bt-gray-700);  /* Gray/700 */
   --bt-secondary-light:    var(--bt-gray-50);   /* Gray/50  */
   --bt-secondary-subtle:   var(--bt-gray-100);  /* Gray/100 */
   --bt-secondary-muted:    var(--bt-gray-200);  /* Gray/200 */
@@ -251,10 +247,10 @@
   --bt-secondary-strong:   var(--bt-gray-400);  /* Gray/400 */
   --bt-secondary-heavy:    var(--bt-gray-500);  /* Gray/500 */
   --bt-secondary-solid:    var(--bt-gray-600);  /* Gray/600 */
-  --bt-secondary-default:  var(--bt-gray-700);  /* Gray/700 */
   --bt-secondary-intense:  var(--bt-gray-800);  /* Gray/800 */
 
   /* Brand → Blue */
+  --bt-brand-default:  var(--bt-blue-700);  /* Blue/700 */
   --bt-brand-light:    var(--bt-blue-50);   /* Blue/50  */
   --bt-brand-subtle:   var(--bt-blue-100);  /* Blue/100 */
   --bt-brand-muted:    var(--bt-blue-200);  /* Blue/200 */
@@ -262,10 +258,10 @@
   --bt-brand-strong:   var(--bt-blue-400);  /* Blue/400 */
   --bt-brand-heavy:    var(--bt-blue-500);  /* Blue/500 */
   --bt-brand-solid:    var(--bt-blue-600);  /* Blue/600 */
-  --bt-brand-default:  var(--bt-blue-700);  /* Blue/700 */
   --bt-brand-intense:  var(--bt-blue-800);  /* Blue/800 */
 
   /* Error → Red */
+  --bt-error-default:  var(--bt-red-700);  /* Red/700 */
   --bt-error-light:    var(--bt-red-50);   /* Red/50  */
   --bt-error-subtle:   var(--bt-red-100);  /* Red/100 */
   --bt-error-muted:    var(--bt-red-200);  /* Red/200 */
@@ -273,10 +269,10 @@
   --bt-error-strong:   var(--bt-red-400);  /* Red/400 */
   --bt-error-heavy:    var(--bt-red-500);  /* Red/500 */
   --bt-error-solid:    var(--bt-red-600);  /* Red/600 */
-  --bt-error-default:  var(--bt-red-700);  /* Red/700 */
   --bt-error-intense:  var(--bt-red-800);  /* Red/800 */
 
   /* Success → Green */
+  --bt-success-default:  var(--bt-green-700);  /* Green/700 */
   --bt-success-light:    var(--bt-green-50);   /* Green/50  */
   --bt-success-subtle:   var(--bt-green-100);  /* Green/100 */
   --bt-success-muted:    var(--bt-green-200);  /* Green/200 */
@@ -284,10 +280,10 @@
   --bt-success-strong:   var(--bt-green-400);  /* Green/400 */
   --bt-success-heavy:    var(--bt-green-500);  /* Green/500 */
   --bt-success-solid:    var(--bt-green-600);  /* Green/600 */
-  --bt-success-default:  var(--bt-green-700);  /* Green/700 */
   --bt-success-intense:  var(--bt-green-800);  /* Green/800 */
 
   /* Warning → Yellow */
+  --bt-warning-default:  var(--bt-yellow-700);  /* Yellow/700 */
   --bt-warning-light:    var(--bt-yellow-50);   /* Yellow/50  */
   --bt-warning-subtle:   var(--bt-yellow-100);  /* Yellow/100 */
   --bt-warning-muted:    var(--bt-yellow-200);  /* Yellow/200 */
@@ -295,10 +291,10 @@
   --bt-warning-strong:   var(--bt-yellow-400);  /* Yellow/400 */
   --bt-warning-heavy:    var(--bt-yellow-500);  /* Yellow/500 */
   --bt-warning-solid:    var(--bt-yellow-600);  /* Yellow/600 */
-  --bt-warning-default:  var(--bt-yellow-700);  /* Yellow/700 */
   --bt-warning-intense:  var(--bt-yellow-800);  /* Yellow/800 */
 
   /* Information → Blue */
+  --bt-information-default:  var(--bt-blue-700);  /* Blue/700 */
   --bt-information-light:    var(--bt-blue-50);   /* Blue/50  */
   --bt-information-subtle:   var(--bt-blue-100);  /* Blue/100 */
   --bt-information-muted:    var(--bt-blue-200);  /* Blue/200 */
@@ -306,7 +302,6 @@
   --bt-information-strong:   var(--bt-blue-400);  /* Blue/400 */
   --bt-information-heavy:    var(--bt-blue-500);  /* Blue/500 */
   --bt-information-solid:    var(--bt-blue-600);  /* Blue/600 */
-  --bt-information-default:  var(--bt-blue-700);  /* Blue/700 */
   --bt-information-intense:  var(--bt-blue-800);  /* Blue/800 */
 
   /* ── Semantic Colors — Surface ────────────────────────────── */
