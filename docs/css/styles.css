@@ -219,6 +219,50 @@
   --bt-orange-900: #7c2d12;
   --bt-orange-950: #431407;
 
+  /* ── Color Collections (Figma: Color/*) ───────────────────── */
+
+  /* Primary → Blue */
+  --bt-primary-subtle:  var(--bt-blue-100);  /* Blue/100 */
+  --bt-primary-default: var(--bt-blue-700);  /* Blue/700 */
+  --bt-primary-intense: var(--bt-blue-800);  /* Blue/800 */
+
+  /* Secondary → Gray */
+  --bt-secondary-muted:    var(--bt-gray-200);  /* Gray/200 */
+  --bt-secondary-emphasis: var(--bt-gray-300);  /* Gray/300 */
+  --bt-secondary-default:  var(--bt-gray-700);  /* Gray/700 */
+  --bt-secondary-intense:  var(--bt-gray-800);  /* Gray/800 */
+
+  /* Brand → Blue */
+  --bt-brand-subtle:  var(--bt-blue-100);  /* Blue/100 */
+  --bt-brand-default: var(--bt-blue-700);  /* Blue/700 */
+  --bt-brand-intense: var(--bt-blue-800);  /* Blue/800 */
+
+  /* Error → Red */
+  --bt-error-subtle:  var(--bt-red-100);  /* Red/100 */
+  --bt-error-default: var(--bt-red-700);  /* Red/700 */
+  --bt-error-intense: var(--bt-red-800);  /* Red/800 */
+
+  /* Success → Green */
+  --bt-success-subtle:  var(--bt-green-100);  /* Green/100 */
+  --bt-success-default: var(--bt-green-700);  /* Green/700 */
+  --bt-success-intense: var(--bt-green-800);  /* Green/800 */
+
+  /* Warning → Yellow */
+  --bt-warning-subtle:  var(--bt-yellow-100);  /* Yellow/100 */
+  --bt-warning-default: var(--bt-yellow-700);  /* Yellow/700 */
+  --bt-warning-intense: var(--bt-yellow-800);  /* Yellow/800 */
+
+  /* Information → Blue */
+  --bt-information-subtle:  var(--bt-blue-100);  /* Blue/100 */
+  --bt-information-default: var(--bt-blue-700);  /* Blue/700 */
+  --bt-information-intense: var(--bt-blue-800);  /* Blue/800 */
+
+  /* Base → Gray */
+  --bt-base-light:    var(--bt-gray-50);   /* Gray/50  */
+  --bt-base-subtle:   var(--bt-gray-100);  /* Gray/100 */
+  --bt-base-muted:    var(--bt-gray-200);  /* Gray/200 */
+  --bt-base-emphasis: var(--bt-gray-300);  /* Gray/300 */
+
   /* ── Semantic Colors — Surface ────────────────────────────── */
   /* All semantic tokens alias Primitive Colors via var() — mirrors Figma VARIABLE_ALIAS */
 

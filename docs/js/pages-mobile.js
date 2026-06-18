@@ -113,7 +113,7 @@ const PAGES = {
   'foundations/tokens/our-tokens': {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
     toc: [
-      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Colors'] },
+      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Primitive Colors', 'Semantic Colors'] },
       { group: 'Theme Tokens',      items: ['Background', 'Text', 'Border', 'Icon'] },
     ],
     render: (tab) => {
@@ -421,12 +421,88 @@ const PAGES = {
           ['--bt-text-6xl', { fontSize: 'var(--bt-base-sizing-10xl)', lineHeight: 'var(--bt-base-sizing-12xl)' }],
         ]))}
 
-        <h2 id="Colors">Colors</h2>
-        ${_seg('colors')}
-        <div id="token-view-preview-colors">
+        <h2 id="Primitive Colors">Primitive Colors</h2>
+        ${_seg('primitive-colors')}
+        <div id="token-view-preview-primitive-colors">
         ${colorHtml}
         </div>
-        ${_jv('colors', Object.fromEntries(Object.entries(palettes).flatMap(([colorName, shades]) => shades.map(([step, hex]) => [`--bt-${colorName.toLowerCase()}-${step}`, hex]))))}
+        ${_jv('primitive-colors', Object.fromEntries(Object.entries(palettes).flatMap(([colorName, shades]) => shades.map(([step, hex]) => [`--bt-${colorName.toLowerCase()}-${step}`, hex]))))}
+
+        <h2 id="Semantic Colors">Semantic Colors</h2>
+        ${_seg('semantic-colors')}
+        <div id="token-view-preview-semantic-colors">
+        ${(() => {
+          const _cpBtn2 = (val) => `<button class="copy-btn" onclick="copyText('${val}',this)" title="Copy"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>`;
+          const _sw2 = (hex) => `<div style="width:40px;height:24px;border-radius:4px;background:${hex};border:1px solid rgba(0,0,0,0.10);display:inline-block;vertical-align:middle;"></div>`;
+          const cols = [
+            ['Primary', [
+              ['--bt-primary-subtle',  'Blue/100', '#e2edfc'],
+              ['--bt-primary-default', 'Blue/700', '#0d4e97'],
+              ['--bt-primary-intense', 'Blue/800', '#0f447d'],
+            ]],
+            ['Secondary', [
+              ['--bt-secondary-muted',    'Gray/200', '#e6e6e6'],
+              ['--bt-secondary-emphasis', 'Gray/300', '#d4d4d4'],
+              ['--bt-secondary-default',  'Gray/700', '#404040'],
+              ['--bt-secondary-intense',  'Gray/800', '#272727'],
+            ]],
+            ['Brand', [
+              ['--bt-brand-subtle',  'Blue/100', '#e2edfc'],
+              ['--bt-brand-default', 'Blue/700', '#0d4e97'],
+              ['--bt-brand-intense', 'Blue/800', '#0f447d'],
+            ]],
+            ['Error', [
+              ['--bt-error-subtle',  'Red/100', '#fde6e6'],
+              ['--bt-error-default', 'Red/700', '#b31d38'],
+              ['--bt-error-intense', 'Red/800', '#961b35'],
+            ]],
+            ['Success', [
+              ['--bt-success-subtle',  'Green/100', '#daede5'],
+              ['--bt-success-default', 'Green/700', '#2d584b'],
+              ['--bt-success-intense', 'Green/800', '#28473e'],
+            ]],
+            ['Warning', [
+              ['--bt-warning-subtle',  'Yellow/100', '#f9f2ce'],
+              ['--bt-warning-default', 'Yellow/700', '#aa820a'],
+              ['--bt-warning-intense', 'Yellow/800', '#8c6a05'],
+            ]],
+            ['Information', [
+              ['--bt-information-subtle',  'Blue/100', '#e2edfc'],
+              ['--bt-information-default', 'Blue/700', '#0d4e97'],
+              ['--bt-information-intense', 'Blue/800', '#0f447d'],
+            ]],
+            ['Base', [
+              ['--bt-base-light',    'Gray/50',  '#fafafa'],
+              ['--bt-base-subtle',   'Gray/100', '#f5f5f5'],
+              ['--bt-base-muted',    'Gray/200', '#e6e6e6'],
+              ['--bt-base-emphasis', 'Gray/300', '#d4d4d4'],
+            ]],
+          ];
+          return cols.map(([label, tokens], i) => `
+            <p class="section-label" style="margin-top:${i === 0 ? '0' : '32px'};margin-bottom:8px;">${label}</p>
+            <table class="token-table">
+              <thead><tr><th>Example</th><th>Variable Token</th><th>Primitive Token</th><th>Hex</th></tr></thead>
+              <tbody>${tokens.map(([token, prim, hex]) => `
+                <tr>
+                  <td>${_sw2(hex)}</td>
+                  <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span>${_cpBtn2(token)}</div></td>
+                  <td>${prim}</td>
+                  <td><div style="display:inline-flex;align-items:center;gap:6px;"><span>${hex}</span>${_cpBtn2(hex)}</div></td>
+                </tr>`).join('')}
+              </tbody>
+            </table>`).join('');
+        })()}
+        </div>
+        ${_jv('semantic-colors', {
+          primary:     { '--bt-primary-subtle': 'var(--bt-blue-100)', '--bt-primary-default': 'var(--bt-blue-700)', '--bt-primary-intense': 'var(--bt-blue-800)' },
+          secondary:   { '--bt-secondary-muted': 'var(--bt-gray-200)', '--bt-secondary-emphasis': 'var(--bt-gray-300)', '--bt-secondary-default': 'var(--bt-gray-700)', '--bt-secondary-intense': 'var(--bt-gray-800)' },
+          brand:       { '--bt-brand-subtle': 'var(--bt-blue-100)', '--bt-brand-default': 'var(--bt-blue-700)', '--bt-brand-intense': 'var(--bt-blue-800)' },
+          error:       { '--bt-error-subtle': 'var(--bt-red-100)', '--bt-error-default': 'var(--bt-red-700)', '--bt-error-intense': 'var(--bt-red-800)' },
+          success:     { '--bt-success-subtle': 'var(--bt-green-100)', '--bt-success-default': 'var(--bt-green-700)', '--bt-success-intense': 'var(--bt-green-800)' },
+          warning:     { '--bt-warning-subtle': 'var(--bt-yellow-100)', '--bt-warning-default': 'var(--bt-yellow-700)', '--bt-warning-intense': 'var(--bt-yellow-800)' },
+          information: { '--bt-information-subtle': 'var(--bt-blue-100)', '--bt-information-default': 'var(--bt-blue-700)', '--bt-information-intense': 'var(--bt-blue-800)' },
+          base:        { '--bt-base-light': 'var(--bt-gray-50)', '--bt-base-subtle': 'var(--bt-gray-100)', '--bt-base-muted': 'var(--bt-gray-200)', '--bt-base-emphasis': 'var(--bt-gray-300)' },
+        })}
 
         <h2 id="Background">Background</h2>
         ${_seg('bg')}
