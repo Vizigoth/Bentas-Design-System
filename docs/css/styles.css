@@ -221,11 +221,16 @@
 
   /* ── Color Collections (Figma: Color/*) ───────────────────── */
 
-  /* Base → Gray (Figma: 4 tokens) */
+  /* Base → Gray */
+  --bt-base-default:  var(--bt-gray-0);    /* Gray/0   */
   --bt-base-light:    var(--bt-gray-50);   /* Gray/50  */
   --bt-base-subtle:   var(--bt-gray-100);  /* Gray/100 */
   --bt-base-muted:    var(--bt-gray-200);  /* Gray/200 */
   --bt-base-emphasis: var(--bt-gray-300);  /* Gray/300 */
+  --bt-base-strong:   var(--bt-gray-400);  /* Gray/400 */
+  --bt-base-heavy:    var(--bt-gray-500);  /* Gray/500 */
+  --bt-base-solid:    var(--bt-gray-600);  /* Gray/600 */
+  --bt-base-intense:  var(--bt-gray-700);  /* Gray/700 */
 
   /* Primary → Blue */
   --bt-primary-default:  var(--bt-blue-700);  /* Blue/700 */

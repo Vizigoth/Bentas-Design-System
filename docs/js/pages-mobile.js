@@ -436,10 +436,15 @@ const PAGES = {
           const _sw2 = (hex) => `<div style="width:40px;height:24px;border-radius:4px;background:${hex};border:1px solid rgba(0,0,0,0.10);display:inline-block;vertical-align:middle;"></div>`;
           const cols = [
             ['Base', [
+              ['--bt-base-default',  'Gray/0',   '#ffffff'],
               ['--bt-base-light',    'Gray/50',  '#fafafa'],
               ['--bt-base-subtle',   'Gray/100', '#f5f5f5'],
               ['--bt-base-muted',    'Gray/200', '#e6e6e6'],
               ['--bt-base-emphasis', 'Gray/300', '#d4d4d4'],
+              ['--bt-base-strong',   'Gray/400', '#a3a3a3'],
+              ['--bt-base-heavy',    'Gray/500', '#727272'],
+              ['--bt-base-solid',    'Gray/600', '#535353'],
+              ['--bt-base-intense',  'Gray/700', '#404040'],
             ]],
             ['Primary', [
               ['--bt-primary-default',  'Blue/700', '#0d4e97'],
@@ -535,7 +540,7 @@ const PAGES = {
         })()}
         </div>
         ${_jv('semantic-colors', {
-          base:        { '--bt-base-light': 'var(--bt-gray-50)', '--bt-base-subtle': 'var(--bt-gray-100)', '--bt-base-muted': 'var(--bt-gray-200)', '--bt-base-emphasis': 'var(--bt-gray-300)' },
+          base:        { '--bt-base-default': 'var(--bt-gray-0)', '--bt-base-light': 'var(--bt-gray-50)', '--bt-base-subtle': 'var(--bt-gray-100)', '--bt-base-muted': 'var(--bt-gray-200)', '--bt-base-emphasis': 'var(--bt-gray-300)', '--bt-base-strong': 'var(--bt-gray-400)', '--bt-base-heavy': 'var(--bt-gray-500)', '--bt-base-solid': 'var(--bt-gray-600)', '--bt-base-intense': 'var(--bt-gray-700)' },
           primary:     { '--bt-primary-light': 'var(--bt-blue-50)', '--bt-primary-subtle': 'var(--bt-blue-100)', '--bt-primary-muted': 'var(--bt-blue-200)', '--bt-primary-emphasis': 'var(--bt-blue-300)', '--bt-primary-strong': 'var(--bt-blue-400)', '--bt-primary-heavy': 'var(--bt-blue-500)', '--bt-primary-solid': 'var(--bt-blue-600)', '--bt-primary-default': 'var(--bt-blue-700)', '--bt-primary-intense': 'var(--bt-blue-800)' },
           secondary:   { '--bt-secondary-light': 'var(--bt-gray-50)', '--bt-secondary-subtle': 'var(--bt-gray-100)', '--bt-secondary-muted': 'var(--bt-gray-200)', '--bt-secondary-emphasis': 'var(--bt-gray-300)', '--bt-secondary-strong': 'var(--bt-gray-400)', '--bt-secondary-heavy': 'var(--bt-gray-500)', '--bt-secondary-solid': 'var(--bt-gray-600)', '--bt-secondary-default': 'var(--bt-gray-700)', '--bt-secondary-intense': 'var(--bt-gray-800)' },
           brand:       { '--bt-brand-light': 'var(--bt-blue-50)', '--bt-brand-subtle': 'var(--bt-blue-100)', '--bt-brand-muted': 'var(--bt-blue-200)', '--bt-brand-emphasis': 'var(--bt-blue-300)', '--bt-brand-strong': 'var(--bt-blue-400)', '--bt-brand-heavy': 'var(--bt-blue-500)', '--bt-brand-solid': 'var(--bt-blue-600)', '--bt-brand-default': 'var(--bt-blue-700)', '--bt-brand-intense': 'var(--bt-blue-800)' },
