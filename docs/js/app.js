@@ -30,7 +30,7 @@ function makePage(id) {
 let currentId       = 'welcome';
 let currentTab      = 0;
 let openGroups      = new Set();
-let currentPlatform = 'mobile';
+let currentPlatform = 'web';
 let platformDropdownOpen = false;
 
 // ── Helpers ─────────────────────────────────────────────────
