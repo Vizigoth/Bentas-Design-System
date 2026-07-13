@@ -262,7 +262,7 @@ const PAGES = {
         </div>
       `).join('');
 
-      const _seg = id => `<div class="seg-ctrl" style="display:inline-flex;align-items:center;background:#f5f5f5;border-radius:8px;padding:4px;gap:0;margin-bottom:16px;"><button class="seg-btn seg-btn--active" onclick="switchTokenView('${id}','preview',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:var(--bt-blue-700);color:#fff;transition:background 120ms,color 120ms;">Preview</button><button class="seg-btn" onclick="switchTokenView('${id}','json',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:transparent;color:var(--bt-text-default);transition:background 120ms,color 120ms;">Json</button></div>`;
+      const _seg = id => `<div class="seg-ctrl" style="display:inline-flex;align-items:center;background:var(--bt-surface-primary-subtle, #f5f5f5);border-radius:var(--bt-radius-lg, 8px);padding:4px;gap:0;margin-bottom:16px;"><button class="seg-btn seg-btn--active" onclick="switchTokenView('${id}','preview',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:var(--bt-radius-md, 6px);border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:var(--bt-blue-700);color:var(--bt-text-inverted, #ffffff);transition:background 120ms,color 120ms;">Preview</button><button class="seg-btn" onclick="switchTokenView('${id}','json',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:var(--bt-radius-md, 6px);border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:transparent;color:var(--bt-text-default);transition:background 120ms,color 120ms;">Json</button></div>`;
       const _ci = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
       const _jv  = (id, data) => `<div id="token-view-json-${id}" style="display:none;"><div style="position:relative;"><button class="copy-btn" onclick="copyText(document.getElementById('token-json-${id}').textContent,this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:var(--bt-surface-subtle);border-radius:6px;color:var(--bt-text-emphasis);">${_ci}</button><pre id="token-json-${id}" style="background:var(--bt-surface-subtle);color:var(--bt-text-default);border:1px solid var(--bt-border-muted);border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(data, null, 2)}</pre></div></div>`;
 
@@ -1157,17 +1157,17 @@ const PAGES = {
         </div>`;
 
       const navPreview = (activeIdx) => `
-        <div style="position:relative;display:inline-flex;flex-direction:column;background:white;border-top:1px solid var(--bt-border-muted);border-radius:0 0 24px 24px;width:373px;box-shadow:0 -2px 12px rgba(0,0,0,0.06);">
+        <div style="position:relative;display:inline-flex;flex-direction:column;background:var(--bt-surface-primary-default, #ffffff);border-top:1px solid var(--bt-border-muted);border-radius:0 0 var(--bt-radius-6xl, 24px) var(--bt-radius-6xl, 24px);width:373px;box-shadow:0 -2px 12px rgba(0,0,0,0.06);">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 12px;position:relative;">
             <div style="display:flex;gap:8px;">
               ${tabItem(iconHome,     'Ana Sayfa', activeIdx===0)}
               ${tabItem(iconRequests, 'Talepler',  activeIdx===1)}
             </div>
             <div style="position:absolute;left:50%;transform:translateX(-50%);top:-32px;display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <div style="width:62px;height:62px;border-radius:9999px;background:var(--bt-blue-700);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(13,78,151,0.35);">
+              <div style="width:62px;height:62px;border-radius:var(--bt-radius-full, 9999px);background:var(--bt-surface-brand, #0d4e97);display:flex;align-items:center;justify-content:center;color:var(--bt-icon-inverted, #ffffff);box-shadow:0 4px 12px rgba(13,78,151,0.35);">
                 ${iconScan}
               </div>
-              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-gray-400);">Giriş Yap</span>
+              <span style="font-size:var(--bt-text-2xs-size, 10px);font-weight:500;line-height:var(--bt-text-2xs-lh, 12px);font-family:var(--font);color:var(--bt-text-muted);">Giriş Yap</span>
             </div>
             <div style="display:flex;gap:8px;">
               ${tabItem(iconReceipt, 'Aidat',  activeIdx===3)}
@@ -1211,16 +1211,16 @@ const PAGES = {
         <div class="preview-box" style="padding:48px 32px 32px;display:flex;gap:48px;align-items:flex-end;flex-wrap:wrap;justify-content:center;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
             <span style="font-size:12px;color:var(--bt-text-muted);font-family:var(--font);">Active</span>
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;background:white;border:1px solid var(--bt-border-muted);border-radius:8px;color:var(--bt-blue-700);">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;background:var(--bt-surface-primary-default, #ffffff);border:1px solid var(--bt-border-muted);border-radius:var(--bt-radius-lg, 8px);color:var(--bt-text-brand);">
               ${iconHome}
-              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-blue-700);">Ana Sayfa</span>
+              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-text-brand);">Ana Sayfa</span>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
             <span style="font-size:12px;color:var(--bt-text-muted);font-family:var(--font);">Inactive</span>
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;background:white;border:1px solid var(--bt-border-muted);border-radius:8px;color:var(--bt-gray-400);">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;height:52px;padding:6px 4px;box-sizing:border-box;background:var(--bt-surface-primary-default, #ffffff);border:1px solid var(--bt-border-muted);border-radius:var(--bt-radius-lg, 8px);color:var(--bt-text-muted);">
               ${iconUser}
-              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-gray-400);">Profil</span>
+              <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-text-muted);">Profil</span>
             </div>
           </div>
         </div>
@@ -1237,18 +1237,18 @@ const PAGES = {
         <p class="page-desc">Merkezdeki FAB (Floating Action Button), barın 32px üzerinde yüzer ve birincil aksiyon olarak kullanılır.</p>
         <div class="preview-box" style="padding:56px 32px 32px;display:flex;justify-content:center;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-            <div style="width:62px;height:62px;border-radius:9999px;background:var(--bt-blue-700);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(13,78,151,0.35);">
+            <div style="width:62px;height:62px;border-radius:var(--bt-radius-full, 9999px);background:var(--bt-surface-brand, #0d4e97);display:flex;align-items:center;justify-content:center;color:var(--bt-icon-inverted, #ffffff);box-shadow:0 4px 12px rgba(13,78,151,0.35);">
               ${iconScan}
             </div>
-            <span style="font-size:10px;font-weight:500;line-height:12px;font-family:var(--font);color:var(--bt-gray-400);">Giriş Yap</span>
+            <span style="font-size:var(--bt-text-2xs-size, 10px);font-weight:500;line-height:var(--bt-text-2xs-lh, 12px);font-family:var(--font);color:var(--bt-text-muted);">Giriş Yap</span>
           </div>
         </div>
         <table class="token-table" style="margin-top:16px;">
           <thead><tr><th>Özellik</th><th>Token</th><th>Değer</th></tr></thead>
           <tbody>
             <tr><td>Boyut</td><td>—</td><td>62×62px</td></tr>
-            <tr><td>Border radius</td><td><code style="font-size:12px;font-family:var(--mono);">radius/full</code></td><td>9999px</td></tr>
-            <tr><td>Arka plan</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-brand-contrast-default</code></td><td>Blue/700 · #0d4e97</td></tr>
+            <tr><td>Border radius</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-radius-full</code></td><td>9999px</td></tr>
+            <tr><td>Arka plan</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-brand</code></td><td>Blue/700 · #0d4e97</td></tr>
             <tr><td>İkon rengi</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-icon-inverted</code></td><td>#ffffff</td></tr>
             <tr><td>İkon boyutu</td><td>—</td><td>24×24px</td></tr>
             <tr><td>Dikey konum</td><td>—</td><td>Bar üstünde -32px</td></tr>
@@ -1262,16 +1262,16 @@ const PAGES = {
           <tbody>
             <tr><td>Container arka plan</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code></td><td>#ffffff</td></tr>
             <tr><td>Üst border</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-muted</code></td><td>Gray/200 · #e6e6e6</td></tr>
-            <tr><td>Alt köşe yarıçapı</td><td><code style="font-size:12px;font-family:var(--mono);">radius/6xl</code></td><td>24px</td></tr>
+            <tr><td>Alt köşe yarıçapı</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-radius-6xl</code></td><td>24px</td></tr>
             <tr><td>Tab öğe genişliği</td><td>—</td><td>64px</td></tr>
             <tr><td>Tab öğe yüksekliği</td><td>—</td><td>52px</td></tr>
-            <tr><td>Yatay padding</td><td><code style="font-size:12px;font-family:var(--mono);">space/xs</code></td><td>4px</td></tr>
-            <tr><td>Dikey padding</td><td><code style="font-size:12px;font-family:var(--mono);">space/sm</code></td><td>6px</td></tr>
+            <tr><td>Yatay padding</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-space-xs</code></td><td>4px</td></tr>
+            <tr><td>Dikey padding</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-space-sm</code></td><td>6px</td></tr>
             <tr><td>İkon boyutu</td><td>—</td><td>24×24px</td></tr>
-            <tr><td>İkon↔Label gap</td><td><code style="font-size:12px;font-family:var(--mono);">space/2xs</code></td><td>2px</td></tr>
-            <tr><td>Label font boyutu</td><td><code style="font-size:12px;font-family:var(--mono);">text-2xs</code></td><td>10px</td></tr>
-            <tr><td>Label font ağırlığı</td><td><code style="font-size:12px;font-family:var(--mono);">Font/Weight/Medium</code></td><td>500</td></tr>
-            <tr><td>Label satır yüksekliği</td><td><code style="font-size:12px;font-family:var(--mono);">text-lh-2xs</code></td><td>12px</td></tr>
+            <tr><td>İkon↔Label gap</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-space-2xs</code></td><td>2px</td></tr>
+            <tr><td>Label font boyutu</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-2xs-size</code></td><td>10px</td></tr>
+            <tr><td>Label font ağırlığı</td><td>—</td><td>500</td></tr>
+            <tr><td>Label satır yüksekliği</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-2xs-lh</code></td><td>12px</td></tr>
             <tr><td>Aktif renk</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-brand</code></td><td>Blue/700 · #0d4e97</td></tr>
             <tr><td>Pasif renk</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-muted</code></td><td>Gray/400 · #a3a3a3</td></tr>
             <tr><td>Home indicator genişlik</td><td>—</td><td>140px</td></tr>
@@ -1304,8 +1304,8 @@ const PAGES = {
     render: (tab) => {
       const title = 'TextBox';
 
-      const base = 'display:flex;flex-direction:column;gap:4px;width:280px;font-family:var(--font);';
-      const inputBase = 'display:flex;align-items:center;border-radius:8px;border:1px solid;padding-left:16px;height:48px;font-size:16px;font-family:var(--font);background:white;outline:none;width:100%;box-sizing:border-box;';
+      const base = 'display:flex;flex-direction:column;gap:var(--bt-space-xs, 4px);width:280px;font-family:var(--font);';
+      const inputBase = 'display:flex;align-items:center;border-radius:var(--bt-radius-lg, 8px);border:1px solid;padding-left:var(--bt-space-2xl, 16px);height:48px;font-size:16px;font-family:var(--font);background:var(--bt-surface-primary-default, #ffffff);outline:none;width:100%;box-sizing:border-box;';
 
       const previewHtml = `
         <div class="preview-box" style="display:flex;flex-wrap:wrap;gap:24px;padding:32px;">
@@ -1319,7 +1319,7 @@ const PAGES = {
             <span style="font-size:12px;color:var(--bt-text-default);">Description text</span>
           </div>
           <div style="${base}">
-            <div style="${inputBase}border-color:var(--bt-blue-700);cursor:text;">
+            <div style="${inputBase}border-color:var(--bt-border-brand-default, #0d4e97);cursor:text;">
               <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
                 <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
                 <span style="font-size:16px;color:var(--bt-text-default);line-height:24px;">Active state</span>
@@ -1328,16 +1328,16 @@ const PAGES = {
             <span style="font-size:12px;color:var(--bt-text-default);">Description text</span>
           </div>
           <div style="${base}">
-            <div style="${inputBase}border-color:#f7aaae;background:white;">
+            <div style="${inputBase}border-color:var(--bt-border-error-emphasis, #f7aaae);">
               <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
                 <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
                 <span style="font-size:16px;color:var(--bt-text-muted);line-height:24px;">Placeholder</span>
               </div>
               <div style="padding:12px;display:flex;align-items:center;">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#b31d38" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--bt-icon-error-default, #b31d38)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               </div>
             </div>
-            <span style="font-size:12px;color:#b31d38;">Error message</span>
+            <span style="font-size:12px;color:var(--bt-text-error, #b31d38);">Error message</span>
           </div>
           <div style="${base}">
             <div style="${inputBase}border-color:var(--bt-border-muted);background:var(--bt-surface-subtle);">
@@ -1359,7 +1359,7 @@ const PAGES = {
           <tbody>
             <tr><td><span class="token-name">Default</span></td><td><code style="font-family:var(--mono);font-size:12px;">--bt-border-default</code> #d4d4d4</td><td>Normal giriş durumu.</td></tr>
             <tr><td><span class="token-name">Error</span></td><td><code style="font-family:var(--mono);font-size:12px;">--bt-border-error-emphasis</code> #f7aaae</td><td>Doğrulama hatası. Sağda uyarı ikonu gösterilir.</td></tr>
-            <tr><td><span class="token-name">Success</span></td><td>Green/300</td><td>Başarılı doğrulama durumu.</td></tr>
+            <tr><td><span class="token-name">Success</span></td><td><code style="font-family:var(--mono);font-size:12px;">--bt-border-success-emphasis</code> #87c1ab</td><td>Başarılı doğrulama durumu.</td></tr>
           </tbody>
         </table>
       `;
@@ -1381,7 +1381,7 @@ const PAGES = {
                 <td>${fs}</td>
                 <td>
                   <div style="display:flex;flex-direction:column;gap:4px;">
-                    <div style="display:flex;align-items:center;border-radius:8px;border:1px solid var(--bt-border-muted);padding-left:16px;height:${h};background:white;width:220px;box-sizing:border-box;">
+                    <div style="display:flex;align-items:center;border-radius:var(--bt-radius-lg, 8px);border:1px solid var(--bt-border-muted);padding-left:var(--bt-space-2xl, 16px);height:${h};background:var(--bt-surface-primary-default, #ffffff);width:220px;box-sizing:border-box;">
                       <div style="display:flex;flex-direction:column;justify-content:center;flex:1;">
                         <span style="font-size:12px;color:var(--bt-text-emphasis);letter-spacing:0.04px;">Label</span>
                         <span style="font-size:${fs};color:var(--bt-text-muted);line-height:${parseInt(fs)+8}px;">Placeholder</span>
@@ -1400,12 +1400,12 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>State</th><th>Border</th><th>Background</th><th>Metin</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Default</span></td><td>#d4d4d4</td><td>white</td><td>Placeholder: <code style="font-size:12px;font-family:var(--mono);">--bt-text-emphasis</code></td></tr>
-            <tr><td><span class="token-name">Hover</span></td><td>#d4d4d4</td><td>white</td><td>—</td></tr>
-            <tr><td><span class="token-name">Active</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-brand-contrast-default</code> #0d4e97</td><td>white</td><td>Value: <code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code></td></tr>
-            <tr><td><span class="token-name">Filled</span></td><td>#d4d4d4</td><td>white</td><td>Value: <code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code></td></tr>
-            <tr><td><span class="token-name">Disabled</span></td><td>#d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-subtle</code> #f5f5f5</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-muted</code></td></tr>
-            <tr><td><span class="token-name">Read Only</span></td><td>#d4d4d4</td><td>#f5f5f5</td><td>—</td></tr>
+            <tr><td><span class="token-name">Default</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code> #d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code> #ffffff</td><td>Placeholder: <code style="font-size:12px;font-family:var(--mono);">--bt-text-emphasis</code></td></tr>
+            <tr><td><span class="token-name">Hover</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code> #d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code> #ffffff</td><td>—</td></tr>
+            <tr><td><span class="token-name">Active</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-brand-default</code> #0d4e97</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code> #ffffff</td><td>Value: <code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code></td></tr>
+            <tr><td><span class="token-name">Filled</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code> #d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code> #ffffff</td><td>Value: <code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code></td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code> #d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-subtle</code> #f5f5f5</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-muted</code></td></tr>
+            <tr><td><span class="token-name">Read Only</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code> #d4d4d4</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-subtle</code> #f5f5f5</td><td>—</td></tr>
           </tbody>
         </table>
       `;
@@ -1417,8 +1417,8 @@ const PAGES = {
           <thead><tr><th>Type</th><th>Description rengi</th><th>İkon</th></tr></thead>
           <tbody>
             <tr><td><span class="token-name">Default</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-default</code> #1a1a1a</td><td>—</td></tr>
-            <tr><td><span class="token-name">Error</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-error-emphasis</code> #b31d38</td><td>circle-alert</td></tr>
-            <tr><td><span class="token-name">Success</span></td><td>Green/700 #2d584b</td><td>circle-check</td></tr>
+            <tr><td><span class="token-name">Error</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-error</code> #b31d38</td><td>circle-alert</td></tr>
+            <tr><td><span class="token-name">Success</span></td><td><code style="font-size:12px;font-family:var(--mono);">--bt-text-success</code> #2d584b</td><td>circle-check</td></tr>
           </tbody>
         </table>
       `;
@@ -1428,14 +1428,14 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Özellik</th><th>Token</th><th>Değer</th></tr></thead>
           <tbody>
-            <tr><td>Border radius</td><td><code style="font-size:12px;font-family:var(--mono);">radius/lg</code></td><td>8px</td></tr>
-            <tr><td>Left padding</td><td><code style="font-size:12px;font-family:var(--mono);">space/2xl</code></td><td>16px</td></tr>
-            <tr><td>Gap (input ↔ desc)</td><td><code style="font-size:12px;font-family:var(--mono);">space/md</code></td><td>8px</td></tr>
+            <tr><td>Border radius</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-radius-lg</code></td><td>8px</td></tr>
+            <tr><td>Left padding</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-space-2xl</code></td><td>16px</td></tr>
+            <tr><td>Gap (input ↔ desc)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-space-xs</code></td><td>4px</td></tr>
             <tr><td>Label font</td><td>Inter Regular 12px</td><td>letter-spacing: 0.04px</td></tr>
             <tr><td>Value font</td><td>Geist Regular 16px</td><td>line-height: 24px</td></tr>
             <tr><td>Description font</td><td>Inter Regular 12px</td><td>line-height: 16px</td></tr>
             <tr><td>Border (default)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-default</code></td><td>#d4d4d4</td></tr>
-            <tr><td>Border (active)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-brand-contrast-default</code></td><td>#0d4e97</td></tr>
+            <tr><td>Border (active)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-brand-default</code></td><td>#0d4e97</td></tr>
             <tr><td>Border (error)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-border-error-emphasis</code></td><td>#f7aaae</td></tr>
             <tr><td>Bg (default)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-default</code></td><td>#ffffff</td></tr>
             <tr><td>Bg (disabled)</td><td><code style="font-size:12px;font-family:var(--mono);">--bt-surface-primary-subtle</code></td><td>#f5f5f5</td></tr>
@@ -1469,10 +1469,10 @@ const PAGES = {
     render: (tab) => {
       const title = 'Button';
 
-      const b = 'display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--font);font-weight:500;border-radius:6px;white-space:nowrap;transition:opacity 120ms;';
+      const b = 'display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--font);font-weight:500;border-radius:var(--bt-radius-md, 6px);white-space:nowrap;transition:opacity 120ms;';
 
       const variants = [
-        { name: 'Solid',   label: 'Primary',   desc: 'Ana aksiyon. Ekran başına bir tane kullanılır.',           style: `${b}background:var(--bt-blue-700);color:#fff;padding:12px 16px;font-size:16px;` },
+        { name: 'Solid',   label: 'Primary',   desc: 'Ana aksiyon. Ekran başına bir tane kullanılır.',           style: `${b}background:var(--bt-blue-700);color:var(--bt-text-inverted, #ffffff);padding:12px 16px;font-size:16px;` },
         { name: 'Flat',    label: 'Secondary',  desc: 'İkincil aksiyonlar. Primary ile yan yana kullanılır.',     style: `${b}background:var(--bt-gray-100);color:var(--bt-gray-900);padding:12px 16px;font-size:16px;` },
         { name: 'Outline', label: 'Tertiary',   desc: 'Düşük öncelikli aksiyonlar. Border ile belirginleştirilir.', style: `${b}background:var(--bt-gray-100);color:var(--bt-gray-900);border:1px solid var(--bt-gray-300);padding:12px 16px;font-size:16px;` },
         { name: 'Ghost',   label: 'Ghost',      desc: 'En düşük öncelik. Toolbar ve inline aksiyonlar için.',     style: `${b}background:transparent;color:var(--bt-gray-900);padding:12px 16px;font-size:16px;` },
@@ -1488,9 +1488,9 @@ const PAGES = {
       ];
 
       const states = [
-        { state: 'Default',  bg: 'var(--bt-blue-700)', color: '#fff',                    border: 'none',                              opacity: '1',    desc: 'Normal durum.' },
-        { state: 'Hover',    bg: 'var(--bt-blue-700)', color: '#fff',                    border: 'none',                              opacity: '0.88', desc: 'Mouse üzerinde olduğunda.' },
-        { state: 'Pressed',  bg: 'var(--bt-blue-700)', color: '#fff',                    border: 'none',                              opacity: '0.76', desc: 'Tıklama anında.' },
+        { state: 'Default',  bg: 'var(--bt-blue-700)', color: 'var(--bt-text-inverted, #ffffff)', border: 'none',                              opacity: '1',    desc: 'Normal durum.' },
+        { state: 'Hover',    bg: 'var(--bt-blue-700)', color: 'var(--bt-text-inverted, #ffffff)', border: 'none',                              opacity: '0.88', desc: 'Mouse üzerinde olduğunda.' },
+        { state: 'Pressed',  bg: 'var(--bt-blue-700)', color: 'var(--bt-text-inverted, #ffffff)', border: 'none',                              opacity: '0.76', desc: 'Tıklama anında.' },
         { state: 'Disabled', bg: 'var(--bt-gray-200)', color: 'var(--bt-gray-400)',      border: 'none',                              opacity: '1',    desc: 'Etkileşim kapalı.' },
       ];
 
@@ -1524,11 +1524,11 @@ const PAGES = {
             <tr><td><span class="token-name">--bt-gray-300</span></td><td>#d4d4d4</td><td>Outline border</td></tr>
             <tr><td><span class="token-name">--bt-gray-400</span></td><td>#a3a3a3</td><td>Disabled text</td></tr>
             <tr><td><span class="token-name">--bt-gray-900</span></td><td>#1a1a1a</td><td>Secondary / Tertiary / Ghost text</td></tr>
-            <tr><td><span class="token-name">radius/md</span></td><td>6px</td><td>Border radius (all sizes)</td></tr>
-            <tr><td><span class="token-name">Font/Family/Text</span></td><td>Geist</td><td>Font family</td></tr>
-            <tr><td><span class="token-name">Font/Weight/Medium</span></td><td>500</td><td>Font weight (all sizes)</td></tr>
-            <tr><td><span class="token-name">text-sm</span></td><td>14px / 16px</td><td>2xs · xs · sm sizes</td></tr>
-            <tr><td><span class="token-name">text-md</span></td><td>16px / 24px</td><td>md · lg · xl sizes</td></tr>
+            <tr><td><span class="token-name">--bt-radius-md</span></td><td>6px</td><td>Border radius (all sizes)</td></tr>
+            <tr><td><span class="token-name">--font</span></td><td>Geist</td><td>Font family</td></tr>
+            <tr><td><span class="token-name">—</span></td><td>500</td><td>Font weight (all sizes)</td></tr>
+            <tr><td><span class="token-name">--bt-text-sm-size / --bt-text-sm-lh</span></td><td>14px / 16px</td><td>2xs · xs · sm sizes</td></tr>
+            <tr><td><span class="token-name">--bt-text-md-size / --bt-text-md-lh</span></td><td>16px / 24px</td><td>md · lg · xl sizes</td></tr>
           </tbody>
         </table>
       `};
@@ -1565,7 +1565,7 @@ const PAGES = {
               <td><span class="token-name">${s.size}</span></td>
               <td>${s.py} / ${s.px}</td>
               <td>${s.fs} / ${s.lh}</td>
-              <td><button style="${b}background:var(--bt-blue-700);color:#fff;padding:${s.py} ${s.px};font-size:${s.fs};line-height:${s.lh}">Button</button></td>
+              <td><button style="${b}background:var(--bt-blue-700);color:var(--bt-text-inverted, #ffffff);padding:${s.py} ${s.px};font-size:${s.fs};line-height:${s.lh}">Button</button></td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -1757,7 +1757,7 @@ const PAGES = {
       const base = `display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;border-radius:var(--bt-radius-md);transition:opacity 120ms;flex-shrink:0;`;
 
       const fillModes = [
-        { name: 'Solid',   desc: 'High-emphasis action. Use for the primary icon action on a surface.',                   style: `${base}background:var(--bt-surface-brand);`,         iconColor: '#ffffff' },
+        { name: 'Solid',   desc: 'High-emphasis action. Use for the primary icon action on a surface.',                   style: `${base}background:var(--bt-surface-brand);`,         iconColor: 'var(--bt-icon-inverted, #ffffff)' },
         { name: 'Outline', desc: 'Medium-emphasis. Border adds visible affordance without a filled background.',           style: `${base}background:transparent;border:1px solid var(--bt-border-default);`, iconColor: 'var(--bt-icon-default)' },
         { name: 'Flat',    desc: 'Medium-emphasis. Subtle background provides grouping without strong contrast.',          style: `${base}background:var(--bt-surface-subtle);`,        iconColor: 'var(--bt-icon-default)' },
         { name: 'Ghost',   desc: 'Low-emphasis. No background or border. Use in toolbars and dense layouts.',             style: `${base}background:transparent;`,                    iconColor: 'var(--bt-icon-default)' },
@@ -1811,7 +1811,7 @@ const PAGES = {
               <td>${s.px}</td>
               <td>${s.padding}</td>
               <td>${tk(s.token)}</td>
-              <td>${btn(`${base}background:var(--bt-surface-brand);`, '#ffffff', sizePad[s.name])}</td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);`, 'var(--bt-icon-inverted, #ffffff)', sizePad[s.name])}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -1822,7 +1822,7 @@ const PAGES = {
           <tbody>
             <tr>
               <td><span class="token-name">Default</span></td>
-              <td>${btn(`${base}background:var(--bt-surface-brand);`, '#ffffff')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);`, 'var(--bt-icon-inverted, #ffffff)')}</td>
               <td>${btn(`${base}background:transparent;border:1px solid var(--bt-border-default);`, 'var(--bt-icon-default)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-subtle);`, 'var(--bt-icon-default)')}</td>
               <td>${btn(`${base}background:transparent;`, 'var(--bt-icon-default)')}</td>
@@ -1830,7 +1830,7 @@ const PAGES = {
             </tr>
             <tr>
               <td><span class="token-name">Hover</span></td>
-              <td>${btn(`${base}background:var(--bt-surface-brand);opacity:0.88;`, '#ffffff')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);opacity:0.88;`, 'var(--bt-icon-inverted, #ffffff)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-subtle);border:1px solid var(--bt-border-default);`, 'var(--bt-icon-default)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-muted);`, 'var(--bt-icon-default)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-subtle);`, 'var(--bt-icon-default)')}</td>
@@ -1838,7 +1838,7 @@ const PAGES = {
             </tr>
             <tr>
               <td><span class="token-name">Pressed</span></td>
-              <td>${btn(`${base}background:var(--bt-surface-brand);opacity:0.76;`, '#ffffff')}</td>
+              <td>${btn(`${base}background:var(--bt-surface-brand);opacity:0.76;`, 'var(--bt-icon-inverted, #ffffff)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-muted);border:1px solid var(--bt-border-default);`, 'var(--bt-icon-default)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-emphasis);`, 'var(--bt-icon-default)')}</td>
               <td>${btn(`${base}background:var(--bt-surface-muted);`, 'var(--bt-icon-default)')}</td>
@@ -1859,33 +1859,33 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td rowspan="7">Container</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+            <tr><td rowspan="7">Container</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
             <tr><td>Size — xl</td><td>—</td><td>56 × 56px</td></tr>
             <tr><td>Size — lg</td><td>—</td><td>48 × 48px</td></tr>
             <tr><td>Size — md</td><td>—</td><td>40 × 40px</td></tr>
             <tr><td>Size — sm</td><td>—</td><td>32 × 32px</td></tr>
             <tr><td>Size — xs</td><td>—</td><td>28 × 28px</td></tr>
             <tr><td>Transition</td><td>—</td><td>opacity 120ms</td></tr>
-            <tr><td rowspan="5">Padding (uniform)</td><td>xl</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>lg</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
-            <tr><td>md</td><td>${tk('Space/md')}</td><td>8px</td></tr>
-            <tr><td>sm</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
-            <tr><td>xs</td><td>${tk('Base-sizing/2xs')}</td><td>2px</td></tr>
-            <tr><td rowspan="2">Background — Solid</td><td>Default / Hover / Pressed</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
-            <tr><td>Disabled</td><td>${tk('Gray/200')}</td><td>#e6e6e6</td></tr>
-            <tr><td>Background — Flat</td><td>Default</td><td>${tk('Gray/100')}</td><td>#f5f5f5</td></tr>
+            <tr><td rowspan="5">Padding (uniform)</td><td>xl</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>lg</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+            <tr><td>md</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+            <tr><td>sm</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td>xs</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+            <tr><td rowspan="2">Background — Solid</td><td>Default / Hover / Pressed</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td>Disabled</td><td>${tk('--bt-surface-muted')}</td><td>#e6e6e6</td></tr>
+            <tr><td>Background — Flat</td><td>Default</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td></tr>
             <tr><td>Background — Outline</td><td>Default</td><td>—</td><td>transparent</td></tr>
             <tr><td>Background — Ghost</td><td>Default</td><td>—</td><td>transparent</td></tr>
-            <tr><td>Border — Outline</td><td>Width · Color</td><td>${tk('Gray/300')}</td><td>1px solid #d4d4d4</td></tr>
+            <tr><td>Border — Outline</td><td>Width · Color</td><td>${tk('--bt-border-default')}</td><td>1px solid #d4d4d4</td></tr>
             <tr><td>Opacity — Solid Hover</td><td>Opacity</td><td>—</td><td>0.88</td></tr>
             <tr><td>Opacity — Solid Pressed</td><td>Opacity</td><td>—</td><td>0.76</td></tr>
             <tr><td rowspan="2">Icon container</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
             <tr><td>Overflow</td><td>—</td><td>clip</td></tr>
             <tr><td>Icon (SVG)</td><td>Size</td><td>—</td><td>18 × 18px</td></tr>
-            <tr><td rowspan="2">Icon color — Solid</td><td>Default / Hover / Pressed</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
-            <tr><td>Disabled</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
-            <tr><td rowspan="2">Icon color — Outline / Flat / Ghost</td><td>Default / Hover / Pressed</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Disabled</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="2">Icon color — Solid</td><td>Default / Hover / Pressed</td><td>${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
+            <tr><td>Disabled</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="2">Icon color — Outline / Flat / Ghost</td><td>Default / Hover / Pressed</td><td>${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Disabled</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
           </tbody>
         </table>
       `;
@@ -2135,9 +2135,9 @@ const PAGES = {
         <table class="token-table" style="margin-bottom:40px;">
           <thead><tr><th>State</th><th>Border</th><th>Content change</th></tr></thead>
           <tbody>
-            <tr><td><span class="token-name">Default</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>—</td></tr>
-            <tr><td><span class="token-name">Active</span></td><td>${tk('Blue/700')} · #0d4e97</td><td>—</td></tr>
-            <tr><td><span class="token-name">Disabled</span></td><td>${tk('Gray/300')} · #d4d4d4</td><td>Subtitle / badge / description → ${tk('Gray/400')} · #a3a3a3 · Icon değişmez</td></tr>
+            <tr><td><span class="token-name">Default</span></td><td>${tk('--bt-border-default')} · #d4d4d4</td><td>—</td></tr>
+            <tr><td><span class="token-name">Active</span></td><td>${tk('--bt-border-brand-default')} · #0d4e97</td><td>—</td></tr>
+            <tr><td><span class="token-name">Disabled</span></td><td>${tk('--bt-border-default')} · #d4d4d4</td><td>Subtitle / badge / description → ${tk('--bt-text-muted')} · #a3a3a3 · Icon değişmez</td></tr>
           </tbody>
         </table>
 
@@ -2156,29 +2156,29 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td rowspan="3">Card container</td><td>Background</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
-            <tr><td>Border — Default / Disabled</td><td>${tk('Gray/300')}</td><td>1px solid #d4d4d4</td></tr>
-            <tr><td>Border — Active</td><td>${tk('Blue/700')}</td><td>1px solid #0d4e97</td></tr>
-            <tr><td>Card container (Card)</td><td>Border Radius</td><td>${tk('Radius/2xl')}</td><td>12px</td></tr>
-            <tr><td>Card container (Card With Header)</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
-            <tr><td rowspan="2">Inner padding</td><td>All sides</td><td>${tk('Space/lg')}</td><td>10px</td></tr>
-            <tr><td>Row gap (title ↔ subtitle/badge/desc)</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
-            <tr><td rowspan="2">Title</td><td>Font size / weight / line-height</td><td>${tk('Title/xs/Medium')}</td><td>12px / 500 / 16px</td></tr>
-            <tr><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
-            <tr><td rowspan="2">Subtitle — Default / Active</td><td>Font size / weight / line-height</td><td>${tk('Text/md/Medium')}</td><td>16px / 500 / 24px</td></tr>
-            <tr><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Subtitle — Disabled</td><td>Color</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
-            <tr><td rowspan="2">Description lines</td><td>Font size / weight / line-height</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
-            <tr><td>Color — Disabled</td><td>${tk('Gray/400')}</td><td>#a3a3a3</td></tr>
-            <tr><td rowspan="3">Badge (Type=Badge)</td><td>Padding</td><td>${tk('Space/md')} · ${tk('Space/2xs')}</td><td>px 8px · py 2px</td></tr>
-            <tr><td>Border Radius</td><td>${tk('Radius/full')}</td><td>9999px</td></tr>
-            <tr><td>Font size / weight</td><td>${tk('Text/xs/Regular')}</td><td>12px / 400</td></tr>
+            <tr><td rowspan="3">Card container</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+            <tr><td>Border — Default / Disabled</td><td>${tk('--bt-border-default')}</td><td>1px solid #d4d4d4</td></tr>
+            <tr><td>Border — Active</td><td>${tk('--bt-border-brand-default')}</td><td>1px solid #0d4e97</td></tr>
+            <tr><td>Card container (Card)</td><td>Border Radius</td><td>${tk('--bt-radius-2xl')}</td><td>12px</td></tr>
+            <tr><td>Card container (Card With Header)</td><td>Border Radius</td><td>${tk('--bt-radius-lg')}</td><td>8px</td></tr>
+            <tr><td rowspan="2">Inner padding</td><td>All sides</td><td>${tk('--bt-space-lg')}</td><td>10px</td></tr>
+            <tr><td>Row gap (title ↔ subtitle/badge/desc)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td rowspan="2">Title</td><td>Font size / weight / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 500 / 16px</td></tr>
+            <tr><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td rowspan="2">Subtitle — Default / Active</td><td>Font size / weight / line-height</td><td>${tk('--bt-text-md-size')} / ${tk('--bt-text-md-lh')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Subtitle — Disabled</td><td>Color</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="2">Description lines</td><td>Font size / weight / line-height</td><td>${tk('--bt-text-sm-size')} / ${tk('--bt-text-sm-lh')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Color — Disabled</td><td>${tk('--bt-text-muted')}</td><td>#a3a3a3</td></tr>
+            <tr><td rowspan="3">Badge (Type=Badge)</td><td>Padding</td><td>${tk('--bt-space-md')} · ${tk('--bt-space-2xs')}</td><td>px 8px · py 2px</td></tr>
+            <tr><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+            <tr><td>Font size / weight</td><td>${tk('--bt-text-xs-size')}</td><td>12px / 400</td></tr>
             <tr><td>Right Control icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
-            <tr><td rowspan="3">CWH — Header</td><td>Background</td><td>${tk('Gray/50')}</td><td>#fafafa</td></tr>
-            <tr><td>Padding H / V</td><td>${tk('Space/lg')} · ${tk('Space/sm')}</td><td>10px / 6px</td></tr>
-            <tr><td>Title font</td><td>${tk('Text/md/Medium')}</td><td>16px / 500 / 24px</td></tr>
-            <tr><td rowspan="2">CWH — Body rows</td><td>Font size / weight</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
-            <tr><td>Row vertical padding</td><td>${tk('Space/2xs')}</td><td>2px</td></tr>
+            <tr><td rowspan="3">CWH — Header</td><td>Background</td><td>${tk('--bt-surface-light')}</td><td>#fafafa</td></tr>
+            <tr><td>Padding H / V</td><td>${tk('--bt-space-lg')} · ${tk('--bt-space-sm')}</td><td>10px / 6px</td></tr>
+            <tr><td>Title font</td><td>${tk('--bt-text-md-size')} / ${tk('--bt-text-md-lh')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td rowspan="2">CWH — Body rows</td><td>Font size / weight</td><td>${tk('--bt-text-sm-size')} / ${tk('--bt-text-sm-lh')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Row vertical padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
           </tbody>
         </table>
       `;
@@ -2231,181 +2231,6 @@ const PAGES = {
     }
   },
 
-  'components/alert': {
-    tabs: ['Overview', 'Usage'],
-    toc: ['Types', 'Theme Colors', 'Close Button'],
-    render: (tab) => {
-      const title = 'Alert';
-
-      // Lucide icons
-      const iconCircleAlert = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-      const iconCircleCheck = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
-      const iconInfo        = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
-      const iconX           = color => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-
-      // Figma tokens: --bt-surface-{type}-light, --bt-border-{type}-default, --bt-surface-{type}-default
-      const TYPE_CFG = {
-        error:       { lucideIcon: iconCircleAlert, lucideName: 'circle-alert', accent: '#b31d38', lightBg: '#fef2f2', filledBg: '#b31d38', surfaceLight: '--bt-surface-error-light',       borderToken: '--bt-border-error-default',       surfaceFilled: '--bt-surface-error-default'       },
-        warning:     { lucideIcon: iconCircleAlert, lucideName: 'circle-alert', accent: '#aa820a', lightBg: '#fdf9e8', filledBg: '#aa820a', surfaceLight: '--bt-surface-warning-light',     borderToken: '--bt-border-warning-default',     surfaceFilled: '--bt-surface-warning-default'     },
-        information: { lucideIcon: iconInfo,        lucideName: 'info',         accent: '#0d4e97', lightBg: '#f1f7fe', filledBg: '#0d4e97', surfaceLight: '--bt-surface-information-light', borderToken: '--bt-border-information-default', surfaceFilled: '--bt-surface-information-default' },
-        success:     { lucideIcon: iconCircleCheck, lucideName: 'circle-check', accent: '#2d584b', lightBg: '#daede5', filledBg: '#2d584b', surfaceLight: '--bt-surface-success-light',     borderToken: '--bt-border-success-default',     surfaceFilled: '--bt-surface-success-default'     },
-      };
-
-      const TYPES      = ['error', 'warning', 'information', 'success'];
-      const TYPE_LABEL = { error: 'Error', warning: 'Warning', information: 'Information', success: 'Success' };
-      const TYPE_DESC  = {
-        error:       'Critical errors or blocking situations that require immediate action.',
-        warning:     'Situations that need attention but are not critical.',
-        information: 'Helpful context or neutral information for the user.',
-        success:     'Confirms a completed action or positive outcome.',
-      };
-      const THEMES     = ['stroke', 'light', 'filled'];
-      const THEME_DESC = {
-        stroke:  'Neutral background with a default gray border. Works on any surface.',
-        light:   'Tinted background with a type-matched accent border. Softer emphasis.',
-        filled:  'Solid accent background with inverted (white) text and icon. Highest emphasis.',
-      };
-
-      const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-      const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
-      const pw  = inner => `<div style="max-width:440px">${inner}</div>`;
-
-      const alertEl = ({ type = 'error', theme = 'stroke', closeBtn = false, alertTitle = 'Alert Title', desc = 'Short description goes here.' }) => {
-        const c = TYPE_CFG[type];
-        const isFilled  = theme === 'filled';
-        const bg        = isFilled ? c.filledBg : theme === 'light' ? c.lightBg : '#fafafa';
-        const border    = isFilled ? 'none' : `1px solid ${theme === 'light' ? c.accent : '#d4d4d4'}`;
-        const iconColor = isFilled ? '#fff' : c.accent;
-        const textColor = isFilled ? '#fff' : '#1a1a1a';
-        const descAlpha = isFilled ? '0.85' : '1';
-        return `
-          <div style="display:flex;align-items:center;background:${bg};border:${border};border-radius:4px;width:100%;">
-            <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${c.lucideIcon(iconColor)}</div>
-            <div style="flex:1;padding:8px;min-width:0;">
-              <div style="font-size:16px;font-weight:500;color:${textColor};line-height:24px;">${alertTitle}</div>
-              <div style="font-size:14px;color:${textColor};opacity:${descAlpha};line-height:16px;margin-top:4px;">${desc}</div>
-            </div>
-            ${closeBtn ? `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">${iconX(textColor)}</div>` : ''}
-          </div>`;
-      };
-
-      const overviewHtml = `
-        <p class="page-desc">Inline messages that inform the user about an important state. Four types, three theme colors, and an optional close button.</p>
-
-        <div class="preview-box">
-          <div style="display:flex;flex-direction:column;gap:10px;max-width:440px;">
-            ${TYPES.map(t => alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` })).join('')}
-          </div>
-        </div>
-
-        <h2 id="Types">Types</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four semantic types — each with a distinct icon (Lucide) and accent color. Shown here in Stroke theme.</p>
-        <table class="token-table">
-          <thead><tr><th>Type</th><th style="min-width:340px">Preview</th><th>Description</th></tr></thead>
-          <tbody>
-            ${TYPES.map(t => `
-            <tr>
-              <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
-              <td>${pw(alertEl({ type: t, alertTitle: `${TYPE_LABEL[t]} Alert` }))}</td>
-              <td style="color:var(--bt-text-emphasis)">${TYPE_DESC[t]}</td>
-            </tr>`).join('')}
-          </tbody>
-        </table>
-        <table class="token-table" style="margin-top:12px">
-          <thead><tr><th>Type</th><th>Icon (Lucide)</th><th>Accent token</th><th>Value</th></tr></thead>
-          <tbody>
-            ${TYPES.map(t => {
-              const c = TYPE_CFG[t];
-              return `<tr>
-                <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
-                <td>${tk(c.lucideName)}</td>
-                <td>${tk(c.borderToken)}</td>
-                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:${c.accent};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>${c.accent}</span></td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-
-        <h2 id="Theme Colors">Theme Colors</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Three themes control how much visual weight the alert carries.</p>
-        ${THEMES.map(th => `
-          <div style="margin-bottom:24px;">
-            ${lbl(th.charAt(0).toUpperCase() + th.slice(1))}
-            <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:12px;">${THEME_DESC[th]}</p>
-            <table class="token-table">
-              <thead><tr><th>Type</th><th style="min-width:340px">Preview</th></tr></thead>
-              <tbody>
-                ${TYPES.map(t => `
-                <tr>
-                  <td><span class="token-name">${TYPE_LABEL[t]}</span></td>
-                  <td>${pw(alertEl({ type: t, theme: th, alertTitle: `${TYPE_LABEL[t]} Alert` }))}</td>
-                </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>
-        `).join('')}
-        <table class="token-table" style="margin-top:4px">
-          <thead><tr><th>Theme</th><th>Type</th><th>Background token</th><th>Border token</th></tr></thead>
-          <tbody>
-            <tr><td rowspan="1"><span class="token-name">Stroke</span></td><td>All</td><td>${tk('--bt-surface-primary-light')} · #fafafa</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
-            ${TYPES.map((t, i) => {
-              const c = TYPE_CFG[t];
-              return `<tr>
-                ${i === 0 ? `<td rowspan="4"><span class="token-name">Light</span></td>` : ''}
-                <td>${TYPE_LABEL[t]}</td>
-                <td>${tk(c.surfaceLight)} · ${c.lightBg}</td>
-                <td>${tk(c.borderToken)} · ${c.accent}</td>
-              </tr>`;
-            }).join('')}
-            ${TYPES.map((t, i) => {
-              const c = TYPE_CFG[t];
-              return `<tr>
-                ${i === 0 ? `<td rowspan="4"><span class="token-name">Filled</span></td>` : ''}
-                <td>${TYPE_LABEL[t]}</td>
-                <td>${tk(c.surfaceFilled)} · ${c.filledBg}</td>
-                <td>—</td>
-              </tr>`;
-            }).join('')}
-            <tr><td><span class="token-name">Filled</span> · Text / Icon</td><td colspan="3">${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')} · #ffffff</td></tr>
-          </tbody>
-        </table>
-
-        <h2 id="Close Button">Close Button</h2>
-        <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Controlled via the <strong>Close Button</strong> property. Renders a 40×40px hit area on the right edge with a Lucide ${tk('x')} icon.</p>
-        <table class="token-table">
-          <thead><tr><th>State</th><th style="min-width:340px">Preview</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><span class="token-name">Off</span></td>
-              <td>${pw(alertEl({ type: 'error', theme: 'stroke', closeBtn: false, alertTitle: 'Error Alert' }))}</td>
-              <td style="color:var(--bt-text-emphasis)">No close affordance. Use for persistent or mandatory alerts.</td>
-            </tr>
-            <tr>
-              <td><span class="token-name">On</span></td>
-              <td>${pw(alertEl({ type: 'error', theme: 'stroke', closeBtn: true, alertTitle: 'Error Alert' }))}</td>
-              <td style="color:var(--bt-text-emphasis)">Dismissible. Use when the user may want to hide the alert.</td>
-            </tr>
-          </tbody>
-        </table>
-        <table class="token-table" style="margin-top:12px">
-          <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-          <tbody>
-            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
-            <tr><td>Icon container / Close button</td><td>Width × Height</td><td>—</td><td>40 × 40px</td></tr>
-            <tr><td>Content area</td><td>Padding</td><td>${tk('--space/md')}</td><td>8px</td></tr>
-            <tr><td>Title ↔ Description</td><td>Gap</td><td>${tk('--space/xs')}</td><td>4px</td></tr>
-            <tr><td>Title</td><td>Font Size / Weight / Line Height</td><td>${tk('--font/size/text-md')}</td><td>16px / 500 / 24px</td></tr>
-            <tr><td>Description</td><td>Font Size / Weight / Line Height</td><td>${tk('--font/size/text-sm')}</td><td>14px / 400 / 16px</td></tr>
-            <tr><td>Close icon</td><td>Lucide</td><td>${tk('x')}</td><td>14 × 14px</td></tr>
-          </tbody>
-        </table>
-      `;
-
-      if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
-      return { title, html: overviewHtml };
-    }
-  },
-
   'components/alert-dialog': {
     tabs: ['Overview', 'Usage'],
     toc: ['Types', 'Button Layout', 'Anatomy'],
@@ -2417,21 +2242,22 @@ const PAGES = {
       const iconCircleCheck = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
       const iconInfo        = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
 
-      // ── Figma local variable values ─────────────────────────────────────────
-      // Space/xs=4  Space/md=8  Space/2xl=16  Space/3xl=20  Space/4xl=24
-      // Radius/md=6  Radius/6xl=28  Radius/full=9999
-      // Shadow/lg: 0 4px 6px rgba(16,24,40,.031) + 0 12px 16px rgba(16,24,40,.078)
-      // Font/size/text-md=16  Font/size/text-sm=14
-      // Font/lh/text-lh-md=24  Font/lh/text-lh-sm=20
+      // ── CSS tokens used below ────────────────────────────────────────────────
+      // --bt-space-xs=4  --bt-space-md=8  --bt-space-2xl=16  --bt-space-3xl=20
+      // --bt-radius-md=6  --bt-radius-6xl=28  --bt-radius-full=9999
+      // No shadow token exists in this system — the dialog shadow is a one-off value.
+      // --bt-text-md-size=16 / --bt-text-md-lh=24 (title)
+      // --bt-text-sm-size=14 (description) — its line-height is a 20px override,
+      // NOT --bt-text-sm-lh (which is 16px elsewhere), so it stays a literal value.
 
       const SHADOW = '0 4px 6px rgba(16,24,40,.031),0 12px 16px rgba(16,24,40,.078)';
 
       // ── Type configuration ──────────────────────────────────────────────────
       const TYPE_CFG = {
-        error:       { icon: iconCircleAlert, accent: '#b31d38', lightBg: '#fef2f2', surfaceToken: '--bt-surface-error-light',       borderToken: '--bt-border-error-default'       },
-        warning:     { icon: iconCircleAlert, accent: '#aa820a', lightBg: '#fdf9e8', surfaceToken: '--bt-surface-warning-light',     borderToken: '--bt-border-warning-default'     },
-        success:     { icon: iconCircleCheck, accent: '#2d584b', lightBg: '#e8f3ee', surfaceToken: '--bt-surface-success-light',     borderToken: '--bt-border-success-default'     },
-        information: { icon: iconInfo,        accent: '#0d4e97', lightBg: '#f1f7fe', surfaceToken: '--bt-surface-information-light', borderToken: '--bt-border-information-default' },
+        error:       { icon: iconCircleAlert, accent: '#b31d38', lightBg: '#fef2f2', surfaceToken: '--bt-surface-error-light',       borderToken: '--bt-border-error-default',       iconToken: '--bt-icon-error-default'       },
+        warning:     { icon: iconCircleAlert, accent: '#aa820a', lightBg: '#fdf9e8', surfaceToken: '--bt-surface-warning-light',     borderToken: '--bt-border-warning-default',     iconToken: '--bt-icon-warning-default'     },
+        success:     { icon: iconCircleCheck, accent: '#2d584b', lightBg: '#e8f3ee', surfaceToken: '--bt-surface-success-light',     borderToken: '--bt-border-success-default',     iconToken: '--bt-icon-success-default'     },
+        information: { icon: iconInfo,        accent: '#0d4e97', lightBg: '#f1f7fe', surfaceToken: '--bt-surface-information-light', borderToken: '--bt-border-information-default', iconToken: '--bt-icon-information-default' },
       };
 
       const TYPES      = ['error', 'warning', 'success', 'information'];
@@ -2459,28 +2285,28 @@ const PAGES = {
       // horizontal → flex:1 0 0 + min-width:1px (Fill along row)
       // vertical   → width:100% + flex-shrink:0  (Fill cross axis)
       const btnPrimary = (mode = 'h') =>
-        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0d4e97;border-radius:6px;">
-           <span style="font-size:16px;font-weight:500;line-height:24px;color:#fff;white-space:nowrap;">Button</span>
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-md, 8px) var(--bt-space-2xl, 16px);background:var(--bt-surface-brand, #0d4e97);border-radius:var(--bt-radius-md, 6px);">
+           <span style="font-size:var(--bt-text-md-size, 16px);font-weight:500;line-height:var(--bt-text-md-lh, 24px);color:var(--bt-text-inverted, #ffffff);white-space:nowrap;">Button</span>
          </div>`;
 
       const btnGhost = (mode = 'h') =>
-        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;">
-           <span style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;white-space:nowrap;">Button</span>
+        `<div style="${mode === 'h' ? 'flex:1 0 0;min-width:1px' : 'width:100%;flex-shrink:0'};display:flex;align-items:center;justify-content:center;padding:var(--bt-space-md, 8px) var(--bt-space-2xl, 16px);border-radius:var(--bt-radius-md, 6px);">
+           <span style="font-size:var(--bt-text-md-size, 16px);font-weight:500;line-height:var(--bt-text-md-lh, 24px);color:var(--bt-text-default, #1a1a1a);white-space:nowrap;">Button</span>
          </div>`;
 
       // ── Button area — Space/3xl=20px H · Space/2xl=16px V padding ───────────
       // gap: horizontal-2 → Space/2xl=16px · vertical-2 → Space/2xl=16px
       const btnArea = layout => {
         if (layout === 'vertical-1') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;">
+          <div style="padding:var(--bt-space-2xl, 16px) var(--bt-space-3xl, 20px);width:100%;box-sizing:border-box;display:flex;">
             ${btnPrimary('v')}
           </div>`;
         if (layout === 'horizontal-2') return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;gap:16px;">
+          <div style="padding:var(--bt-space-2xl, 16px) var(--bt-space-3xl, 20px);width:100%;box-sizing:border-box;display:flex;gap:var(--bt-space-2xl, 16px);">
             ${btnGhost('h')}${btnPrimary('h')}
           </div>`;
         return `
-          <div style="padding:16px 20px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">
+          <div style="padding:var(--bt-space-2xl, 16px) var(--bt-space-3xl, 20px);width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:var(--bt-space-2xl, 16px);">
             ${btnPrimary('v')}${btnGhost('v')}
           </div>`;
       };
@@ -2490,14 +2316,14 @@ const PAGES = {
       const alertDialogEl = ({ type = 'information', layout = 'vertical-1' }) => {
         const c = TYPE_CFG[type];
         return `
-          <div style="background:#fff;border-radius:28px;box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px;">
-              <div style="width:40px;height:40px;border-radius:9999px;background:${c.lightBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                ${c.icon(c.accent)}
+          <div style="background:var(--bt-surface-primary-default, #ffffff);border-radius:var(--bt-radius-6xl, 28px);box-shadow:${SHADOW};display:flex;flex-direction:column;width:100%;max-width:369px;box-sizing:border-box;overflow:hidden;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:var(--bt-space-xs, 4px);padding:var(--bt-space-3xl, 20px);">
+              <div style="width:40px;height:40px;border-radius:var(--bt-radius-full, 9999px);background:var(${c.surfaceToken}, ${c.lightBg});display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                ${c.icon(`var(${c.iconToken}, ${c.accent})`)}
               </div>
-              <div style="display:flex;flex-direction:column;gap:4px;width:100%;">
-                <div style="font-size:16px;font-weight:500;line-height:24px;color:#1a1a1a;text-align:center;">Title Text Here</div>
-                <div style="font-size:14px;font-weight:400;line-height:20px;color:#1a1a1a;text-align:center;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
+              <div style="display:flex;flex-direction:column;gap:var(--bt-space-xs, 4px);width:100%;">
+                <div style="font-size:var(--bt-text-md-size, 16px);font-weight:500;line-height:var(--bt-text-md-lh, 24px);color:var(--bt-text-default, #1a1a1a);text-align:center;">Title Text Here</div>
+                <div style="font-size:var(--bt-text-sm-size, 14px);font-weight:400;line-height:20px;color:var(--bt-text-default, #1a1a1a);text-align:center;">Description for additional information displayed below the title to clarify the purpose of the section.</div>
               </div>
             </div>
             ${btnArea(layout)}
@@ -2551,8 +2377,8 @@ const PAGES = {
           <thead><tr><th>Layout</th><th>Figma props</th><th>Button order</th><th>Gap token</th></tr></thead>
           <tbody>
             <tr><td><span class="token-name">Vertical · 1</span></td><td>Position=Vertical, Segments=1</td><td>Primary only — full width</td><td>—</td></tr>
-            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Position=Horizontal, Segments=2</td><td>Ghost (left) + Primary (right)</td><td>${tk('Space/2xl')} · 16px</td></tr>
-            <tr><td><span class="token-name">Vertical · 2</span></td><td>Position=Vertical, Segments=2</td><td>Primary (top) + Ghost (bottom)</td><td>${tk('Space/2xl')} · 16px</td></tr>
+            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Position=Horizontal, Segments=2</td><td>Ghost (left) + Primary (right)</td><td>${tk('--bt-space-2xl')} · 16px</td></tr>
+            <tr><td><span class="token-name">Vertical · 2</span></td><td>Position=Vertical, Segments=2</td><td>Primary (top) + Ghost (bottom)</td><td>${tk('--bt-space-2xl')} · 16px</td></tr>
           </tbody>
         </table>
 
@@ -2560,23 +2386,23 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Border Radius</td><td>${tk('Radius/6xl')}</td><td>28px</td></tr>
-            <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
-            <tr><td>Body</td><td>Padding</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
-            <tr><td>Body</td><td>Gap (pictogram ↔ text)</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
-            <tr><td>Title ↔ Description</td><td>Gap</td><td>${tk('Space/xs')}</td><td>4px</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-6xl')}</td><td>28px</td></tr>
+            <tr><td>Container</td><td>Shadow</td><td>—</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%) (no token — custom shadow)</td></tr>
+            <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+            <tr><td>Body</td><td>Gap (pictogram ↔ text)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td>Title ↔ Description</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
             <tr><td>Pictogram circle</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
-            <tr><td>Pictogram circle</td><td>Border Radius</td><td>${tk('Radius/full')}</td><td>9999px</td></tr>
+            <tr><td>Pictogram circle</td><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
             <tr><td>Icon</td><td>Size</td><td>—</td><td>20 × 20px</td></tr>
-            <tr><td>Title</td><td>Font</td><td>${tk('Title/md/Medium')}</td><td>16px / 500 / 24px · center</td></tr>
-            <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 20px · center</td></tr>
-            <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
-            <tr><td>Button area</td><td>Padding V</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
-            <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
-            <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
-            <tr><td>Primary button text</td><td>Color</td><td>${tk('Gray/0')}</td><td>#ffffff</td></tr>
+            <tr><td>Title</td><td>Font</td><td>${tk('--bt-text-md-size')} / ${tk('--bt-text-md-lh')}</td><td>16px / 500 / 24px · center</td></tr>
+            <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-sm-size')} (line-height: no token — 20px override)</td><td>14px / 400 / 20px · center</td></tr>
+            <tr><td>Button area</td><td>Padding H</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+            <tr><td>Button area</td><td>Padding V</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Padding H</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Padding V</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+            <tr><td>Button</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+            <tr><td>Primary button bg</td><td>Color</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td>Primary button text</td><td>Color</td><td>${tk('--bt-text-inverted')}</td><td>#ffffff</td></tr>
           </tbody>
         </table>
       `;
@@ -2606,14 +2432,14 @@ const PAGES = {
       const iconPlaceholder = () =>
         `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
            <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-             ${iScan('#1a1a1a')}
+             ${iScan('var(--bt-icon-default, #1a1a1a)')}
            </div>
          </div>`;
 
       const iconX = () =>
         `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
            <div style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-             ${iX('#1a1a1a')}
+             ${iX('var(--bt-icon-default, #1a1a1a)')}
            </div>
          </div>`;
 
@@ -2781,8 +2607,8 @@ const PAGES = {
           <thead><tr><th>Layout</th><th>Figma props</th><th>Button order</th><th>Gap token</th></tr></thead>
           <tbody>
             <tr><td><span class="token-name">Vertical · 1</span></td><td>Position=Vertical, Segments=1</td><td>Primary only — full width</td><td>—</td></tr>
-            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Position=Horizontal, Segments=2</td><td>Ghost (left) + Primary (right)</td><td>${tk('Space/2xl')} · 16px</td></tr>
-            <tr><td><span class="token-name">Vertical · 2</span></td><td>Position=Vertical, Segments=2</td><td>Primary (top) + Ghost (bottom)</td><td>${tk('Space/2xl')} · 16px</td></tr>
+            <tr><td><span class="token-name">Horizontal · 2</span></td><td>Position=Horizontal, Segments=2</td><td>Ghost (left) + Primary (right)</td><td>${tk('--bt-space-2xl')} · 16px</td></tr>
+            <tr><td><span class="token-name">Vertical · 2</span></td><td>Position=Vertical, Segments=2</td><td>Primary (top) + Ghost (bottom)</td><td>${tk('--bt-space-2xl')} · 16px</td></tr>
           </tbody>
         </table>
 
@@ -2791,11 +2617,11 @@ const PAGES = {
           <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td>Container</td><td>Width</td><td>—</td><td>369px</td></tr>
-            <tr><td>Container</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-lg')}</td><td>8px</td></tr>
             <tr><td>Container</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')} · #ffffff</td></tr>
             <tr><td>Container</td><td>Shadow</td><td>—</td><td>0 4px 6px rgba(16,24,40,0.03) · 0 12px 16px rgba(16,24,40,0.08)</td></tr>
             <tr><td>Toolbar</td><td>Height</td><td>—</td><td>40px</td></tr>
-            <tr><td>Toolbar</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Toolbar</td><td>Padding H</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
             <tr><td>Toolbar</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-subtle')}</td><td>${tk('--bt-surface-subtle')} · #f5f5f5</td></tr>
             <tr><td>Toolbar</td><td>Bottom border</td><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
             <tr><td>Toolbar title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>Geist 18px / 500 / 24px</td></tr>
@@ -2803,13 +2629,13 @@ const PAGES = {
             <tr><td>Icon/Placeholder btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
             <tr><td>Icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
             <tr><td>Icon</td><td>Color</td><td>${tk('Icon Colors/--bt-icon-default')}</td><td>${tk('--bt-icon-default')} · #1a1a1a</td></tr>
-            <tr><td>Body</td><td>Padding</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
-            <tr><td>Body</td><td>Gap</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
+            <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+            <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
             <tr><td>Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>Geist 14px / 400 / 16px</td></tr>
             <tr><td>Description</td><td>Color</td><td>${tk('Text Colors/--bt-text-default')}</td><td>${tk('--bt-text-default')} · #1a1a1a</td></tr>
             <tr><td>Input field</td><td>Height</td><td>—</td><td>48px</td></tr>
-            <tr><td>Input field</td><td>Padding left</td><td>${tk('Space/2xl')}</td><td>16px (tek taraf — sağ, Right Control frame'den gelir)</td></tr>
-            <tr><td>Input field</td><td>Border Radius</td><td>${tk('Radius/lg')}</td><td>8px</td></tr>
+            <tr><td>Input field</td><td>Padding left</td><td>${tk('--bt-space-2xl')}</td><td>16px (tek taraf — sağ, Right Control frame'den gelir)</td></tr>
+            <tr><td>Input field</td><td>Border Radius</td><td>${tk('--bt-radius-lg')}</td><td>8px</td></tr>
             <tr><td>Input field</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')} · #ffffff</td></tr>
             <tr><td>Input field</td><td>Border — Default</td><td>${tk('Border Colors/--bt-border-default')}</td><td>${tk('--bt-border-default')} · #d4d4d4</td></tr>
             <tr><td>Input field</td><td>Border — Active</td><td>${tk('Blue/700')}</td><td>${tk('--bt-border-brand')} · #0d4e97</td></tr>
@@ -2820,9 +2646,9 @@ const PAGES = {
             <tr><td>Input placeholder</td><td>Font</td><td>${tk('Text/md/Regular')}</td><td>Geist 16px / 400 / 24px</td></tr>
             <tr><td>Input placeholder</td><td>Color</td><td>${tk('Gray/500')}</td><td>${tk('--bt-text-emphasis')} · #727272</td></tr>
             <tr><td>Right Control</td><td>Size</td><td>—</td><td>48 × 48px</td></tr>
-            <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
-            <tr><td>Button area</td><td>Padding V</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+            <tr><td>Button area</td><td>Padding H</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+            <tr><td>Button area</td><td>Padding V</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
             <tr><td>Primary button bg</td><td>Color</td><td>${tk('Surface Colors Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')} · #0d4e97</td></tr>
             <tr><td>Primary button text</td><td>Color</td><td>${tk('Text Colors/--bt-text-inverted')}</td><td>${tk('--bt-text-inverted')} · #ffffff</td></tr>
           </tbody>
@@ -2847,12 +2673,12 @@ const PAGES = {
             <tr><td>${tk('Title/lg/Medium')}</td><td>—</td><td>Geist 18px / 500 / 24px</td><td>Toolbar title tipografisi</td></tr>
             <tr><td>${tk('Text/sm/Regular')}</td><td>—</td><td>Geist 14px / 400 / 16px</td><td>Description tipografisi</td></tr>
             <tr><td>${tk('Text/md/Regular')}</td><td>—</td><td>Geist 16px / 400 / 24px</td><td>Input label tipografisi</td></tr>
-            <tr><td>${tk('Radius/lg')}</td><td>${tk('--bt-radius-lg')}</td><td>8px</td><td>Container · Input field border radius</td></tr>
-            <tr><td>${tk('Radius/md')}</td><td>${tk('--bt-radius-md')}</td><td>6px</td><td>Button border radius</td></tr>
-            <tr><td>${tk('Space/3xl')}</td><td>${tk('--bt-space-3xl')}</td><td>20px</td><td>Body padding · Button area padding H</td></tr>
-            <tr><td>${tk('Space/2xl')}</td><td>${tk('--bt-space-2xl')}</td><td>16px</td><td>Toolbar padding H · Body gap · Button area padding V</td></tr>
-            <tr><td>${tk('Space/xl')}</td><td>${tk('--bt-space-xl')}</td><td>12px</td><td>Input field padding right</td></tr>
-            <tr><td>${tk('Space/md')}</td><td>${tk('--bt-space-md')}</td><td>8px</td><td>Button padding V</td></tr>
+            <tr><td>${tk('--bt-radius-lg')}</td><td>${tk('--bt-radius-lg')}</td><td>8px</td><td>Container · Input field border radius</td></tr>
+            <tr><td>${tk('--bt-radius-md')}</td><td>${tk('--bt-radius-md')}</td><td>6px</td><td>Button border radius</td></tr>
+            <tr><td>${tk('--bt-space-3xl')}</td><td>${tk('--bt-space-3xl')}</td><td>20px</td><td>Body padding · Button area padding H</td></tr>
+            <tr><td>${tk('--bt-space-2xl')}</td><td>${tk('--bt-space-2xl')}</td><td>16px</td><td>Toolbar padding H · Body gap · Button area padding V</td></tr>
+            <tr><td>${tk('--bt-space-xl')}</td><td>${tk('--bt-space-xl')}</td><td>12px</td><td>Input field padding right</td></tr>
+            <tr><td>${tk('--bt-space-md')}</td><td>${tk('--bt-space-md')}</td><td>8px</td><td>Button padding V</td></tr>
             <tr><td>${tk('Gray/500')}</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td><td>Input label (içinde) · Input placeholder</td></tr>
             <tr><td>${tk('Gray/100')}</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td><td>Input background — Disabled</td></tr>
             <tr><td>${tk('Red/700')}</td><td>${tk('--bt-text-error')}</td><td>#b31d38</td><td>Input border — Error state</td></tr>
@@ -3012,36 +2838,36 @@ const PAGES = {
         <table class="token-table">
           <thead><tr><th>Element</th><th>Özellik</th><th>Figma token</th><th>Değer</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Background</td><td>${tk('Gray/100')}</td><td>#f5f5f5</td></tr>
-            <tr><td>Container</td><td>Border Radius (üst)</td><td>${tk('Radius/6xl')}</td><td>28px 28px 0 0</td></tr>
-            <tr><td>Container</td><td>Shadow</td><td>${tk('Shadow/lg')}</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%)</td></tr>
+            <tr><td>Container</td><td>Background</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Container</td><td>Border Radius (üst)</td><td>${tk('--bt-radius-6xl')}</td><td>28px 28px 0 0</td></tr>
+            <tr><td>Container</td><td>Shadow</td><td>—</td><td>0 4px 6px rgba(16,24,40,3%) · 0 12px 16px rgba(16,24,40,8%) (no token — custom shadow)</td></tr>
             <tr><td>Grabber</td><td>Width</td><td>—</td><td>72px</td></tr>
             <tr><td>Grabber</td><td>Height</td><td>—</td><td>6px</td></tr>
-            <tr><td>Grabber</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>Grabber</td><td>Padding V</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
             <tr><td>Toolbar bar</td><td>Height</td><td>—</td><td>40px</td></tr>
             <tr><td>Toolbar icon btn</td><td>Size</td><td>—</td><td>40 × 40px</td></tr>
-            <tr><td>Toolbar icon btn</td><td>Padding</td><td>${tk('Space/md')}</td><td>8px</td></tr>
-            <tr><td>Toolbar Title</td><td>Font</td><td>${tk('Title/lg/Medium')}</td><td>18px / 500 / 24px</td></tr>
-            <tr><td>Toolbar Title</td><td>Color</td><td>${tk('Gray/900')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Subtitle</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
-            <tr><td>Subtitle</td><td>Color</td><td>${tk('Gray/500')}</td><td>#727272</td></tr>
-            <tr><td>Body</td><td>Padding top/sides</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Body</td><td>Padding bottom</td><td>${tk('Space/6xl')}</td><td>32px</td></tr>
-            <tr><td>Body</td><td>Gap</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Body title</td><td>Font</td><td>${tk('Text/md/Medium')}</td><td>16px / 500 / 24px</td></tr>
-            <tr><td>Body description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>14px / 400 / 16px</td></tr>
-            <tr><td>Button area</td><td>Padding top</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button area</td><td>Padding H</td><td>${tk('Space/3xl')}</td><td>20px</td></tr>
-            <tr><td>Button area</td><td>Padding bottom</td><td>${tk('Space/8xl')}</td><td>40px (safe area)</td></tr>
+            <tr><td>Toolbar icon btn</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+            <tr><td>Toolbar Title</td><td>Font</td><td>${tk('--bt-text-lg-size')} / ${tk('--bt-text-lg-lh')}</td><td>18px / 500 / 24px</td></tr>
+            <tr><td>Toolbar Title</td><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+            <tr><td>Subtitle</td><td>Font</td><td>${tk('--bt-text-sm-size')} / ${tk('--bt-text-sm-lh')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Subtitle</td><td>Color</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td></tr>
+            <tr><td>Body</td><td>Padding top/sides</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Body</td><td>Padding bottom</td><td>${tk('--bt-space-6xl')}</td><td>32px</td></tr>
+            <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Body title</td><td>Font</td><td>${tk('--bt-text-md-size')} / ${tk('--bt-text-md-lh')}</td><td>16px / 500 / 24px</td></tr>
+            <tr><td>Body description</td><td>Font</td><td>${tk('--bt-text-sm-size')} / ${tk('--bt-text-sm-lh')}</td><td>14px / 400 / 16px</td></tr>
+            <tr><td>Button area</td><td>Padding top</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Button area</td><td>Padding H</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+            <tr><td>Button area</td><td>Padding bottom</td><td>${tk('--bt-space-8xl')}</td><td>40px (safe area)</td></tr>
             <tr><td>Button area gap</td><td>Gap</td><td>—</td><td>12px</td></tr>
-            <tr><td>Button</td><td>Padding V</td><td>${tk('Space/xl')}</td><td>12px</td></tr>
-            <tr><td>Button</td><td>Padding H</td><td>${tk('Space/2xl')}</td><td>16px</td></tr>
-            <tr><td>Button</td><td>Border Radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
-            <tr><td>Primary button bg</td><td>Color</td><td>${tk('Blue/700')}</td><td>#0d4e97</td></tr>
-            <tr><td>Ghost button bg</td><td>Color</td><td>${tk('Gray/100')}</td><td>#f5f5f5</td></tr>
+            <tr><td>Button</td><td>Padding V</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+            <tr><td>Button</td><td>Padding H</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+            <tr><td>Button</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+            <tr><td>Primary button bg</td><td>Color</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+            <tr><td>Ghost button bg</td><td>Color</td><td>${tk('--bt-surface-subtle')}</td><td>#f5f5f5</td></tr>
             <tr><td>Home Indicator</td><td>Width</td><td>—</td><td>140px</td></tr>
             <tr><td>Home Indicator</td><td>Height</td><td>—</td><td>6px</td></tr>
-            <tr><td>Home Indicator</td><td>Padding V</td><td>${tk('Space/md')}</td><td>8px</td></tr>
+            <tr><td>Home Indicator</td><td>Padding V</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           </tbody>
         </table>
       `;
@@ -3070,17 +2896,19 @@ const PAGES = {
       const accItem = ({ label='Title Text Here', desc='', content='', state='default', iconType='chevron', position='single', id }) => {
         const isOpen     = state === 'active';
         const isDisabled = state === 'disabled';
-        const titleC = isDisabled ? '#a3a3a3' : '#1a1a1a';
-        const descC  = isDisabled ? '#a3a3a3' : '#a3a3a3';
-        const iconC  = isDisabled ? '#a3a3a3' : '#1a1a1a';
-        const leftC  = isDisabled ? '#a3a3a3' : '#1a1a1a';
+        const titleC = isDisabled ? 'var(--bt-text-muted, #a3a3a3)' : 'var(--bt-text-default, #1a1a1a)';
+        const descC  = 'var(--bt-text-muted, #a3a3a3)';
+        const iconC  = isDisabled ? 'var(--bt-icon-muted, #a3a3a3)' : 'var(--bt-icon-default, #1a1a1a)';
+        const leftC  = isDisabled ? 'var(--bt-icon-muted, #a3a3a3)' : 'var(--bt-icon-default, #1a1a1a)';
         const cursor = isDisabled ? 'not-allowed' : 'pointer';
-        const radMap = { single: '6px', first: '6px 6px 0 0', middle: '0', last: '0 0 6px 6px' };
-        const borderR   = radMap[position] || '6px';
-        const borderTop = (position === 'middle' || position === 'last') ? 'none' : '1px solid #d4d4d4';
-        const borderBot = (position === 'first' || position === 'middle') ? 'none' : '1px solid #d4d4d4';
-        const hdrBg     = isOpen ? '#f5f5f5' : '#fff';
-        const itemStyle = `background:#fff;border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid #d4d4d4;border-right:1px solid #d4d4d4;border-radius:${borderR};overflow:hidden;`;
+        const rad = 'var(--bt-radius-md, 6px)';
+        const radMap = { single: rad, first: `${rad} ${rad} 0 0`, middle: '0', last: `0 0 ${rad} ${rad}` };
+        const borderR   = radMap[position] || rad;
+        const borderColor = 'var(--bt-border-default, #d4d4d4)';
+        const borderTop = (position === 'middle' || position === 'last') ? 'none' : `1px solid ${borderColor}`;
+        const borderBot = (position === 'first' || position === 'middle') ? 'none' : `1px solid ${borderColor}`;
+        const hdrBg     = isOpen ? 'var(--bt-surface-subtle, #f5f5f5)' : 'var(--bt-surface-primary-default, #ffffff)';
+        const itemStyle = `background:var(--bt-surface-primary-default, #ffffff);border-top:${borderTop};border-bottom:${borderBot};border-left:1px solid ${borderColor};border-right:1px solid ${borderColor};border-radius:${borderR};overflow:hidden;`;
         const closedIco = iconType === 'chevron' ? iChevronDown(iconC) : iPlus(iconC);
         const openIco   = iconType === 'chevron' ? iChevronUp(iconC)   : iX(iconC);
         const click     = (isDisabled || !id) ? '' : `onclick="window.toggleAcc('${id}')"`;
@@ -3095,7 +2923,7 @@ const PAGES = {
               <span data-ico-c style="display:${isOpen?'none':'inline-flex'};width:24px;height:24px;align-items:center;justify-content:center;">${closedIco}</span>
               <span data-ico-o style="display:${isOpen?'inline-flex':'none'};width:24px;height:24px;align-items:center;justify-content:center;">${openIco}</span>
             </div>
-            <div data-body style="padding:0 8px 8px 36px;font-size:14px;color:#727272;line-height:20px;background:#fff;${isOpen?'':'display:none'}">${content}</div>
+            <div data-body style="padding:0 8px 8px 36px;font-size:var(--bt-text-sm-size, 14px);color:var(--bt-text-emphasis, #727272);line-height:20px;background:var(--bt-surface-primary-default, #ffffff);${isOpen?'':'display:none'}">${content}</div>
           </div>`;
       };
 
@@ -3271,7 +3099,7 @@ const PAGES = {
             var icC  = el.querySelector('[data-ico-c]');
             var icO  = el.querySelector('[data-ico-o]');
             var hdr = el.querySelector('[data-hdr]');
-            if (hdr) hdr.style.background = open ? '#fff' : '#f5f5f5';
+            if (hdr) hdr.style.background = open ? 'var(--bt-surface-primary-default, #ffffff)' : 'var(--bt-surface-subtle, #f5f5f5)';
             if (body) body.style.display = open ? 'none' : 'block';
             if (icC)  icC.style.display  = open ? 'inline-flex' : 'none';
             if (icO)  icO.style.display  = open ? 'none' : 'inline-flex';
@@ -3303,13 +3131,13 @@ const PAGES = {
 
       const avatarEl = ({ size = 'md', themeColor = 'default', type = 'initials', initials = 'EG' }) => {
         const cfg       = SIZE_CFG[size];
-        const bg        = themeColor === 'brand' ? '#0d4e97' : '#e6e6e6';
-        const textColor = themeColor === 'brand' ? '#ffffff' : '#1a1a1a';
-        const iconColor = themeColor === 'brand' ? '#ffffff' : '#a3a3a3';
+        const bg        = themeColor === 'brand' ? 'var(--bt-surface-brand, #0d4e97)' : 'var(--bt-surface-primary-muted, #e6e6e6)';
+        const textColor = themeColor === 'brand' ? 'var(--bt-text-inverted, #ffffff)' : 'var(--bt-text-default, #1a1a1a)';
+        const iconColor = themeColor === 'brand' ? 'var(--bt-icon-inverted, #ffffff)' : 'var(--bt-icon-muted, #a3a3a3)';
         const content = type === 'icon'
           ? iconUser(cfg.iconSize, iconColor)
           : `<span style="font-size:${cfg.fs}px;font-weight:500;color:${textColor};font-family:var(--font);line-height:1;">${initials}</span>`;
-        return `<div style="width:${cfg.dim}px;height:${cfg.dim}px;border-radius:9999px;background:${bg};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${content}</div>`;
+        return `<div style="width:var(${cfg.token}, ${cfg.dim}px);height:var(${cfg.token}, ${cfg.dim}px);border-radius:var(--bt-radius-full, 9999px);background:${bg};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${content}</div>`;
       };
 
       const SIZES = ['2xs', 'xs', 'sm', 'md', 'lg', 'xl'];
@@ -3354,8 +3182,8 @@ const PAGES = {
         <table class="token-table" style="margin-top:12px">
           <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Initials · 2xs / xs / sm</td><td>Font Size / Line Height</td><td>${tk('--bt-text-xs')}</td><td>12px / 16px</td></tr>
-            <tr><td>Initials · md / lg / xl</td><td>Font Size / Line Height</td><td>${tk('--bt-text-sm')}</td><td>14px / 16px</td></tr>
+            <tr><td>Initials · 2xs / xs / sm</td><td>Font Size / Line Height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+            <tr><td>Initials · md / lg / xl</td><td>Font Size / Line Height</td><td>${tk('--bt-text-sm-size')} / ${tk('--bt-text-sm-lh')}</td><td>14px / 16px</td></tr>
             <tr><td>Initials</td><td>Font Weight</td><td>Medium</td><td>500</td></tr>
             <tr><td>Icon</td><td>Name (Lucide)</td><td>circle-user-round</td><td>—</td></tr>
           </tbody>
@@ -3384,7 +3212,7 @@ const PAGES = {
           <tbody>
             <tr><td>Container</td><td>Shape</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
             <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
-            <tr><td>Container · Brand</td><td>Background</td><td>${tk('--bt-surface-brand-contrast-default')}</td><td>#0d4e97</td></tr>
+            <tr><td>Container · Brand</td><td>Background</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
             <tr><td>Initials · Default</td><td>Text Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
             <tr><td>Initials · Brand</td><td>Text Color</td><td>${tk('--bt-text-inverted')}</td><td>#ffffff</td></tr>
             <tr><td>Icon · Default</td><td>Stroke Color</td><td>${tk('--bt-icon-muted')}</td><td>#a3a3a3</td></tr>
@@ -3433,16 +3261,16 @@ const PAGES = {
       const iLoader = (color, size = 16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 
       // Figma properties: Type × Theme Color × State=Default
-      // Layout tokens: gap=var(--space/2xs,2px), px=var(--space/md,8px), py=var(--space/2xs,2px), radius=var(--radius/full,9999px)
-      // Typography: font/family/text, font-normal (400), font/size/text-xs (12px), font/line-height/text-lh-xs (16px)
+      // Layout tokens: gap/py=var(--bt-space-2xs,2px), px=var(--bt-space-md,8px), radius=var(--bt-radius-full,9999px)
+      // Typography: var(--font), font-normal (400), var(--bt-text-xs-size) (12px), var(--bt-text-xs-lh) (16px)
       const TYPE_CFG = {
-        solid:   { bg: '#0d4e97',    border: '',                    text: '#ffffff', icon: '#ffffff' }, // Surface Colors/Brand/--bt-surface-brand-contrast-default + --bt-text-inverted
-        flat:    { bg: '#f5f5f5',    border: '',                    text: '#1a1a1a', icon: '#1a1a1a' }, // --bt-surface-primary-subtle + --bt-text-default
-        outline: { bg: '#f5f5f5',    border: '1px solid #d4d4d4',   text: '#1a1a1a', icon: '#1a1a1a' }, // --bt-surface-primary-subtle + --bt-border-default + --bt-text-default
-        ghost:   { bg: 'transparent', border: '',                   text: '#1a1a1a', icon: '#1a1a1a' }, // no surface + --bt-text-default
+        solid:   { bg: 'var(--bt-surface-brand, #0d4e97)',        border: '',                                                    text: 'var(--bt-text-inverted, #ffffff)', icon: 'var(--bt-icon-inverted, #ffffff)' },
+        flat:    { bg: 'var(--bt-surface-primary-subtle, #f5f5f5)', border: '',                                                  text: 'var(--bt-text-default, #1a1a1a)',  icon: 'var(--bt-icon-default, #1a1a1a)'  },
+        outline: { bg: 'var(--bt-surface-primary-subtle, #f5f5f5)', border: '1px solid var(--bt-border-default, #d4d4d4)',       text: 'var(--bt-text-default, #1a1a1a)',  icon: 'var(--bt-icon-default, #1a1a1a)'  },
+        ghost:   { bg: 'transparent',                              border: '',                                                  text: 'var(--bt-text-default, #1a1a1a)',  icon: 'var(--bt-icon-default, #1a1a1a)'  },
       };
 
-      const BASE_STYLE = `display:inline-flex;align-items:center;gap:2px;padding:2px 8px;border-radius:9999px;font-size:12px;font-weight:400;line-height:16px;white-space:nowrap;font-family:var(--font);`;
+      const BASE_STYLE = `display:inline-flex;align-items:center;gap:var(--bt-space-2xs, 2px);padding:var(--bt-space-2xs, 2px) var(--bt-space-md, 8px);border-radius:var(--bt-radius-full, 9999px);font-size:var(--bt-text-xs-size, 12px);font-weight:400;line-height:var(--bt-text-xs-lh, 16px);white-space:nowrap;font-family:var(--font);`;
 
       const badgeEl = ({ type = 'solid', label = 'Badge', leftIcon = false, rightIcon = false }) => {
         const c = TYPE_CFG[type];
@@ -3454,28 +3282,30 @@ const PAGES = {
       // Basic:   color-100 bg + gray/300 border (#d4d4d4) + gray/900 text (#1a1a1a)
       // Colored: color-100 bg + color-700 border + color-700 text
       const COLOR_MAP = {
-        blue:    { bg: '#e2edfc', accent: '#0d4e97' }, // --blue/100, --blue/700
-        green:   { bg: '#daede5', accent: '#2d584b' }, // --green/100, --green/700
-        yellow:  { bg: '#f9f2ce', accent: '#aa820a' }, // --yellow/100, --yellow/700
-        red:     { bg: '#fde6e6', accent: '#b31d38' }, // --red/100, --red/700
-        sky:     { bg: '#e0f2fe', accent: '#0369a1' }, // --sky/100, --sky/700
-        purple:  { bg: '#f3e8ff', accent: '#7e22ce' }, // --purple/100, --purple/700
-        cyan:    { bg: '#cffafe', accent: '#0e7490' }, // --cyan/100, --cyan/700
-        emerald: { bg: '#d1fae5', accent: '#047857' }, // --emerald/100, --emerald/700
-        orange:  { bg: '#ffedd5', accent: '#c2410c' }, // --orange/100, --orange/700
+        blue:    { bgToken: '--bt-blue-100',    bgHex: '#e2edfc', accentToken: '--bt-blue-700',    accentHex: '#0d4e97' },
+        green:   { bgToken: '--bt-green-100',   bgHex: '#daede5', accentToken: '--bt-green-700',   accentHex: '#2d584b' },
+        yellow:  { bgToken: '--bt-yellow-100',  bgHex: '#f9f2ce', accentToken: '--bt-yellow-700',  accentHex: '#aa820a' },
+        red:     { bgToken: '--bt-red-100',     bgHex: '#fde6e6', accentToken: '--bt-red-700',     accentHex: '#b31d38' },
+        sky:     { bgToken: '--bt-sky-100',     bgHex: '#e0f2fe', accentToken: '--bt-sky-700',     accentHex: '#0369a1' },
+        purple:  { bgToken: '--bt-purple-100',  bgHex: '#f3e8ff', accentToken: '--bt-purple-700',  accentHex: '#7e22ce' },
+        cyan:    { bgToken: '--bt-cyan-100',    bgHex: '#cffafe', accentToken: '--bt-cyan-700',    accentHex: '#0e7490' },
+        emerald: { bgToken: '--bt-emerald-100', bgHex: '#d1fae5', accentToken: '--bt-emerald-700', accentHex: '#047857' },
+        orange:  { bgToken: '--bt-orange-100',  bgHex: '#ffedd5', accentToken: '--bt-orange-700',  accentHex: '#c2410c' },
       };
 
       const COLORS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange'];
       const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
       const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-      const swatch = hex => `<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:${hex};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${hex}</code></span>`;
+      const swatch = (token, hex) => `<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:var(${token}, ${hex});border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${token}</code></span>`;
       const secLbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
 
       const colorBadgeEl = ({ color, type = 'basic', label }) => {
         const c = COLOR_MAP[color];
-        const border = type === 'colored' ? `1px solid ${c.accent}` : '1px solid #d4d4d4';
-        const text   = type === 'colored' ? c.accent : '#1a1a1a';
-        return `<span style="${BASE_STYLE}background:${c.bg};border:${border};color:${text};">${label || capitalize(color)}</span>`;
+        const bg     = `var(${c.bgToken}, ${c.bgHex})`;
+        const accent = `var(${c.accentToken}, ${c.accentHex})`;
+        const border = type === 'colored' ? accent : 'var(--bt-border-default, #d4d4d4)';
+        const text   = type === 'colored' ? accent : 'var(--bt-text-default, #1a1a1a)';
+        return `<span style="${BASE_STYLE}background:${bg};border:1px solid ${border};color:${text};">${label || capitalize(color)}</span>`;
       };
 
       const overviewHtml = `
@@ -3525,19 +3355,19 @@ const PAGES = {
         <table class="token-table" style="margin-top:12px">
           <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
           <tbody>
-            <tr><td>Container</td><td>Horizontal Padding</td><td>${tk('--space/md')}</td><td>8px</td></tr>
-            <tr><td>Container</td><td>Vertical Padding</td><td>${tk('--space/2xs')}</td><td>2px</td></tr>
-            <tr><td>Container</td><td>Gap</td><td>${tk('--space/2xs')}</td><td>2px</td></tr>
-            <tr><td>Container</td><td>Border Radius</td><td>${tk('--radius/full')}</td><td>9999px</td></tr>
-            <tr><td>Solid · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-contrast-default')}</td><td>#0d4e97</td></tr>
+            <tr><td>Container</td><td>Horizontal Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+            <tr><td>Container</td><td>Vertical Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+            <tr><td>Container</td><td>Gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+            <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+            <tr><td>Solid · Background</td><td>Fill</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
             <tr><td>Flat · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
             <tr><td>Outline · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
             <tr><td>Outline · Border</td><td>Stroke</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
             <tr><td>Solid · Text / Icon</td><td>Color</td><td>${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
             <tr><td>Flat / Outline / Ghost · Text / Icon</td><td>Color</td><td>${tk('--bt-text-default')} / ${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
-            <tr><td>Label</td><td>Font Size</td><td>${tk('--font/size/text-xs')}</td><td>12px</td></tr>
+            <tr><td>Label</td><td>Font Size</td><td>${tk('--bt-text-xs-size')}</td><td>12px</td></tr>
             <tr><td>Label</td><td>Font Weight</td><td>Regular</td><td>400</td></tr>
-            <tr><td>Label</td><td>Line Height</td><td>${tk('--font/line-height/text-lh-xs')}</td><td>16px</td></tr>
+            <tr><td>Label</td><td>Line Height</td><td>${tk('--bt-text-xs-lh')}</td><td>16px</td></tr>
             <tr><td>Icon</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
           </tbody>
         </table>
@@ -3565,8 +3395,8 @@ const PAGES = {
               const cm = COLOR_MAP[c];
               return `<tr>
                 <td><span class="token-name">${capitalize(c)}</span></td>
-                <td>${swatch(cm.bg)}</td>
-                <td>${swatch(cm.accent)}</td>
+                <td>${swatch(cm.bgToken, cm.bgHex)}</td>
+                <td>${swatch(cm.accentToken, cm.accentHex)}</td>
                 <td>${colorBadgeEl({ color: c, type: 'basic' })}</td>
                 <td>${colorBadgeEl({ color: c, type: 'colored' })}</td>
               </tr>`;
@@ -3659,8 +3489,8 @@ const PAGES = {
         const isOn   = mode === 'selected';
         const thumbX = isOn ? c.thumbOn : c.thumbOff;
         return `<div style="display:inline-flex;align-items:center;flex-shrink:0;">
-          <div style="width:${c.w}px;height:${c.h}px;border-radius:4px;background:${track};position:relative;padding:2px;box-sizing:border-box;${ring ? `box-shadow:${ring};` : ''}">
-            <div style="position:absolute;top:2px;left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:4px;background:${thumb};box-shadow:${thumbShadow};"></div>
+          <div style="width:${c.w}px;height:${c.h}px;border-radius:var(--bt-radius-sm, 4px);background:${track};position:relative;padding:var(--bt-space-2xs, 2px);box-sizing:border-box;${ring ? `box-shadow:${ring};` : ''}">
+            <div style="position:absolute;top:var(--bt-space-2xs, 2px);left:${thumbX}px;width:${c.thumb}px;height:${c.thumb}px;border-radius:var(--bt-radius-sm, 4px);background:${thumb};box-shadow:${thumbShadow};"></div>
           </div>
         </div>`;
       };
@@ -3676,12 +3506,12 @@ const PAGES = {
         const labelColor = isDisabled ? 'var(--bt-text-muted)' : 'var(--bt-text-default)';
         const reqColor   = isDisabled ? 'var(--bt-text-muted)' : 'var(--bt-text-brand)';
         const descColor  = isDisabled ? 'var(--bt-text-muted)' : 'var(--bt-text-emphasis)';
-        const labelBlock = `<div style="display:flex;flex-direction:column;gap:2px;flex:1;">
-          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-            <span style="font-size:16px;font-weight:400;line-height:24px;color:${labelColor};font-family:var(--font);">Label Here</span>
-            <span style="font-size:14px;font-weight:400;color:${reqColor};font-family:var(--font);">(Required Field)</span>
+        const labelBlock = `<div style="display:flex;flex-direction:column;gap:var(--bt-space-2xs, 2px);flex:1;">
+          <div style="display:flex;align-items:center;gap:var(--bt-space-xs, 4px);flex-wrap:wrap;">
+            <span style="font-size:var(--bt-text-md-size, 16px);font-weight:400;line-height:var(--bt-text-md-lh, 24px);color:${labelColor};font-family:var(--font);">Label Here</span>
+            <span style="font-size:var(--bt-text-sm-size, 14px);font-weight:400;color:${reqColor};font-family:var(--font);">(Required Field)</span>
           </div>
-          <span style="font-size:14px;font-weight:400;line-height:16px;color:${descColor};font-family:var(--font);">Description for additional information here.</span>
+          <span style="font-size:var(--bt-text-sm-size, 14px);font-weight:400;line-height:var(--bt-text-sm-lh, 16px);color:${descColor};font-family:var(--font);">Description for additional information here.</span>
         </div>`;
         const items = side === 'left'
           ? [labelBlock, `<div style="flex-shrink:0;">${sw}</div>`]
@@ -3690,7 +3520,7 @@ const PAGES = {
       };
 
       const stateChip = (label, bg) =>
-        `<span style="display:inline-block;padding:2px 10px;border-radius:9999px;background:${bg};font-size:11px;font-weight:600;letter-spacing:.04em;line-height:18px;color:#fff;font-family:var(--font);">${label}</span>`;
+        `<span style="display:inline-block;padding:var(--bt-space-2xs, 2px) 10px;border-radius:var(--bt-radius-full, 9999px);background:${bg};font-size:11px;font-weight:600;letter-spacing:.04em;line-height:18px;color:var(--bt-text-inverted, #ffffff);font-family:var(--font);">${label}</span>`;
 
       // ── Overview ──────────────────────────────────────────────────────────────
       const overviewHtml = `
@@ -3727,7 +3557,7 @@ const PAGES = {
             <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">Unselected (Off)</span>
           </div>
           <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
-            ${[['Default','default','#535353'],['Focused','focused','#0e62bb'],['Disabled','disabled','#a3a3a3']].map(([lbl,state,bg]) => `
+            ${[['Default','default','var(--bt-gray-600, #535353)'],['Focused','focused','var(--bt-blue-600, #0e62bb)'],['Disabled','disabled','var(--bt-text-muted, #a3a3a3)']].map(([lbl,state,bg]) => `
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
                 ${stateChip(lbl, bg)}
                 ${switchEl('md','unselected',state)}
@@ -3740,7 +3570,7 @@ const PAGES = {
             <span style="font-size:12px;font-weight:600;color:var(--bt-text-default);">Selected (On)</span>
           </div>
           <div style="background:var(--bt-surface-subtle);padding:20px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;">
-            ${[['Default','default','#535353'],['Focused','focused','#0e62bb'],['Disabled','disabled','#a3a3a3']].map(([lbl,state,bg]) => `
+            ${[['Default','default','var(--bt-gray-600, #535353)'],['Focused','focused','var(--bt-blue-600, #0e62bb)'],['Disabled','disabled','var(--bt-text-muted, #a3a3a3)']].map(([lbl,state,bg]) => `
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
                 ${stateChip(lbl, bg)}
                 ${switchEl('md','selected',state)}
@@ -3783,13 +3613,13 @@ const PAGES = {
           <tbody>
             <tr><td rowspan="3">Track — Selected</td><td>Background</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-default')}</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
             <tr><td>Background — Disabled</td><td>${tk('Surface Colors/Brand/--bt-surface-brand-contrast-muted')}</td><td>${tk('--bt-blue-200')}</td><td>#bedbf9</td></tr>
-            <tr><td>Border Radius</td><td>${tk('Radius/sm')}</td><td>—</td><td>4px</td></tr>
+            <tr><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>—</td><td>4px</td></tr>
             <tr><td rowspan="3">Track — Unselected</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-emphasis')}</td><td>${tk('--bt-surface-emphasis')}</td><td>#d4d4d4</td></tr>
             <tr><td>Background — Disabled</td><td>${tk('Surface Colors Primary/--bt-surface-primary-muted')}</td><td>${tk('--bt-surface-muted')}</td><td>#e6e6e6</td></tr>
-            <tr><td>Border Radius</td><td>${tk('Radius/sm')}</td><td>—</td><td>4px</td></tr>
-            <tr><td>Track Padding</td><td>All sides</td><td>${tk('Space/2xs')}</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+            <tr><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>—</td><td>4px</td></tr>
+            <tr><td>Track Padding</td><td>All sides</td><td>${tk('--bt-space-2xs')}</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
             <tr><td rowspan="3">Thumb</td><td>Background</td><td>${tk('Surface Colors Primary/--bt-surface-primary-default')}</td><td>${tk('--bt-surface-default')}</td><td>#ffffff</td></tr>
-            <tr><td>Border Radius</td><td>${tk('Radius/sm')}</td><td>—</td><td>4px</td></tr>
+            <tr><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>—</td><td>4px</td></tr>
             <tr><td>Shadow</td><td>${tk('Shadow/md')}</td><td>—</td><td>0 2px 4px #1018280F, 0 4px 8px #1018281A</td></tr>
             <tr><td>Focus Ring — Selected</td><td>Box Shadow</td><td>${tk('Focus Ring/primary')}</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.24)</td></tr>
             <tr><td>Focus Ring — Unselected</td><td>Box Shadow</td><td>${tk('Focus Ring/neutral')}</td><td>—</td><td>0 0 0 3px rgba(212,212,212,0.24)</td></tr>
@@ -3798,7 +3628,7 @@ const PAGES = {
             <tr><td>Required Field</td><td>Color</td><td>${tk('Text Colors/Brand/--bt-text-brand-contrast-default')}</td><td>${tk('--bt-text-brand')}</td><td>#0d4e97</td></tr>
             <tr><td rowspan="2">Description</td><td>Font</td><td>${tk('Text/sm/Regular')}</td><td>—</td><td>Geist 14px / 400 / 16px</td></tr>
             <tr><td>Color</td><td>${tk('Text Colors/--bt-text-emphasis')}</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td></tr>
-            <tr><td>Label ↔ Switch gap</td><td>Gap</td><td>${tk('Space/xs')}</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+            <tr><td>Label ↔ Switch gap</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
             <tr><td>Track border radius</td><td>Border Radius</td><td>—</td><td>—</td><td>9999px (pill)</td></tr>
             <tr><td>Row height</td><td>Height</td><td>—</td><td>—</td><td>44px</td></tr>
           </tbody>
@@ -3851,8 +3681,8 @@ const PAGES = {
             <tr><td>${tk('Text Colors/--bt-text-emphasis')}</td><td>${tk('--bt-text-emphasis')}</td><td>#727272</td><td>Description metni</td></tr>
             <tr><td>${tk('Label/md/Regular')}</td><td>—</td><td>Geist 16px/400/24px</td><td>Label tipografisi</td></tr>
             <tr><td>${tk('Text/sm/Regular')}</td><td>—</td><td>Geist 14px/400/16px</td><td>Description tipografisi</td></tr>
-            <tr><td>${tk('Space/xs')}</td><td>${tk('--bt-space-xs')}</td><td>4px</td><td>Label ↔ Switch gap</td></tr>
-            <tr><td>${tk('Space/2xs')}</td><td>${tk('--bt-space-2xs')}</td><td>2px</td><td>Label ↔ Description gap</td></tr>
+            <tr><td>${tk('--bt-space-xs')}</td><td>${tk('--bt-space-xs')}</td><td>4px</td><td>Label ↔ Switch gap</td></tr>
+            <tr><td>${tk('--bt-space-2xs')}</td><td>${tk('--bt-space-2xs')}</td><td>2px</td><td>Label ↔ Description gap</td></tr>
           </tbody>
         </table>
         <h2 id="Size Specs">Size Specs</h2>
@@ -3870,4 +3700,255 @@ const PAGES = {
     }
   },
 
+};
+
+// ── Alert — shared markup + Playground registration ────────────
+// Hoisted to module scope (rather than nested inside render()) so both the
+// component page and the standalone isolation.html page can call it.
+// Icon slot rendered at 20×20 within the 40×40 hit area (Figma's own
+// "Icon/Placeholder" instance is 24×24 — sized down 4px per user request).
+const alertIconCircleAlert = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+const alertIconCircleCheck = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
+const alertIconInfo        = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+const alertIconX           = color => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+// Re-verified against Figma "Alert Notification" component set (Bentas DS,
+// node 381:28155) via Desktop Bridge — one get_design_context call per theme
+// (Stroke/Light/Filled) to read the exact bound variables:
+//   Stroke  bg=--bt-surface-primary-default   border=--bt-border-primary-default  text=--bt-text-primary-default  icon=--bt-icon-{type}-default
+//   Light   bg=--bt-surface-{type}-light       border=--bt-border-{type}-default   text=--bt-text-primary-default  icon=--bt-icon-{type}-default
+//   Filled  bg=--bt-surface-{type}-default     border=none                         text=--bt-text-inverted (full opacity, both title+desc) icon=--bt-icon-inverted
+// hexFallback values below are only the `var(--token, fallback)` fallback —
+// the rendered color always comes from the CSS variable.
+const ALERT_TYPE_CFG = {
+  error:       { lucideIcon: alertIconCircleAlert, lucideName: 'circle-alert', surfaceLight: '--bt-surface-error-light',       surfaceDefault: '--bt-surface-error-default',       borderToken: '--bt-border-error-default',       iconToken: '--bt-icon-error-default',       hexLight: '#fef2f2', hexDefault: '#b31d38' },
+  warning:     { lucideIcon: alertIconCircleAlert, lucideName: 'circle-alert', surfaceLight: '--bt-surface-warning-light',     surfaceDefault: '--bt-surface-warning-default',     borderToken: '--bt-border-warning-default',     iconToken: '--bt-icon-warning-default',     hexLight: '#fdf9e8', hexDefault: '#aa820a' },
+  information: { lucideIcon: alertIconInfo,        lucideName: 'info',         surfaceLight: '--bt-surface-information-light', surfaceDefault: '--bt-surface-information-default', borderToken: '--bt-border-information-default', iconToken: '--bt-icon-information-default', hexLight: '#f1f7fe', hexDefault: '#0d4e97' },
+  success:     { lucideIcon: alertIconCircleCheck, lucideName: 'circle-check', surfaceLight: '--bt-surface-success-light',     surfaceDefault: '--bt-surface-success-default',     borderToken: '--bt-border-success-default',     iconToken: '--bt-icon-success-default',     hexLight: '#e8f3ee', hexDefault: '#2d584b' },
+};
+
+const ALERT_TYPES      = ['error', 'warning', 'information', 'success'];
+const ALERT_TYPE_LABEL = { error: 'Error', warning: 'Warning', information: 'Information', success: 'Success' };
+const ALERT_TYPE_DESC  = {
+  error:       'Critical errors or blocking situations that require immediate action.',
+  warning:     'Situations that need attention but are not critical.',
+  information: 'Helpful context or neutral information for the user.',
+  success:     'Confirms a completed action or positive outcome.',
+};
+const ALERT_THEMES     = ['light', 'stroke', 'filled'];
+const ALERT_THEME_DESC = {
+  stroke:  'Neutral background with a default gray border. Works on any surface.',
+  light:   'Tinted background with a type-matched accent border. Softer emphasis.',
+  filled:  'Solid accent background with inverted (white) text and icon. Highest emphasis.',
+};
+
+function alertEl({ type = 'error', theme = 'light', closeBtn = false, alertTitle = 'Alert Title', desc = 'Short description goes here.' }) {
+  const c        = ALERT_TYPE_CFG[type];
+  const isFilled = theme === 'filled';
+  const isLight  = theme === 'light';
+
+  const bg = isFilled
+    ? `var(${c.surfaceDefault}, ${c.hexDefault})`
+    : isLight
+      ? `var(${c.surfaceLight}, ${c.hexLight})`
+      : `var(--bt-surface-primary-default, #ffffff)`;
+
+  const border = isFilled
+    ? 'none'
+    : `1px solid ${isLight ? `var(${c.borderToken}, ${c.hexDefault})` : `var(--bt-border-primary-default, #d4d4d4)`}`;
+
+  const iconColor = isFilled ? `var(--bt-icon-inverted, #ffffff)` : `var(${c.iconToken}, ${c.hexDefault})`;
+  const textColor = isFilled ? `var(--bt-text-inverted, #ffffff)` : `var(--bt-text-primary-default, #1a1a1a)`;
+
+  return `
+          <div style="display:flex;align-items:center;background:${bg};border:${border};border-radius:var(--bt-radius-sm, 4px);width:100%;">
+            <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${c.lucideIcon(iconColor)}</div>
+            <div style="flex:1;padding:var(--bt-space-md, 8px);min-width:0;display:flex;flex-direction:column;gap:var(--bt-space-xs, 4px);">
+              <div style="font-size:var(--bt-text-md-size, 16px);font-weight:500;line-height:var(--bt-text-md-lh, 24px);color:${textColor};">${alertTitle}</div>
+              <div style="font-size:var(--bt-text-sm-size, 14px);font-weight:400;line-height:var(--bt-text-sm-lh, 16px);color:${textColor};">${desc}</div>
+            </div>
+            ${closeBtn ? `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">${alertIconX(textColor)}</div>` : ''}
+          </div>`;
+}
+
+// Playground preview/code — capped at 440px so the alert reads as a realistic
+// inline banner instead of stretching full-width on wide viewport presets.
+// `props` carries the secondary playground controls: theme (stroke/light/filled)
+// and closeBtn (on/off), on top of the primary type variant.
+function alertPlaygroundMarkup(variantKey, props = {}) {
+  const theme    = props.theme || 'stroke';
+  const closeBtn = props.closeBtn === 'on';
+  return `<div style="max-width:440px;width:100%;">${alertEl({ type: variantKey, theme, closeBtn, alertTitle: `${ALERT_TYPE_LABEL[variantKey]} Alert` })}</div>`;
+}
+function alertPlaygroundCode(variantKey, props = {}) {
+  const theme    = props.theme || 'stroke';
+  const closeBtn = props.closeBtn === 'on';
+  return alertEl({ type: variantKey, theme, closeBtn, alertTitle: `${ALERT_TYPE_LABEL[variantKey]} Alert` }).trim();
+}
+
+// Isolation mode target — docs/isolation.html looks this up by ?component=.
+window.PGD_ISOLATE = window.PGD_ISOLATE || {};
+window.PGD_ISOLATE['alert'] = {
+  mount(root, variant, props) {
+    root.innerHTML = alertPlaygroundMarkup(ALERT_TYPES.includes(variant) ? variant : 'error', props);
+  }
+};
+
+const ALERT_VARIANTS = ALERT_TYPES.map(t => ({ key: t, label: ALERT_TYPE_LABEL[t] }));
+const ALERT_PROPS = [
+  { key: 'theme', label: 'Theme', default: 'light', options: ALERT_THEMES.map(th => ({ key: th, label: th.charAt(0).toUpperCase() + th.slice(1) })) },
+  { key: 'closeBtn', label: 'Close Button', default: 'off', options: [{ key: 'off', label: 'Off' }, { key: 'on', label: 'On' }] },
+];
+
+PAGES['components/alert'] = {
+  tabs: ['Overview', 'Examples', 'Usage'],
+  toc: ['Types', 'Theme Colors', 'Close Button'],
+  render: (tab) => {
+    const title = 'Alert';
+    const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
+    const pw  = inner => `<div style="max-width:440px">${inner}</div>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Live preview of the Alert — pick a type, measure it, preview it at other viewport widths, or open it in isolation mode.</p>
+      <h2>Playground</h2>
+      ${registerPlayground({
+        id: 'pgd-alert-examples',
+        variants: ALERT_VARIANTS,
+        props: ALERT_PROPS,
+        preview: alertPlaygroundMarkup,
+        code: alertPlaygroundCode,
+        isolate: 'alert',
+        trigger: { label: 'Click Me' },
+        noMargin: true,
+      })}
+    `};
+
+    if (tab === 'Usage') return { title, html: `<p class="page-desc">Alert usage guidelines.</p><div class="placeholder"><div class="placeholder-title">Usage Guidelines</div><div class="placeholder-text">Coming soon.</div></div>` };
+
+    const overviewHtml = `
+      ${registerPlayground({
+        id: 'pgd-alert-overview',
+        variants: ALERT_VARIANTS,
+        props: ALERT_PROPS,
+        preview: alertPlaygroundMarkup,
+        code: alertPlaygroundCode,
+        isolate: 'alert',
+        trigger: { label: 'Click Me' },
+      })}
+
+      <p class="page-desc">Inline messages that inform the user about an important state. Four types, three theme colors, and an optional close button.</p>
+
+      <div class="preview-box">
+        <div style="display:flex;flex-direction:column;gap:10px;max-width:440px;">
+          ${ALERT_TYPES.map(t => alertEl({ type: t, alertTitle: `${ALERT_TYPE_LABEL[t]} Alert` })).join('')}
+        </div>
+      </div>
+
+      <h2 id="Types">Types</h2>
+      <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Four semantic types — each with a distinct icon (Lucide) and accent color. Shown here in Light theme (the default).</p>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th style="min-width:340px">Preview</th><th>Description</th></tr></thead>
+        <tbody>
+          ${ALERT_TYPES.map(t => `
+          <tr>
+            <td><span class="token-name">${ALERT_TYPE_LABEL[t]}</span></td>
+            <td>${pw(alertEl({ type: t, alertTitle: `${ALERT_TYPE_LABEL[t]} Alert` }))}</td>
+            <td style="color:var(--bt-text-emphasis)">${ALERT_TYPE_DESC[t]}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Type</th><th>Icon (Lucide)</th><th>Icon color token</th><th>Value</th></tr></thead>
+        <tbody>
+          ${ALERT_TYPES.map(t => {
+            const c = ALERT_TYPE_CFG[t];
+            return `<tr>
+              <td><span class="token-name">${ALERT_TYPE_LABEL[t]}</span></td>
+              <td>${tk(c.lucideName)}</td>
+              <td>${tk(c.iconToken)}</td>
+              <td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:2px;background:${c.hexDefault};border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span>${c.hexDefault}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Theme Colors">Theme Colors</h2>
+      <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Three themes control how much visual weight the alert carries.</p>
+      ${ALERT_THEMES.map(th => `
+        <div style="margin-bottom:24px;">
+          ${lbl(th.charAt(0).toUpperCase() + th.slice(1))}
+          <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:12px;">${ALERT_THEME_DESC[th]}</p>
+          <table class="token-table">
+            <thead><tr><th>Type</th><th style="min-width:340px">Preview</th></tr></thead>
+            <tbody>
+              ${ALERT_TYPES.map(t => `
+              <tr>
+                <td><span class="token-name">${ALERT_TYPE_LABEL[t]}</span></td>
+                <td>${pw(alertEl({ type: t, theme: th, alertTitle: `${ALERT_TYPE_LABEL[t]} Alert` }))}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `).join('')}
+      <table class="token-table" style="margin-top:4px">
+        <thead><tr><th>Theme</th><th>Type</th><th>Background token</th><th>Border token</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="1"><span class="token-name">Stroke</span></td><td>All</td><td>${tk('--bt-surface-primary-default')} · #ffffff</td><td>${tk('--bt-border-primary-default')} · #d4d4d4</td></tr>
+          ${ALERT_TYPES.map((t, i) => {
+            const c = ALERT_TYPE_CFG[t];
+            return `<tr>
+              ${i === 0 ? `<td rowspan="4"><span class="token-name">Light</span></td>` : ''}
+              <td>${ALERT_TYPE_LABEL[t]}</td>
+              <td>${tk(c.surfaceLight)} · ${c.hexLight}</td>
+              <td>${tk(c.borderToken)} · ${c.hexDefault}</td>
+            </tr>`;
+          }).join('')}
+          ${ALERT_TYPES.map((t, i) => {
+            const c = ALERT_TYPE_CFG[t];
+            return `<tr>
+              ${i === 0 ? `<td rowspan="4"><span class="token-name">Filled</span></td>` : ''}
+              <td>${ALERT_TYPE_LABEL[t]}</td>
+              <td>${tk(c.surfaceDefault)} · ${c.hexDefault}</td>
+              <td>—</td>
+            </tr>`;
+          }).join('')}
+          <tr><td><span class="token-name">Filled</span> · Text / Icon</td><td colspan="3">${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')} · #ffffff</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Close Button">Close Button</h2>
+      <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Controlled via the <strong>Close Button</strong> property. Renders a 40×40px hit area on the right edge with a Lucide ${tk('x')} icon.</p>
+      <table class="token-table">
+        <thead><tr><th>State</th><th style="min-width:340px">Preview</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Off</span></td>
+            <td>${pw(alertEl({ type: 'error', theme: 'stroke', closeBtn: false, alertTitle: 'Error Alert' }))}</td>
+            <td style="color:var(--bt-text-emphasis)">No close affordance. Use for persistent or mandatory alerts.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">On</span></td>
+            <td>${pw(alertEl({ type: 'error', theme: 'stroke', closeBtn: true, alertTitle: 'Error Alert' }))}</td>
+            <td style="color:var(--bt-text-emphasis)">Dismissible. Use when the user may want to hide the alert.</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Icon container / Close button</td><td>Width × Height</td><td>—</td><td>40 × 40px</td></tr>
+          <tr><td>Icon / Close icon</td><td>Width × Height</td><td>—</td><td>20 × 20px</td></tr>
+          <tr><td>Content area</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Title ↔ Description</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Title</td><td>Font Size / Weight / Line Height</td><td>${tk('--bt-text-md-size')} / ${tk('--bt-text-md-lh')}</td><td>16px / 500 / 24px</td></tr>
+          <tr><td>Description</td><td>Font Size / Weight / Line Height</td><td>${tk('--bt-text-sm-size')} / ${tk('--bt-text-sm-lh')}</td><td>14px / 400 / 16px</td></tr>
+          <tr><td>Close icon</td><td>Lucide</td><td>${tk('x')}</td><td>20 × 20px</td></tr>
+        </tbody>
+      </table>
+    `;
+
+    return { title, html: overviewHtml };
+  }
 };

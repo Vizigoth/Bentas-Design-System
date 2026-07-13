@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bentas Design System — Isolation Mode</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    html, body { height: 100%; margin: 0; background: var(--bt-surface-subtle); }
+    .iso-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 40px;
+      box-sizing: border-box;
+    }
+    .iso-badge {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(26,26,26,.85);
+      color: #fff;
+      font-family: var(--font);
+      font-size: 12px;
+      letter-spacing: .02em;
+      z-index: 10;
+    }
+    .iso-empty {
+      font-family: var(--font);
+      color: var(--bt-text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="iso-badge">Isolation Mode</div>
+  <div class="iso-shell" id="iso-root"></div>
+
+  <script src="js/pages-mobile.js"></script>
+  <script src="js/pages-web.js"></script>
+  <script>
+    const params    = new URLSearchParams(location.search);
+    const component = params.get('component');
+    const variant   = params.get('variant') || 'default';
+    const props     = {};
+    for (const [k, v] of params.entries()) { if (k !== 'component' && k !== 'variant') props[k] = v; }
+    const root      = document.getElementById('iso-root');
+    const entry     = window.PGD_ISOLATE && window.PGD_ISOLATE[component];
+
+    if (entry) {
+      entry.mount(root, variant, props);
+      document.title = `${component} (${variant}) — Isolation Mode · Bentas Design System`;
+    } else {
+      root.innerHTML = '<p class="iso-empty">Unknown component — open this page via a component\'s "Open in isolation mode" button.</p>';
+    }
+  </script>
+</body>
+</html>

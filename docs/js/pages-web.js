@@ -71,82 +71,78 @@ const NAV_WEB = [
 
 const PAGES_WEB = Object.assign({}, PAGES);
 
-// ── Sidebar — interactive example-viewer toggle ───────────────
+// ── Sidebar — shared markup + Playground registration ─────────
+// Hoisted to module scope (rather than nested inside render()) so both the
+// component page and the standalone isolation.html page can call it.
 window._sbxToggle = function() {
   const el = document.getElementById('sbxDrawer');
   if (el) el.classList.toggle('is-collapsed');
 };
 
-PAGES_WEB['components/sidebar'] = {
-  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc: ['Structure', 'Anatomy'],
-  render: (tab) => {
-    const title = 'Sidebar';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+const sbxIconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`;
+const sbxIconPlaceholder = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg>`;
 
-    // Icons — reuses the same corner-bracket "Icon/Placeholder" convention as
-    // other component pages (e.g. Card) since the Figma source uses placeholder
-    // icon slots for all rail/drawer items. Search box uses a real search icon
-    // (Figma node "Icon/search", distinct from the placeholder slots).
-    const iconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`;
-    const iconPlaceholder = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg>`;
-
-    const railButton = () => `<div class="sbx-btn">${iconPlaceholder}</div>`;
-    const drawerItem = (label) => `
+const sbxRailButton = () => `<div class="sbx-btn">${sbxIconPlaceholder}</div>`;
+const sbxDrawerItem = (label) => `
           <div class="sbx-item">
             <div class="sbx-item-inner">
-              <div class="sbx-item-icon">${iconPlaceholder}</div>
+              <div class="sbx-item-icon">${sbxIconPlaceholder}</div>
               <div class="sbx-item-label">${label}</div>
             </div>
           </div>`;
 
-    // Single source of truth for the live preview markup.
-    const sidebarMarkup = () => `
+// Single source of truth for the live preview markup. `variant` controls the
+// drawer's initial state ('expanded' | 'collapsed'); the rail's own collapse
+// button still toggles it further from there.
+function sidebarMarkup(variant) {
+  const collapsedCls = variant === 'collapsed' ? ' is-collapsed' : '';
+  return `
         <div class="sbx-shell">
           <div class="sbx-rail">
             <div class="sbx-logo"></div>
             <div class="sbx-center">
-              ${railButton()}
+              ${sbxRailButton()}
               <div class="sbx-collapse" onclick="window._sbxToggle()" title="Toggle drawer"></div>
-              ${railButton()}
-              ${railButton()}
-              ${railButton()}
+              ${sbxRailButton()}
+              ${sbxRailButton()}
+              ${sbxRailButton()}
             </div>
             <div class="sbx-bottom">
-              ${railButton()}
-              ${railButton()}
+              ${sbxRailButton()}
+              ${sbxRailButton()}
             </div>
           </div>
-          <div class="sbx-drawer" id="sbxDrawer">
+          <div class="sbx-drawer${collapsedCls}" id="sbxDrawer">
             <div class="sbx-drawer-top">
               <div class="sbx-searchbox">
-                <div class="sbx-searchbox-icon">${iconSearch}</div>
+                <div class="sbx-searchbox-icon">${sbxIconSearch}</div>
                 <div class="sbx-searchbox-text">Placeholder Text</div>
                 <div class="sbx-searchbox-kbd">Tab</div>
               </div>
             </div>
             <div class="sbx-drawer-center">
-              ${drawerItem('Drawer Item Label')}
-              ${drawerItem('Drawer Item Label')}
-              ${drawerItem('Drawer Item Label')}
-              ${drawerItem('Drawer Item Label')}
-              ${drawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label')}
             </div>
             <div class="sbx-drawer-bottom">
-              ${drawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label')}
             </div>
           </div>
         </div>`;
+}
 
-    // Clean, copy-pastable reference markup shown in the code panel.
-    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const drawerItemCode = `      <div class="sbx-item">
+// Clean, copy-pastable reference markup shown in the code panel.
+const sbxDrawerItemCode = `      <div class="sbx-item">
         <div class="sbx-item-inner">
           <div class="sbx-item-icon"><!-- icon --></div>
           <div class="sbx-item-label">Drawer Item Label</div>
         </div>
       </div>`;
-    const codeSnippet = `<nav class="sbx-shell">
+function sidebarCodeSnippet(variant) {
+  return `<nav class="sbx-shell">
   <div class="sbx-rail">
     <div class="sbx-logo"></div>
     <div class="sbx-center">
@@ -161,7 +157,7 @@ PAGES_WEB['components/sidebar'] = {
       <div class="sbx-btn"><!-- icon --></div>
     </div>
   </div>
-  <div class="sbx-drawer">
+  <div class="sbx-drawer${variant === 'collapsed' ? ' is-collapsed' : ''}">
     <div class="sbx-drawer-top">
       <div class="sbx-searchbox">
         <div class="sbx-searchbox-icon"><!-- search icon --></div>
@@ -170,48 +166,46 @@ PAGES_WEB['components/sidebar'] = {
       </div>
     </div>
     <div class="sbx-drawer-center">
-${drawerItemCode}
-${drawerItemCode}
+${sbxDrawerItemCode}
+${sbxDrawerItemCode}
       <!-- …repeat per nav item -->
     </div>
     <div class="sbx-drawer-bottom">
-${drawerItemCode}
+${sbxDrawerItemCode}
     </div>
   </div>
 </nav>`;
+}
 
-    // Shared Playground block — same markup as the Examples tab, used at the
-    // top of Overview too. Kept as a separate const so the Examples tab's own
-    // HTML below stays untouched.
-    const playgroundBlock = `
-      <div class="example-viewer" style="margin-bottom:32px;">
-        <div class="example-viewer-toolbar">
-          <button class="example-viewer-toggle" onclick="window._sbxToggle()">Toggle Drawer</button>
-        </div>
-        <div class="example-viewer-preview">${sidebarMarkup()}</div>
-        <div class="example-viewer-code">
-          <pre id="sbxCode">${esc(codeSnippet)}</pre>
-          <button class="copy-btn" onclick="copyText(document.getElementById('sbxCode').textContent, this)" title="Copy code">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
-        </div>
-      </div>`;
+// Isolation mode target — docs/isolation.html looks this up by ?component=.
+window.PGD_ISOLATE = window.PGD_ISOLATE || {};
+window.PGD_ISOLATE['sidebar'] = {
+  mount(root, variant) { root.innerHTML = sidebarMarkup(variant); }
+};
+
+const SBX_VARIANTS = [
+  { key: 'expanded',  label: 'Expanded' },
+  { key: 'collapsed', label: 'Collapsed' },
+];
+
+PAGES_WEB['components/sidebar'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc: ['Structure', 'Anatomy'],
+  render: (tab) => {
+    const title = 'Sidebar';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Live preview of the Sidebar — a fixed navigation rail paired with an expandable drawer. Toggle the drawer and copy the generated markup below.</p>
+      <p class="page-desc">Live preview of the Sidebar — a fixed navigation rail paired with an expandable drawer. Pick a variant, toggle the drawer, measure it, preview it at other viewport widths, or open it in isolation mode.</p>
       <h2>Playground</h2>
-      <div class="example-viewer">
-        <div class="example-viewer-toolbar">
-          <button class="example-viewer-toggle" onclick="window._sbxToggle()">Toggle Drawer</button>
-        </div>
-        <div class="example-viewer-preview">${sidebarMarkup()}</div>
-        <div class="example-viewer-code">
-          <pre id="sbxCode">${esc(codeSnippet)}</pre>
-          <button class="copy-btn" onclick="copyText(document.getElementById('sbxCode').textContent, this)" title="Copy code">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
-        </div>
-      </div>
+      ${registerPlayground({
+        id: 'pgd-sidebar-examples',
+        variants: SBX_VARIANTS,
+        preview: sidebarMarkup,
+        code: sidebarCodeSnippet,
+        isolate: 'sidebar',
+        noMargin: true,
+      })}
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
@@ -257,7 +251,13 @@ ${drawerItemCode}
 
     // ── Overview ──────────────────────────────────────────────
     return { title, html: `
-      ${playgroundBlock}
+      ${registerPlayground({
+        id: 'pgd-sidebar-overview',
+        variants: SBX_VARIANTS,
+        preview: sidebarMarkup,
+        code: sidebarCodeSnippet,
+        isolate: 'sidebar',
+      })}
 
       <p class="page-desc">A two-part navigation shell: a fixed icon rail and an expandable drawer with a search box and a scrollable item list.</p>
 
