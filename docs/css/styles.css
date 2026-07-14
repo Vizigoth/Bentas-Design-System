@@ -1975,3 +1975,115 @@ code {
   border-bottom: 1px dashed var(--bt-purple-800);
   flex-shrink: 0;
 }
+
+/* ── Button (bt-btn) ─────────────────────────────────────────── */
+.bt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-sm);        /* spacing-sm = 6px */
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: Geist, var(--font);
+  font-weight: 400;
+  font-size: 12px;                /* Label/xs/Regular — all sizes */
+  line-height: 16px;              /* text-lh-xs */
+  border-radius: var(--bt-radius-sm); /* radius-sm = 4px */
+  transition: background 120ms, border-color 120ms, color 120ms, box-shadow 120ms;
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.bt-btn:disabled { cursor: not-allowed; }
+
+/* — Sizes (Icon & Text): --btn-py / --btn-px consumed by .bt-btn--icon — */
+.bt-btn--2xs { --btn-py: var(--bt-space-2xs); --btn-px: var(--bt-space-xs);  padding: var(--btn-py) var(--btn-px); }
+.bt-btn--xs  { --btn-py: var(--bt-space-xs);  --btn-px: var(--bt-space-md);  padding: var(--btn-py) var(--btn-px); }
+.bt-btn--sm  { --btn-py: var(--bt-space-sm);  --btn-px: var(--bt-space-md);  padding: var(--btn-py) var(--btn-px); }
+.bt-btn--md  { --btn-py: var(--bt-space-md);  --btn-px: var(--bt-space-md);  padding: var(--btn-py) var(--btn-px); }
+.bt-btn--lg  { --btn-py: var(--bt-space-lg);  --btn-px: var(--bt-space-md);  padding: var(--btn-py) var(--btn-px); }
+.bt-btn--xl  { --btn-py: var(--bt-space-xl);  --btn-px: var(--bt-space-xl);  padding: var(--btn-py) var(--btn-px); }
+.bt-btn--2xl { --btn-py: var(--bt-space-2xl); --btn-px: var(--bt-space-xl);  padding: var(--btn-py) var(--btn-px); }
+
+/* — Icon Only: square padding = py of matching size — */
+.bt-btn--icon { gap: 0; padding: var(--btn-py); }
+
+/* ── Primary / Solid ─────────────────────────────────────────── */
+.bt-btn--primary-solid {
+  background: var(--bt-primary-default);
+  color: var(--bt-text-primary-inverted);
+  border-color: var(--bt-primary-default);
+}
+.bt-btn--primary-solid:hover:not(:disabled),
+.bt-btn--primary-solid.bt-btn--state-hover {
+  background: var(--bt-primary-intense);
+  border-color: var(--bt-primary-intense);
+}
+.bt-btn--primary-solid:focus-visible:not(:disabled),
+.bt-btn--primary-solid.bt-btn--state-focus {
+  box-shadow: 0 0 0 3px rgba(13,78,151,.50);
+}
+.bt-btn--primary-solid:disabled {
+  background: var(--bt-base-muted);
+  color: var(--bt-text-primary-muted);
+  border-color: var(--bt-base-muted);
+}
+
+/* ── Primary / Outline ───────────────────────────────────────── */
+.bt-btn--primary-outline {
+  background: transparent;
+  color: var(--bt-primary-default);
+  border-color: var(--bt-primary-default);
+}
+.bt-btn--primary-outline:hover:not(:disabled),
+.bt-btn--primary-outline.bt-btn--state-hover {
+  background: var(--bt-primary-subtle);
+}
+.bt-btn--primary-outline:focus-visible:not(:disabled),
+.bt-btn--primary-outline.bt-btn--state-focus {
+  background: var(--bt-primary-subtle);
+  box-shadow: 0 0 0 3px rgba(13,78,151,.50);
+}
+.bt-btn--primary-outline:disabled {
+  color: var(--bt-text-primary-muted);
+  border-color: var(--bt-base-muted);
+}
+
+/* ── Primary / Flat: no border, hover shows subtle bg ────────── */
+.bt-btn--primary-flat {
+  background: transparent;
+  color: var(--bt-primary-default);
+  border-color: transparent;
+}
+.bt-btn--primary-flat:hover:not(:disabled),
+.bt-btn--primary-flat.bt-btn--state-hover {
+  background: var(--bt-primary-subtle);
+}
+.bt-btn--primary-flat:focus-visible:not(:disabled),
+.bt-btn--primary-flat.bt-btn--state-focus {
+  background: var(--bt-primary-subtle);
+  box-shadow: 0 0 0 3px rgba(13,78,151,.50);
+}
+.bt-btn--primary-flat:disabled {
+  color: var(--bt-text-primary-muted);
+}
+
+/* ── Primary / Ghost: no border, no hover bg (Figma: no token) ─ */
+.bt-btn--primary-ghost {
+  background: transparent;
+  color: var(--bt-primary-default);
+  border-color: transparent;
+}
+.bt-btn--primary-ghost:hover:not(:disabled),
+.bt-btn--primary-ghost.bt-btn--state-hover {
+  color: var(--bt-primary-intense);
+}
+.bt-btn--primary-ghost:focus-visible:not(:disabled),
+.bt-btn--primary-ghost.bt-btn--state-focus {
+  box-shadow: 0 0 0 3px rgba(13,78,151,.50);
+}
+.bt-btn--primary-ghost:disabled {
+  color: var(--bt-text-primary-muted);
+}

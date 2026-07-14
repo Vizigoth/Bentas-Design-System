@@ -299,3 +299,242 @@ PAGES_WEB['components/sidebar'] = {
     `};
   }
 };
+
+// ── Button ──────────────────────────────────────────────────────
+const _btnIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg>`;
+
+const BTN_FILL_VARIANTS = [
+  { key: 'solid',   label: 'Solid' },
+  { key: 'outline', label: 'Outline' },
+  { key: 'flat',    label: 'Flat' },
+  { key: 'ghost',   label: 'Ghost' },
+];
+const BTN_SIZE_VARIANTS = [
+  { key: '2xs', label: '2xs' },
+  { key: 'xs',  label: 'xs' },
+  { key: 'sm',  label: 'sm' },
+  { key: 'md',  label: 'md' },
+  { key: 'lg',  label: 'lg' },
+  { key: 'xl',  label: 'xl' },
+  { key: '2xl', label: '2xl' },
+];
+const BTN_CONTENT_OPTS = [
+  { key: 'icon-text', label: 'Icon & Text' },
+  { key: 'icon',      label: 'Icon Only' },
+];
+const BTN_STATE_OPTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'focus',    label: 'Focus' },
+  { key: 'disabled', label: 'Disabled' },
+];
+
+function _btnCls(fill, size, content, state) {
+  const parts = [`bt-btn`, `bt-btn--primary-${fill}`, `bt-btn--${size}`];
+  if (content === 'icon') parts.push('bt-btn--icon');
+  if (state === 'hover') parts.push('bt-btn--state-hover');
+  if (state === 'focus') parts.push('bt-btn--state-focus');
+  return parts.join(' ');
+}
+
+function btnPreview(fill, size, content, state) {
+  const disabled = state === 'disabled';
+  const cls = _btnCls(fill, size, content, disabled ? 'default' : state);
+  const icon = _btnIcon;
+  const text = content === 'icon' ? '' : '<span>Button</span>';
+  const inner = icon + text;
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+      <button class="${cls}"${disabled ? ' disabled' : ''}>${inner}</button>
+    </div>`;
+}
+
+function btnCode(fill, size, content, state) {
+  const disabled = state === 'disabled';
+  const cls = _btnCls(fill, size, content, disabled ? 'default' : state);
+  const icon = '<!-- icon 16x16 -->';
+  const text = content === 'icon' ? '' : 'Button';
+  const inner = [icon, text].filter(Boolean).join('\n  ');
+  return `<button class="${cls}"${disabled ? ' disabled' : ''}>\n  ${inner}\n</button>`;
+}
+
+function _stateRow(fill) {
+  const states = [
+    { label: 'Default',  cls: '',                    disabled: false },
+    { label: 'Hover',    cls: ' bt-btn--state-hover', disabled: false },
+    { label: 'Focus',    cls: ' bt-btn--state-focus', disabled: false },
+    { label: 'Disabled', cls: '',                    disabled: true  },
+  ];
+  return states.map(s => `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <button class="bt-btn bt-btn--primary-${fill} bt-btn--sm${s.cls}"${s.disabled ? ' disabled' : ''}>${_btnIcon}<span>${s.label}</span></button>
+      <span style="font-size:11px;color:var(--bt-text-primary-muted)">${s.label}</span>
+    </div>`).join('');
+}
+
+PAGES_WEB['components/button'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc: ['Anatomy', 'Sizes', 'States'],
+  render: (tab) => {
+    const title = 'Button';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    // ── Examples ─────────────────────────────────────────────────
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Primary button — Solid, Outline, Flat ve Ghost fill modlari, 7 boyut, 2 icerik tipi ve 4 state ile.</p>
+
+      <h2>Solid</h2>
+      ${registerPlayground({
+        id: 'pgd-btn-solid-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
+          { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
+        ],
+        preview: (sz, p) => btnPreview('solid', sz, p.content, p.state),
+        code:    (sz, p) => btnCode('solid', sz, p.content, p.state),
+      })}
+
+      <h2>Outline</h2>
+      ${registerPlayground({
+        id: 'pgd-btn-outline-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
+          { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
+        ],
+        preview: (sz, p) => btnPreview('outline', sz, p.content, p.state),
+        code:    (sz, p) => btnCode('outline', sz, p.content, p.state),
+      })}
+
+      <h2>Flat</h2>
+      ${registerPlayground({
+        id: 'pgd-btn-flat-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
+          { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
+        ],
+        preview: (sz, p) => btnPreview('flat', sz, p.content, p.state),
+        code:    (sz, p) => btnCode('flat', sz, p.content, p.state),
+      })}
+
+      <h2>Ghost</h2>
+      ${registerPlayground({
+        id: 'pgd-btn-ghost-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
+          { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
+        ],
+        preview: (sz, p) => btnPreview('ghost', sz, p.content, p.state),
+        code:    (sz, p) => btnCode('ghost', sz, p.content, p.state),
+      })}
+    `};
+
+    // ── CSS Properties ───────────────────────────────────────────
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Primary Button icin kullanilan design token - CSS degisken eslesmeler.</p>
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">--bt-primary-default</span></td><td>#0d4e97</td><td>Solid bg · Outline &amp; Ghost text/border · Default state</td></tr>
+          <tr><td><span class="token-name">--bt-primary-intense</span></td><td>#0f447d</td><td>Hover &amp; active bg (Solid)</td></tr>
+          <tr><td><span class="token-name">--bt-primary-subtle</span></td><td>#e2edfc</td><td>Hover bg (Outline &amp; Ghost)</td></tr>
+          <tr><td><span class="token-name">--bt-text-primary-inverted</span></td><td>#ffffff</td><td>Text &amp; icon rengi — Solid uzerinde</td></tr>
+          <tr><td><span class="token-name">--bt-base-muted</span></td><td>#e6e6e6</td><td>Disabled bg (Solid) · Disabled border (Outline)</td></tr>
+          <tr><td><span class="token-name">--bt-text-primary-muted</span></td><td>#a3a3a3</td><td>Disabled text &amp; icon rengi</td></tr>
+          <tr><td><span class="token-name">--bt-radius-sm</span></td><td>4px</td><td>Border radius (tum boyutlar)</td></tr>
+          <tr><td><span class="token-name">--bt-space-2xs</span></td><td>2px</td><td>py — 2xs</td></tr>
+          <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>px — 2xs · py — xs · Icon Only 2xs/xs padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-sm</span></td><td>6px</td><td>py — sm · Icon–label gap (tum boyutlar) · Icon Only sm padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-md</span></td><td>8px</td><td>px — xs/sm/md/lg · py — md · Icon Only md padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-lg</span></td><td>10px</td><td>py — lg · Icon Only lg padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-xl</span></td><td>12px</td><td>py/px — xl · px — 2xl · Icon Only xl padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-2xl</span></td><td>16px</td><td>py — 2xl · Icon Only 2xl padding</td></tr>
+          <tr><td><span class="token-name">Focus Ring/primary</span></td><td>#0D4E9780 · spread 3px</td><td>Focus ring (box-shadow)</td></tr>
+          <tr><td><span class="token-name">Label/xs/Regular</span></td><td>Geist 12px/400/16px</td><td>Tum boyutlarda label stili</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    // ── Usage ────────────────────────────────────────────────────
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Primary Button kullanim kilavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Solid butonu sayfanin tek ana aksiyonu (CTA) icin kullan</li>
+        <li>Hiyerarsiyi koru: Solid → Outline → Ghost, azalan onem sirasıyla</li>
+        <li>Disabled durumda butonu gizlemek yerine devre disi birak</li>
+        <li>Icon + Text kombinasyonunda ikon sol tarafta, metin sagda olsun</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Ayni satirda birden fazla Solid buton koyma</li>
+        <li>Ghost butonu izole ortamda kullanma — arka yuzey rengi olmadan kaybolur</li>
+        <li>Token disinda hardcoded renk kullanma; her zaman <code style="font-family:var(--mono)">--bt-primary-*</code> tokenlarini kullan</li>
+      </ul>
+    `};
+
+    // ── Overview ─────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-btn-overview',
+        variants: BTN_FILL_VARIANTS,
+        props: [
+          { key: 'size',    label: 'Size',    options: BTN_SIZE_VARIANTS, default: 'sm'        },
+          { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS,  default: 'icon-text' },
+          { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,    default: 'default'   },
+        ],
+        preview: (fill, p) => btnPreview(fill, p.size, p.content, p.state),
+        code:    (fill, p) => btnCode(fill, p.size, p.content, p.state),
+      })}
+
+      <p class="page-desc">Aksiyon tetikleyen tiklanabilir UI elemani. Fill mode (Solid / Outline / Flat / Ghost), 7 boyut (2xs–2xl) ve 2 icerik tipiyle yapilandirilabilir. Bu sayfa <strong>Primary</strong> themeColor kapsar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="4">Container</td><td>Background (Solid, Default)</td><td>${tk('Color/Primary/--bt-primary-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Background (Solid, Hover)</td><td>${tk('Color/Primary/--bt-primary-intense')}</td><td>#0f447d</td></tr>
+          <tr><td>Border radius</td><td>${tk('Radius/radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Focus ring</td><td>${tk('Focus Ring/primary')}</td><td>box-shadow 0 0 0 3px #0D4E9780</td></tr>
+          <tr><td rowspan="3">Label (2xs)</td><td>Font family</td><td>${tk('Font/Family/Label')}</td><td>Geist</td></tr>
+          <tr><td>Size / weight</td><td>${tk('Font/Size/text-xs · Font/Weight/Regular')}</td><td>12px / 400</td></tr>
+          <tr><td>Line height</td><td>${tk('Font/Line-Height/text-lh-xs')}</td><td>16px</td></tr>
+          <tr><td rowspan="9">Spacing</td><td>2xs — py / px</td><td>${tk('Space/spacing-2xs · Space/spacing-xs')}</td><td>2px / 4px</td></tr>
+          <tr><td>xs — py / px</td><td>${tk('Space/spacing-xs · Space/spacing-md')}</td><td>4px / 8px</td></tr>
+          <tr><td>sm — py / px</td><td>${tk('Space/spacing-sm · Space/spacing-md')}</td><td>6px / 8px</td></tr>
+          <tr><td>md — py / px</td><td>${tk('Space/spacing-md · Space/spacing-md')}</td><td>8px / 8px</td></tr>
+          <tr><td>lg — py / px</td><td>${tk('Space/spacing-lg · Space/spacing-md')}</td><td>10px / 8px</td></tr>
+          <tr><td>xl — py / px</td><td>${tk('Space/spacing-xl · Space/spacing-xl')}</td><td>12px / 12px</td></tr>
+          <tr><td>2xl — py / px</td><td>${tk('Space/spacing-2xl · Space/spacing-xl')}</td><td>16px / 12px</td></tr>
+          <tr><td>Icon Only — padding</td><td>py degeri (kare)</td><td>size ile ayni py</td></tr>
+          <tr><td>Icon–label gap</td><td>${tk('Space/spacing-sm')}</td><td>6px</td></tr>
+          <tr><td>Icon</td><td>Size (tum boyutlar)</td><td>—</td><td>16 × 16px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <div style="display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;padding:24px;background:var(--bt-surface-subtle);border-radius:8px;margin-bottom:40px;">
+        <button class="bt-btn bt-btn--primary-solid bt-btn--2xs">${_btnIcon}<span>2xs</span></button>
+        <button class="bt-btn bt-btn--primary-solid bt-btn--xs">${_btnIcon}<span>xs</span></button>
+        <button class="bt-btn bt-btn--primary-solid bt-btn--sm">${_btnIcon}<span>sm</span></button>
+        <button class="bt-btn bt-btn--primary-solid bt-btn--md">${_btnIcon}<span>md</span></button>
+        <button class="bt-btn bt-btn--primary-solid bt-btn--lg">${_btnIcon}<span>lg</span></button>
+        <button class="bt-btn bt-btn--primary-solid bt-btn--xl">${_btnIcon}<span>xl</span></button>
+        <button class="bt-btn bt-btn--primary-solid bt-btn--2xl">${_btnIcon}<span>2xl</span></button>
+      </div>
+
+      <h2 id="States">States</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;margin-bottom:16px;">
+        ${['solid','outline','flat','ghost'].map(f => `
+        <div>
+          <p style="font-size:11px;font-weight:600;color:var(--bt-text-primary-muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;">${f.charAt(0).toUpperCase()+f.slice(1)}</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;padding:20px;background:var(--bt-surface-subtle);border-radius:8px;">${_stateRow(f)}</div>
+        </div>`).join('')}
+      </div>
+    `};
+  }
+};
