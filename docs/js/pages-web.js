@@ -326,6 +326,8 @@ const BTN_STATE_OPTS = [
   { key: 'default',  label: 'Default' },
   { key: 'hover',    label: 'Hover' },
   { key: 'focus',    label: 'Focus' },
+  { key: 'active',   label: 'Active' },
+  { key: 'selected', label: 'Selected' },
   { key: 'disabled', label: 'Disabled' },
 ];
 const BTN_THEME_OPTS = [
@@ -341,8 +343,10 @@ const BTN_THEME_OPTS = [
 function _btnCls(fill, size, content, state, theme = 'primary') {
   const parts = [`bt-btn`, `bt-btn--${theme}-${fill}`, `bt-btn--${size}`];
   if (content === 'icon') parts.push('bt-btn--icon');
-  if (state === 'hover') parts.push('bt-btn--state-hover');
-  if (state === 'focus') parts.push('bt-btn--state-focus');
+  if (state === 'hover')    parts.push('bt-btn--state-hover');
+  if (state === 'focus')    parts.push('bt-btn--state-focus');
+  if (state === 'active')   parts.push('bt-btn--state-active');
+  if (state === 'selected') parts.push('bt-btn--state-selected');
   return parts.join(' ');
 }
 
@@ -369,10 +373,12 @@ function btnCode(fill, size, content, state, theme = 'primary') {
 
 function _stateRow(fill, theme = 'primary') {
   const states = [
-    { label: 'Default',  cls: '',                    disabled: false },
-    { label: 'Hover',    cls: ' bt-btn--state-hover', disabled: false },
-    { label: 'Focus',    cls: ' bt-btn--state-focus', disabled: false },
-    { label: 'Disabled', cls: '',                    disabled: true  },
+    { label: 'Default',  cls: '',                      disabled: false },
+    { label: 'Hover',    cls: ' bt-btn--state-hover',  disabled: false },
+    { label: 'Focus',    cls: ' bt-btn--state-focus',  disabled: false },
+    { label: 'Active',   cls: ' bt-btn--state-active', disabled: false },
+    { label: 'Selected', cls: ' bt-btn--state-selected', disabled: false },
+    { label: 'Disabled', cls: '',                      disabled: true  },
   ];
   return states.map(s => `
     <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
