@@ -2103,16 +2103,16 @@ code {
 
 .bt-btn--base-outline { background: transparent; color: var(--bt-text-primary-default); box-shadow: inset 0 0 0 1px var(--bt-border-primary-default); }
 .bt-btn--base-outline:hover:not(:disabled), .bt-btn--base-outline.bt-btn--state-hover { background: var(--bt-base-emphasis); }
-.bt-btn--base-outline:focus-visible:not(:disabled), .bt-btn--base-outline.bt-btn--state-focus { background: var(--bt-base-emphasis); box-shadow: inset 0 0 0 1px var(--bt-border-primary-default), 0 0 0 3px rgba(212,212,212,.50); }
-.bt-btn--base-outline:disabled { color: var(--bt-text-primary-muted); box-shadow: inset 0 0 0 1px var(--bt-base-muted); }
+.bt-btn--base-outline:focus-visible:not(:disabled), .bt-btn--base-outline.bt-btn--state-focus { box-shadow: inset 0 0 0 1px var(--bt-border-primary-default), 0 0 0 3px rgba(212,212,212,.50); }
+.bt-btn--base-outline:disabled { color: var(--bt-text-primary-muted); box-shadow: inset 0 0 0 1px var(--bt-border-primary-default); }
 
 .bt-btn--base-flat { background: transparent; color: var(--bt-text-primary-default); }
 .bt-btn--base-flat:hover:not(:disabled), .bt-btn--base-flat.bt-btn--state-hover { background: var(--bt-base-emphasis); }
-.bt-btn--base-flat:focus-visible:not(:disabled), .bt-btn--base-flat.bt-btn--state-focus { background: var(--bt-base-emphasis); box-shadow: 0 0 0 3px rgba(212,212,212,.50); }
+.bt-btn--base-flat:focus-visible:not(:disabled), .bt-btn--base-flat.bt-btn--state-focus { box-shadow: 0 0 0 3px rgba(212,212,212,.50); }
 .bt-btn--base-flat:disabled { color: var(--bt-text-primary-muted); }
 
 .bt-btn--base-ghost { background: transparent; color: var(--bt-text-primary-default); }
-.bt-btn--base-ghost:hover:not(:disabled), .bt-btn--base-ghost.bt-btn--state-hover { color: var(--bt-secondary-default); }
+.bt-btn--base-ghost:hover:not(:disabled), .bt-btn--base-ghost.bt-btn--state-hover { text-decoration: underline; }
 .bt-btn--base-ghost:focus-visible:not(:disabled), .bt-btn--base-ghost.bt-btn--state-focus { box-shadow: 0 0 0 3px rgba(212,212,212,.50); }
 .bt-btn--base-ghost:disabled { color: var(--bt-text-primary-muted); }
 
