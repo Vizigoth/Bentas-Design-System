@@ -328,18 +328,27 @@ const BTN_STATE_OPTS = [
   { key: 'focus',    label: 'Focus' },
   { key: 'disabled', label: 'Disabled' },
 ];
+const BTN_THEME_OPTS = [
+  { key: 'base',        label: 'Base' },
+  { key: 'primary',     label: 'Primary' },
+  { key: 'secondary',   label: 'Secondary' },
+  { key: 'success',     label: 'Success' },
+  { key: 'warning',     label: 'Warning' },
+  { key: 'error',       label: 'Error' },
+  { key: 'information', label: 'Information' },
+];
 
-function _btnCls(fill, size, content, state) {
-  const parts = [`bt-btn`, `bt-btn--primary-${fill}`, `bt-btn--${size}`];
+function _btnCls(fill, size, content, state, theme = 'primary') {
+  const parts = [`bt-btn`, `bt-btn--${theme}-${fill}`, `bt-btn--${size}`];
   if (content === 'icon') parts.push('bt-btn--icon');
   if (state === 'hover') parts.push('bt-btn--state-hover');
   if (state === 'focus') parts.push('bt-btn--state-focus');
   return parts.join(' ');
 }
 
-function btnPreview(fill, size, content, state) {
+function btnPreview(fill, size, content, state, theme = 'primary') {
   const disabled = state === 'disabled';
-  const cls = _btnCls(fill, size, content, disabled ? 'default' : state);
+  const cls = _btnCls(fill, size, content, disabled ? 'default' : state, theme);
   const icon = _btnIcon;
   const text = content === 'icon' ? '' : '<span>Button</span>';
   const inner = icon + text;
@@ -349,16 +358,16 @@ function btnPreview(fill, size, content, state) {
     </div>`;
 }
 
-function btnCode(fill, size, content, state) {
+function btnCode(fill, size, content, state, theme = 'primary') {
   const disabled = state === 'disabled';
-  const cls = _btnCls(fill, size, content, disabled ? 'default' : state);
+  const cls = _btnCls(fill, size, content, disabled ? 'default' : state, theme);
   const icon = '<!-- icon 16x16 -->';
   const text = content === 'icon' ? '' : 'Button';
   const inner = [icon, text].filter(Boolean).join('\n  ');
   return `<button class="${cls}"${disabled ? ' disabled' : ''}>\n  ${inner}\n</button>`;
 }
 
-function _stateRow(fill) {
+function _stateRow(fill, theme = 'primary') {
   const states = [
     { label: 'Default',  cls: '',                    disabled: false },
     { label: 'Hover',    cls: ' bt-btn--state-hover', disabled: false },
@@ -367,7 +376,7 @@ function _stateRow(fill) {
   ];
   return states.map(s => `
     <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <button class="bt-btn bt-btn--primary-${fill} bt-btn--sm${s.cls}"${s.disabled ? ' disabled' : ''}>${_btnIcon}<span>${s.label}</span></button>
+      <button class="bt-btn bt-btn--${theme}-${fill} bt-btn--sm${s.cls}"${s.disabled ? ' disabled' : ''}>${_btnIcon}<span>${s.label}</span></button>
       <span style="font-size:11px;color:var(--bt-text-primary-muted)">${s.label}</span>
     </div>`).join('');
 }
@@ -381,18 +390,19 @@ PAGES_WEB['components/button'] = {
 
     // ── Examples ─────────────────────────────────────────────────
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Primary button — Solid, Outline, Flat ve Ghost fill modlari, 7 boyut, 2 icerik tipi ve 4 state ile.</p>
+      <p class="page-desc">Solid, Outline, Flat ve Ghost fill modlari; 7 tema rengi, 7 boyut, 2 icerik tipi ve 4 state ile.</p>
 
       <h2>Solid</h2>
       ${registerPlayground({
         id: 'pgd-btn-solid-ex',
         variants: BTN_SIZE_VARIANTS,
         props: [
+          { key: 'theme',   label: 'Theme',   options: BTN_THEME_OPTS,    default: 'primary'   },
           { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
           { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
         ],
-        preview: (sz, p) => btnPreview('solid', sz, p.content, p.state),
-        code:    (sz, p) => btnCode('solid', sz, p.content, p.state),
+        preview: (sz, p) => btnPreview('solid', sz, p.content, p.state, p.theme),
+        code:    (sz, p) => btnCode('solid', sz, p.content, p.state, p.theme),
       })}
 
       <h2>Outline</h2>
@@ -400,11 +410,12 @@ PAGES_WEB['components/button'] = {
         id: 'pgd-btn-outline-ex',
         variants: BTN_SIZE_VARIANTS,
         props: [
+          { key: 'theme',   label: 'Theme',   options: BTN_THEME_OPTS,    default: 'primary'   },
           { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
           { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
         ],
-        preview: (sz, p) => btnPreview('outline', sz, p.content, p.state),
-        code:    (sz, p) => btnCode('outline', sz, p.content, p.state),
+        preview: (sz, p) => btnPreview('outline', sz, p.content, p.state, p.theme),
+        code:    (sz, p) => btnCode('outline', sz, p.content, p.state, p.theme),
       })}
 
       <h2>Flat</h2>
@@ -412,11 +423,12 @@ PAGES_WEB['components/button'] = {
         id: 'pgd-btn-flat-ex',
         variants: BTN_SIZE_VARIANTS,
         props: [
+          { key: 'theme',   label: 'Theme',   options: BTN_THEME_OPTS,    default: 'primary'   },
           { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
           { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
         ],
-        preview: (sz, p) => btnPreview('flat', sz, p.content, p.state),
-        code:    (sz, p) => btnCode('flat', sz, p.content, p.state),
+        preview: (sz, p) => btnPreview('flat', sz, p.content, p.state, p.theme),
+        code:    (sz, p) => btnCode('flat', sz, p.content, p.state, p.theme),
       })}
 
       <h2>Ghost</h2>
@@ -424,11 +436,12 @@ PAGES_WEB['components/button'] = {
         id: 'pgd-btn-ghost-ex',
         variants: BTN_SIZE_VARIANTS,
         props: [
+          { key: 'theme',   label: 'Theme',   options: BTN_THEME_OPTS,    default: 'primary'   },
           { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS, default: 'icon-text' },
           { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,   default: 'default'   },
         ],
-        preview: (sz, p) => btnPreview('ghost', sz, p.content, p.state),
-        code:    (sz, p) => btnCode('ghost', sz, p.content, p.state),
+        preview: (sz, p) => btnPreview('ghost', sz, p.content, p.state, p.theme),
+        code:    (sz, p) => btnCode('ghost', sz, p.content, p.state, p.theme),
       })}
     `};
 
@@ -482,15 +495,16 @@ PAGES_WEB['components/button'] = {
         id: 'pgd-btn-overview',
         variants: BTN_FILL_VARIANTS,
         props: [
+          { key: 'theme',   label: 'Theme',   options: BTN_THEME_OPTS,    default: 'primary'   },
           { key: 'size',    label: 'Size',    options: BTN_SIZE_VARIANTS, default: 'sm'        },
           { key: 'content', label: 'Content', options: BTN_CONTENT_OPTS,  default: 'icon-text' },
           { key: 'state',   label: 'State',   options: BTN_STATE_OPTS,    default: 'default'   },
         ],
-        preview: (fill, p) => btnPreview(fill, p.size, p.content, p.state),
-        code:    (fill, p) => btnCode(fill, p.size, p.content, p.state),
+        preview: (fill, p) => btnPreview(fill, p.size, p.content, p.state, p.theme),
+        code:    (fill, p) => btnCode(fill, p.size, p.content, p.state, p.theme),
       })}
 
-      <p class="page-desc">Aksiyon tetikleyen tiklanabilir UI elemani. Fill mode (Solid / Outline / Flat / Ghost), 7 boyut (2xs–2xl) ve 2 icerik tipiyle yapilandirilabilir. Bu sayfa <strong>Primary</strong> themeColor kapsar.</p>
+      <p class="page-desc">Aksiyon tetikleyen tiklanabilir UI elemani. Fill mode (Solid / Outline / Flat / Ghost), 7 tema rengi (Base / Primary / Secondary / Success / Warning / Error / Information), 7 boyut (2xs–2xl) ve 2 icerik tipiyle yapilandirilabilir.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
       <table class="token-table" style="margin-bottom:40px;">
@@ -528,13 +542,15 @@ PAGES_WEB['components/button'] = {
       </div>
 
       <h2 id="States">States</h2>
-      <div style="display:flex;flex-wrap:wrap;gap:20px;margin-bottom:16px;">
+      ${['base','primary','secondary','success','warning','error','information'].map(theme => `
+      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.charAt(0).toUpperCase()+theme.slice(1)}</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
         ${['solid','outline','flat','ghost'].map(f => `
         <div>
-          <p style="font-size:11px;font-weight:600;color:var(--bt-text-primary-muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;">${f.charAt(0).toUpperCase()+f.slice(1)}</p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;padding:20px;background:var(--bt-surface-subtle);border-radius:8px;">${_stateRow(f)}</div>
+          <p style="font-size:11px;font-weight:600;color:var(--bt-text-primary-muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em;">${f.charAt(0).toUpperCase()+f.slice(1)}</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;padding:16px;background:var(--bt-surface-subtle);border-radius:8px;">${_stateRow(f, theme)}</div>
         </div>`).join('')}
-      </div>
+      </div>`).join('')}
     `};
   }
 };
