@@ -1175,6 +1175,26 @@ Satır gizleme: `tr.sc-hidden`, `tr.fp-hidden`, `tr.search-hidden`, `tr.cf-hidde
 
 ### 10.1 Task Add Panel (Yeni Talep / 653px)
 
+#### Anatomy
+
+```
+task-panel (aside, role=dialog, hidden)
+  ├── task-panel__header (40px)
+  │     ├── task-panel__header-left   ← [×] close btn + title
+  │     └── [Kaydet] btn              ← sağda, footer YOK
+  └── task-panel__body (flex:1, arka plan: surface-light)
+        └── task-panel__card          ← beyaz inner card, overflow-y:auto
+              ├── tp-field (İşin Adı)
+              ├── tp-field (Açıklama)
+              └── tp-field (...)
+```
+
+> **Header yapısı:** Close butonu + başlık **solda** (`header-left`), Kaydet butonu **header'ın sağında**. Ayrı bir footer bölümü yoktur.
+>
+> **Inner card:** Body, açık renkli (`surface-light`) bir dolgu alanıdır; formun kendisi beyaz (`surface-default`) bordered card içinde yaşar.
+
+#### CSS
+
 ```css
 /* Arka plan overlay */
 .panel-overlay {
@@ -1184,7 +1204,7 @@ Satır gizleme: `tr.sc-hidden`, `tr.fp-hidden`, `tr.search-hidden`, `tr.cf-hidde
 }
 .panel-overlay.is-open { opacity: 1; pointer-events: all; }
 
-/* Panel kabuğu */
+/* Panel kabuğu — başlangıçta hidden attribute + translateX(100%) */
 .task-panel {
   position: fixed; top: 0; right: 0;
   width: 653px; height: 100vh; z-index: 201;
@@ -1205,6 +1225,7 @@ Satır gizleme: `tr.sc-hidden`, `tr.fp-hidden`, `tr.search-hidden`, `tr.cf-hidde
   border-bottom: 1px solid var(--bt-border-primary-default);
   box-shadow: 0px 2px 3px rgba(0,0,0,0.08);
 }
+.task-panel__header-left { display: flex; align-items: center; gap: var(--space-md); }
 .task-panel__title {
   font-family: var(--font-title); font-size: var(--text-md);
   font-weight: 400; line-height: var(--lh-md); color: var(--color-gray-900);
@@ -1223,7 +1244,7 @@ Satır gizleme: `tr.sc-hidden`, `tr.fp-hidden`, `tr.search-hidden`, `tr.cf-hidde
   padding: var(--space-2xl); background: var(--bt-surface-primary-light);
 }
 
-/* Inner card */
+/* Inner card — formun yaşadığı beyaz alan */
 .task-panel__card {
   flex: 1; background: var(--bt-surface-primary-default);
   border: 1px solid var(--bt-border-primary-default);
@@ -1232,6 +1253,86 @@ Satır gizleme: `tr.sc-hidden`, `tr.fp-hidden`, `tr.search-hidden`, `tr.cf-hidde
   overflow-y: auto;
 }
 ```
+
+#### HTML Skeleton
+
+```html
+<div class="panel-overlay" id="panelOverlay" aria-hidden="true"></div>
+
+<aside class="task-panel" id="taskPanel"
+       role="dialog" aria-modal="true"
+       aria-labelledby="taskPanelTitle"
+       hidden>
+
+  <div class="task-panel__header">
+    <div class="task-panel__header-left">
+      <button class="task-panel__close" id="taskPanelClose" aria-label="Kapat">
+        <i data-lucide="x"></i>
+      </button>
+      <span class="task-panel__title" id="taskPanelTitle">Yeni İş Talebi Ekle</span>
+    </div>
+    <button class="btn btn-primary" id="taskPanelSave">Kaydet</button>
+  </div>
+
+  <div class="task-panel__body">
+    <div class="task-panel__card">
+      <!-- tp-field'ler buraya -->
+    </div>
+  </div>
+
+</aside>
+```
+
+#### JS — Open / Close
+
+```js
+const panel   = document.getElementById('taskPanel');
+const overlay = document.getElementById('panelOverlay');
+
+function openPanel() {
+  // Edit panel açıksa sola it
+  if (editPanel.classList.contains('is-open')) {
+    editPanel.classList.add('is-pushed-panel');
+  }
+
+  panel.hidden = false;           // hidden kaldır — DOM'a geri al
+  panel.getBoundingClientRect();  // ⚠️ reflow zorla: animasyonun başlaması için şart
+  panel.classList.add('is-open');
+  overlay.classList.add('is-open');
+  overlay.setAttribute('aria-hidden', 'false');
+
+  lucide.createIcons();           // ⚠️ hidden iken ikonlar init edilemez — burada çağır
+}
+
+function closePanel() {
+  editPanel.classList.remove('is-pushed-panel');
+  panel.classList.remove('is-open');
+  overlay.classList.remove('is-open');
+  overlay.setAttribute('aria-hidden', 'true');
+
+  // Animasyon bittikten sonra DOM'dan gizle
+  panel.addEventListener('transitionend', function hide() {
+    panel.hidden = true;
+    panel.removeEventListener('transitionend', hide);
+  }, { once: true });
+}
+
+document.getElementById('taskPanelClose').addEventListener('click', closePanel);
+overlay.addEventListener('click', closePanel);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && panel.classList.contains('is-open')) closePanel();
+});
+```
+
+#### Kritik Notlar
+
+| Kural | Neden |
+|---|---|
+| `panel.hidden = false` → `getBoundingClientRect()` → `classList.add('is-open')` | `hidden` kaldırılır kaldırılmaz browser layout'u hesaplar; reflow olmadan transform start state görünmez, animasyon çalışmaz |
+| Kapatmada `transitionend` bekle, sonra `hidden = true` set et | Animasyon tamamlanmadan `hidden=true` yapılırsa panel anında yok olur |
+| `lucide.createIcons()` panel açılışında | `hidden` iken `display:none` gibi davranır; icon SVG'leri oluşturulamaz |
+| `role="dialog"` + `aria-modal="true"` + `aria-labelledby` | Ekran okuyucular için zorunlu |
+| Kaydet butonu **header'da sağda**, ayrı footer yok | Medusa pattern — dar panel'de footer alan kaybedeceğinden tercih edilmiyor |
 
 ### 10.2 Filter Panel (653px — aynı yapı)
 
@@ -1380,6 +1481,120 @@ Edit panel tüm ekranı kaplar ve iki sütuna ayrılır.
 .ep-expand-btn:hover { background: var(--bt-surface-primary-subtle); }
 .ep-expand-btn svg { width: 14px; height: 14px; stroke-width: 1.5; }
 ```
+
+---
+
+### 10.4 Panel Stack (Katmanlı Panel Sistemi)
+
+Bir panel içindeki butona basıldığında yeni panel sağdan açılır, alttaki panel sola kayar. Panel kapatıldığında alttakiler geri döner. Sonsuz katman desteklenir.
+
+#### Davranış Akışı
+
+```
+Başlangıç:     [App]
+Ekle/Düzenle:  [App] ← [Panel A]
+İçeride buton: [App] ← [Panel A (sola kaydı)] ← [Panel B]
+Panel B kapat: [App] ← [Panel A (geri geldi)]
+Panel A kapat: [App]
+```
+
+#### CSS
+
+```css
+/* Temel panel — sağdan girer */
+.panel {
+  position: fixed; top: 0; right: 0;
+  height: 100vh; z-index: 300;
+  background: var(--bt-surface-primary-light);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.panel.is-open { transform: translateX(0); }
+
+/* Üstüne yeni panel açıldığında panel sola kayar.
+   inline style (JS tarafından set edilir) transition'ı taşır;
+   is-pushed yalnızca CSS fallback olarak kullanılabilir. */
+.panel.is-pushed { transform: translateX(-653px); }
+.panel.is-fullscreen.is-pushed { transform: translateX(-50vw); }
+```
+
+#### JS — Panel Stack Manager
+
+```js
+const panelStack = [];
+
+/**
+ * Yeni bir panel açar; mevcut tüm açık panelleri sola iter.
+ * @param {HTMLElement} panelEl   - Açılacak panel elementi
+ * @param {number}      pushOffset - Sola kayma miktarı (px). Default 653.
+ */
+function pushPanel(panelEl, pushOffset = 653) {
+  // Mevcut açık panelleri sola it
+  panelStack.forEach(({ el }) => {
+    el.style.transform = `translateX(-${pushOffset}px)`;
+  });
+
+  panelEl.hidden = false;
+  panelEl.getBoundingClientRect(); // reflow — animasyonun başlaması için zorunlu
+  panelEl.classList.add('is-open');
+  panelStack.push({ el: panelEl, pushOffset });
+}
+
+/**
+ * En üstteki paneli kapatır; altındakileri orijinal konumuna geri getirir.
+ */
+function popPanel() {
+  if (!panelStack.length) return;
+  const { el } = panelStack.pop();
+
+  el.classList.remove('is-open');
+  el.addEventListener('transitionend', () => {
+    el.hidden = true;
+    el.style.transform = '';
+  }, { once: true });
+
+  // Alttaki panellerin push offset'ini sıfırla
+  panelStack.forEach(({ el: pEl }) => { pEl.style.transform = ''; });
+}
+
+// Escape tuşu her zaman en üstteki paneli kapatır
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') popPanel();
+});
+```
+
+#### Kullanım Örneği
+
+```js
+// "Ekle" butonu → Panel A aç
+document.getElementById('addBtn').addEventListener('click', () => {
+  pushPanel(document.getElementById('panelA'));
+});
+
+// Panel A içindeki "İlişki Ekle" → Panel B aç (aynı 653px offset)
+document.getElementById('addRelationBtn').addEventListener('click', () => {
+  pushPanel(document.getElementById('panelB'));
+});
+
+// Her paneliniz bir .panel-close-btn içersin
+document.querySelectorAll('.panel-close-btn').forEach(btn => {
+  btn.addEventListener('click', popPanel);
+});
+
+// Overlay click da yalnızca en üstteki paneli kapatır
+document.getElementById('panelOverlay').addEventListener('click', popPanel);
+```
+
+#### Kurallar
+
+| Kural | Açıklama |
+|---|---|
+| `pushOffset` default | 653px (task/filter panel genişliği) |
+| Full-screen panel üstüne açılırsa | `pushPanel(panelB, window.innerWidth / 2)` |
+| Stack boşken `popPanel()` | Hiçbir şey yapmaz, hata vermez |
+| Birden fazla `pushPanel()` çağrısı | Her biri tüm stack'i `pushOffset` px daha sola iter — dikkatli kullan |
+| `getBoundingClientRect()` | Reflow tetikler; `hidden = false` sonrası animasyon için zorunlu |
 
 ---
 

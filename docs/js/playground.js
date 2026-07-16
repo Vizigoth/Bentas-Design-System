@@ -119,8 +119,9 @@ function renderPlayground(config) {
   const segControl = `
     <div class="pgd-seg-row">
       <div class="pgd-seg-ctrl">
-        <button class="pgd-seg-btn ${st.view !== 'code' ? 'active' : ''}" onclick="_pgdSetView('${config.id}','preview')">Preview</button>
+        <button class="pgd-seg-btn ${st.view === 'preview' ? 'active' : ''}" onclick="_pgdSetView('${config.id}','preview')">Preview</button>
         <button class="pgd-seg-btn ${st.view === 'code' ? 'active' : ''}" onclick="_pgdSetView('${config.id}','code')">Code</button>
+        ${config.css ? `<button class="pgd-seg-btn ${st.view === 'css' ? 'active' : ''}" onclick="_pgdSetView('${config.id}','css')">CSS</button>` : ''}
       </div>
     </div>`;
 
@@ -161,7 +162,7 @@ function renderPlayground(config) {
           ${isolateControl}
           ${triggerControl}
         </div>
-        ${st.view === 'code' ? codeBlock : previewBlock}
+        ${st.view === 'code' ? codeBlock : st.view === 'css' && config.css ? `<div class="example-viewer-code" style="padding:0;max-height:none;">${config.css(st.variant, st.props)}</div>` : previewBlock}
       </div>
     </div>`;
 }

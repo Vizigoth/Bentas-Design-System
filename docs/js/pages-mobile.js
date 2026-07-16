@@ -14,7 +14,7 @@ const NAV_MOBILE = [
   {
     label: 'Components', children: [
       { label: 'Accordion',         id: 'components/accordion' },
-      { label: 'Alert',             id: 'components/alert' },
+      { label: 'Alert Toaster',     id: 'components/alert' },
       { label: 'Alert Dialog',      id: 'components/alert-dialog' },
       { label: 'Avatar',            id: 'components/avatar' },
       { label: 'Badge',             id: 'components/badge' },
@@ -3775,6 +3775,100 @@ function alertEl({ type = 'error', theme = 'light', closeBtn = false, alertTitle
 // inline banner instead of stretching full-width on wide viewport presets.
 // `props` carries the secondary playground controls: theme (stroke/light/filled)
 // and closeBtn (on/off), on top of the primary type variant.
+function alertCss(type, props = {}) {
+  const theme = props.theme || 'stroke';
+  const c = ALERT_TYPE_CFG[type];
+  if (!c) return '';
+
+  const isFilled = theme === 'filled';
+  const isLight  = theme === 'light';
+
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+
+  const bg = isFilled
+    ? `var(${c.surfaceDefault})  /* ${c.hexDefault} */`
+    : isLight
+      ? `var(${c.surfaceLight})  /* ${c.hexLight} */`
+      : `var(--bt-surface-primary-default)  /* #ffffff */`;
+
+  const border = isFilled
+    ? 'none'
+    : isLight
+      ? `1px solid var(${c.borderToken})  /* ${c.hexDefault} */`
+      : `1px solid var(--bt-border-primary-default)  /* #d4d4d4 */`;
+
+  const iconColor = isFilled
+    ? `var(--bt-icon-inverted)  /* #ffffff */`
+    : `var(${c.iconToken})  /* ${c.hexDefault} */`;
+
+  const textColor = isFilled
+    ? `var(--bt-text-inverted)  /* #ffffff */`
+    : `var(--bt-text-primary-default)`;
+
+  lines.push(`/* Alert Toaster · ${type.charAt(0).toUpperCase() + type.slice(1)} · ${theme.charAt(0).toUpperCase() + theme.slice(1)} */`);
+  lines.push('');
+  lines.push('.bt-alert-toaster {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background', bg));
+  if (border === 'none') lines.push(p('border', 'none'));
+  else                   lines.push(p('border', border));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-alert-toaster__icon {');
+  lines.push(p('width', '40px'));
+  lines.push(p('height', '40px'));
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('justify-content', 'center'));
+  lines.push(p('flex-shrink', '0'));
+  lines.push(p('color', iconColor));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-alert-toaster__content {');
+  lines.push(p('flex', '1'));
+  lines.push(p('padding', 'var(--bt-space-md)  /* 8px */'));
+  lines.push(p('display', 'flex'));
+  lines.push(p('flex-direction', 'column'));
+  lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-alert-toaster__title {');
+  lines.push(p('font-size', 'var(--bt-text-md-size)  /* 16px */'));
+  lines.push(p('font-weight', '500'));
+  lines.push(p('line-height', 'var(--bt-text-md-lh)  /* 24px */'));
+  lines.push(p('color', textColor));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-alert-toaster__desc {');
+  lines.push(p('font-size', 'var(--bt-text-sm-size)  /* 14px */'));
+  lines.push(p('font-weight', '400'));
+  lines.push(p('line-height', 'var(--bt-text-sm-lh)  /* 16px */'));
+  lines.push(p('color', textColor));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-alert-toaster__close {');
+  lines.push(p('width', '40px'));
+  lines.push(p('height', '40px'));
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('justify-content', 'center'));
+  lines.push(p('flex-shrink', '0'));
+  lines.push(p('cursor', 'pointer'));
+  lines.push(p('color', iconColor));
+  lines.push('}');
+
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
 function alertPlaygroundMarkup(variantKey, props = {}) {
   const theme    = props.theme || 'stroke';
   const closeBtn = props.closeBtn === 'on';
@@ -3804,7 +3898,7 @@ PAGES['components/alert'] = {
   tabs: ['Overview', 'Examples', 'Usage'],
   toc: ['Types', 'Theme Colors', 'Close Button'],
   render: (tab) => {
-    const title = 'Alert';
+    const title = 'Alert Toaster';
     const tk  = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
     const lbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
     const pw  = inner => `<div style="max-width:440px">${inner}</div>`;
@@ -3818,6 +3912,7 @@ PAGES['components/alert'] = {
         props: ALERT_PROPS,
         preview: alertPlaygroundMarkup,
         code: alertPlaygroundCode,
+        css: (type, p) => alertCss(type, p),
         isolate: 'alert',
         trigger: { label: 'Click Me' },
         noMargin: true,
@@ -3833,6 +3928,7 @@ PAGES['components/alert'] = {
         props: ALERT_PROPS,
         preview: alertPlaygroundMarkup,
         code: alertPlaygroundCode,
+        css: (type, p) => alertCss(type, p),
         isolate: 'alert',
         trigger: { label: 'Click Me' },
       })}
