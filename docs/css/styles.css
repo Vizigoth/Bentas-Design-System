@@ -3245,6 +3245,96 @@ code {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   SEARCHBOX
+   <div class="bt-searchbox [--sm|--md|--lg] [--hover|--active|--disabled]">
+     <div class="bt-searchbox__control"><span class="bt-searchbox__icon">...</span></div>
+     <div class="bt-searchbox__field"><input class="bt-searchbox__text" /></div>
+     <div class="bt-searchbox__control">[clear icon, filled only]</div>
+   </div>
+   --sm/--md/--lg controls height + internal padding. Hover/Active also apply
+   natively via :hover/:focus-within — modifier classes exist only to force a
+   state for documentation previews.
+   ════════════════════════════════════════════════════════════════ */
+.bt-searchbox {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bt-surface-primary-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-md, 6px);
+  transition: border-color 0.15s;
+}
+.bt-searchbox--sm { height: 28px; }
+.bt-searchbox--md { height: 32px; }
+.bt-searchbox--lg { height: 36px; }
+
+.bt-searchbox:not(.bt-searchbox--disabled):hover,
+.bt-searchbox--hover {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+}
+.bt-searchbox:not(.bt-searchbox--disabled):focus-within,
+.bt-searchbox--active {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  box-shadow: 0 0 0 3px rgba(13,78,151,0.5);
+}
+.bt-searchbox--disabled {
+  background: var(--bt-surface-secondary-subtle, #e6e6e6);
+}
+
+/* — Icon controls (search / clear) — */
+.bt-searchbox__control {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.bt-searchbox--sm .bt-searchbox__control { padding: var(--bt-space-2xs, 2px); }
+.bt-searchbox--md .bt-searchbox__control { padding: var(--bt-space-xs, 4px); }
+.bt-searchbox--lg .bt-searchbox__control { padding: var(--bt-space-sm, 6px); }
+
+.bt-searchbox__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  flex-shrink: 0;
+}
+.bt-searchbox__icon svg { display: block; }
+.bt-searchbox__control--clickable { cursor: pointer; }
+
+/* — Field / input — */
+.bt-searchbox__field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+.bt-searchbox--sm .bt-searchbox__field { padding: var(--bt-space-xs, 4px); }
+.bt-searchbox--md .bt-searchbox__field { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px); }
+.bt-searchbox--lg .bt-searchbox__field { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px); }
+
+.bt-searchbox__text {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--bt-text-xs-size, 12px);
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-searchbox__text::placeholder { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-searchbox--disabled .bt-searchbox__text { cursor: not-allowed; }
+.bt-searchbox--disabled .bt-searchbox__icon { color: var(--bt-text-primary-muted, #a3a3a3); }
+
+/* ════════════════════════════════════════════════════════════════
    DESIGN EXAMPLES — dex-* (scoped to demo scenes)
    ════════════════════════════════════════════════════════════════ */
 

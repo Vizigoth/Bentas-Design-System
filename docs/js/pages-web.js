@@ -40,6 +40,7 @@ const NAV_WEB = [
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Progress',          id: 'components/progress' },
       { label: 'Radio Button',      id: 'components/radio-button' },
+      { label: 'Searchbox',         id: 'components/searchbox' },
       { label: 'Sidebar',           id: 'components/sidebar' },
       { label: 'Skeleton',          id: 'components/skeleton' },
       { label: 'Snackbar',          id: 'components/snackbar' },
@@ -2137,6 +2138,245 @@ PAGES_WEB['components/switch'] = {
             <td><span class="token-name">Content Right</span></td>
             <td>${pw(swPreview('default', { on:'on', side:'right', desc:'show' }))}</td>
           </tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Searchbox ────────────────────────────────────────────────────
+const _sbxIconClear = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+const SBX_SIZE_OPTS = [
+  { key: 'lg', label: 'Lg' },
+  { key: 'md', label: 'Md' },
+  { key: 'sm', label: 'Sm (Default)' },
+];
+const SBX_STATE_VARIANTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'active',   label: 'Active' },
+  { key: 'filled',   label: 'Filled' },
+  { key: 'disabled', label: 'Disabled' },
+];
+
+function sbxInput(el) {
+  el.closest('.bt-searchbox').classList.toggle('bt-searchbox--filled', el.value.length > 0);
+}
+function sbxClear(el) {
+  const box = el.closest('.bt-searchbox');
+  const input = box.querySelector('.bt-searchbox__text');
+  input.value = '';
+  box.classList.remove('bt-searchbox--filled');
+  input.focus();
+}
+
+function _sbxCls(state, size) {
+  const parts = ['bt-searchbox', `bt-searchbox--${size}`];
+  if (state !== 'default') parts.push(`bt-searchbox--${state}`);
+  return parts.join(' ');
+}
+
+function sbxPreview(state, props = {}) {
+  const { size = 'sm' } = props;
+  const cls = _sbxCls(state, size);
+  const disabled = state === 'disabled';
+  const filled = state === 'filled';
+  const clearHtml = filled ? `
+        <div class="bt-searchbox__control bt-searchbox__control--clickable" onclick="sbxClear(this)">
+          <span class="bt-searchbox__icon">${_sbxIconClear}</span>
+        </div>` : '';
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
+      <div class="${cls}" style="max-width:320px;">
+        <div class="bt-searchbox__control">
+          <span class="bt-searchbox__icon">${sbxIconSearch}</span>
+        </div>
+        <div class="bt-searchbox__field">
+          <input class="bt-searchbox__text" type="text" placeholder="Placeholder Text"${filled ? ' value="Placeholder Text"' : ''}${disabled ? ' disabled' : ''} oninput="sbxInput(this)" />
+        </div>${clearHtml}
+      </div>
+    </div>`;
+}
+
+function sbxCode(state, props = {}) {
+  const { size = 'sm' } = props;
+  const cls = _sbxCls(state, size);
+  const disabled = state === 'disabled';
+  const filled = state === 'filled';
+  const clearBlock = filled ? `\n  <div class="bt-searchbox__control">\n    <!-- clear icon 10x10 -->\n  </div>` : '';
+  const code = `<div class="${cls}">
+  <div class="bt-searchbox__control">
+    <!-- search icon 14x14 -->
+  </div>
+  <div class="bt-searchbox__field">
+    <input class="bt-searchbox__text" type="text" placeholder="Placeholder Text"${filled ? ' value="Placeholder Text"' : ''}${disabled ? ' disabled' : ''} />
+  </div>${clearBlock}
+</div>`;
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<pre class="code-block">${esc(code)}</pre>`;
+}
+
+function sbxCss(state, props = {}) {
+  const { size = 'sm' } = props;
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+
+  lines.push(`/* Searchbox · ${state.charAt(0).toUpperCase()+state.slice(1)}${size !== 'sm' ? ` · ${size.charAt(0).toUpperCase()+size.slice(1)}` : ''} */`);
+  lines.push('');
+
+  lines.push('.bt-searchbox {');
+  const h = size === 'md' ? '32px' : size === 'lg' ? '36px' : '28px';
+  lines.push(p('height', h));
+  lines.push(p('border-radius', 'var(--bt-radius-md)  /* 6px */'));
+  lines.push(p('background', state === 'disabled' ? 'var(--bt-surface-secondary-subtle)  /* #e6e6e6 */' : 'var(--bt-surface-primary-default)  /* #ffffff */'));
+  const borderColor = (state === 'hover' || state === 'active') ? 'var(--bt-border-brand-default)  /* #0d4e97 */' : 'var(--bt-border-primary-default)  /* #d4d4d4 */';
+  lines.push(p('border', `1px solid ${borderColor}`));
+  if (state === 'active') lines.push(p('box-shadow', '0 0 0 3px rgba(13,78,151,0.5)'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-searchbox__control {');
+  const ctrlPad = size === 'md' ? 'var(--bt-space-xs)  /* 4px */' : size === 'lg' ? 'var(--bt-space-sm)  /* 6px */' : 'var(--bt-space-2xs)  /* 2px */';
+  lines.push(p('padding', ctrlPad));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-searchbox__field {');
+  const fieldPad = size === 'md' ? 'var(--bt-space-sm) var(--bt-space-xs)  /* 6px 4px */' : size === 'lg' ? 'var(--bt-space-md) var(--bt-space-xs)  /* 8px 4px */' : 'var(--bt-space-xs)  /* 4px */';
+  lines.push(p('padding', fieldPad));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-searchbox__text {');
+  lines.push(p('color', state === 'filled' ? 'var(--bt-text-primary-default)  /* #1a1a1a */' : 'var(--bt-text-primary-muted)  /* #a3a3a3 (placeholder) */'));
+  lines.push('}');
+
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/searchbox'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['States', 'Sizes'],
+  render(tab) {
+    const title = 'Searchbox';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>States</h2>
+      ${registerPlayground({
+        id: 'pgd-sbx-ex',
+        variants: SBX_STATE_VARIANTS,
+        props: [
+          { key: 'size', label: 'Size', options: SBX_SIZE_OPTS, default: 'sm' },
+        ],
+        preview: (state, p) => sbxPreview(state, p),
+        code:    (state, p) => sbxCode(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Searchbox için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Control padding</th><th>Field padding</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-sm')} (6px)</td><td>${tk('--bt-space-md')} / ${tk('--bt-space-xs')} (8px / 4px)</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-sm')} / ${tk('--bt-space-xs')} (6px / 4px)</td></tr>
+          <tr><td><span class="token-name">Sm (Default)</span></td><td>28px</td><td>${tk('--bt-space-2xs')} (2px)</td><td>${tk('--bt-space-xs')} (4px, tüm kenarlar)</td></tr>
+        </tbody>
+      </table>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>Filled</td><td>color (text)</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-secondary-subtle')}</td><td>#e6e6e6</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4 (değişmez)</td></tr>
+        </tbody>
+      </table>
+      <h2>Shared Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>border-radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>background (Default/Hover/Active/Filled)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Placeholder metin rengi</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>Icon kutusu</td><td>—</td><td>24 × 24px (search ikon 14×14, clear ikon 10×10)</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-searchbox')}</td><td>Wrapper</td><td>flex row, border+radius+bg — tüm state stilleri burada</td></tr>
+          <tr><td>${tk('.bt-searchbox--sm/--md/--lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding'leri belirler</td></tr>
+          <tr><td>${tk('.bt-searchbox--hover/--active/--disabled')}</td><td>Wrapper</td><td>State'i zorlamak için (docs amaçlı) — gerçek kullanımda :hover/:focus-within otomatik çalışır</td></tr>
+          <tr><td>${tk('.bt-searchbox__control')}</td><td>İkon kutusu</td><td>Search (sol) ve Clear (sağ, sadece değer varken) ikonlarını saran kare alan</td></tr>
+          <tr><td>${tk('.bt-searchbox__icon')}</td><td>İkon</td><td>24×24, muted renk</td></tr>
+          <tr><td>${tk('.bt-searchbox__field')}</td><td>Input sarmalayıcı</td><td>flex:1, size'a göre padding</td></tr>
+          <tr><td>${tk('.bt-searchbox__text')}</td><td>Input</td><td>Gerçek <code style="font-family:var(--mono)">&lt;input type="text"&gt;</code>, border/outline sıfırlanmış</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Searchbox kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Bir liste/tabloyu anlık (debounce'lu) filtrelemek için kullan</li>
+        <li>Kullanıcı bir şey yazdığında Clear (X) aksiyonunu göster, tek tıkla temizlensin</li>
+        <li>Placeholder'da ne aranacağını belirt (örn. "Sipariş numarası ara")</li>
+        <li>Sayfa/tablo genişliğine göre Sm/Md/Lg boyutlarından uygun olanı seç</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Searchbox'ı genel bir form text field'ı olarak kullanma — o iş için Text Field bileşenini tercih et</li>
+        <li>Disabled durumda arama sonucu gösterme; boş/yükleniyor state'i ayrıca ele al</li>
+        <li>Token dışında hardcoded renk/spacing kullanma; her zaman <code style="font-family:var(--mono)">--bt-*</code> tokenlarını kullan</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-sbx-overview',
+        variants: SBX_STATE_VARIANTS,
+        props: [
+          { key: 'size', label: 'Size', options: SBX_SIZE_OPTS, default: 'sm' },
+        ],
+        preview: (state, p) => sbxPreview(state, p),
+        code:    (state, p) => sbxCode(state, p),
+        css:     (state, p) => sbxCss(state, p),
+      })}
+
+      <p class="page-desc">Arama/filtreleme için kullanılan input alanı. Üç boyut (Sm / Md / Lg) ve beş state (Default / Hover / Active / Filled / Disabled) destekler. Sol tarafta sabit arama ikonu, değer girildiğinde sağda temizleme (X) aksiyonu belirir.</p>
+
+      <h2 id="States">States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${SBX_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${sbxPreview(s.key, { size: 'sm' })}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${sbxPreview('default', { size: 'lg' })}</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${sbxPreview('default', { size: 'md' })}</td></tr>
+          <tr><td><span class="token-name">Sm (Default)</span></td><td>28px</td><td>${sbxPreview('default', { size: 'sm' })}</td></tr>
         </tbody>
       </table>
     `};
