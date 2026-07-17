@@ -788,7 +788,7 @@ function spltPreview(fill, size, state, theme = 'primary', content = 'icon-text'
   const btnIcon = content !== 'text' ? _btnIcon : '';
   const label = content !== 'icon' ? '<span>Button</span>' : '';
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <div class="${cls}">
         <button class="bt-split-btn__button${btnCls}"${dis}>${btnIcon}${label}</button>
         <div class="bt-split-btn__divider"></div>
@@ -815,24 +815,18 @@ function spltCode(fill, size, state, theme = 'primary', content = 'icon-text') {
 </div>`;
 }
 
-function _spltStateRow(fill, theme = 'primary') {
-  const states = [
-    { label: 'Default',  cls: '',                               disabled: false },
-    { label: 'Hover',    cls: ' bt-split-btn--state-hover',     disabled: false },
-    { label: 'Focus',    cls: ' bt-split-btn--state-focus',     disabled: false },
-    { label: 'Active',   cls: ' bt-split-btn--state-active',    disabled: false },
-    { label: 'Selected', cls: ' bt-split-btn--state-selected',  disabled: false },
-    { label: 'Disabled', cls: '',                               disabled: true  },
-  ];
-  return states.map(s => `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <div class="bt-split-btn bt-split-btn--${theme}-${fill} bt-split-btn--sm${s.cls}">
-        <button class="bt-split-btn__button"${s.disabled ? ' disabled' : ''}>${_btnIcon}<span>${s.label}</span></button>
-        <div class="bt-split-btn__divider"></div>
-        <button class="bt-split-btn__split"${s.disabled ? ' disabled' : ''}>${_spltChevron}</button>
-      </div>
-      <span style="font-size:11px;color:var(--bt-text-primary-muted)">${s.label}</span>
-    </div>`).join('');
+function _spltStateTable(theme) {
+  return `
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th>${SPLT_FILL_VARIANTS.map(f => `<th>${f.label}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${SPLT_STATE_OPTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            ${SPLT_FILL_VARIANTS.map(f => `<td>${spltPreview(f.key, 'sm', s.key, theme, 'icon-text')}</td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
 }
 
 PAGES_WEB['components/split-button'] = {
@@ -999,25 +993,21 @@ PAGES_WEB['components/split-button'] = {
       </table>
 
       <h2 id="Sizes">Sizes</h2>
-      <div style="display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;padding:24px;background:var(--bt-surface-subtle);border-radius:8px;margin-bottom:40px;">
-        ${['2xs','xs','sm','md','lg','xl','2xl'].map(sz => `
-          <div class="bt-split-btn bt-split-btn--primary-solid bt-split-btn--${sz}">
-            <button class="bt-split-btn__button">${_btnIcon}<span>${sz}</span></button>
-            <div class="bt-split-btn__divider"></div>
-            <button class="bt-split-btn__split">${_spltChevron}</button>
-          </div>`).join('')}
-      </div>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${SPLT_SIZE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${spltPreview('solid', s.key, 'default', 'primary', 'icon-text')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
 
       <h2 id="States">States</h2>
-      ${['base','primary','secondary','success','warning','error','information'].map(theme => `
-      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.charAt(0).toUpperCase()+theme.slice(1)}</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
-        ${['solid','outline','flat','ghost'].map(f => `
-        <div>
-          <p style="font-size:11px;font-weight:600;color:var(--bt-text-primary-muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em;">${f.charAt(0).toUpperCase()+f.slice(1)}</p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;padding:16px;background:var(--bt-surface-subtle);border-radius:8px;">${_spltStateRow(f, theme)}</div>
-        </div>`).join('')}
-      </div>`).join('')}
+      ${BTN_THEME_OPTS.map(theme => `
+      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.label}</h3>
+      ${_spltStateTable(theme.key)}`).join('')}
     `};
   }
 };
@@ -1096,7 +1086,7 @@ function chkPreview(state, props = {}) {
     ? ` onclick="this.querySelector('.bt-checkbox__box').classList.toggle('bt-checkbox__box--checked')" style="cursor:pointer;"`
     : '';
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <div class="${fieldCls}"${clickAttr}>
         <div class="${boxCls}">${_chkCheck}</div>${contentHtml}
       </div>
@@ -1453,7 +1443,7 @@ function rdPreview(state, props = {}) {
     ? ` onclick="this.querySelector('.bt-radio__dot').classList.toggle('bt-radio__dot--selected')" style="cursor:pointer;"`
     : '';
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <div class="${fieldCls}"${clickAttr}>
         <div class="${dotCls}"></div>${contentHtml}
       </div>
@@ -1831,7 +1821,7 @@ function swPreview(state, props = {}) {
     ? ` onclick="this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"`
     : '';
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <div class="${fieldCls}"${clickAttr}>${contentHtml}
         <div class="${trackCls}"><div class="bt-switch__thumb"></div></div>
       </div>
@@ -2199,7 +2189,7 @@ function bgrpPreview(fill, size, content, theme = 'primary') {
   const label3   = content !== 'icon'  ? '<span>Option 3</span>' : '';
   const toggle = `onclick="this.classList.toggle('bt-btn--state-selected')"`;
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <div class="${wrapCls}">
         <button class="${itemCls}" ${toggle}>${icon}${label1}</button>
         <button class="${itemCls}" ${toggle}>${icon}${label2}</button>
@@ -2622,7 +2612,7 @@ function btnPreview(fill, size, content, state, theme = 'primary') {
   const text = content !== 'icon' ? '<span>Button</span>' : '';
   const inner = icon + text;
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+    <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <button class="${cls}"${disabled ? ' disabled' : ''}>${inner}</button>
     </div>`;
 }
@@ -2636,20 +2626,18 @@ function btnCode(fill, size, content, state, theme = 'primary') {
   return `<button class="${cls}"${disabled ? ' disabled' : ''}>\n  ${inner}\n</button>`;
 }
 
-function _stateRow(fill, theme = 'primary') {
-  const states = [
-    { label: 'Default',  cls: '',                      disabled: false },
-    { label: 'Hover',    cls: ' bt-btn--state-hover',  disabled: false },
-    { label: 'Focus',    cls: ' bt-btn--state-focus',  disabled: false },
-    { label: 'Active',   cls: ' bt-btn--state-active', disabled: false },
-    { label: 'Selected', cls: ' bt-btn--state-selected', disabled: false },
-    { label: 'Disabled', cls: '',                      disabled: true  },
-  ];
-  return states.map(s => `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <button class="bt-btn bt-btn--${theme}-${fill} bt-btn--sm${s.cls}"${s.disabled ? ' disabled' : ''}>${_btnIcon}<span>${s.label}</span></button>
-      <span style="font-size:11px;color:var(--bt-text-primary-muted)">${s.label}</span>
-    </div>`).join('');
+function _btnStateTable(theme) {
+  return `
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th>${BTN_FILL_VARIANTS.map(f => `<th>${f.label}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${BTN_STATE_OPTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            ${BTN_FILL_VARIANTS.map(f => `<td>${btnPreview(f.key, 'sm', 'icon-text', s.key, theme)}</td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
 }
 
 PAGES_WEB['components/button'] = {
@@ -2803,26 +2791,21 @@ PAGES_WEB['components/button'] = {
       </table>
 
       <h2 id="Sizes">Sizes</h2>
-      <div style="display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;padding:24px;background:var(--bt-surface-subtle);border-radius:8px;margin-bottom:40px;">
-        <button class="bt-btn bt-btn--primary-solid bt-btn--2xs">${_btnIcon}<span>2xs</span></button>
-        <button class="bt-btn bt-btn--primary-solid bt-btn--xs">${_btnIcon}<span>xs</span></button>
-        <button class="bt-btn bt-btn--primary-solid bt-btn--sm">${_btnIcon}<span>sm</span></button>
-        <button class="bt-btn bt-btn--primary-solid bt-btn--md">${_btnIcon}<span>md</span></button>
-        <button class="bt-btn bt-btn--primary-solid bt-btn--lg">${_btnIcon}<span>lg</span></button>
-        <button class="bt-btn bt-btn--primary-solid bt-btn--xl">${_btnIcon}<span>xl</span></button>
-        <button class="bt-btn bt-btn--primary-solid bt-btn--2xl">${_btnIcon}<span>2xl</span></button>
-      </div>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${BTN_SIZE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${btnPreview('solid', s.key, 'icon-text', 'default', 'primary')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
 
       <h2 id="States">States</h2>
-      ${['base','primary','secondary','success','warning','error','information'].map(theme => `
-      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.charAt(0).toUpperCase()+theme.slice(1)}</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
-        ${['solid','outline','flat','ghost'].map(f => `
-        <div>
-          <p style="font-size:11px;font-weight:600;color:var(--bt-text-primary-muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em;">${f.charAt(0).toUpperCase()+f.slice(1)}</p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;padding:16px;background:var(--bt-surface-subtle);border-radius:8px;">${_stateRow(f, theme)}</div>
-        </div>`).join('')}
-      </div>`).join('')}
+      ${BTN_THEME_OPTS.map(theme => `
+      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.label}</h3>
+      ${_btnStateTable(theme.key)}`).join('')}
     `};
   }
 };
