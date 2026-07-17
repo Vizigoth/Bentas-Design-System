@@ -43,6 +43,7 @@ const NAV_WEB = [
       { label: 'Sidebar',           id: 'components/sidebar' },
       { label: 'Skeleton',          id: 'components/skeleton' },
       { label: 'Snackbar',          id: 'components/snackbar' },
+      { label: 'Switch',            id: 'components/switch' },
       { label: 'Text Field',        id: 'components/text-field' },
       { label: 'TextBox',           id: 'components/textbox' },
       { label: 'Toggle',            id: 'components/toggle' },
@@ -1761,6 +1762,390 @@ PAGES_WEB['components/radio-button'] = {
           <tr>
             <td><span class="token-name">Label Left</span></td>
             <td>${pw(rdPreview('default', { selected:'on', side:'left',  desc:'show' }))}</td>
+          </tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Switch ────────────────────────────────────────────────────
+const SW_STATE_VARIANTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'focused',  label: 'Focused' },
+  { key: 'disabled', label: 'Disabled' },
+];
+const SW_ON_OPTS = [
+  { key: 'off', label: 'Off' },
+  { key: 'on',  label: 'On' },
+];
+const SW_SIZE_OPTS = [
+  { key: 'lg', label: 'Lg' },
+  { key: 'md', label: 'Md' },
+  { key: 'sm', label: 'Sm (Default)' },
+];
+const SW_SIDE_OPTS = [
+  { key: 'left',  label: 'Content Left (Default)' },
+  { key: 'right', label: 'Content Right' },
+];
+
+function _swTrackCls(state, on, size) {
+  const parts = ['bt-switch__track'];
+  if (size === 'md')        parts.push('bt-switch__track--md');
+  if (size === 'lg')        parts.push('bt-switch__track--lg');
+  if (on === 'on')          parts.push('bt-switch__track--on');
+  if (state !== 'default')  parts.push(`bt-switch__track--${state}`);
+  return parts.join(' ');
+}
+
+function _swFieldCls(state, side) {
+  const parts = ['bt-switch-field'];
+  if (side === 'right')     parts.push('bt-switch-field--content-right');
+  if (state === 'disabled') parts.push('bt-switch-field--disabled');
+  return parts.join(' ');
+}
+
+function swPreview(state, props = {}) {
+  const {
+    on           = 'off',
+    size         = 'sm',
+    side         = 'left',
+    desc         = 'show',
+    showContent  = 'yes',
+    showLabel    = 'yes',
+    showRequired = 'yes',
+  } = props;
+  const trackCls = _swTrackCls(state, on, size);
+  const fieldCls = _swFieldCls(state, side);
+  const descHtml = desc === 'show' ? `\n        <div class="bt-switch__desc-row"><p class="bt-switch__desc">Description for additional information here.</p></div>` : '';
+  const labelHtml    = showLabel    === 'yes' ? `<span class="bt-switch__label">Label Text</span>` : '';
+  const requiredHtml = showRequired === 'yes' ? `<span class="bt-switch__required">(Required Field)</span>` : '';
+  const contentHtml  = showContent  === 'yes' ? `
+        <div class="bt-switch__content">
+          <div class="bt-switch__label-row">
+            ${labelHtml}${requiredHtml}
+          </div>${descHtml}
+        </div>` : '';
+  const clickAttr = state !== 'disabled'
+    ? ` onclick="this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"`
+    : '';
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;padding:32px;">
+      <div class="${fieldCls}"${clickAttr}>${contentHtml}
+        <div class="${trackCls}"><div class="bt-switch__thumb"></div></div>
+      </div>
+    </div>`;
+}
+
+function swCode(state, props = {}) {
+  const {
+    on           = 'off',
+    size         = 'sm',
+    side         = 'left',
+    desc         = 'show',
+    showContent  = 'yes',
+    showLabel    = 'yes',
+    showRequired = 'yes',
+  } = props;
+  const trackCls = _swTrackCls(state, on, size);
+  const fieldCls = _swFieldCls(state, side);
+  const labelLine    = showLabel    === 'yes' ? '\n      <span class="bt-switch__label">Label Text</span>' : '';
+  const requiredLine = showRequired === 'yes' ? '\n      <span class="bt-switch__required">(Required Field)</span>' : '';
+  const descLine     = (showContent === 'yes' && desc === 'show') ? '\n    <div class="bt-switch__desc-row">\n      <p class="bt-switch__desc">Description for additional information here.</p>\n    </div>' : '';
+  const contentBlock = showContent === 'yes'
+    ? `\n  <div class="bt-switch__content">\n    <div class="bt-switch__label-row">${labelLine}${requiredLine}\n    </div>${descLine}\n  </div>`
+    : '';
+  const code = `<div class="${fieldCls}">${contentBlock}
+  <div class="${trackCls}">
+    <div class="bt-switch__thumb"></div>
+  </div>
+</div>`;
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<pre class="code-block">${esc(code)}</pre>`;
+}
+
+function swCss(state, props = {}) {
+  const { on = 'off', size = 'sm' } = props;
+  const isOn = on === 'on';
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+
+  lines.push(`/* Switch · ${isOn ? 'On' : 'Off'} · ${state.charAt(0).toUpperCase()+state.slice(1)}${size !== 'sm' ? ` · ${size.charAt(0).toUpperCase()+size.slice(1)}` : ''} */`);
+  lines.push('');
+
+  lines.push('.bt-switch__track {');
+  const trackWH = size === 'md' ? ['40px','24px'] : size === 'lg' ? ['48px','28px'] : ['32px','20px'];
+  lines.push(p('width',  trackWH[0]));
+  lines.push(p('height', trackWH[1]));
+  lines.push(p('padding', '2px'));
+  lines.push(p('border-radius', '4px'));
+  if (!isOn) lines.push(p('background', 'var(--bt-surface-primary-emphasis)  /* #d4d4d4 */'));
+  else       lines.push(p('background', 'var(--bt-surface-brand-default)  /* #0d4e97 */; justify-content: flex-end'));
+  lines.push('}');
+
+  if (state !== 'default') {
+    lines.push('');
+    const stateLabel = `.bt-switch__track--${state}`;
+
+    if (state === 'hover') {
+      lines.push(`${stateLabel} {`);
+      if (!isOn) lines.push(p('background', 'var(--bt-surface-primary-strong)  /* #a3a3a3 */'));
+      else       lines.push(p('background', 'var(--bt-surface-brand-intense)  /* #0f447d */'));
+      lines.push('}');
+    }
+
+    if (state === 'focused') {
+      lines.push(`${stateLabel} {`);
+      if (!isOn) {
+        lines.push(p('background',  'var(--bt-surface-primary-strong)  /* #a3a3a3 */'));
+        lines.push(p('box-shadow',  '0 0 0 3px rgba(212,212,212,0.5)'));
+      } else {
+        lines.push(p('background',  'var(--bt-surface-brand-intense)  /* #0f447d */'));
+        lines.push(p('box-shadow',  '0 0 0 3px rgba(13,78,151,0.5)'));
+      }
+      lines.push('}');
+    }
+
+    if (state === 'disabled') {
+      lines.push(`${stateLabel} {`);
+      if (!isOn) lines.push(p('background', 'var(--bt-surface-primary-muted)  /* #e6e6e6 */'));
+      else       lines.push(p('background', 'var(--bt-surface-brand-muted)  /* #bedbf9 */'));
+      lines.push(p('cursor', 'not-allowed'));
+      lines.push('}');
+    }
+  }
+
+  lines.push('');
+  lines.push('.bt-switch__thumb {');
+  const thumbPx = size === 'md' ? '20px' : size === 'lg' ? '24px' : '16px';
+  lines.push(p('width',  thumbPx));
+  lines.push(p('height', thumbPx));
+  lines.push(p('border-radius', '4px'));
+  lines.push(p('background', 'var(--bt-surface-primary-default)  /* #ffffff, all states */'));
+  lines.push(p('box-shadow', '0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10)'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('/* Text */');
+  lines.push('.bt-switch__label, .bt-switch__required {');
+  if (state === 'disabled') lines.push(p('color', 'var(--bt-text-primary-muted)  /* #a3a3a3 */'));
+  else                      lines.push(p('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+  lines.push('}');
+  lines.push('.bt-switch__desc {');
+  if (state === 'disabled') lines.push(p('color', 'var(--bt-text-primary-muted)  /* #a3a3a3 */'));
+  else                      lines.push(p('color', 'var(--bt-text-primary-emphasis)  /* #727272 */'));
+  lines.push('}');
+
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/switch'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['States', 'Sizes', 'Content Position'],
+  render(tab) {
+    const title = 'Switch';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    const pw = html => `<div class="preview-wrap">${html}</div>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>Off States</h2>
+      ${registerPlayground({
+        id: 'pgd-sw-off-ex',
+        variants: SW_STATE_VARIANTS,
+        props: [
+          { key: 'size',         label: 'Size',             options: SW_SIZE_OPTS,  default: 'sm'    },
+          { key: 'side',         label: 'Content',          options: SW_SIDE_OPTS,  default: 'left'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+        ],
+        preview: (state, p) => swPreview(state, { ...p, on: 'off' }),
+        code:    (state, p) => swCode(state, { ...p, on: 'off' }),
+      })}
+      <h2>On States</h2>
+      ${registerPlayground({
+        id: 'pgd-sw-on-ex',
+        variants: SW_STATE_VARIANTS,
+        props: [
+          { key: 'size',         label: 'Size',             options: SW_SIZE_OPTS,  default: 'sm'    },
+          { key: 'side',         label: 'Content',          options: SW_SIDE_OPTS,  default: 'left'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+        ],
+        preview: (state, p) => swPreview(state, { ...p, on: 'on' }),
+        code:    (state, p) => swCode(state, { ...p, on: 'on' }),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Switch için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Track</th><th>Thumb</th><th>CSS class</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Lg</span></td><td>48 × 28px</td><td>24 × 24px</td><td>${tk('.bt-switch__track--lg')}</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>40 × 24px</td><td>20 × 20px</td><td>${tk('.bt-switch__track--md')}</td></tr>
+          <tr><td><span class="token-name">Sm (Default)</span></td><td>32 × 20px</td><td>16 × 16px</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <h2>Track Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Mode</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">Default</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-emphasis')}</td><td>#d4d4d4</td></tr>
+          <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Hover</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-strong')}</td><td>#a3a3a3</td></tr>
+          <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
+          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.5)</td></tr>
+          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
+        </tbody>
+      </table>
+      <h2>Thumb</h2>
+      <table class="token-table">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff (tüm state'lerde sabit)</td></tr>
+          <tr><td>box-shadow</td><td>${tk('Shadow/md')}</td><td>0 2px 4px rgba(16,24,40,.06), 0 4px 8px rgba(16,24,40,.10)</td></tr>
+          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+        </tbody>
+      </table>
+      <h2>Text Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>State</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Label / Required</td><td>Default</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Default</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>All text</td><td>Disabled</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-switch-field')}</td><td>Wrapper</td><td>Temel sarmalayıcı — inline-flex, gap 8px</td></tr>
+          <tr><td>${tk('.bt-switch-field--content-right')}</td><td>Wrapper</td><td>Switch solda, content sağda (row-reverse)</td></tr>
+          <tr><td>${tk('.bt-switch-field--disabled')}</td><td>Wrapper</td><td>cursor: not-allowed</td></tr>
+          <tr><td>${tk('.bt-switch__track')}</td><td>Görsel track</td><td>32×20px, border-radius 4px, sm/default state</td></tr>
+          <tr><td>${tk('.bt-switch__track--md')}</td><td>Track</td><td>40×24px</td></tr>
+          <tr><td>${tk('.bt-switch__track--lg')}</td><td>Track</td><td>48×28px</td></tr>
+          <tr><td>${tk('.bt-switch__track--on')}</td><td>Track</td><td>On state — mavi arka plan, thumb sağa yaslanır</td></tr>
+          <tr><td>${tk('.bt-switch__track--hover')}</td><td>Track</td><td>Hover state</td></tr>
+          <tr><td>${tk('.bt-switch__track--focused')}</td><td>Track</td><td>Focused state + focus ring</td></tr>
+          <tr><td>${tk('.bt-switch__track--disabled')}</td><td>Track</td><td>Disabled state</td></tr>
+          <tr><td>${tk('.bt-switch__thumb')}</td><td>Görsel thumb</td><td>Beyaz kare, radius 4px, gölgeli — tüm state'lerde sabit</td></tr>
+          <tr><td>${tk('.bt-switch__content')}</td><td>İçerik alanı</td><td>Label + required + description wrapper, gap: ${tk('--bt-space-xs')} (4px)</td></tr>
+          <tr><td>${tk('.bt-switch__label-row')}</td><td>İçerik</td><td>Label ve required field'ı yan yana tutar — gap: ${tk('--bt-space-xs')} (4px), padding: ${tk('--bt-space-none')} (Figma'da bu container için ayrıca seçilmiş, 0px)</td></tr>
+          <tr><td>${tk('.bt-switch__label')}</td><td>Metin</td><td>14px, primary default renk</td></tr>
+          <tr><td>${tk('.bt-switch__required')}</td><td>Metin</td><td>12px, "(Required Field)" metni — Label ile aynı renk (${tk('--bt-text-primary-default')})</td></tr>
+          <tr><td>${tk('.bt-switch__desc-row')}</td><td>İçerik</td><td>Description wrapper — gap: ${tk('--bt-space-none')}, padding: ${tk('--bt-space-none')} (Figma'da bu container için ayrıca seçilmiş, 0px)</td></tr>
+          <tr><td>${tk('.bt-switch__desc')}</td><td>Metin</td><td>12px, muted renk, açıklama metni</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Switch kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Switch'i anlık efektli, kaydet/onayla gerektirmeyen ayarlar için kullan (Wi-Fi, bildirimler, karanlık mod gibi).</li>
+        <li>Etiketi switch'in durumunu değil, kontrol ettiği ayarı anlatacak şekilde yaz.</li>
+        <li>Aynı formda tek bir boyut (sm/md/lg) kullan — karıştırma.</li>
+        <li>Disabled durumda neden devre dışı olduğunu Description alanında açıkla.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Formlarda birden fazla seçim gerektiren durumlarda switch kullanma — Checkbox tercih et.</li>
+        <li>Birbirini dışlayan seçenekler için kullanma — Radio Button kullan.</li>
+        <li>Switch değişikliğini bir "Kaydet" aksiyonuna bağlama; değişiklik anlık uygulanmalı.</li>
+      </ul>
+      <h2>Switch vs Checkbox</h2>
+      <table class="token-table">
+        <thead><tr><th>Kriter</th><th>Switch</th><th>Checkbox</th></tr></thead>
+        <tbody>
+          <tr><td>Etki zamanı</td><td>Anlık</td><td>Form submit sonrası</td></tr>
+          <tr><td>Seçim sayısı</td><td>Tekil (açık/kapalı)</td><td>Çoklu olabilir</td></tr>
+          <tr><td>Kullanım bağlamı</td><td>Ayarlar, tercihler</td><td>Formlar, listeler</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-sw-overview',
+        variants: SW_STATE_VARIANTS,
+        props: [
+          { key: 'on',           label: 'Mode',             options: SW_ON_OPTS,    default: 'off'   },
+          { key: 'size',         label: 'Size',             options: SW_SIZE_OPTS,  default: 'sm'    },
+          { key: 'side',         label: 'Content',          options: SW_SIDE_OPTS,  default: 'left'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+        ],
+        preview: (state, p) => swPreview(state, p),
+        code:    (state, p) => swCode(state, p),
+        css:     (state, p) => swCss(state, p),
+      })}
+
+      <p class="page-desc">Tek bir ayarı açık/kapalı konumuna getiren toggle kontrolü. Üç boyut (Sm / Md / Lg), dört state (Default / Hover / Focused / Disabled) ve iki content konumu (Left / Right) destekler.</p>
+
+      <h2 id="States">States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Off</th><th>On</th></tr></thead>
+        <tbody>
+          ${SW_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${pw(swPreview(s.key, { on:'off', desc:'hide' }))}</td>
+            <td>${pw(swPreview(s.key, { on:'on',  desc:'hide' }))}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Track</th><th>Thumb</th><th>Off</th><th>On</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Lg</span></td>
+            <td>48 × 28px</td><td>24 × 24px</td>
+            <td>${pw(swPreview('default', { on:'off', size:'lg', desc:'hide' }))}</td>
+            <td>${pw(swPreview('default', { on:'on',  size:'lg', desc:'hide' }))}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Md</span></td>
+            <td>40 × 24px</td><td>20 × 20px</td>
+            <td>${pw(swPreview('default', { on:'off', size:'md', desc:'hide' }))}</td>
+            <td>${pw(swPreview('default', { on:'on',  size:'md', desc:'hide' }))}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Sm (Default)</span></td>
+            <td>32 × 20px</td><td>16 × 16px</td>
+            <td>${pw(swPreview('default', { on:'off', size:'sm', desc:'hide' }))}</td>
+            <td>${pw(swPreview('default', { on:'on',  size:'sm', desc:'hide' }))}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="Content Position">Content Position</h2>
+      <table class="token-table">
+        <thead><tr><th>Side</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Content Left (Default)</span></td>
+            <td>${pw(swPreview('default', { on:'on', side:'left', desc:'show' }))}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Content Right</span></td>
+            <td>${pw(swPreview('default', { on:'on', side:'right', desc:'show' }))}</td>
           </tr>
         </tbody>
       </table>
