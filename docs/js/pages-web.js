@@ -40,7 +40,7 @@ const NAV_WEB = [
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Progress',          id: 'components/progress' },
       { label: 'Radio Button',      id: 'components/radio-button' },
-      { label: 'Searchbox',         id: 'components/searchbox' },
+      { label: 'SearchBox',          id: 'components/searchbox' },
       { label: 'Sidebar',           id: 'components/sidebar' },
       { label: 'Skeleton',          id: 'components/skeleton' },
       { label: 'Snackbar',          id: 'components/snackbar' },
@@ -2260,7 +2260,7 @@ PAGES_WEB['components/searchbox'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
   toc:  ['States', 'Sizes'],
   render(tab) {
-    const title = 'Searchbox';
+    const title = 'SearchBox';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     if (tab === 'Examples') return { title, html: `
@@ -2277,7 +2277,7 @@ PAGES_WEB['components/searchbox'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Searchbox için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">SearchBox için kullanılan design token–CSS değişken eşleşmeleri.</p>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Control padding</th><th>Field padding</th></tr></thead>
@@ -2327,7 +2327,7 @@ PAGES_WEB['components/searchbox'] = {
     `};
 
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Searchbox kullanım kılavuzu.</p>
+      <p class="page-desc">SearchBox kullanım kılavuzu.</p>
       <h2>Do</h2>
       <ul>
         <li>Bir liste/tabloyu anlık (debounce'lu) filtrelemek için kullan</li>
@@ -2337,7 +2337,7 @@ PAGES_WEB['components/searchbox'] = {
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li>Searchbox'ı genel bir form text field'ı olarak kullanma — o iş için Text Field bileşenini tercih et</li>
+        <li>SearchBox'ı genel bir form text field'ı olarak kullanma — o iş için Text Field bileşenini tercih et</li>
         <li>Disabled durumda arama sonucu gösterme; boş/yükleniyor state'i ayrıca ele al</li>
         <li>Token dışında hardcoded renk/spacing kullanma; her zaman <code style="font-family:var(--mono)">--bt-*</code> tokenlarını kullan</li>
       </ul>
@@ -3049,3 +3049,6 @@ PAGES_WEB['components/button'] = {
     `};
   }
 };
+
+// Expose for isolation.html auto-render
+window.PAGES_WEB = PAGES_WEB;

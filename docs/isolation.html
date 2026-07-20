@@ -44,20 +44,51 @@
   <div class="iso-badge">Isolation Mode</div>
   <div class="iso-shell" id="iso-root"></div>
 
+  <script src="js/playground.js"></script>
   <script src="js/pages-mobile.js"></script>
   <script src="js/pages-web.js"></script>
   <script>
     const params    = new URLSearchParams(location.search);
     const component = params.get('component');
+    const pgdId     = params.get('pgd_id');
     const variant   = params.get('variant') || 'default';
     const props     = {};
-    for (const [k, v] of params.entries()) { if (k !== 'component' && k !== 'variant') props[k] = v; }
-    const root      = document.getElementById('iso-root');
-    const entry     = window.PGD_ISOLATE && window.PGD_ISOLATE[component];
+    for (const [k, v] of params.entries()) {
+      if (k !== 'component' && k !== 'variant' && k !== 'pgd_id') props[k] = v;
+    }
+    const root  = document.getElementById('iso-root');
+    const entry = window.PGD_ISOLATE && window.PGD_ISOLATE[component];
 
     if (entry) {
+      // Registered isolation target (e.g. Sidebar, Alert)
       entry.mount(root, variant, props);
       document.title = `${component} (${variant}) — Isolation Mode · Bentas Design System`;
+
+    } else if (pgdId) {
+      // Auto-isolation: call render() on each page/tab until the target playground
+      // id appears in _pgdConfigs, then stop — no need to iterate the whole tree.
+      const allTabs = ['Overview', 'Examples', 'CSS Properties', 'Usage'];
+      outer: for (const page of Object.values(window.PAGES_WEB || {})) {
+        for (const tab of allTabs) {
+          try { page.render(tab); } catch (e) {}
+          if (window._pgdConfigs[pgdId]) break outer;
+        }
+      }
+      const cfg = window._pgdConfigs && window._pgdConfigs[pgdId];
+      if (cfg) {
+        const resolvedProps = {};
+        (cfg.props || []).forEach(p => {
+          resolvedProps[p.key] = props[p.key] || p.default || (p.options && p.options[0].key);
+        });
+        const resolvedVariant = (cfg.variants || []).find(v => v.key === variant)
+          ? variant
+          : (cfg.variants ? cfg.variants[0].key : variant);
+        root.innerHTML = cfg.preview(resolvedVariant, resolvedProps);
+        document.title = 'Isolation Mode · Bentas Design System';
+      } else {
+        root.innerHTML = '<p class="iso-empty">Component not found.</p>';
+      }
+
     } else {
       root.innerHTML = '<p class="iso-empty">Unknown component — open this page via a component\'s "Open in isolation mode" button.</p>';
     }

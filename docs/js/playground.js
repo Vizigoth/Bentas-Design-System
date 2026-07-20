@@ -24,6 +24,7 @@ const _pgdIconClick     = `<svg width="14" height="14" viewBox="0 0 24 24" fill=
 
 const _pgdState   = {};   // id -> { variant, props, measure, viewport, dimW, dimH, openMenu }
 const _pgdConfigs = {};   // id -> config, kept so re-renders (state changes) can rebuild the block
+window._pgdConfigs = _pgdConfigs; // exposed for isolation.html
 
 function _pgdEsc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -91,8 +92,8 @@ function renderPlayground(config) {
       </div>` : ''}
     </div>`;
 
-  const isolateControl = config.isolate ? `
-    <button class="pgd-icon-btn" title="Open in isolation mode" onclick="_pgdOpenIsolation('${config.id}')">${_pgdIconIsolate}</button>` : '';
+  const isolateControl = `
+    <button class="pgd-icon-btn" title="Open in isolation mode" onclick="_pgdOpenIsolation('${config.id}')">${_pgdIconIsolate}</button>`;
 
   const triggerControl = config.trigger ? `
     <button class="pgd-trigger-btn" onclick="_pgdRunTrigger('${config.id}')">${_pgdIconClick}<span>${(config.trigger.label) || 'Click Me'}</span></button>` : '';
@@ -312,9 +313,20 @@ window._pgdMeasureLeave = function(id) {
 window._pgdOpenIsolation = function(id) {
   const config = _pgdConfigs[id];
   const st = _pgdState[id];
-  if (!config || !config.isolate) return;
-  const params = new URLSearchParams({ component: config.isolate, variant: st.variant, ...st.props });
-  window.open('isolation.html?' + params.toString(), '_blank');
+  if (!config) return;
+
+  // Explicit PGD_ISOLATE registration → use isolation.html
+  if (config.isolate) {
+    const params = new URLSearchParams({ component: config.isolate, variant: st.variant, ...st.props });
+    window.open('isolation.html?' + params.toString(), '_blank');
+    return;
+  }
+
+  // Auto-isolation: pass playground id + current state via URL params.
+  // isolation.html loads playground.js, calls render() to populate _pgdConfigs,
+  // then renders the preview directly — no cross-window communication needed.
+  const isoParams = new URLSearchParams({ pgd_id: config.id, variant: st.variant, ...st.props });
+  window.open('isolation.html?' + isoParams.toString(), '_blank');
 };
 
 // "Click Me" trigger — demonstrates the component the way it behaves at
