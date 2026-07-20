@@ -1,4 +1,4 @@
-# MobileDesignSystem — Proje Kuralları
+# Bentas Design System — Proje Kuralları
 
 ## CSS Değişkenleri (Design Tokens) — ZORUNLU
 
@@ -19,6 +19,23 @@ Sabit piksel değeri sadece **token karşılığı olmayan** boyutlarda kabul ed
 
 O component'in CSS bloğunda hardcoded px/hex değer kalmadığından emin ol — yalnızca `var(--bt-*, fallback)` deseninin fallback kısmında px/hex görünmeli. CSS selector specificity'ye dikkat: aynı elementi hedefleyen daha genel bir kural (örn. `.content p`) component'in kendi class'ını ezebilir — component class'larını yeterince spesifik yaz (örn. `.bt-x-field .bt-x__desc`).
 
+## Component İsimlendirme Kuralı
+
+Bileşen adları **PascalCase** olmalı, kelimeler ayrı harf büyüklüğüyle birleştirilmeli:
+- `SearchBox` (✓) — `Searchbox` değil (✗)
+- `SplitButton` (✓), `IconButton` (✓), `TextBox` (✓)
+
+Figma sayfa adı referans alınır; belirsizlik varsa major design system'lerdeki (Material, Carbon, Fluent) yaygın kullanım tercih edilir.
+
+## Isolation Mode (Playground Toolbar)
+
+`docs/js/playground.js` içindeki isolation butonu **tüm playground'larda standarttır** — ekstra kurulum gerekmez.
+
+Yeni bir component eklendiğinde sadece `registerPlayground({id: 'pgd-xxx-overview', ...})` yeterli. `isolation.html`, `window.PAGES_WEB` üzerinden tüm sayfaların `render()` fonksiyonlarını çağırarak `_pgdConfigs`'i doldurur ve ilgili playground'ı `pgd_id` URL parametresiyle bulur.
+
+`window.PGD_ISOLATE` kaydı veya `config.isolate` **artık yeni componentler için gerekli değil** — sadece Sidebar ve Alert gibi eskiden eklenmiş özel mount davranışları olan componentlerde kalır.
+
 ## Geçmiş
 
-Checkbox / Radio Button / Switch component'lerindeki hardcoded font-size/line-height/gap/border-radius/beyaz-hex değerleri 2026-07-17'de retroaktif olarak `--bt-text-*-size/-lh`, `--bt-space-*`, `--bt-radius-*`, `--bt-surface-primary-default` token'larına geçirildi. Bu kural yeni eklenen her component için geçerli — component tamamlandığında yukarıdaki "Kontrol" adımını uygula.
+- **2026-07-17**: Checkbox / Radio Button / Switch component'lerindeki hardcoded değerler retroaktif olarak `--bt-*` token'larına geçirildi.
+- **2026-07-20**: Isolation mode tüm playground'lar için standart hale getirildi; `pgd_id` URL parametresi sistemi eklendi. Repo adı `MobileDesignSystem` → `Bentas-Design-System` olarak değişti.

@@ -2299,8 +2299,12 @@ Nord Health (nordhealth.design) tarzı, Figma "Playground" toolbar'ından (Benta
    gibi (beyaz kutu+border+shadow, sabit width×height, açık gri canvas'ta **sol üstte
    hizalı**). Presetler: Small Mobile 360×780, Large Mobile 414×896, Tablet 768×1024,
    Desktop (sınırsız/ortalanmış eski davranış)
-5. **Open in isolation mode** — `docs/isolation.html?component=X&variant=Y&prop=Z`'i yeni
-   sekmede açar; component + tüm state query param'lardan reconstruct edilir
+5. **Open in isolation mode** — her playground'da standarttır, ekstra kurulum gerekmez.
+   `pgd_id` varsa `isolation.html?pgd_id=X&variant=Y&prop=Z` açılır; `isolation.html`
+   `window.PAGES_WEB` üzerinden `render()` loop'u çalıştırır (ilk eşleşmede durur),
+   `_pgdConfigs[pgdId]`'yi bulur ve preview'ı doğrudan render eder. Eski
+   `PGD_ISOLATE`-kayıtlı componentler (Sidebar, Alert) `component=X` param'ıyla
+   çalışmaya devam eder.
 6. **Click Me** (opsiyonel, `config.trigger`) — component'in gerçek çalışma anını
    (ekranın üstünden `filter:blur()` + `translateY` ile smooth slide-in/out) gösteren bir
    toast sistemi tetikler. Art arda tıklanınca toast'lar birbirini **değiştirmez, alt alta
@@ -2314,12 +2318,16 @@ başlığının hemen altında durur, kutunun İÇİNDE değil.
 
 Playground eklenecek bir bileşenin markup/icon/kod-üretim fonksiyonları `render()`
 closure'ı İÇİNDE değil, dosyanın **modül seviyesinde** (top-level `const`/`function`)
-tanımlanmalı — hem component sayfası hem `isolation.html` aynı fonksiyonu çağırabilsin
-diye. `pages-mobile.js`'te `PAGES` tek bir dev object literal olduğundan, playground
-eklenecek bileşenin girişi bu literal'den çıkarılıp dosya sonuna
-`PAGES['components/x'] = {...}` şeklinde ayrı atama olarak taşınıyor. Sonra
+tanımlanmalı.
+
+**Web componentleri** (`pages-web.js`): `PAGES_WEB['components/x'] = {...}` şeklinde
+ayrı atama, `registerPlayground({id: 'pgd-x-overview', ...})` çağrısı yeterli.
+`window.PGD_ISOLATE` kaydı **gerekmez** — isolation mode otomatik çalışır.
+
+**Mobil componentler** (`pages-mobile.js`): `PAGES` literal'inden çıkarılıp dosya
+sonuna `PAGES['components/x'] = {...}` olarak taşınır. İzolasyon için
 `window.PGD_ISOLATE['componentKey'] = { mount(root, variant, props) {...} }` ile
-isolation hedefi kaydediliyor.
+kayıt yapılması gerekir (eski pattern — henüz pgd_id sistemine geçirilmedi).
 
 ### Icon kuralı
 
