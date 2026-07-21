@@ -3096,8 +3096,8 @@ function tbxPreview(state, props = {}) {
   const metaHtml  = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
   const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   return `
-    <div style="display:flex;align-items:center;justify-content:center;padding:24px;">
-      <div class="${_tbxCls(state, size)}" style="max-width:320px;">
+    <div style="padding:24px;">
+      <div class="${_tbxCls(state, size)}">
         ${metaHtml}
         <div class="bt-tbx__input">${_tbxInputInner(state)}</div>
         ${helperHtml}
