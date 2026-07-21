@@ -3461,7 +3461,12 @@ code {
   color: var(--bt-text-primary-default, #1a1a1a);
 }
 .bt-tbx__text::placeholder { color: var(--bt-text-primary-muted, #a3a3a3); }
-.bt-tbx--disabled .bt-tbx__text { cursor: not-allowed; }
+.bt-tbx--disabled .bt-tbx__text {
+  cursor: not-allowed;
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  -webkit-text-fill-color: var(--bt-text-primary-muted, #a3a3a3); /* WebKit disabled override */
+  opacity: 1; /* Tarayıcı varsayılan disabled opacity'sini sıfırla */
+}
 
 /* — Controls (icon wrappers) — */
 .bt-tbx__control {
