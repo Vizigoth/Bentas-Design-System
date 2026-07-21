@@ -3335,6 +3335,183 @@ code {
 .bt-searchbox--disabled .bt-searchbox__icon { color: var(--bt-text-primary-muted, #a3a3a3); }
 
 /* ════════════════════════════════════════════════════════════════
+   TEXTBOX
+   Wrapper:  <div class="bt-tbx [--sm|--md|--lg] [state-modifier]">
+     <div class="bt-tbx__meta">
+       <span class="bt-tbx__label">Label</span>
+       <span class="bt-tbx__required">Required Field</span>
+     </div>
+     <div class="bt-tbx__input">
+       <div class="bt-tbx__field"><input class="bt-tbx__text" /></div>
+       [<div class="bt-tbx__control"><span class="bt-tbx__icon">...</span></div>]
+       [<div class="bt-tbx__control"><button class="bt-tbx__clear">×</button></div>]
+     </div>
+     <span class="bt-tbx__helper">Helper text</span>
+   </div>
+   State modifiers: --hover | --focused | --active | --disabled | --readonly | --error | --error-focused
+   Hover / focus states apply natively; modifier classes exist for documentation previews.
+   ════════════════════════════════════════════════════════════════ */
+
+/* — Wrapper — */
+.bt-tbx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-xs, 4px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* — Label row — */
+.bt-tbx__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-xs, 4px);
+}
+.bt-tbx__label {
+  font-size: var(--bt-text-xs-size, 12px);
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-tbx__required {
+  font-size: var(--bt-text-xs-size, 12px);
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-emphasis, #727272);
+  white-space: nowrap;
+}
+.bt-tbx--error .bt-tbx__label,
+.bt-tbx--error .bt-tbx__required {
+  color: var(--bt-text-error-default, #b31d38);
+}
+
+/* — Input box — */
+.bt-tbx__input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bt-surface-primary-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.bt-tbx--sm .bt-tbx__input { height: 28px; }
+.bt-tbx--md .bt-tbx__input { height: 32px; }
+.bt-tbx--lg .bt-tbx__input { height: 36px; }
+
+/* Hover */
+.bt-tbx:not(.bt-tbx--disabled):not(.bt-tbx--readonly):not(.bt-tbx--error) .bt-tbx__input:hover,
+.bt-tbx--hover .bt-tbx__input {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+}
+/* Focused / Active */
+.bt-tbx:not(.bt-tbx--disabled):not(.bt-tbx--readonly):not(.bt-tbx--error) .bt-tbx__input:focus-within,
+.bt-tbx--focused .bt-tbx__input,
+.bt-tbx--active .bt-tbx__input {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  box-shadow: 0 0 0 3px rgba(13,78,151,0.5);
+}
+/* Error */
+.bt-tbx--error .bt-tbx__input {
+  border-color: var(--bt-border-error-default, #b31d38);
+}
+/* Error focused — native */
+.bt-tbx--error:not(.bt-tbx--disabled) .bt-tbx__input:focus-within {
+  box-shadow: 0 0 0 3px rgba(179,29,56,0.5);
+}
+/* Error focused — forced class (docs preview) */
+.bt-tbx--error-focused .bt-tbx__input {
+  border-color: var(--bt-border-error-default, #b31d38);
+  box-shadow: 0 0 0 3px rgba(179,29,56,0.5);
+}
+/* Disabled */
+.bt-tbx--disabled .bt-tbx__input {
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+  cursor: not-allowed;
+}
+/* Read Only */
+.bt-tbx--readonly .bt-tbx__input {
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+}
+
+/* — Field (text area) — */
+.bt-tbx__field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+.bt-tbx--sm .bt-tbx__field { padding: var(--bt-space-xs, 4px) var(--bt-space-xs, 4px) var(--bt-space-xs, 4px) var(--bt-space-xl, 12px); }
+.bt-tbx--md .bt-tbx__field { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px) var(--bt-space-sm, 6px) var(--bt-space-xl, 12px); }
+.bt-tbx--lg .bt-tbx__field { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px) var(--bt-space-md, 8px) var(--bt-space-xl, 12px); }
+
+/* — Text input — */
+.bt-tbx__text {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--bt-text-xs-size, 12px);
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-tbx__text::placeholder { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-tbx--disabled .bt-tbx__text { cursor: not-allowed; }
+
+/* — Controls (icon wrappers) — */
+.bt-tbx__control {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.bt-tbx--sm .bt-tbx__control { padding: var(--bt-space-2xs, 2px); }
+.bt-tbx--md .bt-tbx__control { padding: var(--bt-space-xs, 4px); }
+.bt-tbx--lg .bt-tbx__control { padding: var(--bt-space-sm, 6px); }
+
+.bt-tbx__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  flex-shrink: 0;
+}
+.bt-tbx__icon svg { display: block; }
+.bt-tbx--error .bt-tbx__icon { color: var(--bt-text-error-default, #b31d38); }
+
+/* Clear button */
+.bt-tbx__clear {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  flex-shrink: 0;
+}
+.bt-tbx__clear:hover { color: var(--bt-text-primary-default, #1a1a1a); }
+
+/* — Helper text — */
+.bt-tbx__helper {
+  display: block;
+  font-size: var(--bt-text-xs-size, 12px);
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+
+/* ════════════════════════════════════════════════════════════════
    DESIGN EXAMPLES — dex-* (scoped to demo scenes)
    ════════════════════════════════════════════════════════════════ */
 

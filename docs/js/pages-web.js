@@ -3050,5 +3050,330 @@ PAGES_WEB['components/button'] = {
   }
 };
 
+// ── TextBox ─────────────────────────────────────────────────────
+const _tbxIconValidation = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+const _tbxIconClear      = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+const TBX_STATE_VARIANTS = [
+  { key: 'default',       label: 'Default' },
+  { key: 'hover',         label: 'Hover' },
+  { key: 'focused',       label: 'Focused' },
+  { key: 'active',        label: 'Active' },
+  { key: 'filled',        label: 'Filled' },
+  { key: 'disabled',      label: 'Disabled' },
+  { key: 'readonly',      label: 'Read Only' },
+  { key: 'error',         label: 'Error' },
+  { key: 'error-focused', label: 'Error Focused' },
+];
+const TBX_SIZE_OPTS  = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md' }, { key: 'lg', label: 'Lg' }];
+const TBX_BOOL_OPTS  = [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }];
+
+function _tbxCls(state, size) {
+  const parts = ['bt-tbx', `bt-tbx--${size}`];
+  if (state === 'error-focused') {
+    parts.push('bt-tbx--error', 'bt-tbx--error-focused');
+  } else if (state !== 'default' && state !== 'filled') {
+    parts.push(`bt-tbx--${state}`);
+  }
+  return parts.join(' ');
+}
+
+function _tbxInputInner(state) {
+  const isError  = state === 'error' || state === 'error-focused';
+  const isFilled = state === 'filled';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+  const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
+  const clearHtml      = isFilled ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
+  const inputAttrs     = (isFilled ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  return `<div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
+}
+
+function tbxPreview(state, props = {}) {
+  const { size = 'sm', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml  = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div class="${_tbxCls(state, size)}" style="max-width:320px;">
+        ${metaHtml}
+        <div class="bt-tbx__input">${_tbxInputInner(state)}</div>
+        ${helperHtml}
+      </div>
+    </div>`;
+}
+
+function tbxCode(state, props = {}) {
+  const { size = 'sm', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const cls = _tbxCls(state, size);
+  const isError    = state === 'error' || state === 'error-focused';
+  const isFilled   = state === 'filled';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+
+  const metaParts = [];
+  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-info icon 15×15 -->\n  </div>` : '';
+  const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
+  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const inputAttrs  = (isFilled ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+
+  const code = `${metaBlock}<div class="bt-tbx__input">
+  <div class="bt-tbx__field">
+    <input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} />
+  </div>${valBlock}${clearBlock}
+</div>${helperBlock}`;
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+function tbxCss(state, props = {}) {
+  const { size = 'sm' } = props;
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+  const isError   = state === 'error' || state === 'error-focused';
+  const isFocused = state === 'focused' || state === 'active' || state === 'error-focused';
+  const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
+
+  lines.push(`/* TextBox · ${label}${size !== 'sm' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push('');
+  lines.push('.bt-tbx__input {');
+  lines.push(p('height', size === 'lg' ? '36px' : size === 'md' ? '32px' : '28px'));
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background',
+    (state === 'disabled' || state === 'readonly')
+      ? 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'
+      : 'var(--bt-surface-primary-default)  /* #ffffff */'));
+  lines.push(p('border', `1px solid ${
+    isError
+      ? 'var(--bt-border-error-default)  /* #b31d38 */'
+      : (state === 'hover' || state === 'focused' || state === 'active')
+        ? 'var(--bt-border-brand-default)  /* #0d4e97 */'
+        : 'var(--bt-border-primary-default)  /* #d4d4d4 */'
+  }`));
+  if (isFocused) lines.push(p('box-shadow',
+    isError ? '0 0 0 3px rgba(179,29,56,0.5)' : '0 0 0 3px rgba(13,78,151,0.5)'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('.bt-tbx__field {');
+  lines.push(p('padding', size === 'lg'
+    ? 'var(--bt-space-md) var(--bt-space-xs) var(--bt-space-md) var(--bt-space-xl)  /* 8px 4px 8px 12px */'
+    : size === 'md'
+      ? 'var(--bt-space-sm) var(--bt-space-xs) var(--bt-space-sm) var(--bt-space-xl)  /* 6px 4px 6px 12px */'
+      : 'var(--bt-space-xs) var(--bt-space-xs) var(--bt-space-xs) var(--bt-space-xl)  /* 4px 4px 4px 12px */'));
+  lines.push('}');
+
+  if (isError) {
+    lines.push('');
+    lines.push('.bt-tbx__label,');
+    lines.push('.bt-tbx__required {');
+    lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
+    lines.push('}');
+  }
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/textbox'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Sizes'],
+  render(tab) {
+    const title = 'TextBox';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const sharedProps = [
+      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'sm'  },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+    ];
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      ${registerPlayground({
+        id: 'pgd-tbx-ex',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => tbxPreview(state, p),
+        code:    (state, p) => tbxCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">TextBox için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Control padding</th><th>Field padding</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-2xs')} (2px)</td><td>${tk('--bt-space-xs')} top/bot · ${tk('--bt-space-xl')} left · ${tk('--bt-space-xs')} right</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-sm')} top/bot · ${tk('--bt-space-xl')} left · ${tk('--bt-space-xs')} right</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-sm')} (6px)</td><td>${tk('--bt-space-md')} top/bot · ${tk('--bt-space-xl')} left · ${tk('--bt-space-xs')} right</td></tr>
+        </tbody>
+      </table>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+      <h2>Shared Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>background (Default/Hover/Focused/Error)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Placeholder rengi</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Değer metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Label rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Required field rengi</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Helper text rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>Control kutusu</td><td>—</td><td>24 × 24px (validation ikon 15×15, clear ikon 10×10)</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-tbx')}</td><td>Wrapper</td><td>flex-col, gap 4px — state modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-tbx--sm/md/lg')}</td><td>Wrapper</td><td>Input yüksekliği ve iç padding'i belirler</td></tr>
+          <tr><td>${tk('.bt-tbx__meta')}</td><td>Label satırı</td><td>flex row, gap 4px</td></tr>
+          <tr><td>${tk('.bt-tbx__label')}</td><td>Label metni</td><td>color: --bt-text-primary-default (error: --bt-text-error-default)</td></tr>
+          <tr><td>${tk('.bt-tbx__required')}</td><td>Zorunluk işareti</td><td>color: --bt-text-primary-emphasis (error: --bt-text-error-default)</td></tr>
+          <tr><td>${tk('.bt-tbx__input')}</td><td>Input kutusu</td><td>border, radius, bg — tüm state border/shadow değişimleri burada</td></tr>
+          <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>flex:1, sol padding 12px (--bt-space-xl)</td></tr>
+          <tr><td>${tk('.bt-tbx__text')}</td><td>&lt;input&gt;</td><td>Gerçek HTML input elemanı</td></tr>
+          <tr><td>${tk('.bt-tbx__control')}</td><td>İkon sarmalayıcı</td><td>Validation veya clear ikon için</td></tr>
+          <tr><td>${tk('.bt-tbx__icon')}</td><td>24×24 ikon alanı</td><td>color: muted (error: --bt-text-error-default)</td></tr>
+          <tr><td>${tk('.bt-tbx__clear')}</td><td>Temizle butonu</td><td>Filled state'te gösterilir; × ikonu, hover'da koyu</td></tr>
+          <tr><td>${tk('.bt-tbx__helper')}</td><td>Yardım metni</td><td>color: --bt-text-primary-default</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">TextBox kullanım kuralları.</p>
+      <h2>When to use</h2>
+      <ul>
+        <li>Kullanıcının serbest metin gireceği tek satırlık form alanlarında</li>
+        <li>Arama, filtreleme veya veri girişi gerektiren formlarda</li>
+        <li>Label + Helper text ile birlikte kullanıcıya bağlam sağlamak istediğinde</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Her zaman anlamlı bir <code style="font-family:var(--mono)">placeholder</code> metni ekle</li>
+        <li>Zorunlu alanları <code style="font-family:var(--mono)">.bt-tbx__required</code> ile işaretle</li>
+        <li>Hata mesajını helper text olarak göster, error state ile birlikte kullan</li>
+        <li>Düzenleme yoksa Disabled yerine Read Only kullan — okuma hakkı varsa</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Label'sız TextBox bırakma — erişilebilirlik için label zorunlu</li>
+        <li>Çok satırlı metin için TextBox kullanma — bunun yerine Textarea kullan</li>
+        <li>Error state'te yalnızca border'ı kırmızı yapma — label ve required field da dönmeli</li>
+      </ul>
+    `};
+
+    // ── Overview ─────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-tbx-overview',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => tbxPreview(state, p),
+        code:    (state, p) => tbxCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+
+      <p class="page-desc">Tek satırlık metin giriş bileşeni. Label, Required Field ve Helper Text ile birleşik yapı; 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Input kutusu</td><td>Border (Default)</td><td>${tk('Border/Primary/--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border (Hover/Focused)</td><td>${tk('Border/Brand/--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Border radius</td><td>${tk('Radius/radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Sm</td><td>Height</td><td>—</td><td>28px</td></tr>
+          <tr><td>Md</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Lg</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td rowspan="2">Label</td><td>Font / size</td><td>${tk('Font/Family/Label · Font/Size/text-xs')}</td><td>Geist 12px</td></tr>
+          <tr><td>Color</td><td>${tk('Text/Primary/--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Required field</td><td>Color</td><td>${tk('Text/Primary/--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Placeholder</td><td>Color</td><td>${tk('Text/Primary/--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>${tk('Focus Ring/primary')}</td><td>0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>State</th><th>Preview (Sm)</th></tr></thead>
+        <tbody>
+          ${TBX_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="${_tbxCls(s.key, 'sm')}">
+                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span><span class="bt-tbx__required">Required Field</span></div>
+                  <div class="bt-tbx__input">
+                    <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${s.key === 'filled' ? ' value="Placeholder Text"' : ''}${s.key === 'disabled' ? ' disabled' : ''}${s.key === 'readonly' ? ' readonly' : ''} /></div>
+                    ${(s.key === 'error' || s.key === 'error-focused') ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : ''}
+                    ${s.key === 'filled' ? `<div class="bt-tbx__control"><button class="bt-tbx__clear">${_tbxIconClear}</button></div>` : ''}
+                  </div>
+                  <span class="bt-tbx__helper">Helper Text</span>
+                </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${TBX_SIZE_OPTS.map(sz => `
+          <tr>
+            <td><span class="token-name">${sz.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="bt-tbx bt-tbx--${sz.key}">
+                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                  <div class="bt-tbx__input">
+                    <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text" /></div>
+                  </div>
+                  <span class="bt-tbx__helper">Helper Text</span>
+                </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
 // Expose for isolation.html auto-render
 window.PAGES_WEB = PAGES_WEB;
