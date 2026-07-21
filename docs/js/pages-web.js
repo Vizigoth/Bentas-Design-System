@@ -47,6 +47,7 @@ const NAV_WEB = [
       { label: 'Switch',            id: 'components/switch' },
       { label: 'Text Field',        id: 'components/text-field' },
       { label: 'TextBox',           id: 'components/textbox' },
+      { label: 'Select LookUp',     id: 'components/select-lookup' },
       { label: 'Toggle',            id: 'components/toggle' },
       { label: 'Top App Bar',       id: 'components/top-app-bar' },
     ]
@@ -3065,7 +3066,7 @@ const TBX_STATE_VARIANTS = [
   { key: 'error',         label: 'Error' },
   { key: 'error-focused', label: 'Error Focused' },
 ];
-const TBX_SIZE_OPTS  = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md' }, { key: 'lg', label: 'Lg' }];
+const TBX_SIZE_OPTS  = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md (Default)' }, { key: 'lg', label: 'Lg' }];
 const TBX_BOOL_OPTS  = [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }];
 
 function _tbxCls(state, size) {
@@ -3189,7 +3190,7 @@ PAGES_WEB['components/textbox'] = {
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     const sharedProps = [
-      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'sm'  },
+      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
       { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
       { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
       { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
@@ -3366,6 +3367,221 @@ PAGES_WEB['components/textbox'] = {
                   </div>
                   <span class="bt-tbx__helper">Helper Text</span>
                 </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Select LookUp ───────────────────────────────────────────────
+// Reuses bt-tbx CSS entirely — adds a left control (search/select icon).
+const _slkIconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`;
+
+function _slkInputInner(state) {
+  const isError    = state === 'error' || state === 'error-focused';
+  const isFilled   = state === 'filled' || state === 'readonly';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+  const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
+  const clearHtml      = state === 'filled' ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
+  const inputAttrs     = (isFilled ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  return `
+        <div class="bt-tbx__control">
+          <span class="bt-tbx__icon">${_slkIconSearch}</span>
+        </div>
+        <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Seçin…"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
+}
+
+function slkPreview(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  return `
+    <div style="padding:24px;">
+      <div class="${_tbxCls(state, size)}">
+        ${metaHtml}
+        <div class="bt-tbx__input">${_slkInputInner(state)}</div>
+        ${helperHtml}
+      </div>
+    </div>`;
+}
+
+function slkCode(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const cls        = _tbxCls(state, size);
+  const isError    = state === 'error' || state === 'error-focused';
+  const isFilled   = state === 'filled' || state === 'readonly';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+
+  const metaParts = [];
+  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const valBlock    = isError        ? `\n  <div class="bt-tbx__control">\n    <!-- validation icon 15×15 -->\n  </div>` : '';
+  const clearBlock  = state === 'filled' ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
+  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const inputAttrs  = (isFilled ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+
+  const code = `${metaBlock}<div class="bt-tbx__input">
+  <div class="bt-tbx__control">
+    <!-- search icon 14×14 -->
+  </div>
+  <div class="bt-tbx__field">
+    <input class="bt-tbx__text" type="text" placeholder="Seçin…"${inputAttrs} />
+  </div>${valBlock}${clearBlock}
+</div>${helperBlock}`;
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+PAGES_WEB['components/select-lookup'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Sizes'],
+  render(tab) {
+    const title = 'Select LookUp';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const sharedProps = [
+      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+    ];
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      ${registerPlayground({
+        id: 'pgd-slk-ex',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => slkPreview(state, p),
+        code:    (state, p) => slkCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Select LookUp, <code style="font-family:var(--mono)">bt-tbx</code> CSS sınıflarını tamamen miras alır — ek token yoktur.</p>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>text</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-tbx')}</td><td>Wrapper</td><td>TextBox ile aynı CSS — state modifier'ları buraya</td></tr>
+          <tr><td>${tk('.bt-tbx--sm/md/lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding</td></tr>
+          <tr><td>${tk('.bt-tbx__control')}</td><td>Sol ikon sarmalayıcı</td><td>Field'dan önce konumlanır — search/select ikonu</td></tr>
+          <tr><td>${tk('.bt-tbx__icon')}</td><td>24×24 ikon alanı</td><td>Sol ikon ve sağ validation ikonu için ortak</td></tr>
+          <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>Sol ikon solda olduğu için sol padding azalabilir</td></tr>
+          <tr><td>${tk('.bt-tbx__clear')}</td><td>Temizle butonu</td><td>Filled state'te sağda gösterilir</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Select LookUp kullanım kuralları.</p>
+      <h2>When to use</h2>
+      <ul>
+        <li>Yazarak arama yapılabilen seçim alanlarında (autocomplete / combo box)</li>
+        <li>Listeden tek seçim yapılacak ancak sonuçların filtrelenmesi gerektiğinde</li>
+        <li>Seçili değerin görünür kalıp temizlenebilmesi gerektiğinde (Filled + × butonu)</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Sol ikonla arama ya da seçim davranışını göster</li>
+        <li>Filled state'te her zaman clear (×) butonunu sun</li>
+        <li>Error state'te hem border hem label/required kırmızıya dönsün</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Seçim sonrası left icon'u kaldırma — her zaman görünür kalmalı</li>
+        <li>TextBox ile karıştırma — Select LookUp yalnızca listeden seçim içindir</li>
+      </ul>
+    `};
+
+    // ── Overview ─────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-slk-overview',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => slkPreview(state, p),
+        code:    (state, p) => slkCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+
+      <p class="page-desc">Sol arama ikonu ve seçim alanından oluşan lookup bileşeni. <code style="font-family:var(--mono)">bt-tbx</code> CSS'ini miras alır; 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">Input kutusu</td><td>Border (Default)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td rowspan="3">Sol ikon (Left Control)</td><td>Kutu boyutu</td><td>—</td><td>24 × 24px</td></tr>
+          <tr><td>Sm padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Md padding</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Lg padding</td><td>${tk('--bt-space-sm')}</td><td>6px</td></tr>
+          <tr><td>Sol ikon rengi</td><td>color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Placeholder</td><td>color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Seçili değer</td><td>color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>State</th><th>Preview (Md)</th></tr></thead>
+        <tbody>
+          ${TBX_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:6px 0;">
+              <div class="${_tbxCls(s.key, 'md')}">
+                <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span><span class="bt-tbx__required">Required Field</span></div>
+                <div class="bt-tbx__input">${_slkInputInner(s.key)}</div>
+                <span class="bt-tbx__helper">Helper Text</span>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${TBX_SIZE_OPTS.map(sz => `
+          <tr>
+            <td><span class="token-name">${sz.label}</span></td>
+            <td style="padding:6px 0;">
+              <div class="bt-tbx bt-tbx--${sz.key}">
+                <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                <div class="bt-tbx__input">
+                  <div class="bt-tbx__control"><span class="bt-tbx__icon">${_slkIconSearch}</span></div>
+                  <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Seçin…" /></div>
+                </div>
+                <span class="bt-tbx__helper">Helper Text</span>
               </div>
             </td>
           </tr>`).join('')}
