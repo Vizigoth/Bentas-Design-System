@@ -3085,7 +3085,7 @@ function _tbxInputInner(state) {
   const isReadOnly = state === 'readonly';
   const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
   const clearHtml      = isFilled ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
-  const inputAttrs     = (isFilled ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  const inputAttrs     = ((isFilled || isReadOnly) ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   return `<div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
 }
 
@@ -3120,7 +3120,7 @@ function tbxCode(state, props = {}) {
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-info icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
   const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
-  const inputAttrs  = (isFilled ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="bt-tbx__input">
   <div class="bt-tbx__field">
@@ -3338,7 +3338,7 @@ PAGES_WEB['components/textbox'] = {
                 <div class="${_tbxCls(s.key, 'sm')}">
                   <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span><span class="bt-tbx__required">Required Field</span></div>
                   <div class="bt-tbx__input">
-                    <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${s.key === 'filled' ? ' value="Placeholder Text"' : ''}${s.key === 'disabled' ? ' disabled' : ''}${s.key === 'readonly' ? ' readonly' : ''} /></div>
+                    <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${(s.key === 'filled' || s.key === 'readonly') ? ' value="Placeholder Text"' : ''}${s.key === 'disabled' ? ' disabled' : ''}${s.key === 'readonly' ? ' readonly' : ''} /></div>
                     ${(s.key === 'error' || s.key === 'error-focused') ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : ''}
                     ${s.key === 'filled' ? `<div class="bt-tbx__control"><button class="bt-tbx__clear">${_tbxIconClear}</button></div>` : ''}
                   </div>
