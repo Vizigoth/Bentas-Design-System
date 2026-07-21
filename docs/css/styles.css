@@ -3446,6 +3446,66 @@ code {
 .bt-tbx--sm .bt-tbx__field { padding: var(--bt-space-xs, 4px) var(--bt-space-xs, 4px) var(--bt-space-xs, 4px) var(--bt-space-xl, 12px); }
 .bt-tbx--md .bt-tbx__field { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px) var(--bt-space-sm, 6px) var(--bt-space-xl, 12px); }
 .bt-tbx--lg .bt-tbx__field { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px) var(--bt-space-md, 8px) var(--bt-space-xl, 12px); }
+/* ════════════════════════════════════════════════════════════════
+   MULTI SELECT — bt-msl (extends bt-tbx state system)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Override fixed height — chip rows can wrap */
+.bt-msl .bt-tbx__input { height: auto; }
+.bt-msl.bt-tbx--sm .bt-tbx__input { min-height: 28px; }
+.bt-msl.bt-tbx--md .bt-tbx__input { min-height: 32px; }
+.bt-msl.bt-tbx--lg .bt-tbx__input { min-height: 36px; }
+
+/* — Chip content area — */
+.bt-msl__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bt-space-xs, 4px);
+}
+.bt-tbx--sm .bt-msl__content { padding: var(--bt-space-xs, 4px); }
+.bt-tbx--md .bt-msl__content { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px); }
+.bt-tbx--lg .bt-msl__content { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px); }
+
+/* — Chip — */
+.bt-msl__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bt-space-2xs, 2px);
+  padding: var(--bt-space-2xs, 2px) var(--bt-space-xs, 4px);
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  flex-shrink: 0;
+}
+.bt-msl__chip-text {
+  font-size: var(--bt-text-xs-size, 12px);
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-msl__chip-remove {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--bt-icon-primary-strong, #535353);
+  flex-shrink: 0;
+}
+.bt-msl__chip-remove:hover { color: var(--bt-text-primary-default, #1a1a1a); }
+
+/* Disabled chips */
+.bt-tbx--disabled .bt-msl__chip { opacity: 0.6; }
+.bt-tbx--disabled .bt-msl__chip-remove,
+.bt-tbx--readonly .bt-msl__chip-remove { pointer-events: none; }
+
 /* Icon-left variant (e.g. Date Picker) — left control already provides spacing */
 .bt-tbx--icon-left.bt-tbx--sm .bt-tbx__field { padding-left: var(--bt-space-xs, 4px); }
 .bt-tbx--icon-left.bt-tbx--md .bt-tbx__field { padding-left: var(--bt-space-xs, 4px); }

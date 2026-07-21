@@ -48,6 +48,7 @@ const NAV_WEB = [
       { label: 'Text Field',        id: 'components/text-field' },
       { label: 'TextBox',           id: 'components/textbox' },
       { label: 'Select LookUp',     id: 'components/select-lookup' },
+      { label: 'MultiSelect',       id: 'components/multi-select' },
       { label: 'Date Picker',       id: 'components/date-picker' },
       { label: 'Dropdown',          id: 'components/dropdown' },
       { label: 'Toggle',            id: 'components/toggle' },
@@ -3986,6 +3987,223 @@ function txaCss(state, props = {}) {
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
+
+// ── Multi Select ─────────────────────────────────────────────────────────────
+
+const _mslIconXSmall = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5"/></svg>`;
+
+const _mslChips = `
+  <span class="bt-msl__chip"><span class="bt-msl__chip-text">Option 1</span></span>
+  <span class="bt-msl__chip"><span class="bt-msl__chip-text">Option 2</span></span>
+  <span class="bt-msl__chip"><span class="bt-msl__chip-text">+2 more</span><button type="button" class="bt-msl__chip-remove">${_mslIconXSmall}</button></span>`;
+
+function _mslCls(state, size) {
+  return _tbxCls(state, size) + ' bt-msl';
+}
+
+function _mslInputInner(state) {
+  const isError    = state === 'error' || state === 'error-focused';
+  const isFilled   = state === 'filled';
+  const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
+  const clearHtml      = isFilled ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
+  return `<div class="bt-tbx__control bt-tbx__control--left"><span class="bt-tbx__icon">${_slkIconPlus}</span></div><div class="bt-msl__content">${_mslChips}</div>${validationHtml}${clearHtml}`;
+}
+
+function mslPreview(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  return `
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
+      <div class="${_mslCls(state, size)}">
+        ${metaHtml}
+        <div class="bt-tbx__input">${_mslInputInner(state)}</div>
+        ${helperHtml}
+      </div>
+    </div>`;
+}
+
+function mslCode(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const cls     = _mslCls(state, size);
+  const isError = state === 'error' || state === 'error-focused';
+  const isFilled = state === 'filled';
+  const metaParts = [];
+  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
+  const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
+  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const code = `${metaBlock}<div class="bt-tbx__input">
+  <div class="bt-tbx__control bt-tbx__control--left">
+    <!-- plus icon 16×16 -->
+  </div>
+  <div class="bt-msl__content">
+    <span class="bt-msl__chip">
+      <span class="bt-msl__chip-text">Option 1</span>
+    </span>
+    <span class="bt-msl__chip">
+      <span class="bt-msl__chip-text">+2 more</span>
+      <button class="bt-msl__chip-remove"><!-- × icon 10×10 --></button>
+    </span>
+  </div>${valBlock}${clearBlock}
+</div>${helperBlock}`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+PAGES_WEB['components/multi-select'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Sizes'],
+  render(tab) {
+    const title = 'MultiSelect';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const sharedProps = [
+      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+    ];
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      ${registerPlayground({
+        id: 'pgd-msl-ex',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => mslPreview(state, p),
+        code:    (state, p) => mslCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">MultiSelect için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Min Height</th><th>Left control padding</th><th>Content padding</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-2xs')} (2px)</td><td>${tk('--bt-space-xs')} (4px) tüm kenar</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-sm')} (6px) dikey · ${tk('--bt-space-xs')} (4px) yatay</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-sm')} (6px)</td><td>${tk('--bt-space-md')} (8px) dikey · ${tk('--bt-space-xs')} (4px) yatay</td></tr>
+        </tbody>
+      </table>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>chip opacity</td><td colspan="2">0.6</td></tr>
+          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+      <h2>Chip Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>padding</td><td>${tk('--bt-space-2xs')} / ${tk('--bt-space-xs')}</td><td>2px / 4px</td></tr>
+          <tr><td>gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>text color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>remove icon color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-tbx.bt-msl')}</td><td>Wrapper</td><td>TextBox state sistemi + min-height override; state/size modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-tbx__control--left')}</td><td>Plus ikon sarmalayıcı</td><td>Sol tarafta sabit; hover/focused'ta subtle bg</td></tr>
+          <tr><td>${tk('.bt-msl__content')}</td><td>Chip alanı</td><td>flex-wrap, gap --bt-space-xs; boyuta göre padding</td></tr>
+          <tr><td>${tk('.bt-msl__chip')}</td><td>Tekil chip</td><td>subtle bg + border + radius-sm</td></tr>
+          <tr><td>${tk('.bt-msl__chip-text')}</td><td>Chip metni</td><td>12px, nowrap</td></tr>
+          <tr><td>${tk('.bt-msl__chip-remove')}</td><td>Chip × butonu</td><td>16×16, +N more chip'inde gösterilir</td></tr>
+          <tr><td>${tk('.bt-tbx__clear')}</td><td>Tümünü temizle butonu</td><td>Filled state'te sağda</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">MultiSelect kullanım kuralları.</p>
+      <h2>When to use</h2>
+      <ul>
+        <li>Kullanıcının birden fazla seçenek seçmesi gereken form alanlarında</li>
+        <li>Seçili değerlerin chip olarak görünür kalması gerektiğinde</li>
+        <li>Dropdown listesinden çoklu seçim yapılacak durumlarda</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Seçilen chip sayısını göster — fazla chip'leri "+N more" olarak topla</li>
+        <li>Filled state'te "Tümünü temizle" (×) butonu ekle</li>
+        <li>Plus ikonu ile yeni seçim ekleneceğini kullanıcıya göster</li>
+        <li>Error state'te helper text ile açıklayıcı mesaj ekle</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Tek seçim için MultiSelect kullanma — Select LookUp veya Dropdown kullan</li>
+        <li>Chip'leri readonly state'te kaldırma butonuyla gösterme</li>
+      </ul>
+    `};
+
+    // ── Overview ───────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-msl-overview',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => mslPreview(state, p),
+        code:    (state, p) => mslCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+      <h2>Anatomy</h2>
+      <ol>
+        <li><strong>Meta</strong> — label + required field satırı</li>
+        <li><strong>Left control</strong> — plus ikonu, yeni seçim eklemek için (${tk('.bt-tbx__control--left')})</li>
+        <li><strong>Content</strong> — seçili chip'ler (${tk('.bt-msl__content')})</li>
+        <li><strong>Chip</strong> — tekil seçim etiketi; "+N more" chip'i kaldırma × butonu içerir</li>
+        <li><strong>Clear control</strong> — filled state'te tüm seçimleri temizler</li>
+        <li><strong>Validation control</strong> — error state'te uyarı ikonu</li>
+        <li><strong>Helper text</strong> — yardımcı bilgi veya hata mesajı</li>
+      </ol>
+      <h2>States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Class modifier</th><th>Görsel fark</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>—</td><td>Gri border, chip'ler görünür</td></tr>
+          <tr><td>Hover</td><td>${tk('.bt-tbx--hover')}</td><td>Mavi border</td></tr>
+          <tr><td>Focused</td><td>${tk('.bt-tbx--focused')}</td><td>Mavi border + focus ring</td></tr>
+          <tr><td>Active</td><td>${tk('.bt-tbx--active')}</td><td>Mavi border + focus ring (panel açık)</td></tr>
+          <tr><td>Filled</td><td>${tk('.bt-tbx--filled')}</td><td>Chip'ler + sağda × (tümünü temizle)</td></tr>
+          <tr><td>Disabled</td><td>${tk('.bt-tbx--disabled')}</td><td>Subtle bg, chip'ler %60 opacity</td></tr>
+          <tr><td>Read Only</td><td>${tk('.bt-tbx--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
+          <tr><td>Error</td><td>${tk('.bt-tbx--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
+          <tr><td>Error Focused</td><td>${tk('.bt-tbx--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
+        </tbody>
+      </table>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Class</th><th>Min Height</th></tr></thead>
+        <tbody>
+          <tr><td>Small</td><td>${tk('.bt-tbx--sm')}</td><td>28px</td></tr>
+          <tr><td>Medium (Default)</td><td>${tk('.bt-tbx--md')}</td><td>32px</td></tr>
+          <tr><td>Large</td><td>${tk('.bt-tbx--lg')}</td><td>36px</td></tr>
+        </tbody>
+      </table>
+    `};
+  }
+};
 
 // ── Date Picker ──────────────────────────────────────────────────────────────
 
