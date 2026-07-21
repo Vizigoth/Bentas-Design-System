@@ -48,6 +48,8 @@ const NAV_WEB = [
       { label: 'Text Field',        id: 'components/text-field' },
       { label: 'TextBox',           id: 'components/textbox' },
       { label: 'Select LookUp',     id: 'components/select-lookup' },
+      { label: 'Date Picker',       id: 'components/date-picker' },
+      { label: 'Dropdown',          id: 'components/dropdown' },
       { label: 'Toggle',            id: 'components/toggle' },
       { label: 'Top App Bar',       id: 'components/top-app-bar' },
     ]
@@ -2146,12 +2148,12 @@ PAGES_WEB['components/switch'] = {
 };
 
 // ── Searchbox ────────────────────────────────────────────────────
-const _sbxIconClear = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const _sbxIconClear = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5"/></svg>`;
 
 const SBX_SIZE_OPTS = [
   { key: 'lg', label: 'Lg' },
-  { key: 'md', label: 'Md' },
-  { key: 'sm', label: 'Sm (Default)' },
+  { key: 'md', label: 'Md (Default)' },
+  { key: 'sm', label: 'Sm' },
 ];
 const SBX_STATE_VARIANTS = [
   { key: 'default',  label: 'Default' },
@@ -2189,7 +2191,7 @@ function sbxPreview(state, props = {}) {
         </div>` : '';
   return `
     <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
-      <div class="${cls}" style="max-width:320px;">
+      <div class="${cls}" style="max-width:420px;">
         <div class="bt-searchbox__control">
           <span class="bt-searchbox__icon">${sbxIconSearch}</span>
         </div>
@@ -2270,7 +2272,7 @@ PAGES_WEB['components/searchbox'] = {
         id: 'pgd-sbx-ex',
         variants: SBX_STATE_VARIANTS,
         props: [
-          { key: 'size', label: 'Size', options: SBX_SIZE_OPTS, default: 'sm' },
+          { key: 'size', label: 'Size', options: SBX_SIZE_OPTS, default: 'md' },
         ],
         preview: (state, p) => sbxPreview(state, p),
         code:    (state, p) => sbxCode(state, p),
@@ -2350,7 +2352,7 @@ PAGES_WEB['components/searchbox'] = {
         id: 'pgd-sbx-overview',
         variants: SBX_STATE_VARIANTS,
         props: [
-          { key: 'size', label: 'Size', options: SBX_SIZE_OPTS, default: 'sm' },
+          { key: 'size', label: 'Size', options: SBX_SIZE_OPTS, default: 'md' },
         ],
         preview: (state, p) => sbxPreview(state, p),
         code:    (state, p) => sbxCode(state, p),
@@ -3053,7 +3055,7 @@ PAGES_WEB['components/button'] = {
 
 // ── TextBox ─────────────────────────────────────────────────────
 const _tbxIconValidation = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-const _tbxIconClear      = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const _tbxIconClear      = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5"/></svg>`;
 
 const TBX_STATE_VARIANTS = [
   { key: 'default',       label: 'Default' },
@@ -3097,7 +3099,7 @@ function tbxPreview(state, props = {}) {
   const metaHtml  = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
   const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   return `
-    <div style="padding:24px;">
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
         ${metaHtml}
         <div class="bt-tbx__input">${_tbxInputInner(state)}</div>
@@ -3378,7 +3380,7 @@ PAGES_WEB['components/textbox'] = {
 
 // ── Select LookUp ───────────────────────────────────────────────
 // Reuses bt-tbx CSS entirely — adds a left control (search/select icon).
-const _slkIconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`;
+const _slkIconPlus = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
 
 function _slkInputInner(state) {
   const isError    = state === 'error' || state === 'error-focused';
@@ -3389,10 +3391,10 @@ function _slkInputInner(state) {
   const clearHtml      = state === 'filled' ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
   const inputAttrs     = (isFilled ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   return `
-        <div class="bt-tbx__control">
-          <span class="bt-tbx__icon">${_slkIconSearch}</span>
+        <div class="bt-tbx__control bt-tbx__control--left">
+          <span class="bt-tbx__icon">${_slkIconPlus}</span>
         </div>
-        <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Seçin…"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
+        <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
 }
 
 function slkPreview(state, props = {}) {
@@ -3402,7 +3404,7 @@ function slkPreview(state, props = {}) {
   const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
   const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   return `
-    <div style="padding:24px;">
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
         ${metaHtml}
         <div class="bt-tbx__input">${_slkInputInner(state)}</div>
@@ -3429,11 +3431,11 @@ function slkCode(state, props = {}) {
   const inputAttrs  = (isFilled ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="bt-tbx__input">
-  <div class="bt-tbx__control">
-    <!-- search icon 14×14 -->
+  <div class="bt-tbx__control bt-tbx__control--left">
+    <!-- plus icon 16×16 -->
   </div>
   <div class="bt-tbx__field">
-    <input class="bt-tbx__text" type="text" placeholder="Seçin…"${inputAttrs} />
+    <input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} />
   </div>${valBlock}${clearBlock}
 </div>${helperBlock}`;
 
@@ -3578,10 +3580,867 @@ PAGES_WEB['components/select-lookup'] = {
               <div class="bt-tbx bt-tbx--${sz.key}">
                 <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
                 <div class="bt-tbx__input">
-                  <div class="bt-tbx__control"><span class="bt-tbx__icon">${_slkIconSearch}</span></div>
-                  <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Seçin…" /></div>
+                  <div class="bt-tbx__control bt-tbx__control--left"><span class="bt-tbx__icon">${_slkIconPlus}</span></div>
+                  <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text" /></div>
                 </div>
                 <span class="bt-tbx__helper">Helper Text</span>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Dropdown ────────────────────────────────────────────────────
+const _ddIconChevron   = `<svg width="12" height="7" viewBox="0 0 12 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l5 5 5-5"/></svg>`;
+const _ddIconChevronUp = `<svg width="12" height="7" viewBox="0 0 12 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l5-5 5 5"/></svg>`;
+
+function _ddInputInner(state) {
+  const isError    = state === 'error' || state === 'error-focused';
+  const isActive   = state === 'active';
+  const showValue  = state === 'filled' || state === 'readonly' || isActive || isError;
+  const textColor  = showValue
+    ? 'var(--bt-text-primary-default,#1a1a1a)'
+    : 'var(--bt-text-primary-muted,#a3a3a3)';
+  const validationHtml = isError ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
+  const clearHtml      = state === 'filled' ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
+  const chevronIcon    = isActive ? _ddIconChevronUp : _ddIconChevron;
+  return `
+        <div class="bt-tbx__field"><span class="bt-tbx__text" style="color:${textColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</span></div>${validationHtml}${clearHtml}
+        <div class="bt-tbx__control bt-tbx__control--right">
+          <span class="bt-tbx__icon">${chevronIcon}</span>
+        </div>`;
+}
+
+const _ddIconLoader = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>`;
+
+const _ddOptionsHtml = `
+  <div class="bt-dd-option bt-dd-option--selected">
+    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+    <span class="bt-dd-option__text">Option 1</span>
+  </div>
+  <div class="bt-dd-option">
+    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+    <span class="bt-dd-option__text">Option 2</span>
+  </div>
+  <div class="bt-dd-option">
+    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+    <span class="bt-dd-option__text">Option 3</span>
+  </div>
+  <div class="bt-dd-option">
+    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+    <span class="bt-dd-option__text">Option 4</span>
+  </div>`;
+
+// Global toggle for interactive default-state dropdown in playground
+window.btDdToggle = function(inputEl) {
+  const root   = inputEl.closest('.bt-tbx');
+  const isOpen = root.classList.toggle('bt-tbx--active');
+  const opts   = root.querySelector('.bt-dd-options');
+  if (opts) opts.style.display = isOpen ? '' : 'none';
+  const icon = inputEl.querySelector('.bt-tbx__control--right .bt-tbx__icon');
+  if (icon) {
+    icon.innerHTML = isOpen
+      ? '<svg width="12" height="7" viewBox="0 0 12 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l5-5 5 5"/></svg>'
+      : '<svg width="12" height="7" viewBox="0 0 12 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l5 5 5-5"/></svg>';
+  }
+};
+
+function ddPreview(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const isActive  = state === 'active';
+  const isDefault = state === 'default';
+  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  // Options panel: always inside bt-tbx (above helper). Hidden initially for default (interactive), visible for active.
+  const optionsHtml = (isActive || isDefault) ? `<div class="bt-dd-options" style="margin-top:2px;${isDefault ? 'display:none;' : ''}">${_ddOptionsHtml}</div>` : '';
+  // Interactive click only for default state
+  const inputAttrs  = isDefault ? ` onclick="btDdToggle(this)" style="cursor:pointer;"` : '';
+  return `
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
+      <div class="${_tbxCls(state, size)}">
+        ${metaHtml}
+        <div class="bt-tbx__input"${inputAttrs}>${_ddInputInner(state)}</div>
+        ${optionsHtml}
+        ${helperHtml}
+      </div>
+    </div>`;
+}
+
+function ddCode(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const cls      = _tbxCls(state, size);
+  const isError  = state === 'error' || state === 'error-focused';
+  const isFilled = state === 'filled';
+  const isActive = state === 'active';
+  const metaParts = [];
+  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
+  const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
+  const optionsBlock = isActive ? `\n<div class="bt-dd-options">\n  <div class="bt-dd-option bt-dd-option--selected">\n    <span class="bt-dd-option__text">Option 1</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 2</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 3</span>\n  </div>\n</div>` : '';
+  const code = `${metaBlock}<div class="bt-tbx__input">
+  <div class="bt-tbx__field">
+    <span class="bt-tbx__text">Placeholder Text</span>
+  </div>${valBlock}${clearBlock}
+  <div class="bt-tbx__control bt-tbx__control--right">
+    <!-- ${isActive ? 'chevron-up' : 'chevron-down'} icon -->
+  </div>
+</div>${optionsBlock}${helperBlock}`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+PAGES_WEB['components/dropdown'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Sizes'],
+  render(tab) {
+    const title = 'Dropdown';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const sharedProps = [
+      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+    ];
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      ${registerPlayground({
+        id: 'pgd-dd-ex',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => ddPreview(state, p),
+        code:    (state, p) => ddCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Dropdown için kullanılan design token–CSS değişken eşleşmeleri. ${tk('bt-tbx')} CSS'ini miras alır.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Field padding</th><th>Control padding</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-xs')} top/bot · ${tk('--bt-space-xl')} left · ${tk('--bt-space-xs')} right</td><td>${tk('--bt-space-2xs')} (2px)</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-sm')} top/bot · ${tk('--bt-space-xl')} left · ${tk('--bt-space-xs')} right</td><td>${tk('--bt-space-xs')} (4px)</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-md')} top/bot · ${tk('--bt-space-xl')} left · ${tk('--bt-space-xs')} right</td><td>${tk('--bt-space-sm')} (6px)</td></tr>
+        </tbody>
+      </table>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover / Focused</td><td>right control bg</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-tbx')}</td><td>Wrapper</td><td>TextBox CSS miras alır — state modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-tbx--sm/md/lg')}</td><td>Wrapper</td><td>Input yüksekliği ve padding belirler</td></tr>
+          <tr><td>${tk('.bt-tbx__meta')}</td><td>Label satırı</td><td>Label ve Required Field sarmalayıcısı</td></tr>
+          <tr><td>${tk('.bt-tbx__input')}</td><td>Input kutusu</td><td>Border, radius, bg — tüm state değişimleri burada</td></tr>
+          <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>Seçili değer veya placeholder span'ını içerir</td></tr>
+          <tr><td>${tk('.bt-tbx__control')}</td><td>Ikon sarmalayıcı</td><td>Validation veya clear ikon için</td></tr>
+          <tr><td>${tk('.bt-tbx__control--right')}</td><td>Chevron sarmalayıcı</td><td>Her state'te sağda; hover/focused'da subtle bg alır</td></tr>
+          <tr><td>${tk('.bt-tbx__clear')}</td><td>Temizle butonu</td><td>Filled state'te gösterilir — seçimi sıfırlar</td></tr>
+          <tr><td>${tk('.bt-tbx__helper')}</td><td>Yardım metni</td><td>color: --bt-text-primary-default</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Dropdown kullanım kuralları.</p>
+      <h2>When to use</h2>
+      <ul>
+        <li>Önceden tanımlanmış seçenekler arasından tek seçim yapıldığında</li>
+        <li>5 veya daha fazla seçenek olduğunda (az seçenek için Radio Button tercih et)</li>
+        <li>Form alanlarında kompakt seçim ihtiyacı olduğunda</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Anlamlı bir placeholder metni ekle (örn. "Seçin...")</li>
+        <li>Zorunlu alanları <code style="font-family:var(--mono)">.bt-tbx__required</code> ile işaretle</li>
+        <li>Filled state'te clear butonu ile seçimi sıfırlama imkânı sun</li>
+        <li>Hata mesajını helper text ile birlikte göster</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>2-3 seçenek için Dropdown kullanma — Radio Button daha iyi UX sağlar</li>
+        <li>Label'sız Dropdown bırakma</li>
+        <li>Uzun arama gerektiren listelerde — Select LookUp kullan</li>
+      </ul>
+    `};
+
+    // ── Overview ─────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-dd-overview',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => ddPreview(state, p),
+        code:    (state, p) => ddCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+
+      <p class="page-desc">Listeden tek seçim yapılan dropdown bileşeni. <code style="font-family:var(--mono)">bt-tbx</code> CSS'ini miras alır; 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Input kutusu</td><td>Border (Default)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border (Hover/Focused)</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Sm</td><td>Height</td><td>—</td><td>28px</td></tr>
+          <tr><td>Md</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Lg</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>Chevron kontrol</td><td>bg (hover/focused)</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Placeholder</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Seçili değer</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>State</th><th>Preview (Md)</th></tr></thead>
+        <tbody>
+          ${TBX_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="${_tbxCls(s.key, 'md')}">
+                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span><span class="bt-tbx__required">Required Field</span></div>
+                  <div class="bt-tbx__input">${_ddInputInner(s.key)}</div>
+                  <span class="bt-tbx__helper">Helper Text</span>
+                </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${TBX_SIZE_OPTS.map(sz => `
+          <tr>
+            <td><span class="token-name">${sz.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="bt-tbx bt-tbx--${sz.key}">
+                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                  <div class="bt-tbx__input">
+                    <div class="bt-tbx__field"><span class="bt-tbx__text" style="color:var(--bt-text-primary-muted,#a3a3a3);white-space:nowrap;">Placeholder Text</span></div>
+                    <div class="bt-tbx__control bt-tbx__control--right"><span class="bt-tbx__icon">${_ddIconChevron}</span></div>
+                  </div>
+                  <span class="bt-tbx__helper">Helper Text</span>
+                </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Text Field (TextArea) ─────────────────────────────────────────
+const TXA_STATE_VARIANTS = [
+  { key: 'default',       label: 'Default'       },
+  { key: 'hover',         label: 'Hover'         },
+  { key: 'focused',       label: 'Focused'       },
+  { key: 'active',        label: 'Active'        },
+  { key: 'filled',        label: 'Filled'        },
+  { key: 'disabled',      label: 'Disabled'      },
+  { key: 'readonly',      label: 'Read Only'     },
+  { key: 'error',         label: 'Error'         },
+  { key: 'error-focused', label: 'Error Focused' },
+];
+
+const TXA_SIZE_OPTS = [
+  { key: 'lg', label: 'Lg' },
+  { key: 'md', label: 'Md (Default)' },
+  { key: 'sm', label: 'Sm' },
+];
+
+function _txaCls(state, size) {
+  const parts = ['bt-txa', `bt-txa--${size}`];
+  if (state === 'error-focused') {
+    parts.push('bt-txa--error', 'bt-txa--error-focused');
+  } else if (state !== 'default' && state !== 'filled') {
+    parts.push(`bt-txa--${state}`);
+  }
+  return parts.join(' ');
+}
+
+function txaPreview(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const isFilled   = state === 'filled' || state === 'readonly';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+  const textAttrs  = (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  const content    = isFilled ? 'Placeholder Text' : '';
+  const labelHtml    = label    === 'yes' ? `<span class="bt-txa__label">Label Text</span>` : '';
+  const requiredHtml = required === 'yes' ? `<span class="bt-txa__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-txa__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'yes' ? `<span class="bt-txa__helper">Helper Text</span>` : '';
+  return `
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
+      <div class="${_txaCls(state, size)}">
+        ${metaHtml}
+        <div class="bt-txa__input">
+          <textarea class="bt-txa__text" placeholder="Placeholder Text"${textAttrs}>${content}</textarea>
+        </div>
+        ${helperHtml}
+      </div>
+    </div>`;
+}
+
+function txaCode(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const cls        = _txaCls(state, size);
+  const isFilled   = state === 'filled' || state === 'readonly';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+  const metaParts  = [];
+  if (label    === 'yes') metaParts.push('  <span class="bt-txa__label">Label Text</span>');
+  if (required === 'yes') metaParts.push('  <span class="bt-txa__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-txa__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const helperBlock = helper === 'yes' ? `\n<span class="bt-txa__helper">Helper Text</span>` : '';
+  const textAttrs   = (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  const content     = isFilled ? '...' : '';
+  const code = `${metaBlock}<div class="bt-txa__input">
+  <textarea class="bt-txa__text" placeholder="Placeholder Text"${textAttrs}>${content}</textarea>
+</div>${helperBlock}`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+function txaCss(state, props = {}) {
+  const { size = 'md' } = props;
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+  const isError   = state === 'error' || state === 'error-focused';
+  const isFocused = state === 'focused' || state === 'active' || state === 'error-focused';
+  const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
+  const minH  = size === 'lg' ? '96px' : size === 'md' ? '76px' : '56px';
+  const py    = size === 'lg' ? 'var(--bt-space-md)  /* 8px */'
+              : size === 'md' ? 'var(--bt-space-sm)  /* 6px */'
+              :                 'var(--bt-space-xs)  /* 4px */';
+  lines.push(`/* Text Field · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push('');
+  lines.push('.bt-txa__input {');
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background',
+    (state === 'disabled' || state === 'readonly')
+      ? 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'
+      : 'var(--bt-surface-primary-default)  /* #ffffff */'));
+  lines.push(p('border', `1px solid ${
+    isError
+      ? 'var(--bt-border-error-default)  /* #b31d38 */'
+      : (state === 'hover' || state === 'focused' || state === 'active')
+        ? 'var(--bt-border-brand-default)  /* #0d4e97 */'
+        : 'var(--bt-border-primary-default)  /* #d4d4d4 */'
+  }`));
+  if (isFocused) lines.push(p('box-shadow',
+    isError ? '0 0 0 3px rgba(179,29,56,0.5)' : '0 0 0 3px rgba(13,78,151,0.5)'));
+  lines.push('}');
+  lines.push('');
+  lines.push('.bt-txa__text {');
+  lines.push(p('min-height', minH));
+  lines.push(p('padding', `${py} var(--bt-space-xl)  /* 12px */`));
+  lines.push('}');
+  if (isError) {
+    lines.push('');
+    lines.push('.bt-txa__label,');
+    lines.push('.bt-txa__required {');
+    lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
+    lines.push('}');
+  }
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// ── Date Picker ──────────────────────────────────────────────────────────────
+
+const _dtpIconCalendar = `<svg width="14" height="15" viewBox="0 0 14 15" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="0.6" y="2.6" width="12.8" height="11.8" rx="1.5"/><line x1="0.6" y1="6.6" x2="13.4" y2="6.6"/><line x1="4" y1="0.6" x2="4" y2="4.6"/><line x1="10" y1="0.6" x2="10" y2="4.6"/></svg>`;
+const _dtpChevLeft  = `<svg width="6" height="11" viewBox="0 0 6 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1L1 5.5L5 10"/></svg>`;
+const _dtpChevRight = `<svg width="6" height="11" viewBox="0 0 6 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1L5 5.5L1 10"/></svg>`;
+
+const _dtpMonthNames = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const _dtpWeekDays   = ['PZT','SL','ÇR','PR','CM','CT','PZ'];
+
+function _dtpCalendarHtml() {
+  const today = new Date();
+  const year  = today.getFullYear();
+  const month = today.getMonth();
+  const todayDay = today.getDate();
+
+  const firstDow    = new Date(year, month, 1).getDay(); // 0=Sun
+  const startOffset = firstDow === 0 ? 6 : firstDow - 1; // Monday-based
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev  = new Date(year, month, 0).getDate();
+
+  const cells = [];
+  for (let i = startOffset - 1; i >= 0; i--)    cells.push({ day: daysInPrev - i, other: true });
+  for (let d = 1; d <= daysInMonth; d++)          cells.push({ day: d, other: false, isToday: d === todayDay });
+  const rem = (7 - (cells.length % 7)) % 7;
+  for (let d = 1; d <= rem; d++)                  cells.push({ day: d, other: true });
+
+  const weekdaysHtml = _dtpWeekDays.map(d => `<div class="bt-cal__weekday">${d}</div>`).join('');
+  let weeksHtml = '';
+  for (let i = 0; i < cells.length; i += 7) {
+    const rowHtml = cells.slice(i, i + 7).map(c => {
+      const cls = ['bt-cal__day'];
+      if (c.other)   cls.push('bt-cal__day--other-month');
+      if (c.isToday) cls.push('bt-cal__day--selected');
+      return `<div class="${cls.join(' ')}">${c.day}</div>`;
+    }).join('');
+    weeksHtml += `<div class="bt-cal__week">${rowHtml}</div>`;
+  }
+
+  return `<div class="bt-cal">
+    <div class="bt-cal__header">
+      <button class="bt-cal__month-btn">${_dtpMonthNames[month]} ${year}</button>
+      <div class="bt-cal__nav">
+        <button class="bt-cal__nav-btn">${_dtpChevLeft}</button>
+        <button class="bt-cal__nav-btn bt-cal__nav-btn--today">Bugün</button>
+        <button class="bt-cal__nav-btn">${_dtpChevRight}</button>
+      </div>
+    </div>
+    <div class="bt-cal__body">
+      <div class="bt-cal__weekdays">${weekdaysHtml}</div>
+      ${weeksHtml}
+    </div>
+  </div>`;
+}
+
+// Global toggle for interactive default-state date picker in playground
+window.btDtpToggle = function(inputEl) {
+  const root   = inputEl.closest('.bt-tbx');
+  const isOpen = root.classList.toggle('bt-tbx--active');
+  const cal    = root.querySelector('.bt-cal');
+  if (cal) cal.style.display = isOpen ? '' : 'none';
+};
+
+function _dtpInputInner(state) {
+  const isError    = state === 'error' || state === 'error-focused';
+  const isFilled   = state === 'filled';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+  const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
+  const clearHtml      = isFilled ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
+  const inputAttrs     = ((isFilled || isReadOnly) ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  return `<div class="bt-tbx__control bt-tbx__control--left"><span class="bt-tbx__icon">${_dtpIconCalendar}</span></div><div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
+}
+
+function _dtpCls(state, size) {
+  return _tbxCls(state, size) + ' bt-tbx--icon-left';
+}
+
+function dtpPreview(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const isActive  = state === 'active';
+  const isDefault = state === 'default';
+  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  // Calendar: always rendered for active/default; hidden initially for default (interactive)
+  const calHtml      = (isActive || isDefault) ? _dtpCalendarHtml().replace('<div class="bt-cal">', `<div class="bt-cal"${isDefault ? ' style="display:none;"' : ''}>`) : '';
+  const inputAttrs   = isDefault ? ` onclick="btDtpToggle(this)" style="cursor:pointer;"` : '';
+  return `
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
+      <div class="${_dtpCls(state, size)}">
+        ${metaHtml}
+        <div class="bt-tbx__input"${inputAttrs}>${_dtpInputInner(state)}</div>
+        ${calHtml}
+        ${helperHtml}
+      </div>
+    </div>`;
+}
+
+function dtpCode(state, props = {}) {
+  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const cls        = _dtpCls(state, size);
+  const isError    = state === 'error' || state === 'error-focused';
+  const isFilled   = state === 'filled';
+  const isDisabled = state === 'disabled';
+  const isReadOnly = state === 'readonly';
+  const metaParts = [];
+  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
+  const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
+  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
+  const code = `${metaBlock}<div class="bt-tbx__input">
+  <div class="bt-tbx__control bt-tbx__control--left">
+    <!-- calendar icon 14×15 -->
+  </div>
+  <div class="bt-tbx__field">
+    <input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} />
+  </div>${valBlock}${clearBlock}
+</div>${helperBlock}`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+PAGES_WEB['components/date-picker'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Sizes'],
+  render(tab) {
+    const title = 'Date Picker';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const sharedProps = [
+      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+    ];
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      ${registerPlayground({
+        id: 'pgd-dtp-ex',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => dtpPreview(state, p),
+        code:    (state, p) => dtpCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Date Picker için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Control padding</th><th>Field padding</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-2xs')} (2px)</td><td>${tk('--bt-space-xs')} top/bot/left · ${tk('--bt-space-xs')} right</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-sm')} top/bot · ${tk('--bt-space-xs')} left/right</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-sm')} (6px)</td><td>${tk('--bt-space-md')} top/bot · ${tk('--bt-space-xs')} left/right</td></tr>
+        </tbody>
+      </table>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+      <h2>Shared Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>background (Default/Hover/Focused/Error)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Placeholder rengi</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Değer metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Calendar ikon rengi</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Calendar ikon rengi (disabled)</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-tbx.bt-tbx--icon-left')}</td><td>Wrapper</td><td>TextBox base + sol ikon variant'ı; state modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-tbx__control.bt-tbx__control--left')}</td><td>Calendar ikon sarmalayıcı</td><td>Sol tarafta sabit; hover/focused'ta subtle bg (--bt-surface-primary-subtle)</td></tr>
+          <tr><td>${tk('.bt-tbx__icon')}</td><td>24×24 ikon alanı</td><td>color: --bt-icon-primary-strong (disabled: --bt-icon-primary-muted)</td></tr>
+          <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>flex:1; padding-left --bt-space-xs (4px) — ikon nedeniyle küçültülmüş</td></tr>
+          <tr><td>${tk('.bt-tbx__clear')}</td><td>Temizle butonu</td><td>Filled state'te sağda gösterilir</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Date Picker kullanım kuralları.</p>
+      <h2>When to use</h2>
+      <ul>
+        <li>Kullanıcının tarih seçmesi gereken form alanlarında</li>
+        <li>Tarih aralığı veya tek tarih girişi gerektiren formlarda</li>
+        <li>Takvim açılır paneli ile birlikte kullanılır (Active state)</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Label ile birlikte kullan — kullanıcıya hangi tarih bilgisi beklendiğini belirt</li>
+        <li>Filled state'te temizleme (×) butonu göster</li>
+        <li>Hata durumunda helper text ile açıklayıcı mesaj ekle</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Serbest metin girişi için Date Picker kullanma — TextBox kullan</li>
+        <li>Calendar ikonunu başka amaçlarla değiştirme</li>
+      </ul>
+    `};
+
+    // ── Overview ───────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-dtp-overview',
+        variants: TBX_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => dtpPreview(state, p),
+        code:    (state, p) => dtpCode(state, p),
+        css:     (state, p) => tbxCss(state, p),
+      })}
+      <h2>Anatomy</h2>
+      <ol>
+        <li><strong>Meta</strong> — label + required field satırı</li>
+        <li><strong>Left control</strong> — sabit calendar ikonu (${tk('.bt-tbx__control')})</li>
+        <li><strong>Field</strong> — metin / input alanı (${tk('.bt-tbx__field')})</li>
+        <li><strong>Clear control</strong> — filled state'te × butonu (${tk('.bt-tbx__clear')})</li>
+        <li><strong>Validation control</strong> — error state'te uyarı ikonu</li>
+        <li><strong>Helper text</strong> — yardımcı bilgi veya hata mesajı</li>
+      </ol>
+      <h2>States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Class modifier</th><th>Görsel fark</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>—</td><td>Gri border</td></tr>
+          <tr><td>Hover</td><td>${tk('.bt-tbx--hover')}</td><td>Mavi border</td></tr>
+          <tr><td>Focused</td><td>${tk('.bt-tbx--focused')}</td><td>Mavi border + focus ring</td></tr>
+          <tr><td>Active</td><td>${tk('.bt-tbx--active')}</td><td>Mavi border + focus ring (takvim açık)</td></tr>
+          <tr><td>Filled</td><td>${tk('.bt-tbx--filled')}</td><td>Değer dolu + × butonu</td></tr>
+          <tr><td>Disabled</td><td>${tk('.bt-tbx--disabled')}</td><td>Subtle bg, soluk metin</td></tr>
+          <tr><td>Read Only</td><td>${tk('.bt-tbx--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
+          <tr><td>Error</td><td>${tk('.bt-tbx--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
+          <tr><td>Error Focused</td><td>${tk('.bt-tbx--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
+        </tbody>
+      </table>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Class</th><th>Height</th></tr></thead>
+        <tbody>
+          <tr><td>Small</td><td>${tk('.bt-tbx--sm')}</td><td>28px</td></tr>
+          <tr><td>Medium (Default)</td><td>${tk('.bt-tbx--md')}</td><td>32px</td></tr>
+          <tr><td>Large</td><td>${tk('.bt-tbx--lg')}</td><td>36px</td></tr>
+        </tbody>
+      </table>
+    `};
+  }
+};
+
+PAGES_WEB['components/text-field'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Sizes'],
+  render(tab) {
+    const title = 'Text Field';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const sharedProps = [
+      { key: 'size',     label: 'Size',     options: TXA_SIZE_OPTS, default: 'md'  },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+    ];
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      ${registerPlayground({
+        id: 'pgd-txa-ex',
+        variants: TXA_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => txaPreview(state, p),
+        code:    (state, p) => txaCode(state, p),
+        css:     (state, p) => txaCss(state, p),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Text Field için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Min Height</th><th>Padding</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Sm</span></td><td>56px</td><td>${tk('--bt-space-xs')} top/bot (4px) · ${tk('--bt-space-xl')} left/right (12px)</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>76px</td><td>${tk('--bt-space-sm')} top/bot (6px) · ${tk('--bt-space-xl')} left/right (12px)</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>96px</td><td>${tk('--bt-space-md')} top/bot (8px) · ${tk('--bt-space-xl')} left/right (12px)</td></tr>
+        </tbody>
+      </table>
+      <h2>State Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+      <h2>Shared Tokens</h2>
+      <table class="token-table">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>background (Default/Hover/Focused/Error)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Placeholder rengi</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Değer metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Label rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Required field rengi</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Helper text rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>resize</td><td>—</td><td>vertical (disabled/readonly: none)</td></tr>
+        </tbody>
+      </table>
+      <h2>Class Reference</h2>
+      <table class="token-table">
+        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-txa')}</td><td>Wrapper</td><td>flex-col, gap 4px — state modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-txa--sm/md/lg')}</td><td>Wrapper</td><td>Min-height ve padding belirler</td></tr>
+          <tr><td>${tk('.bt-txa__meta')}</td><td>Label satırı</td><td>flex row, gap 4px</td></tr>
+          <tr><td>${tk('.bt-txa__label')}</td><td>Label metni</td><td>color: --bt-text-primary-default (error: --bt-text-error-default)</td></tr>
+          <tr><td>${tk('.bt-txa__required')}</td><td>Zorunluk işareti</td><td>color: --bt-text-primary-emphasis (error: --bt-text-error-default)</td></tr>
+          <tr><td>${tk('.bt-txa__input')}</td><td>Input kutusu</td><td>border, radius, bg — tüm state border/shadow değişimleri burada</td></tr>
+          <tr><td>${tk('.bt-txa__text')}</td><td>&lt;textarea&gt;</td><td>Gerçek HTML textarea elemanı; resize: vertical</td></tr>
+          <tr><td>${tk('.bt-txa__helper')}</td><td>Yardım metni</td><td>color: --bt-text-primary-default</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Text Field kullanım kuralları.</p>
+      <h2>When to use</h2>
+      <ul>
+        <li>Kullanıcının birden fazla satır metin gireceği form alanlarında</li>
+        <li>Açıklama, not, yorum gibi uzun içerik girişi gerektiren durumlarda</li>
+        <li>Serbest biçimli metin içeriği toplamak istediğinde</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Her zaman anlamlı bir <code style="font-family:var(--mono)">placeholder</code> metni ekle</li>
+        <li>Zorunlu alanları <code style="font-family:var(--mono)">.bt-txa__required</code> ile işaretle</li>
+        <li>Hata mesajını helper text olarak göster, error state ile birlikte kullan</li>
+        <li>Yeterli min-height ile başla — kullanıcı dikey resize yapabilir</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Label'sız Text Field bırakma — erişilebilirlik için label zorunlu</li>
+        <li>Tek satırlık girişler için Text Field kullanma — bunun yerine TextBox kullan</li>
+        <li>Error state'te yalnızca border'ı kırmızı yapma — label ve required field da dönmeli</li>
+      </ul>
+    `};
+
+    // ── Overview ─────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-txa-overview',
+        variants: TXA_STATE_VARIANTS,
+        props: sharedProps,
+        preview: (state, p) => txaPreview(state, p),
+        code:    (state, p) => txaCode(state, p),
+        css:     (state, p) => txaCss(state, p),
+      })}
+
+      <p class="page-desc">Çok satırlı metin giriş bileşeni. Label, Required Field ve Helper Text ile birleşik yapı; 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Input kutusu</td><td>Border (Default)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border (Hover/Focused)</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Sm</td><td>Min Height</td><td>—</td><td>56px (3 satır)</td></tr>
+          <tr><td>Md</td><td>Min Height</td><td>—</td><td>76px (4 satır)</td></tr>
+          <tr><td>Lg</td><td>Min Height</td><td>—</td><td>96px (5 satır)</td></tr>
+          <tr><td rowspan="2">Label</td><td>Font / size</td><td>${tk('Font/Family/Label · Font/Size/text-xs')}</td><td>Geist 12px</td></tr>
+          <tr><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Required field</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Placeholder</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>State</th><th>Preview (Md)</th></tr></thead>
+        <tbody>
+          ${TXA_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="${_txaCls(s.key, 'md')}">
+                  <div class="bt-txa__meta"><span class="bt-txa__label">Label Text</span><span class="bt-txa__required">Required Field</span></div>
+                  <div class="bt-txa__input">
+                    <textarea class="bt-txa__text" placeholder="Placeholder Text"${s.key === 'disabled' ? ' disabled' : ''}${s.key === 'readonly' ? ' readonly' : ''}>${(s.key === 'filled' || s.key === 'readonly') ? 'Placeholder Text' : ''}</textarea>
+                  </div>
+                  <span class="bt-txa__helper">Helper Text</span>
+                </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${TXA_SIZE_OPTS.map(sz => `
+          <tr>
+            <td><span class="token-name">${sz.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="bt-txa bt-txa--${sz.key}">
+                  <div class="bt-txa__meta"><span class="bt-txa__label">Label Text</span></div>
+                  <div class="bt-txa__input">
+                    <textarea class="bt-txa__text" placeholder="Placeholder Text"></textarea>
+                  </div>
+                  <span class="bt-txa__helper">Helper Text</span>
+                </div>
               </div>
             </td>
           </tr>`).join('')}
