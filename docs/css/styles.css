@@ -323,7 +323,7 @@
   --bt-surface-primary-solid:     var(--bt-gray-600); /* Gray/600 */
   --bt-surface-primary-intense:   var(--bt-gray-700); /* Gray/700 */
 
-  /* Surface / Secondary → Gray/50–700 (intense leaf is --bt-surface-primary-intense: Figma naming bug) */
+  /* Surface / Secondary → Gray/50–800 */
   --bt-surface-secondary-default:  var(--bt-gray-50);  /* Gray/50  */
   --bt-surface-secondary-light:    var(--bt-gray-100); /* Gray/100 */
   --bt-surface-secondary-subtle:   var(--bt-gray-200); /* Gray/200 */
@@ -332,8 +332,7 @@
   --bt-surface-secondary-strong:   var(--bt-gray-500); /* Gray/500 */
   --bt-surface-secondary-heavy:    var(--bt-gray-600); /* Gray/600 */
   --bt-surface-secondary-solid:    var(--bt-gray-700); /* Gray/700 */
-  /* Figma path: Surface/Secondary/--bt-surface-primary-intense — leaf uses "primary" despite Secondary group (naming bug); overrides Surface/Primary intense */
-  --bt-surface-primary-intense:    var(--bt-gray-800); /* Gray/800 */
+  --bt-surface-secondary-intense:  var(--bt-gray-800); /* Gray/800 */
 
   /* Surface / Brand → Blue/700, Blue/50–800 */
   --bt-surface-brand-default:   var(--bt-blue-700); /* Blue/700 */
@@ -1689,24 +1688,37 @@ code {
   font-family: var(--font);
   flex-shrink: 0;
 }
+/* Figma updated the rail to 48px (matching the Standart Sidebar's collapsed
+   width) — was 56px. Padding stays px-xs(4px), so content area is now 40px
+   (was 48px), fitting the 40×40 top logo exactly with no slack. */
 .sbx-rail {
-  width: 56px;
+  width: 48px;
   flex-shrink: 0;
-  background: var(--bt-surface-primary-intense);
+  background: var(--bt-secondary-intense);
   border-right: 1px solid var(--bt-border-primary-default);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--bt-space-8xl);
-  padding: var(--bt-space-4xl) var(--bt-space-md);
+  padding: var(--bt-space-4xl) var(--bt-space-xs);
   box-sizing: border-box;
+}
+/* Figma "App Logo Placeholder" (521:27619 / 521:27626) — gray-900→800→600
+   diagonal gradient, not the earlier 900/700/500 guess, plus the soft-light
+   sheen overlay and corner inset-shadow both instances carry in Figma. */
+.sbx-logo,
+.sbx-collapse {
+  border-radius: var(--bt-radius-md);
+  border: 0.75px solid var(--bt-gray-0);
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 32.812%, rgba(0,0,0,0.01) 100%),
+    linear-gradient(-45deg, var(--bt-gray-900) 0%, var(--bt-gray-800) 29%, var(--bt-gray-600) 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset -0.28px -0.28px 0.28px rgba(0,0,0,0.05), inset 0.28px 0.28px 0.28px rgba(255,255,255,0.2);
+  flex-shrink: 0;
 }
 .sbx-logo {
   width: 40px; height: 40px;
-  border-radius: var(--bt-radius-md);
-  border: 0.75px solid #fff;
-  background: linear-gradient(-45deg, var(--bt-gray-900) 0%, var(--bt-gray-700) 29%, var(--bt-gray-500) 100%);
-  flex-shrink: 0;
 }
 .sbx-center {
   display: flex;
@@ -1716,22 +1728,38 @@ code {
   flex: 1;
   min-height: 0;
 }
+/* Figma "Hub Sidebar Controls" (521:27487) states — bg matches the rail
+   itself (--bt-secondary-intense) at rest, radius-md, 4px padding around a
+   24×24 icon = 32×32 total (was wrongly 28×28). Hover/Active/Selected all
+   go to --bt-secondary-solid; Focused keeps --bt-secondary-intense but adds
+   a neutral focus ring. */
 .sbx-btn {
-  width: 28px; height: 28px;
-  border-radius: var(--bt-radius-sm);
+  width: 32px; height: 32px;
+  border-radius: var(--bt-radius-md);
+  background: var(--bt-secondary-intense);
   display: flex; align-items: center; justify-content: center;
   color: #fff;
   flex-shrink: 0;
   cursor: pointer;
   transition: background 100ms;
 }
-.sbx-btn:hover { background: rgba(255,255,255,0.08); }
+.sbx-btn:hover,
+.sbx-btn.is-hover,
+.sbx-btn:active,
+.sbx-btn.is-active,
+.sbx-btn.is-selected { background: var(--bt-secondary-solid); }
+.sbx-btn:focus-visible,
+.sbx-btn.is-focus {
+  background: var(--bt-secondary-intense);
+  box-shadow: 0 0 0 3px rgba(212,212,212,0.5);
+  outline: none;
+}
+/* The mid-list "Logo" (521:27625) is a second, smaller App Logo Placeholder
+   instance — same gradient/border recipe as .sbx-logo, just 36px. It's the
+   only element in the rail that isn't a plain icon button, so it doubles as
+   the sidebar's expand/collapse trigger. */
 .sbx-collapse {
   width: 36px; height: 36px;
-  border-radius: var(--bt-radius-md);
-  border: 0.75px solid #fff;
-  background: linear-gradient(-45deg, var(--bt-gray-900) 0%, var(--bt-gray-700) 29%, var(--bt-gray-500) 100%);
-  flex-shrink: 0;
   cursor: pointer;
 }
 .sbx-bottom {
@@ -1744,51 +1772,51 @@ code {
   width: 280px;
   flex-shrink: 0;
   background: var(--bt-base-default);
+  border-right: 1px solid var(--bt-border-primary-default);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   transition: width 180ms ease, opacity 120ms ease;
 }
-.sbx-drawer.is-collapsed { width: 0; opacity: 0; overflow: hidden; }
+.sbx-drawer.is-collapsed { width: 0; opacity: 0; overflow: hidden; border-right: none; }
 .sbx-drawer-top {
   padding: var(--bt-space-2xl) var(--bt-space-xl);
   flex-shrink: 0;
 }
-.sbx-searchbox {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--bt-radius-md);
-  background: var(--bt-base-default);
-  box-sizing: border-box;
-}
-.sbx-searchbox-icon { display:flex; align-items:center; justify-content:center; width:24px; height:24px; padding: var(--bt-space-2xs); color: var(--bt-text-primary-muted); box-sizing:border-box; flex-shrink:0; }
-.sbx-searchbox-text { flex: 1; padding: 0 var(--bt-space-xs); font-size: 12px; line-height: 16px; color: var(--bt-text-primary-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* Uses the real documented SearchBox component (.bt-searchbox--sm, 28px —
+   matches this drawer's Left Control padding-2xs exactly) instead of a
+   static lookalike, same as the Standart Sidebar. Only the "Tab" shortcut
+   hint below is sidebar-specific chrome the generic component doesn't have. */
 .sbx-searchbox-kbd {
   margin-right: var(--bt-space-xs);
   padding: var(--bt-space-2xs) var(--bt-space-xs);
   border: 1px solid var(--bt-border-primary-default);
   border-radius: var(--bt-radius-xs);
-  font-size: 10px;
-  line-height: 12px;
+  font-size: var(--bt-text-2xs-size, 10px);
+  line-height: var(--bt-text-2xs-lh, 12px);
   color: var(--bt-text-primary-strong);
   flex-shrink: 0;
 }
+/* Figma "Drawer Center" (502:18234) itself has no padding and a gap-2xs
+   (2px) between rows — the 8px horizontal padding belongs to each item
+   wrapper (px-md), not the list. Previously these were swapped: the list
+   carried the horizontal padding and each item faked row-spacing with its
+   own vertical padding instead of a real gap. */
 .sbx-drawer-center {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 0 var(--bt-space-md);
   display: flex;
   flex-direction: column;
+  gap: var(--bt-space-2xs);
 }
+/* "Drawer Buttom" (502:18240) is padding-only, same as the Standart
+   Sidebar's pinned item — no divider in Figma. */
 .sbx-drawer-bottom {
   padding: var(--bt-space-2xl) var(--bt-space-xl);
-  border-top: 1px solid var(--bt-border-subtle);
   flex-shrink: 0;
 }
-.sbx-item { padding: var(--bt-space-xs) 0; }
+.sbx-item { padding: 0 var(--bt-space-md); }
 .sbx-item-inner {
   display: flex;
   align-items: center;
@@ -1799,122 +1827,206 @@ code {
   box-sizing: border-box;
   transition: background 100ms;
 }
-.sbx-item-inner:hover { background: var(--bt-surface-subtle); }
-.sbx-item-icon { display:flex; align-items:center; justify-content:center; width:24px; height:24px; padding: var(--bt-space-xs); color: var(--bt-text-primary-strong); box-sizing:border-box; flex-shrink:0; }
+/* Figma "Drawer Item" (255:26349) states — unlike the Standart Sidebar,
+   Hub's Active/Selected are both a neutral --bt-surface-primary-muted
+   (#e6e6e6), not the brand blue, and text/icon colour never inverts.
+   Focus is white + a neutral focus ring, not a coloured one. */
+.sbx-item-inner:hover,
+.sbx-item-inner.is-hover { background: var(--bt-surface-subtle); }
+.sbx-item-inner:active,
+.sbx-item-inner.is-selected { background: var(--bt-surface-primary-muted); }
+.sbx-item-inner:focus-visible,
+.sbx-item-inner.is-focus {
+  background: var(--bt-base-default);
+  box-shadow: 0 0 0 3px rgba(212,212,212,0.5);
+  outline: none;
+}
+/* Same "Left Control" pattern as Standart Sidebar: 4px padding around a
+   24×24 icon = 32×32, not 24×24. */
+.sbx-item-icon { display:flex; align-items:center; justify-content:center; width:32px; height:32px; padding: var(--bt-space-xs); color: var(--bt-text-primary-strong); box-sizing:border-box; flex-shrink:0; }
 .sbx-item-label { flex:1; padding: var(--bt-space-md) var(--bt-space-xs); font-size: 13px; line-height: 16px; color: var(--bt-text-primary-default); }
 
-/* ── Sidebar Variant B — Platform Switcher ────────────────────── */
-.sb2-shell {
+/* ── Standart Sidebar — single panel, collapses to icon rail ──── */
+/* Figma: node 502:18421. One shell toggles width via .is-collapsed;
+   item rows are shared markup — collapsing just hides the label/right
+   control via CSS instead of swapping DOM, so the top button's click
+   animates smoothly between states. */
+.stb-shell {
+  width: 280px;
+  flex-shrink: 0;
   display: flex;
+  flex-direction: column;
   height: 460px;
+  background: var(--bt-base-default);
   border: 1px solid var(--bt-border-primary-default);
-  overflow: hidden;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  box-sizing: border-box;
+  overflow: hidden;
   font-family: var(--font);
+  transition: width 200ms ease;
+}
+.stb-shell.is-collapsed { width: 48px; }
+
+.stb-top {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-md);
+  height: 48px;
+  padding: var(--bt-space-sm) var(--bt-space-lg);
+  background: var(--bt-surface-brand-default);
+  box-sizing: border-box;
   flex-shrink: 0;
 }
-.sb2 {
-  width: 260px;
-  display: flex; flex-direction: column;
-  height: 100%;
-  background: var(--bt-surface-primary-default);
-  border-right: 1px solid var(--bt-border-primary-default);
-}
-.sb2-switcher {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px;
-  height: 52px; flex-shrink: 0;
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.sb2-switcher:hover { background: var(--bt-surface-primary-subtle); }
-.sb2-switcher-icon {
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  background: var(--bt-primary-default);
+/* Collapsed "Sidebar Top" (497:2786) is p-lg on all four sides — not the
+   py-sm/px-lg split the expanded "Sidebar Top" (497:2508) uses, since there's
+   no logo row to anchor the 48px height against. */
+.stb-shell.is-collapsed .stb-top { justify-content: center; padding: var(--bt-space-lg); }
+
+.stb-menu-btn {
+  width: 28px; height: 28px;
   flex-shrink: 0;
-}
-.sb2-switcher-info { flex: 1; min-width: 0; }
-.sb2-switcher-name {
-  display: block; font-size: 13px; font-weight: 500;
-  color: var(--bt-text-primary-default);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.sb2-switcher-sub {
-  display: block; font-size: 11px;
-  color: var(--bt-text-primary-muted);
-}
-.sb2-switcher-chevron {
-  color: var(--bt-text-primary-muted); flex-shrink: 0;
-  display: flex; align-items: center;
-}
-.sb2-nav {
-  flex: 1; overflow-y: auto;
-  padding: 8px;
-  display: flex; flex-direction: column;
-}
-.sb2-section { display: flex; flex-direction: column; gap: 2px; }
-.sb2-section + .sb2-section { margin-top: 12px; }
-.sb2-section-label {
-  font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
-  color: var(--bt-text-primary-muted);
-  padding: 4px 8px;
-  text-transform: uppercase;
-}
-.sb2-item {
-  display: flex; align-items: center; gap: 8px;
-  height: 32px; padding: 0 8px;
-  border-radius: var(--bt-radius-xs);
-  color: var(--bt-text-primary-default);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.sb2-item:hover:not(.active) { background: var(--bt-surface-primary-subtle); }
-.sb2-item.active {
-  background: var(--bt-primary-subtle);
-  color: var(--bt-primary-default);
-  font-weight: 500;
-}
-.sb2-item-icon {
   display: flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; flex-shrink: 0;
-  color: currentColor;
+  border: none;
+  padding: 0;
+  border-radius: var(--bt-radius-sm);
+  background: var(--bt-primary-default);
+  color: var(--bt-text-primary-inverted);
+  cursor: pointer;
+  transition: background 100ms;
 }
-.sb2-item-label { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sb2-footer {
-  padding: 8px;
-  border-top: 1px solid var(--bt-border-primary-default);
+.stb-menu-btn:hover { background: var(--bt-primary-intense); }
+
+.stb-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-sm);
+  min-width: 0;
+  overflow: hidden;
+}
+.stb-shell.is-collapsed .stb-brand { display: none; }
+
+/* Figma "App Logo Placeholder" (497:2439) updated to a blue-100 border over
+   a blue-700→blue-600→blue-600 diagonal gradient (was a neutral gray/white
+   placeholder before). */
+.stb-logo {
+  width: 36px; height: 36px;
+  border-radius: var(--bt-radius-md);
+  border: 0.75px solid var(--bt-blue-100);
+  background: linear-gradient(-45deg, var(--bt-blue-700) 0%, var(--bt-blue-600) 29%, var(--bt-blue-600) 100%);
   flex-shrink: 0;
 }
-.sb2-user {
-  display: flex; align-items: center; gap: 8px;
-  padding: 4px 8px; height: 36px;
+/* Figma bumped "Title Here" down to Title/lg/Medium (18px/24px) from xl (20/28). */
+.stb-title {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: var(--bt-text-lg-size, 18px);
+  line-height: var(--bt-text-lg-lh, 24px);
+  color: var(--bt-text-primary-inverted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stb-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Collapsed has no Search zone to supply the Top→Center gap, so "Base
+   Standart Sidebar" (497:2787) carries it directly as a 16px (space-2xl)
+   flex-gap between its Top/Center/Bottom zones — reproduced here as padding
+   since the search zone is display:none rather than removed from the DOM. */
+.stb-shell.is-collapsed .stb-body { padding-top: var(--bt-space-2xl); }
+
+.stb-search-wrap {
+  padding: var(--bt-space-xl) var(--bt-space-lg);
+  flex-shrink: 0;
+}
+.stb-shell.is-collapsed .stb-search-wrap { display: none; }
+/* Uses the real documented SearchBox component (.bt-searchbox, "md" size —
+   see PAGES_WEB['components/searchbox']) instead of a static lookalike, so
+   it's an actual typeable <input> with the same hover/focus states and
+   sizing already verified there. Only the "Tab" shortcut hint below is
+   sidebar-specific chrome the generic component doesn't have. */
+.stb-searchbox-kbd {
+  margin-right: var(--bt-space-xs);
+  padding: var(--bt-space-2xs) var(--bt-space-xs);
+  border: 1px solid var(--bt-border-primary-default);
   border-radius: var(--bt-radius-xs);
-  cursor: pointer; width: 100%;
-  transition: background 0.1s;
-}
-.sb2-user:hover { background: var(--bt-surface-primary-subtle); }
-.sb2-user-avatar {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: var(--bt-base-emphasis);
+  font-size: var(--bt-text-2xs-size, 10px);
+  line-height: var(--bt-text-2xs-lh, 12px);
+  color: var(--bt-text-primary-strong);
   flex-shrink: 0;
 }
-.sb2-user-info { flex: 1; min-width: 0; text-align: left; }
-.sb2-user-name {
-  display: block; font-size: 12px; font-weight: 500;
+
+.stb-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-2xs);
+}
+/* "Drawer Buttom" (497:2446) is py-2xl only — no border. Figma has no
+   divider above the pinned item; the 16px top padding alone is the
+   separation from the list above. */
+.stb-pinned {
+  padding: var(--bt-space-2xl) 0;
+  flex-shrink: 0;
+}
+/* Collapsed "Sidebar Buttom" (497:2786) has no padding of its own — its gap
+   from the icon list above and its own bottom safe-area both come from the
+   "Base Standart Sidebar" wrapper (gap-2xl between zones, pb-4xl overall). */
+.stb-shell.is-collapsed .stb-pinned {
+  padding: 0 0 var(--bt-space-4xl);
+  margin-top: var(--bt-space-2xl);
+}
+
+/* Horizontal padding lives on the item wrapper alone (Figma: each "Drawer
+   Item" is px-md) — .stb-list itself has no padding, so 8px + 32px control +
+   8px = 48px, exactly the collapsed rail's width. */
+.stb-item { padding: 0 var(--bt-space-md); flex-shrink: 0; box-sizing: border-box; }
+.stb-item-inner {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  width: 100%;
+  border-radius: var(--bt-radius-md);
+  background: var(--bt-base-default);
   color: var(--bt-text-primary-default);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 100ms, color 100ms;
 }
-.sb2-user-email {
-  display: block; font-size: 11px;
-  color: var(--bt-text-primary-muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.sb2-user-more {
-  color: var(--bt-text-primary-muted); flex-shrink: 0;
-  display: flex; align-items: center;
-}
+.stb-item-inner:hover,
+.stb-item-inner.is-hover { background: var(--bt-base-subtle); }
+/* Pressed (mouse/touch down) — declared after :hover so it wins the tie
+   when both apply at once, matching how a press should read "on top of"
+   hover feedback rather than being masked by it. */
+.stb-item-inner:active { background: var(--bt-base-emphasis); }
+.stb-item-inner.is-selected { background: var(--bt-surface-brand-default); color: var(--bt-text-primary-inverted); }
+.stb-item-inner.is-selected .stb-item-icon,
+.stb-item-inner.is-selected .stb-item-right { color: var(--bt-text-primary-inverted); }
+/* Selected + hover/pressed still needs its own feedback, not the plain
+   .is-hover/:active grays above — these are 3-class-deep so they win
+   regardless of source order. */
+.stb-item-inner.is-selected:hover,
+.stb-item-inner.is-selected.is-hover,
+.stb-item-inner.is-selected:active { background: var(--bt-primary-intense); }
+/* Figma "Drawer Controls" (509:26413) is the real control: 4px padding
+   wrapping a 24×24 "Icon/placeholder" = 32×32 total. Sizing this box at
+   24×24 instead of 32×32 was the bug — it left only a 16×16 content area,
+   shrinking the icon glyph and undersizing the control itself. */
+.stb-item-icon { display:flex; align-items:center; justify-content:center; width:32px; height:32px; padding: var(--bt-space-xs); color: var(--bt-text-primary-strong); box-sizing:border-box; flex-shrink:0; }
+.stb-item-label { flex:1; min-width: 0; padding: var(--bt-space-md) var(--bt-space-xs); font-size: 13px; line-height: 16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.stb-item-right { display:flex; align-items:center; justify-content:center; width:32px; height:32px; padding: var(--bt-space-xs); color: var(--bt-text-primary-strong); box-sizing:border-box; flex-shrink:0; }
+.stb-shell.is-collapsed .stb-item-label,
+.stb-shell.is-collapsed .stb-item-right { display: none; }
+/* With the label/right control gone, the icon is the row's only flex child —
+   without this it sits flush left (default justify-content: flex-start)
+   instead of centered in the 32px-wide collapsed row. */
+.stb-shell.is-collapsed .stb-item-inner { justify-content: center; }
 
 /* ── TOC Column (right panel, aligned to tab bar top) ───────── */
 .toc-col {

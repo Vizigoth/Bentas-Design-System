@@ -577,7 +577,7 @@ const PAGES = {
               ['--bt-surface-primary-strong',   'Gray/400', '#a3a3a3'],
               ['--bt-surface-primary-heavy',    'Gray/500', '#727272'],
               ['--bt-surface-primary-solid',    'Gray/600', '#535353'],
-              ['--bt-surface-primary-intense',  'Gray/800', '#272727'],
+              ['--bt-surface-primary-intense',  'Gray/700', '#404040'],
             ]],
             ['Secondary', [
               ['--bt-surface-secondary-default',  'Gray/50',  '#fafafa'],
@@ -588,6 +588,7 @@ const PAGES = {
               ['--bt-surface-secondary-strong',   'Gray/500', '#727272'],
               ['--bt-surface-secondary-heavy',    'Gray/600', '#535353'],
               ['--bt-surface-secondary-solid',    'Gray/700', '#404040'],
+              ['--bt-surface-secondary-intense',  'Gray/800', '#272727'],
             ]],
             ['Brand', [
               ['--bt-surface-brand-light',    'Blue/50',  '#f1f7fe'],
@@ -651,12 +652,12 @@ const PAGES = {
           primary: Object.fromEntries([
             ['--bt-surface-primary-default','var(--bt-blue-0)'],['--bt-surface-primary-light','var(--bt-gray-50)'],['--bt-surface-primary-subtle','var(--bt-gray-100)'],
             ['--bt-surface-primary-muted','var(--bt-gray-200)'],['--bt-surface-primary-emphasis','var(--bt-gray-300)'],['--bt-surface-primary-strong','var(--bt-gray-400)'],
-            ['--bt-surface-primary-heavy','var(--bt-gray-500)'],['--bt-surface-primary-solid','var(--bt-gray-600)'],['--bt-surface-primary-intense','var(--bt-gray-800)'],
+            ['--bt-surface-primary-heavy','var(--bt-gray-500)'],['--bt-surface-primary-solid','var(--bt-gray-600)'],['--bt-surface-primary-intense','var(--bt-gray-700)'],
           ]),
           secondary: Object.fromEntries([
             ['--bt-surface-secondary-default','var(--bt-gray-50)'],['--bt-surface-secondary-light','var(--bt-gray-100)'],['--bt-surface-secondary-subtle','var(--bt-gray-200)'],
             ['--bt-surface-secondary-muted','var(--bt-gray-300)'],['--bt-surface-secondary-emphasis','var(--bt-gray-400)'],['--bt-surface-secondary-strong','var(--bt-gray-500)'],
-            ['--bt-surface-secondary-heavy','var(--bt-gray-600)'],['--bt-surface-secondary-solid','var(--bt-gray-700)'],
+            ['--bt-surface-secondary-heavy','var(--bt-gray-600)'],['--bt-surface-secondary-solid','var(--bt-gray-700)'],['--bt-surface-secondary-intense','var(--bt-gray-800)'],
           ]),
           brand: Object.fromEntries([
             ['--bt-surface-brand-light','var(--bt-blue-50)'],['--bt-surface-brand-subtle','var(--bt-blue-100)'],['--bt-surface-brand-muted','var(--bt-blue-200)'],

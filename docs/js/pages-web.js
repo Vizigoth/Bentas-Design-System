@@ -282,17 +282,59 @@ window._sbxToggle = function() {
 
 const sbxIconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`;
 const sbxIconPlaceholder = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg>`;
+const sbxIconMenu = `<svg width="20" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
 
-const sbxRailButton = () => `<div class="sbx-btn">${sbxIconPlaceholder}</div>`;
-const sbxDrawerItem = (label) => `
+// Rail icon buttons click-select across the whole rail (center + bottom
+// zones share one group, like a single current-section indicator — e.g.
+// clicking Settings at the bottom deselects whichever nav icon was active).
+window._sbxSelectBtn = function(el) {
+  const rail = el.closest('.sbx-rail');
+  if (!rail) return;
+  const current = rail.querySelector('.sbx-btn.is-selected');
+  if (current && current !== el) current.classList.remove('is-selected');
+  el.classList.add('is-selected');
+};
+const sbxRailButton = () => `<div class="sbx-btn" tabindex="0" onclick="window._sbxSelectBtn(this)">${sbxIconPlaceholder}</div>`;
+// Nav rows click-select within their own .sbx-drawer-center, same pattern as
+// the Standart Sidebar's .stb-list (see window._stbSelectItem).
+window._sbxSelectItem = function(el) {
+  const list = el.closest('.sbx-drawer-center');
+  if (!list) return;
+  const current = list.querySelector('.sbx-item-inner.is-selected');
+  if (current && current !== el) current.classList.remove('is-selected');
+  el.classList.add('is-selected');
+};
+const sbxDrawerItem = (label, state = 'default') => `
           <div class="sbx-item">
-            <div class="sbx-item-inner">
+            <div class="sbx-item-inner${state !== 'default' ? ` is-${state}` : ''}" tabindex="0" onclick="window._sbxSelectItem(this)">
               <div class="sbx-item-icon">${sbxIconPlaceholder}</div>
               <div class="sbx-item-label">${label}</div>
             </div>
           </div>`;
 
-// ── Variant A — Rail + Drawer ────────────────────────────────────
+// Isolated single-row preview for the Overview "States" table — same idea
+// as stbItemStatePreview but for Hub Sidebar's drawer item markup.
+function sbxItemStatePreview(state) {
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;padding:12px;background:var(--bt-base-default);">
+      <div class="sbx-item" style="padding:0;width:220px;">
+        <div class="sbx-item-inner${state !== 'default' ? ` is-${state}` : ''}">
+          <div class="sbx-item-icon">${sbxIconPlaceholder}</div>
+          <div class="sbx-item-label">Drawer Item Label</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+const SBX_ITEM_STATE_VARIANTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'active',   label: 'Active' },
+  { key: 'selected', label: 'Selected' },
+  { key: 'focus',    label: 'Focus' },
+];
+
+// ── Hub Sidebar — persistent icon rail + toggleable drawer ───────
 // Single source of truth for the live preview markup. `variant` controls the
 // drawer's initial state ('expanded' | 'collapsed'); the rail's own collapse
 // button still toggles it further from there.
@@ -316,9 +358,13 @@ function sidebarMarkupA(variant) {
           </div>
           <div class="sbx-drawer${collapsedCls}" id="sbxDrawer">
             <div class="sbx-drawer-top">
-              <div class="sbx-searchbox">
-                <div class="sbx-searchbox-icon">${sbxIconSearch}</div>
-                <div class="sbx-searchbox-text">Placeholder Text</div>
+              <div class="bt-searchbox bt-searchbox--sm">
+                <div class="bt-searchbox__control">
+                  <span class="bt-searchbox__icon">${sbxIconSearch}</span>
+                </div>
+                <div class="bt-searchbox__field">
+                  <input class="bt-searchbox__text" type="text" placeholder="Placeholder Text" oninput="sbxInput(this)" />
+                </div>
                 <div class="sbx-searchbox-kbd">Tab</div>
               </div>
             </div>
@@ -326,7 +372,7 @@ function sidebarMarkupA(variant) {
               ${sbxDrawerItem('Drawer Item Label')}
               ${sbxDrawerItem('Drawer Item Label')}
               ${sbxDrawerItem('Drawer Item Label')}
-              ${sbxDrawerItem('Drawer Item Label')}
+              ${sbxDrawerItem('Drawer Item Label', 'selected')}
               ${sbxDrawerItem('Drawer Item Label')}
             </div>
             <div class="sbx-drawer-bottom">
@@ -337,8 +383,8 @@ function sidebarMarkupA(variant) {
 }
 
 // Clean, copy-pastable reference markup shown in the code panel.
-const sbxDrawerItemCode = `      <div class="sbx-item">
-        <div class="sbx-item-inner">
+const sbxDrawerItemCode = (state = 'default') => `      <div class="sbx-item">
+        <div class="sbx-item-inner${state !== 'default' ? ` is-${state}` : ''}">
           <div class="sbx-item-icon"><!-- icon --></div>
           <div class="sbx-item-label">Drawer Item Label</div>
         </div>
@@ -361,211 +407,434 @@ function sidebarCodeSnippetA(variant) {
   </div>
   <div class="sbx-drawer${variant === 'collapsed' ? ' is-collapsed' : ''}">
     <div class="sbx-drawer-top">
-      <div class="sbx-searchbox">
-        <div class="sbx-searchbox-icon"><!-- search icon --></div>
-        <div class="sbx-searchbox-text">Placeholder Text</div>
+      <div class="bt-searchbox bt-searchbox--sm">
+        <div class="bt-searchbox__control">
+          <span class="bt-searchbox__icon"><!-- search icon --></span>
+        </div>
+        <div class="bt-searchbox__field">
+          <input class="bt-searchbox__text" type="text" placeholder="Placeholder Text" />
+        </div>
         <div class="sbx-searchbox-kbd">Tab</div>
       </div>
     </div>
     <div class="sbx-drawer-center">
-${sbxDrawerItemCode}
-${sbxDrawerItemCode}
+${sbxDrawerItemCode()}
+${sbxDrawerItemCode('selected')}
       <!-- …repeat per nav item -->
     </div>
     <div class="sbx-drawer-bottom">
-${sbxDrawerItemCode}
+${sbxDrawerItemCode()}
     </div>
   </div>
 </nav>`;
 }
 
-// ── Variant B — Platform Switcher ────────────────────────────────
-const sb2IconChevron = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>`;
-const sb2IconMore    = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`;
+// ── Standart Sidebar — single panel, collapses to an icon rail ───
+// Figma: node 502:18421 ("Standart Sidebar" — Collapsed + Expanded).
+// Unlike the Hub Sidebar (persistent rail + separate drawer), this is one
+// panel whose own top button toggles its width between a 48px icon-only
+// rail and a 280px full panel — the item rows are shared markup; the
+// collapsed state just hides the label/right-control via CSS so nothing
+// needs to be re-rendered when toggling.
+window._stbToggle = function(btn) {
+  const shell = btn.closest('.stb-shell');
+  if (shell) shell.classList.toggle('is-collapsed');
+};
 
-const sb2Item = (label, active = false) => `
-          <div class="sb2-item${active ? ' active' : ''}">
-            <div class="sb2-item-icon">${sbxIconPlaceholder}</div>
-            <span class="sb2-item-label">${label}</span>
+// Item row state: 'default' | 'hover' | 'selected'. Hover has both a forced
+// `.is-hover` class (so it can be shown statically in the States table below)
+// and a real `:hover` rule in CSS — either path renders identically. `:active`
+// (pressed) needs no forced class — it's a real browser pseudo-state.
+// Nav rows (withRight === false) click-select within their own .stb-list;
+// the pinned row (withRight === true) is a standalone action, not part of
+// that selection group, so it never gets the select handler.
+const stbItem = (label, state = 'default', withRight = false) => `
+          <div class="stb-item">
+            <div class="stb-item-inner${state !== 'default' ? ` is-${state}` : ''}"${withRight ? '' : ' onclick="window._stbSelectItem(this)"'}>
+              <div class="stb-item-icon">${sbxIconPlaceholder}</div>
+              <span class="stb-item-label">${label}</span>
+              ${withRight ? `<div class="stb-item-right">${sbxIconPlaceholder}</div>` : ''}
+            </div>
           </div>`;
 
-function sidebarMarkupB() {
+// Click-to-select for the nav list — swaps `.is-selected` to whichever row
+// was clicked, scoped to that row's own .stb-list (collapsed rail and
+// expanded panel share this markup, so it works identically in both states).
+window._stbSelectItem = function(el) {
+  const list = el.closest('.stb-list');
+  if (!list) return;
+  const current = list.querySelector('.stb-item-inner.is-selected');
+  if (current && current !== el) current.classList.remove('is-selected');
+  el.classList.add('is-selected');
+};
+
+function standartSidebarMarkup(state) {
+  const collapsedCls = state === 'collapsed' ? ' is-collapsed' : '';
   return `
-        <div class="sb2-shell">
-          <aside class="sb2">
-            <div class="sb2-switcher">
-              <div class="sb2-switcher-icon"></div>
-              <div class="sb2-switcher-info">
-                <span class="sb2-switcher-name">Workspace Adı</span>
-                <span class="sb2-switcher-sub">Platform / Plan</span>
-              </div>
-              <div class="sb2-switcher-chevron">${sb2IconChevron}</div>
+        <div class="stb-shell${collapsedCls}">
+          <div class="stb-top">
+            <button class="stb-menu-btn" onclick="window._stbToggle(this)" title="Toggle sidebar" aria-label="Toggle sidebar">${sbxIconMenu}</button>
+            <div class="stb-brand">
+              <div class="stb-logo"></div>
+              <span class="stb-title">Title Here</span>
             </div>
-            <nav class="sb2-nav">
-              <div class="sb2-section">
-                ${sb2Item('Ana Sayfa', true)}
-                ${sb2Item('Raporlar')}
-                ${sb2Item('Görevler')}
-              </div>
-              <div class="sb2-section">
-                <p class="sb2-section-label">Yönetim</p>
-                ${sb2Item('Kullanıcılar')}
-                ${sb2Item('Ayarlar')}
-              </div>
-              <div class="sb2-section">
-                <p class="sb2-section-label">Destek</p>
-                ${sb2Item('Belgeler')}
-                ${sb2Item('Yardım')}
-              </div>
-            </nav>
-            <div class="sb2-footer">
-              <div class="sb2-user">
-                <div class="sb2-user-avatar"></div>
-                <div class="sb2-user-info">
-                  <span class="sb2-user-name">Ad Soyad</span>
-                  <span class="sb2-user-email">kullanici@email.com</span>
+          </div>
+          <div class="stb-body">
+            <div class="stb-search-wrap">
+              <div class="bt-searchbox bt-searchbox--md">
+                <div class="bt-searchbox__control">
+                  <span class="bt-searchbox__icon">${sbxIconSearch}</span>
                 </div>
-                <div class="sb2-user-more">${sb2IconMore}</div>
+                <div class="bt-searchbox__field">
+                  <input class="bt-searchbox__text" type="text" placeholder="Search" oninput="sbxInput(this)" />
+                </div>
+                <div class="stb-searchbox-kbd">Tab</div>
               </div>
             </div>
-          </aside>
+            <div class="stb-list">
+              ${stbItem('Drawer Item Label')}
+              ${stbItem('Drawer Item Label')}
+              ${stbItem('Drawer Item Label')}
+              ${stbItem('Drawer Item Label', 'selected')}
+              ${stbItem('Drawer Item Label')}
+            </div>
+            <div class="stb-pinned">
+              ${stbItem('Drawer Item Label', 'default', true)}
+            </div>
+          </div>
         </div>`;
 }
 
-function sidebarCodeSnippetB() {
-  return `<aside class="sb2">
-  <div class="sb2-switcher">
-    <div class="sb2-switcher-icon"><!-- logo --></div>
-    <div class="sb2-switcher-info">
-      <span class="sb2-switcher-name">Workspace Adı</span>
-      <span class="sb2-switcher-sub">Platform</span>
-    </div>
-    <div class="sb2-switcher-chevron"><!-- chevron icon --></div>
-  </div>
-  <nav class="sb2-nav">
-    <div class="sb2-section">
-      <div class="sb2-item active">
-        <div class="sb2-item-icon"><!-- icon --></div>
-        <span class="sb2-item-label">Ana Sayfa</span>
-      </div>
-      <!-- …repeat per item -->
-    </div>
-    <div class="sb2-section">
-      <p class="sb2-section-label">Bölüm Başlığı</p>
-      <div class="sb2-item">
-        <div class="sb2-item-icon"><!-- icon --></div>
-        <span class="sb2-item-label">Menü Öğesi</span>
-      </div>
-    </div>
-  </nav>
-  <div class="sb2-footer">
-    <div class="sb2-user">
-      <div class="sb2-user-avatar"><!-- avatar --></div>
-      <div class="sb2-user-info">
-        <span class="sb2-user-name">Ad Soyad</span>
-        <span class="sb2-user-email">email@domain.com</span>
-      </div>
-      <div class="sb2-user-more"><!-- more icon --></div>
+const stbItemCode = (label, state = 'default', withRight = false) => `      <div class="stb-item">
+        <div class="stb-item-inner${state !== 'default' ? ` is-${state}` : ''}">
+          <div class="stb-item-icon"><!-- icon --></div>
+          <span class="stb-item-label">${label}</span>${withRight ? '\n          <div class="stb-item-right"><!-- icon --></div>' : ''}
+        </div>
+      </div>`;
+
+function standartSidebarCodeSnippet(state) {
+  return `<nav class="stb-shell${state === 'collapsed' ? ' is-collapsed' : ''}">
+  <div class="stb-top">
+    <button class="stb-menu-btn" onclick="/* toggle .is-collapsed */"><!-- menu icon --></button>
+    <div class="stb-brand">
+      <div class="stb-logo"></div>
+      <span class="stb-title">Title Here</span>
     </div>
   </div>
-</aside>`;
+  <div class="stb-body">
+    <div class="stb-search-wrap">
+      <div class="bt-searchbox bt-searchbox--md">
+        <div class="bt-searchbox__control">
+          <span class="bt-searchbox__icon"><!-- search icon --></span>
+        </div>
+        <div class="bt-searchbox__field">
+          <input class="bt-searchbox__text" type="text" placeholder="Search" />
+        </div>
+        <div class="stb-searchbox-kbd">Tab</div>
+      </div>
+    </div>
+    <div class="stb-list">
+${stbItemCode('Drawer Item Label')}
+${stbItemCode('Drawer Item Label', 'selected')}
+      <!-- …repeat per nav item -->
+    </div>
+    <div class="stb-pinned">
+${stbItemCode('Drawer Item Label', 'default', true)}
+    </div>
+  </div>
+</nav>`;
+}
+
+// Isolated single-row preview used by the Overview "States" table — shows
+// the item at a fixed 220px width instead of the full 280px shell so
+// Default / Hover / Selected can sit side by side.
+function stbItemStatePreview(state) {
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;padding:12px;background:var(--bt-base-default);">
+      <div class="stb-item" style="padding:0;width:220px;">
+        <div class="stb-item-inner${state !== 'default' ? ` is-${state}` : ''}">
+          <div class="stb-item-icon">${sbxIconPlaceholder}</div>
+          <span class="stb-item-label">Drawer Item Label</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+const STB_ITEM_STATE_VARIANTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'selected', label: 'Selected' },
+];
+
+function sidebarCss(type, props) {
+  const state = (props && props.state) || 'expanded';
+  const collapsed = state === 'collapsed';
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+
+  if (type === 'standart') {
+    lines.push(`/* Standart Sidebar · ${collapsed ? 'Collapsed' : 'Expanded'} */`);
+    lines.push('');
+    lines.push('.stb-shell {');
+    lines.push(p('width', collapsed ? '48px  /* icon rail */' : '280px  /* full panel */'));
+    lines.push(p('background', 'var(--bt-base-default)  /* #ffffff */'));
+    lines.push(p('border-right', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+    lines.push(p('transition', 'width 200ms ease'));
+    lines.push('}');
+    lines.push('');
+    lines.push('.stb-top {');
+    lines.push(p('height', '48px'));
+    lines.push(p('padding', collapsed ? 'var(--bt-space-lg)  /* 10px all sides — no logo row to anchor against */' : 'var(--bt-space-sm) var(--bt-space-lg)  /* 6px 10px */'));
+    lines.push(p('background', 'var(--bt-surface-brand-default)  /* #0d4e97 */'));
+    if (collapsed) lines.push(p('justify-content', 'center  /* .stb-brand is hidden */'));
+    lines.push('}');
+    lines.push('');
+    lines.push('.stb-menu-btn {');
+    lines.push(p('width', '28px'));
+    lines.push(p('height', '28px'));
+    lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+    lines.push(p('background', 'var(--bt-primary-default)  /* #0d4e97 */'));
+    lines.push('}');
+    lines.push('.stb-menu-btn:hover { background: var(--bt-primary-intense); }  /* #0f447d */');
+    if (collapsed) {
+      lines.push('');
+      lines.push('.stb-body { padding-top: var(--bt-space-2xl); }  /* 16px — replaces the hidden Search zone\'s implicit gap */');
+    }
+    lines.push('');
+    lines.push('.stb-item-inner {');
+    lines.push(p('height', '32px'));
+    lines.push(p('border-radius', 'var(--bt-radius-md)  /* 6px */'));
+    lines.push(p('background', 'var(--bt-base-default)  /* #ffffff */'));
+    lines.push('}');
+    lines.push('');
+    lines.push('.stb-item-inner:hover,');
+    lines.push('.stb-item-inner.is-hover {');
+    lines.push(p('background', 'var(--bt-base-subtle)  /* #f5f5f5 */'));
+    lines.push('}');
+    lines.push('');
+    lines.push('.stb-item-inner.is-selected {');
+    lines.push(p('background', 'var(--bt-surface-brand-default)  /* #0d4e97 */'));
+    lines.push(p('color', 'var(--bt-text-primary-inverted)  /* #ffffff */'));
+    lines.push('}');
+    if (collapsed) {
+      lines.push('');
+      lines.push('.stb-item-label,');
+      lines.push('.stb-item-right {');
+      lines.push('  display: none;  /* label/right control hidden while collapsed */');
+      lines.push('}');
+      lines.push('');
+      lines.push('.stb-pinned {');
+      lines.push('  padding: 0 0 var(--bt-space-4xl);  /* 24px bottom safe-area, no top padding */');
+      lines.push('  margin-top: var(--bt-space-2xl);  /* 16px gap from the icon list above */');
+      lines.push('}');
+    } else {
+      lines.push('');
+      lines.push('.stb-pinned { padding: var(--bt-space-2xl) 0; }  /* 16px — no divider, spacing alone separates it */');
+    }
+  } else {
+    lines.push(`/* Hub Sidebar · ${collapsed ? 'Collapsed' : 'Expanded'} */`);
+    lines.push('');
+    lines.push('.sbx-rail {');
+    lines.push(p('width', '48px'));
+    lines.push(p('background', 'var(--bt-secondary-intense)  /* #272727 */'));
+    lines.push(p('padding', 'var(--bt-space-4xl) var(--bt-space-xs)  /* 24px 4px */'));
+    lines.push(p('gap', 'var(--bt-space-8xl)  /* 40px between top/center/bottom */'));
+    lines.push('}');
+    lines.push('');
+    lines.push('.sbx-btn {');
+    lines.push(p('width', '32px'));
+    lines.push(p('height', '32px'));
+    lines.push(p('border-radius', 'var(--bt-radius-md)  /* 6px */'));
+    lines.push(p('background', 'var(--bt-secondary-intense)  /* invisible against the rail at rest */'));
+    lines.push('}');
+    lines.push('.sbx-btn:hover,');
+    lines.push('.sbx-btn.is-hover,');
+    lines.push('.sbx-btn:active,');
+    lines.push('.sbx-btn.is-active,');
+    lines.push('.sbx-btn.is-selected { background: var(--bt-secondary-solid); }  /* #535353 */');
+    lines.push('.sbx-btn:focus-visible,');
+    lines.push('.sbx-btn.is-focus { box-shadow: 0 0 0 3px rgba(212,212,212,0.5); }');
+    lines.push('');
+    lines.push('.sbx-drawer {');
+    lines.push(p('width', collapsed ? '0px' : '280px'));
+    lines.push(p('opacity', collapsed ? '0' : '1'));
+    lines.push(p('border-right', collapsed ? 'none' : '1px solid var(--bt-border-primary-default)'));
+    lines.push(p('transition', 'width 180ms ease, opacity 120ms ease'));
+    lines.push('}');
+    lines.push('');
+    lines.push('.sbx-drawer-center { gap: var(--bt-space-2xs); }  /* 2px — no padding on the list itself */');
+    lines.push('.sbx-item { padding: 0 var(--bt-space-md); }  /* 8px horizontal only, on the item wrapper */');
+    lines.push('');
+    lines.push('.sbx-item-inner:hover,');
+    lines.push('.sbx-item-inner.is-hover { background: var(--bt-surface-subtle); }  /* #f5f5f5 */');
+    lines.push('');
+    lines.push('/* Active and Selected share the same neutral gray — no brand colour,');
+    lines.push('   unlike the Standart Sidebar\'s selected item */');
+    lines.push('.sbx-item-inner:active,');
+    lines.push('.sbx-item-inner.is-selected { background: var(--bt-surface-primary-muted); }  /* #e6e6e6 */');
+    lines.push('');
+    lines.push('.sbx-item-inner:focus-visible,');
+    lines.push('.sbx-item-inner.is-focus {');
+    lines.push(p('background', 'var(--bt-base-default)'));
+    lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.5)'));
+    lines.push('}');
+  }
+
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
 
 // ── Unified dispatcher ────────────────────────────────────────────
-function sidebarMarkup(variant) {
-  if (variant === 'b') return sidebarMarkupB();
-  return sidebarMarkupA(variant);
+// `type` selects Standart vs Hub Sidebar; `props.state` (expanded|collapsed)
+// applies to whichever type is active.
+function sidebarMarkup(type, props) {
+  const state = (props && props.state) || 'expanded';
+  return type === 'standart' ? standartSidebarMarkup(state) : sidebarMarkupA(state);
 }
-function sidebarCodeSnippet(variant) {
-  if (variant === 'b') return sidebarCodeSnippetB();
-  return sidebarCodeSnippetA(variant);
+function sidebarCodeSnippet(type, props) {
+  const state = (props && props.state) || 'expanded';
+  return type === 'standart' ? standartSidebarCodeSnippet(state) : sidebarCodeSnippetA(state);
 }
 
 // Isolation mode target — docs/isolation.html looks this up by ?component=.
 window.PGD_ISOLATE = window.PGD_ISOLATE || {};
 window.PGD_ISOLATE['sidebar'] = {
-  mount(root, variant) { root.innerHTML = sidebarMarkup(variant); }
+  mount(root, variant, props) { root.innerHTML = sidebarMarkup(variant, props || {}); }
 };
 
-const SBX_VARIANTS = [
-  { key: 'expanded',  label: 'A · Expanded' },
-  { key: 'collapsed', label: 'A · Collapsed' },
-  { key: 'b',         label: 'B · Platform Switcher' },
+const SBX_TYPES = [
+  { key: 'standart', label: 'Standart Sidebar' },
+  { key: 'hub',       label: 'Hub Sidebar' },
+];
+const SBX_STATE_OPTS = [
+  { key: 'expanded',  label: 'Expanded' },
+  { key: 'collapsed', label: 'Collapsed' },
 ];
 
 PAGES_WEB['components/sidebar'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc: ['Structure', 'Anatomy'],
+  toc: ['Structure', 'Anatomy', 'States'],
   render: (tab) => {
     const title = 'Sidebar';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    const pw = html => `<div style="padding:12px 0;">${html}</div>`;
 
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Live preview of the Sidebar — a fixed navigation rail paired with an expandable drawer. Pick a variant, toggle the drawer, measure it, preview it at other viewport widths, or open it in isolation mode.</p>
+      <p class="page-desc">Live preview of the Sidebar. Pick a type — Standart or Hub — and a state — Expanded or Collapsed. Clicking the menu button on the sidebar's own top zone toggles the state directly; measure it, preview it at other viewport widths, or open it in isolation mode.</p>
       <h2>Playground</h2>
       ${registerPlayground({
         id: 'pgd-sidebar-examples',
-        variants: SBX_VARIANTS,
+        variants: SBX_TYPES,
+        props: [{ key: 'state', label: 'State', options: SBX_STATE_OPTS, default: 'expanded' }],
         preview: sidebarMarkup,
         code: sidebarCodeSnippet,
+        css: sidebarCss,
         isolate: 'sidebar',
         noMargin: true,
+      })}
+
+      <h2>Item States (Standart Sidebar)</h2>
+      ${registerPlayground({
+        id: 'pgd-sidebar-item-states-ex',
+        variants: STB_ITEM_STATE_VARIANTS,
+        preview: (s) => stbItemStatePreview(s),
+        code:    (s) => `<div class="stb-item">\n  <div class="stb-item-inner${s !== 'default' ? ` is-${s}` : ''}">\n    <div class="stb-item-icon"><!-- icon --></div>\n    <span class="stb-item-label">Drawer Item Label</span>\n  </div>\n</div>`,
+      })}
+
+      <h2>Item States (Hub Sidebar)</h2>
+      ${registerPlayground({
+        id: 'pgd-sidebar-hub-item-states-ex',
+        variants: SBX_ITEM_STATE_VARIANTS,
+        preview: (s) => sbxItemStatePreview(s),
+        code:    (s) => `<div class="sbx-item">\n  <div class="sbx-item-inner${s !== 'default' ? ` is-${s}` : ''}">\n    <div class="sbx-item-icon"><!-- icon --></div>\n    <div class="sbx-item-label">Drawer Item Label</div>\n  </div>\n</div>`,
       })}
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
       <p class="page-desc">Design tokens used to build the Sidebar, mapped to their Figma source and existing <code style="font-family:var(--mono);font-size:12px;">--bt-*</code> variables.</p>
+      <h2>Standart Sidebar</h2>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">--bt-surface-brand-default</span></td><td>#0d4e97</td><td>Top zone background (both states)</td></tr>
+          <tr><td><span class="token-name">--bt-base-default</span></td><td>#ffffff</td><td>Panel / item background</td></tr>
+          <tr><td><span class="token-name">--bt-base-subtle</span></td><td>#f5f5f5</td><td>Item hover background</td></tr>
+          <tr><td><span class="token-name">--bt-border-primary-default</span></td><td>#d4d4d4</td><td>Panel right border, searchbox border, shortcut badge border</td></tr>
+          <tr><td><span class="token-name">--bt-primary-default / --bt-primary-intense</span></td><td>#0d4e97 / #0f447d</td><td>Menu button background / hover</td></tr>
+          <tr><td><span class="token-name">--bt-text-primary-default</span></td><td>#1a1a1a</td><td>Item label (default)</td></tr>
+          <tr><td><span class="token-name">--bt-text-primary-inverted</span></td><td>#ffffff</td><td>Title text · selected item label &amp; icon</td></tr>
+          <tr><td><span class="token-name">--bt-text-primary-muted</span></td><td>#a3a3a3</td><td>Searchbox placeholder text</td></tr>
+          <tr><td><span class="token-name">--bt-text-primary-strong</span></td><td>#535353</td><td>Shortcut badge text, item icon</td></tr>
+          <tr><td><span class="token-name">--bt-radius-md</span></td><td>6px</td><td>Logo / searchbox / item radius</td></tr>
+          <tr><td><span class="token-name">--bt-radius-sm</span></td><td>4px</td><td>Menu button radius</td></tr>
+          <tr><td><span class="token-name">--bt-radius-xs</span></td><td>2px</td><td>Shortcut badge radius</td></tr>
+          <tr><td><span class="token-name">--bt-space-lg</span></td><td>10px</td><td>Top zone / search wrap horizontal padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-md</span></td><td>8px</td><td>Top zone gap · item horizontal padding (also = collapsed width minus icon)</td></tr>
+          <tr><td><span class="token-name">--bt-space-sm</span></td><td>6px</td><td>Top zone vertical padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>Left/right control padding (24px icon → 32px control)</td></tr>
+          <tr><td><span class="token-name">--bt-space-xl</span></td><td>12px</td><td>Search wrap vertical padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-2xl</span></td><td>16px</td><td>Pinned item vertical padding</td></tr>
+          <tr><td><span class="token-name">--bt-text-lg-size / -lh</span></td><td>18px / 24px</td><td>Title text</td></tr>
+          <tr><td><span class="token-name">--bt-blue-100 / -600 / -700</span></td><td>#e2edfc / #0e62bb / #0d4e97</td><td>App logo placeholder border / gradient</td></tr>
+          <tr><td><span class="token-name">--bt-text-xs-size / -lh</span></td><td>12px / 16px</td><td>Searchbox placeholder text</td></tr>
+          <tr><td><span class="token-name">--bt-text-2xs-size / -lh</span></td><td>10px / 12px</td><td>Shortcut badge text</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Hub Sidebar</h2>
       <table class="token-table">
         <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
         <tbody>
-          <tr><td><span class="token-name">--bt-surface-primary-intense</span></td><td>#272727</td><td>Rail background · Figma: Surface/Secondary/--bt-surface-primary-intense (Gray/800)</td></tr>
+          <tr><td><span class="token-name">--bt-secondary-intense</span></td><td>#272727</td><td>Rail background · icon button background (invisible at rest)</td></tr>
+          <tr><td><span class="token-name">--bt-secondary-solid</span></td><td>#535353</td><td>Icon button hover, active &amp; selected background</td></tr>
+          <tr><td><span class="token-name">--bt-gray-900 / -800 / -600</span></td><td>#1a1a1a / #272727 / #535353</td><td>Logo placeholder gradient (both 40px top logo and 36px mid-list logo)</td></tr>
           <tr><td><span class="token-name">--bt-base-default</span></td><td>#ffffff</td><td>Drawer / drawer item background</td></tr>
           <tr><td><span class="token-name">--bt-border-primary-default</span></td><td>#d4d4d4</td><td>Rail / drawer right border, searchbox border, shortcut badge border</td></tr>
-          <tr><td><span class="token-name">--bt-border-subtle</span></td><td>#f5f5f5</td><td>Drawer bottom divider (pinned item)</td></tr>
           <tr><td><span class="token-name">--bt-text-primary-default</span></td><td>#1a1a1a</td><td>Drawer item label</td></tr>
           <tr><td><span class="token-name">--bt-text-primary-muted</span></td><td>#a3a3a3</td><td>Searchbox placeholder text</td></tr>
           <tr><td><span class="token-name">--bt-text-primary-strong</span></td><td>#535353</td><td>Shortcut badge text, drawer item icon</td></tr>
-          <tr><td><span class="token-name">--bt-radius-md</span></td><td>6px</td><td>Logo / searchbox / drawer item radius</td></tr>
-          <tr><td><span class="token-name">--bt-radius-sm</span></td><td>4px</td><td>Rail icon-button radius</td></tr>
+          <tr><td><span class="token-name">--bt-radius-md</span></td><td>6px</td><td>Logo / searchbox / drawer item / rail icon-button radius</td></tr>
           <tr><td><span class="token-name">--bt-radius-xs</span></td><td>2px</td><td>Shortcut badge radius</td></tr>
-          <tr><td><span class="token-name">--bt-space-md</span></td><td>8px</td><td>Rail horizontal padding · drawer item horizontal padding</td></tr>
-          <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>Drawer item vertical padding · icon padding</td></tr>
+          <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>Rail horizontal padding · left/right control padding (24px icon → 32px control)</td></tr>
+          <tr><td><span class="token-name">--bt-space-md</span></td><td>8px</td><td>Drawer item horizontal padding (also = collapsed rail width minus icon)</td></tr>
+          <tr><td><span class="token-name">--bt-space-2xs</span></td><td>2px</td><td>Gap between drawer items · search icon control padding</td></tr>
           <tr><td><span class="token-name">--bt-space-sm</span></td><td>6px</td><td>Rail bottom-zone gap</td></tr>
           <tr><td><span class="token-name">--bt-space-xl</span></td><td>12px</td><td>Drawer top/bottom horizontal padding</td></tr>
           <tr><td><span class="token-name">--bt-space-2xl</span></td><td>16px</td><td>Drawer top/bottom vertical padding</td></tr>
           <tr><td><span class="token-name">--bt-space-4xl</span></td><td>24px</td><td>Rail vertical padding</td></tr>
           <tr><td><span class="token-name">--bt-space-8xl</span></td><td>40px</td><td>Gap between rail zones (top/center/bottom)</td></tr>
+          <tr><td><span class="token-name">--bt-surface-subtle</span></td><td>#f5f5f5</td><td>Drawer item hover background</td></tr>
+          <tr><td><span class="token-name">--bt-surface-primary-muted</span></td><td>#e6e6e6</td><td>Drawer item active &amp; selected background (neutral, no brand colour)</td></tr>
         </tbody>
       </table>
     `};
 
     if (tab === 'Usage') return { title, html: `
       <p class="page-desc">Sidebar usage guidelines.</p>
-      <h2>When to use Variant A (Rail + Drawer)</h2>
+      <h2>When to use Standart Sidebar</h2>
+      <ul>
+        <li>Single-level navigation where the whole panel toggles between an icon rail and a full labelled panel</li>
+        <li>When there's no need for a second, independent drawer alongside a persistent rail</li>
+        <li>Apps with a search-first navigation pattern (search sits at the top of the expanded panel)</li>
+      </ul>
+      <h2>When to use Hub Sidebar</h2>
       <ul>
         <li>Complex B2B apps where the rail provides always-visible global navigation</li>
-        <li>When users need to collapse the drawer to maximise content area</li>
+        <li>When users need to collapse the drawer to maximise content area while keeping the rail anchored</li>
         <li>When the app has two distinct navigation levels (global rail + contextual drawer)</li>
-      </ul>
-      <h2>When to use Variant B (Platform Switcher)</h2>
-      <ul>
-        <li>SaaS dashboards, docs sites, or settings pages (Linear, Vercel, Notion style)</li>
-        <li>When a workspace/organisation switcher is required at the top</li>
-        <li>When nav items are grouped into labelled sections</li>
       </ul>
       <h2>Do</h2>
       <ul>
-        <li><strong>A:</strong> Keep the rail's icon set short and stable — it should not scroll</li>
-        <li><strong>A:</strong> Pin account/settings actions in the drawer bottom slot, separated by a divider</li>
-        <li><strong>B:</strong> Use section labels to group related items; omit the label when there's only one group</li>
-        <li><strong>B:</strong> Keep the switcher's workspace name short enough to avoid truncation at 260px</li>
+        <li><strong>Standart:</strong> Keep the collapsed rail's icon set identical in order and count to the expanded list — items only lose their label, they don't reflow</li>
+        <li><strong>Standart:</strong> Reserve the selected state for the current page only; use hover for transient feedback</li>
+        <li><strong>Hub:</strong> Keep the rail's icon set short and stable — it should not scroll</li>
+        <li><strong>Hub:</strong> Pin account/settings actions in the drawer bottom slot, separated by a divider</li>
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li><strong>A:</strong> Don't mix unrelated actions into the rail — it's for global, always-visible entry points only</li>
-        <li><strong>A:</strong> Don't remove the rail when collapsing the drawer — the rail stays as the persistent anchor</li>
-        <li><strong>B:</strong> Don't nest section groups more than one level deep</li>
-        <li><strong>B:</strong> Don't use Variant B when a collapse behaviour is required — it has no collapse state</li>
+        <li><strong>Standart:</strong> Don't drop the pinned bottom item's right control when expanded — it's the only item with a right-side action</li>
+        <li><strong>Hub:</strong> Don't mix unrelated actions into the rail — it's for global, always-visible entry points only</li>
+        <li><strong>Hub:</strong> Don't remove the rail when collapsing the drawer — the rail stays as the persistent anchor</li>
       </ul>
     `};
 
@@ -573,16 +842,29 @@ PAGES_WEB['components/sidebar'] = {
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-sidebar-overview',
-        variants: SBX_VARIANTS,
+        variants: SBX_TYPES,
+        props: [{ key: 'state', label: 'State', options: SBX_STATE_OPTS, default: 'expanded' }],
         preview: sidebarMarkup,
         code: sidebarCodeSnippet,
+        css: sidebarCss,
         isolate: 'sidebar',
       })}
 
-      <p class="page-desc">Two sidebar variants. <strong>Variant A</strong> — a dark icon rail paired with an expandable drawer; best for complex B2B apps. <strong>Variant B</strong> — a single-pane sidebar with a workspace switcher and grouped nav sections; best for docs, settings, or SaaS dashboards.</p>
+      <p class="page-desc">Two sidebar types, each with an Expanded and Collapsed state. <strong>Standart Sidebar</strong> — a single panel whose own top button toggles its width between a 48px icon rail and a 280px full panel with search + labelled items. <strong>Hub Sidebar</strong> — a persistent dark icon rail paired with a separately-toggleable 280px drawer; best for complex B2B apps with two navigation levels.</p>
 
       <h2 id="Structure">Structure</h2>
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Variant A</p>
+      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Standart Sidebar</p>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>Zone</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Top</span></td><td>Menu/toggle button + app logo &amp; title (title hidden when collapsed)</td></tr>
+          <tr><td><span class="token-name">Body · Search</span></td><td>Searchbox with keyboard shortcut hint (hidden when collapsed)</td></tr>
+          <tr><td><span class="token-name">Body · List</span></td><td>Scrollable list of items — left icon + label, label hidden when collapsed</td></tr>
+          <tr><td><span class="token-name">Body · Pinned</span></td><td>Bottom item with left + right control (no divider — spacing alone separates it)</td></tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Hub Sidebar</p>
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>Zone</th><th>Contents</th></tr></thead>
         <tbody>
@@ -591,47 +873,78 @@ PAGES_WEB['components/sidebar'] = {
           <tr><td><span class="token-name">Rail · Bottom</span></td><td>Secondary icon buttons (e.g. settings, help)</td></tr>
           <tr><td><span class="token-name">Drawer · Top</span></td><td>Searchbox with keyboard shortcut hint</td></tr>
           <tr><td><span class="token-name">Drawer · Center</span></td><td>Scrollable list of drawer items</td></tr>
-          <tr><td><span class="token-name">Drawer · Bottom</span></td><td>Pinned item, separated by a top divider</td></tr>
+          <tr><td><span class="token-name">Drawer · Bottom</span></td><td>Pinned item (no divider — spacing alone separates it)</td></tr>
         </tbody>
       </table>
 
       <h2 id="Anatomy">Anatomy</h2>
+      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Standart Sidebar</p>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Panel</td><td>Width — expanded / collapsed</td><td>—</td><td>280px / 48px</td></tr>
+          <tr><td>Background</td><td>${tk('Base/default')}</td><td>#ffffff</td></tr>
+          <tr><td>Border right</td><td>${tk('Border/Primary default')}</td><td>1px solid #d4d4d4</td></tr>
+          <tr><td rowspan="2">Top zone</td><td>Height</td><td>—</td><td>48px</td></tr>
+          <tr><td>Background</td><td>${tk('Surface/Brand default')}</td><td>#0d4e97</td></tr>
+          <tr><td rowspan="2">Menu button</td><td>Size</td><td>—</td><td>28 × 28px</td></tr>
+          <tr><td>Border radius</td><td>${tk('Radius/sm')}</td><td>4px</td></tr>
+          <tr><td rowspan="2">Left / Right control</td><td>Size</td><td>—</td><td>32 × 32px (24px icon + 4px padding)</td></tr>
+          <tr><td>Border radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+          <tr><td>Search</td><td>Component</td><td>—</td><td>Reuses <code style="font-family:var(--mono);font-size:12px;">.bt-searchbox--md</code> from the SearchBox component (32px, real input)</td></tr>
+          <tr><td rowspan="2">Item row</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Selected background</td><td>${tk('Surface/Brand default')}</td><td>#0d4e97 · text/icon #ffffff</td></tr>
+          <tr><td>Item label</td><td>—</td><td>13px / 400 / 16px · #1a1a1a</td></tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Hub Sidebar</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td rowspan="4">Rail</td><td>Width</td><td>—</td><td>56px</td></tr>
-          <tr><td>Background</td><td>${tk('Surface/Secondary intense')}</td><td>#272727</td></tr>
+          <tr><td rowspan="3">Rail</td><td>Width</td><td>—</td><td>48px (matches Standart Sidebar's collapsed width)</td></tr>
+          <tr><td>Background</td><td>${tk('color/secondary/--bt-secondary-intense')}</td><td>#272727</td></tr>
           <tr><td>Border right</td><td>${tk('Border/Primary default')}</td><td>1px solid #d4d4d4</td></tr>
-          <tr><td>Padding V / H</td><td>${tk('Space/4xl')} · ${tk('Space/md')}</td><td>24px / 8px</td></tr>
-          <tr><td>Logo / Collapse control</td><td>Border radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
-          <tr><td rowspan="2">Rail icon button</td><td>Size</td><td>—</td><td>28 × 28px</td></tr>
-          <tr><td>Border radius</td><td>${tk('Radius/sm')}</td><td>4px</td></tr>
-          <tr><td rowspan="2">Drawer</td><td>Width</td><td>—</td><td>280px</td></tr>
-          <tr><td>Background</td><td>${tk('Base/default')}</td><td>#ffffff</td></tr>
-          <tr><td rowspan="3">Searchbox</td><td>Height</td><td>—</td><td>28px</td></tr>
+          <tr><td rowspan="2">Rail padding / gap</td><td>Padding V / H</td><td>${tk('Space/4xl')} · ${tk('Space/xs')}</td><td>24px / 4px</td></tr>
+          <tr><td>Gap between zones</td><td>${tk('Space/8xl')}</td><td>40px</td></tr>
+          <tr><td rowspan="2">Logo placeholder (40px top / 36px mid-list)</td><td>Border</td><td>—</td><td>0.75px solid white</td></tr>
+          <tr><td>Background</td><td>—</td><td>linear-gradient(-45deg, gray-900 → gray-800 29% → gray-600 100%)</td></tr>
+          <tr><td rowspan="2">Rail icon button</td><td>Size</td><td>—</td><td>32 × 32px (24px icon + 4px padding)</td></tr>
           <tr><td>Border radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
-          <tr><td>Placeholder text</td><td>${tk('Text/xs/Regular')}</td><td>12px / 400 / 16px · #a3a3a3</td></tr>
+          <tr><td rowspan="2">Drawer</td><td>Width</td><td>—</td><td>280px</td></tr>
+          <tr><td>Background / Border right</td><td>${tk('Base/default')}</td><td>#ffffff · 1px solid #d4d4d4</td></tr>
+          <tr><td>Searchbox</td><td>Component</td><td>—</td><td>Reuses <code style="font-family:var(--mono);font-size:12px;">.bt-searchbox--sm</code> from the SearchBox component (28px, real input)</td></tr>
           <tr><td>Shortcut badge</td><td>Border radius</td><td>${tk('Radius/xs')}</td><td>2px</td></tr>
-          <tr><td rowspan="3">Drawer item</td><td>Padding V / H</td><td>${tk('Space/xs')} · ${tk('Space/md')}</td><td>4px / 8px</td></tr>
-          <tr><td>Inner border radius</td><td>${tk('Radius/md')}</td><td>6px</td></tr>
+          <tr><td rowspan="4">Drawer item</td><td>Padding H / row gap</td><td>${tk('Space/md')} · ${tk('Space/2xs')}</td><td>8px / 2px</td></tr>
+          <tr><td>Left control</td><td>—</td><td>32 × 32px (24px icon + 4px padding)</td></tr>
+          <tr><td>Hover / Active &amp; Selected background</td><td>${tk('Base/subtle')} · ${tk('Surface/Primary muted')}</td><td>#f5f5f5 · #e6e6e6 — text/icon colour never changes</td></tr>
+          <tr><td>Focus</td><td>—</td><td>white bg · 0 0 0 3px rgba(212,212,212,.5) ring</td></tr>
           <tr><td>Label</td><td>${tk('Text-1/Regular')}</td><td>13px / 400 / 16px · #1a1a1a</td></tr>
         </tbody>
       </table>
 
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Variant B</p>
-      <table class="token-table">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+      <h2 id="States">States</h2>
+      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Item row (Standart Sidebar) — the same states apply to the collapsed rail's icon-only rows, since it's the same markup with the label hidden.</p>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td rowspan="2">Sidebar</td><td>Width</td><td>—</td><td>260px</td></tr>
-          <tr><td>Background</td><td>${tk('Surface/Primary default')}</td><td>#ffffff</td></tr>
-          <tr><td rowspan="3">Workspace Switcher</td><td>Height</td><td>—</td><td>52px</td></tr>
-          <tr><td>Icon size</td><td>—</td><td>24 × 24px, radius 6px</td></tr>
-          <tr><td>Name</td><td>${tk('Text-1/Medium')}</td><td>13px / 500</td></tr>
-          <tr><td rowspan="2">Nav item</td><td>Height</td><td>—</td><td>32px</td></tr>
-          <tr><td>Active bg</td><td>${tk('Primary/subtle')}</td><td>#e6f0fc · text #0d4e97</td></tr>
-          <tr><td>Section label</td><td>—</td><td>11px / 500 / uppercase / #a3a3a3</td></tr>
-          <tr><td rowspan="2">User row</td><td>Height</td><td>—</td><td>36px</td></tr>
-          <tr><td>Avatar</td><td>—</td><td>24px circle · ${tk('Base/emphasis')}</td></tr>
+          ${STB_ITEM_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${pw(stbItemStatePreview(s.key))}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Drawer item (Hub Sidebar)</p>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${SBX_ITEM_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${pw(sbxItemStatePreview(s.key))}</td>
+          </tr>`).join('')}
         </tbody>
       </table>
     `};

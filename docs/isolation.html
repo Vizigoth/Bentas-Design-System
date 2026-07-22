@@ -19,10 +19,25 @@
       padding: 64px 40px;
       box-sizing: border-box;
     }
+    /* Sidebar-only: pin it flush against the browser's left edge, full
+       viewport height, like it would actually sit in an app — instead of
+       the generic centered/padded preview box other components get. */
+    .iso-shell--app {
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0;
+    }
+    .iso-shell--app .stb-shell,
+    .iso-shell--app .sbx-shell {
+      height: 100vh;
+      border: none;
+      box-shadow: none;
+    }
+    .iso-shell--app .stb-shell { border-right: 1px solid var(--bt-border-primary-default); }
     .iso-badge {
       position: fixed;
       top: 16px;
-      left: 16px;
+      right: 16px;
       padding: 6px 12px;
       border-radius: 999px;
       background: rgba(26,26,26,.85);
@@ -58,6 +73,8 @@
     }
     const root  = document.getElementById('iso-root');
     const entry = window.PGD_ISOLATE && window.PGD_ISOLATE[component];
+
+    if (component === 'sidebar') root.classList.add('iso-shell--app');
 
     if (entry) {
       // Registered isolation target (e.g. Sidebar, Alert)

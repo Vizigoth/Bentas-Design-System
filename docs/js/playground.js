@@ -56,7 +56,7 @@ function renderPlayground(config) {
   const variantControl = config.variants.length > 1 ? `
     <div class="pgd-dropdown">
       <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','variant',event)">
-        <span>${variantLabel}</span>${_pgdIconChevrons}
+        <span class="pgd-prop-label">${config.variantLabel || 'Variant'}</span><span>${variantLabel}</span>${_pgdIconChevrons}
       </button>
       ${st.openMenu === 'variant' ? `
       <div class="pgd-menu">
