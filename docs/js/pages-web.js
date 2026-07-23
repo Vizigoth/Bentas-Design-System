@@ -53,6 +53,7 @@ const NAV_WEB = [
       { label: 'Dropdown',          id: 'components/dropdown' },
       { label: 'Toggle',            id: 'components/toggle' },
       { label: 'Top App Bar',       id: 'components/top-app-bar' },
+      { label: 'Upload',            id: 'components/upload' },
     ]
   },
   {
@@ -4974,6 +4975,480 @@ PAGES_WEB['components/text-field'] = {
                 </div>
               </div>
             </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Upload ─────────────────────────────────────────────────
+
+const _uplIconFile        = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>`;
+const _uplIconX           = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+const _uplIconArrowUp     = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 11 7-7 7 7"/><path d="M12 4v13"/><path d="M19 21H5"/></svg>`;
+const _uplIconCircleCheck = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
+const _uplIconCircleAlert = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+const _uplIconRotateCw    = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>`;
+
+// ── Upload: global interactivity functions ──────────────────
+
+function btUplFormatSize(bytes) {
+  if (bytes < 1024)        return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function btUplSetDzState(dz, state) {
+  const statusEl = dz.querySelector('.bt-dropzone__status');
+  dz.className = 'bt-dropzone' + (state !== 'default' ? ' bt-dropzone--' + state : '');
+  if (state === 'uploading') {
+    statusEl.innerHTML = `<span class="bt-dropzone__status-icon">${_uplIconArrowUp}</span><span>Uploading Files...</span>`;
+  } else if (state === 'completed') {
+    statusEl.innerHTML = `<span class="bt-dropzone__status-icon">${_uplIconCircleCheck}</span><span>Upload Completed</span>`;
+  } else if (state === 'failed') {
+    statusEl.innerHTML = `<span class="bt-dropzone__status-icon">${_uplIconCircleAlert}</span><span>Upload Failed</span>`;
+  } else {
+    statusEl.innerHTML = `<span>Drag and drop files here to upload</span>`;
+  }
+}
+
+function btUplBuildFileRow(name, size) {
+  const row = document.createElement('div');
+  row.className = 'bt-upload-file';
+  row.innerHTML = `
+    <div class="bt-upload-file__content">
+      <div class="bt-upload-file__icon">${_uplIconFile}</div>
+      <div class="bt-upload-file__info">
+        <span class="bt-upload-file__name">${name}</span>
+        <span class="bt-upload-file__size">${size}</span>
+      </div>
+      <div class="bt-upload-file__controls">
+        <span class="bt-upload-file__pct">%0</span>
+        <button class="bt-upload-file__btn" onclick="btUplRemove(this)">${_uplIconX}</button>
+      </div>
+    </div>
+    <div class="bt-upload-file__progress">
+      <div class="bt-upload-file__progress-fill" style="width:0%"></div>
+    </div>`;
+  return row;
+}
+
+function btUplCompleteRow(row, success) {
+  row.classList.add(success ? 'bt-upload-file--success' : 'bt-upload-file--failed');
+  row.querySelector('.bt-upload-file__size').textContent =
+    success ? 'File successfully uploaded' : 'File failed to upload';
+  row.querySelector('.bt-upload-file__controls').innerHTML = success
+    ? `<button class="bt-upload-file__btn" onclick="btUplRemove(this)">${_uplIconX}</button>`
+    : `<button class="bt-upload-file__btn" onclick="btUplRetry(this)">${_uplIconRotateCw}</button>
+       <button class="bt-upload-file__btn" onclick="btUplRemove(this)">${_uplIconX}</button>`;
+  const bar = row.querySelector('.bt-upload-file__progress');
+  if (bar) bar.remove();
+}
+
+function btUplStartUpload(upload, files) {
+  if (!files.length) return;
+  const dz       = upload.querySelector('.bt-dropzone');
+  const fileList = upload.querySelector('.bt-upload__files');
+  btUplSetDzState(dz, 'uploading');
+  upload.classList.add('bt-upload--multiple');
+
+  let pending = files.length;
+
+  files.forEach((file, idx) => {
+    const row = btUplBuildFileRow(file.name, btUplFormatSize(file.size));
+    fileList.appendChild(row);
+    const bar    = row.querySelector('.bt-upload-file__progress-fill');
+    const pctEl  = row.querySelector('.bt-upload-file__pct');
+    let progress = 0;
+
+    setTimeout(() => {
+      const iv = setInterval(() => {
+        progress += Math.random() * 18 + 4;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(iv);
+          const success = Math.random() > 0.25;
+          btUplCompleteRow(row, success);
+          pending--;
+          if (pending === 0) {
+            const hasFailed = !!fileList.querySelector('.bt-upload-file--failed');
+            btUplSetDzState(dz, hasFailed ? 'failed' : 'completed');
+          }
+          return;
+        }
+        bar.style.width = progress + '%';
+        pctEl.textContent = '%' + Math.round(progress);
+      }, 160 + Math.random() * 80);
+    }, idx * 250);
+  });
+}
+
+function btUplRemove(btn) {
+  const row    = btn.closest('.bt-upload-file');
+  const upload = btn.closest('.bt-upload');
+  row.remove();
+  const fileList = upload.querySelector('.bt-upload__files');
+  const dz       = upload.querySelector('.bt-dropzone');
+  if (!fileList.children.length) {
+    upload.classList.remove('bt-upload--multiple');
+    btUplSetDzState(dz, 'default');
+  } else {
+    const hasFailed  = !!fileList.querySelector('.bt-upload-file--failed');
+    const hasUploading = !!fileList.querySelector('.bt-upload-file__progress');
+    if (!hasUploading) btUplSetDzState(dz, hasFailed ? 'failed' : 'completed');
+  }
+}
+
+function btUplRetry(btn) {
+  const row    = btn.closest('.bt-upload-file');
+  const upload = btn.closest('.bt-upload');
+  const dz     = upload.querySelector('.bt-dropzone');
+  const name   = row.querySelector('.bt-upload-file__name').textContent;
+  const newRow = btUplBuildFileRow(name, '—');
+  row.replaceWith(newRow);
+  const bar   = newRow.querySelector('.bt-upload-file__progress-fill');
+  const pctEl = newRow.querySelector('.bt-upload-file__pct');
+  let progress = 0;
+  btUplSetDzState(dz, 'uploading');
+  const iv = setInterval(() => {
+    progress += Math.random() * 18 + 4;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(iv);
+      const success = Math.random() > 0.15;
+      btUplCompleteRow(newRow, success);
+      const fileList = upload.querySelector('.bt-upload__files');
+      const hasFailed    = !!fileList.querySelector('.bt-upload-file--failed');
+      const hasUploading = !!fileList.querySelector('.bt-upload-file__progress');
+      if (!hasUploading) btUplSetDzState(dz, hasFailed ? 'failed' : 'completed');
+      return;
+    }
+    bar.style.width = progress + '%';
+    pctEl.textContent = '%' + Math.round(progress);
+  }, 160 + Math.random() * 80);
+}
+
+function btUplDrop(dz, event) {
+  event.preventDefault();
+  dz.classList.remove('bt-dropzone--dragover');
+  btUplStartUpload(dz.closest('.bt-upload'), Array.from(event.dataTransfer.files));
+}
+
+const UPL_SEGMENT_VARIANTS = [
+  { key: 'default',  label: 'Default'  },
+  { key: 'single',   label: 'Single'   },
+  { key: 'multiple', label: 'Multiple' },
+];
+
+const DZ_STATE_VARIANTS = [
+  { key: 'default',   label: 'Default'         },
+  { key: 'uploading', label: 'Uploading Files'  },
+  { key: 'completed', label: 'Upload Completed' },
+  { key: 'failed',    label: 'Upload Failed'    },
+  { key: 'disabled',  label: 'Disabled'         },
+];
+
+const UF_STATE_VARIANTS = [
+  { key: 'uploading', label: 'Uploading'         },
+  { key: 'success',   label: 'Upload Successful' },
+  { key: 'failed',    label: 'Upload Failed'     },
+];
+
+function _dzHtml(dzState) {
+  let statusHtml = '';
+  if (dzState === 'uploading') {
+    statusHtml = `<span class="bt-dropzone__status-icon">${_uplIconArrowUp}</span><span>Uploading Files...</span>`;
+  } else if (dzState === 'completed') {
+    statusHtml = `<span class="bt-dropzone__status-icon">${_uplIconCircleCheck}</span><span>Upload Completed</span>`;
+  } else if (dzState === 'failed') {
+    statusHtml = `<span class="bt-dropzone__status-icon">${_uplIconCircleAlert}</span><span>Upload Failed</span>`;
+  } else {
+    statusHtml = `<span>Drag and drop files here to upload</span>`;
+  }
+  const mod      = dzState !== 'default' ? ` bt-dropzone--${dzState}` : '';
+  const disabled = dzState === 'disabled' ? ' disabled' : '';
+  return `<div class="bt-dropzone${mod}">
+  <div class="bt-dropzone__inner">
+    <button class="bt-btn bt-btn--xs bt-btn--primary-ghost"${disabled}>Select Files</button>
+    <div class="bt-dropzone__status">${statusHtml}</div>
+  </div>
+</div>`;
+}
+
+function _ufHtml(ufState) {
+  const isUploading = ufState === 'uploading';
+  const isSuccess   = ufState === 'success';
+  const isFailed    = ufState === 'failed';
+  const mod     = isSuccess ? ' bt-upload-file--success' : isFailed ? ' bt-upload-file--failed' : '';
+  const subtext = isSuccess ? 'File successfully uploaded' : isFailed ? 'File failed to upload' : '225.68 KB';
+  const pct     = isUploading ? `<span class="bt-upload-file__pct">%25</span>` : '';
+  const retry   = isFailed ? `<button class="bt-upload-file__btn">${_uplIconRotateCw}</button>` : '';
+  const remove  = `<button class="bt-upload-file__btn">${_uplIconX}</button>`;
+  const bar     = isUploading ? `
+  <div class="bt-upload-file__progress">
+    <div class="bt-upload-file__progress-fill" style="width:25%"></div>
+  </div>` : '';
+  return `<div class="bt-upload-file${mod}">
+  <div class="bt-upload-file__content">
+    <div class="bt-upload-file__icon">${_uplIconFile}</div>
+    <div class="bt-upload-file__info">
+      <span class="bt-upload-file__name">Document.pdf</span>
+      <span class="bt-upload-file__size">${subtext}</span>
+    </div>
+    <div class="bt-upload-file__controls">${pct}${retry}${remove}</div>
+  </div>${bar}
+</div>`;
+}
+
+function _uplCss(segment) {
+  const p = (k, v) => `  ${k}: ${v};`;
+  const lines = [];
+  const isMultiple = segment === 'multiple';
+  const isSingle   = segment === 'single';
+
+  lines.push(`/* Upload · ${segment.charAt(0).toUpperCase() + segment.slice(1)} */`, '');
+
+  lines.push('.bt-upload {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('flex-direction', 'column'));
+  lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+  lines.push(p('width', '100%'));
+  lines.push('}');
+
+  if (isMultiple) {
+    lines.push('', '.bt-upload--multiple {');
+    lines.push(p('gap', 'var(--bt-space-md)  /* 8px */'));
+    lines.push('}');
+  }
+
+  lines.push('', '.bt-dropzone {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('flex-direction', 'column'));
+  lines.push(p('border', '1px dashed var(--bt-border-primary-default)  /* #d4d4d4 */'));
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background', 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'));
+  lines.push(p('width', '100%'));
+  lines.push('}');
+  lines.push('.bt-dropzone__inner {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('justify-content', 'center'));
+  lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+  lines.push(p('padding', 'var(--bt-space-md)  /* 8px */'));
+  lines.push('}');
+  lines.push('/* Select Files → bt-btn bt-btn--xs bt-btn--primary-ghost */');
+  lines.push('.bt-dropzone .bt-btn {');
+  lines.push(p('text-decoration', 'underline'));
+  lines.push('}');
+
+  if (isMultiple) {
+    lines.push('', '.bt-dropzone--uploading .bt-dropzone__status {');
+    lines.push(p('color', 'var(--bt-text-brand-default)  /* #0d4e97 */'));
+    lines.push('}');
+  }
+
+  if (isSingle || isMultiple) {
+    lines.push('', '.bt-upload-file {');
+    lines.push(p('display', 'flex'));
+    lines.push(p('flex-direction', 'column'));
+    lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+    lines.push(p('width', '100%'));
+    lines.push('}');
+    lines.push('.bt-upload-file__name {');
+    lines.push(p('font-size', 'var(--bt-text-xs-size)  /* 12px */'));
+    lines.push(p('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+    lines.push('}');
+    lines.push('.bt-upload-file__size {');
+    lines.push(p('font-size', 'var(--bt-text-2xs-size)  /* 10px */'));
+    lines.push(p('color', 'var(--bt-text-primary-emphasis)  /* #727272 */'));
+    lines.push('}');
+  }
+
+  if (isSingle) {
+    lines.push('', '.bt-upload-file--success .bt-upload-file__size {');
+    lines.push(p('color', 'var(--bt-text-success-default)  /* #2d584b */'));
+    lines.push('}');
+  }
+
+  if (isMultiple) {
+    lines.push('', '.bt-upload-file--failed .bt-upload-file__size {');
+    lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
+    lines.push('}');
+    lines.push('', '.bt-upload-file__progress {');
+    lines.push(p('height', '6px'));
+    lines.push(p('background', 'var(--bt-surface-primary-muted)  /* #e6e6e6 */'));
+    lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+    lines.push('}');
+    lines.push('.bt-upload-file__progress-fill {');
+    lines.push(p('background', 'var(--bt-primary-default)  /* #0d4e97 */'));
+    lines.push('}');
+  }
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// Interactive preview — Default variant shows fully functional upload
+function _uplPreview(segment) {
+  if (segment === 'default') {
+    return `<div class="bt-upload" style="max-width:440px;margin:0 auto;">
+  <input type="file" multiple class="bt-upload__input" style="display:none"
+    onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+  <div class="bt-dropzone"
+    ondragover="event.preventDefault(); this.classList.add('bt-dropzone--dragover')"
+    ondragleave="this.classList.remove('bt-dropzone--dragover')"
+    ondrop="btUplDrop(this, event)">
+    <div class="bt-dropzone__inner">
+      <button class="bt-btn bt-btn--xs bt-btn--primary-ghost"
+        onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">Select Files</button>
+      <div class="bt-dropzone__status"><span>Drag and drop files here to upload</span></div>
+    </div>
+  </div>
+  <div class="bt-upload__files"></div>
+</div>`;
+  }
+  // Single / Multiple — static reference previews
+  const isMultiple = segment === 'multiple';
+  const isSingle   = segment === 'single';
+  const mulClass   = isMultiple ? ' bt-upload--multiple' : '';
+  const dzState    = isMultiple ? 'uploading' : 'default';
+  const files = isSingle
+    ? _ufHtml('success')
+    : isMultiple
+      ? [_ufHtml('failed'), _ufHtml('success'), _ufHtml('uploading')].join('\n')
+      : '';
+  return `<div class="bt-upload${mulClass}" style="max-width:440px;margin:0 auto;">
+  ${_dzHtml(dzState)}${files ? '\n  ' + files.split('\n').join('\n  ') : ''}
+</div>`;
+}
+
+// Static code output (copy-paste reference, no JS)
+function _uplCode(segment) {
+  const isMultiple = segment === 'multiple';
+  const isSingle   = segment === 'single';
+  if (segment === 'default') {
+    return `<div class="bt-upload">
+  <input type="file" multiple class="bt-upload__input" style="display:none"
+    onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+  <div class="bt-dropzone"
+    ondragover="event.preventDefault()"
+    ondrop="btUplDrop(this, event)">
+    <div class="bt-dropzone__inner">
+      <button class="bt-btn bt-btn--xs bt-btn--primary-ghost"
+        onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">Select Files</button>
+      <div class="bt-dropzone__status">
+        <span>Drag and drop files here to upload</span>
+      </div>
+    </div>
+  </div>
+  <div class="bt-upload__files"></div>
+</div>`;
+  }
+  const mulClass = isMultiple ? ' bt-upload--multiple' : '';
+  const dzState  = isMultiple ? 'uploading' : 'default';
+  const files = isSingle
+    ? _ufHtml('success')
+    : isMultiple
+      ? [_ufHtml('failed'), _ufHtml('success'), _ufHtml('uploading')].join('\n')
+      : '';
+  return `<div class="bt-upload${mulClass}">
+  ${_dzHtml(dzState)}${files ? '\n  ' + files.split('\n').join('\n  ') : ''}
+</div>`;
+}
+
+PAGES_WEB['components/upload'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Drop Zone States', 'Upload File States'],
+  render(tab) {
+    const title = 'Upload';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Upload bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Drop Zone</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">Drop Zone</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Border (dashed)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border radius</td><td>—</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Padding</td><td>—</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td rowspan="2">Select Files link</td><td>Color (Default)</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Color (Disabled)</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Status text (Default)</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Status text (Uploading)</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Status text (Completed)</td><td>Color</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Status text (Failed)</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+      <h2>Upload File</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">File name</td><td>Font size</td><td>${tk('--bt-text-xs-size')}</td><td>12px</td></tr>
+          <tr><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td rowspan="3">File size / status</td><td>Font size</td><td>${tk('--bt-text-2xs-size')}</td><td>10px</td></tr>
+          <tr><td>Color (Default)</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Color (Success)</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>File status (Failed)</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Progress %</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Progress bar (track)</td><td>Background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Progress bar (fill)</td><td>Background</td><td>${tk('--bt-primary-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon button hover</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Upload bileşeni kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Drop zone'a kabul edilen dosya formatlarını ve maksimum boyutu belirt</li>
+        <li>Upload başladığında DropZone durumunu "Uploading Files" olarak güncelle</li>
+        <li>Hatalı yüklemelerde kullanıcıya retry butonu sun</li>
+        <li>Çoklu dosya yüklemelerinde her dosyanın durumunu ayrı ayrı göster</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Upload tamamlanmadan sayfayı uyarı vermeden yönlendirme yapma</li>
+        <li>Dosya adı olmadan sadece progress bar gösterme</li>
+        <li>Hata mesajını yalnızca renk değişimiyle ifade etme — açıklayıcı metin ekle</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-upl-overview',
+        variants: UPL_SEGMENT_VARIANTS,
+        preview: (state) => _uplPreview(state),
+        code:    (state) => _uplCode(state),
+        css:     (state) => _uplCss(state),
+      })}
+
+      <p class="page-desc">Dosya yükleme bileşeni. Drop Zone ve Upload File'dan oluşur; Default / Single / Multiple segment modlarını ve 5 Drop Zone state'ini destekler.</p>
+
+      <h2 id="Drop Zone States">Drop Zone States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${DZ_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:8px 0;"><div style="max-width:380px;">${_dzHtml(s.key)}</div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Upload File States">Upload File States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${UF_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:8px 0;"><div style="max-width:380px;">${_ufHtml(s.key)}</div></td>
           </tr>`).join('')}
         </tbody>
       </table>

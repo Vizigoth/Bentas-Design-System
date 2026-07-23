@@ -2356,3 +2356,145 @@ kullanılmışsa (bu projede: `chevrons-up-down`, `ruler-dimension-line`, `propo
 ```bash
 curl -sL "https://unpkg.com/lucide-static@latest/icons/<icon-name>.svg"
 ```
+
+---
+
+## 12. Upload
+
+Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamamen interaktif — gerçek dosya seçimi, progress animasyonu, success/failed state yönetimi.
+
+### 12.1 Drop Zone (`.bt-dropzone`)
+
+`Select Files` butonu `bt-btn bt-btn--xs bt-btn--primary-ghost` component'idir. İkonlar inline SVG.
+
+```html
+<!-- Default -->
+<div class="bt-upload">
+  <input type="file" multiple class="bt-upload__input" style="display:none"
+    onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+  <div class="bt-dropzone"
+    ondragover="event.preventDefault()"
+    ondrop="btUplDrop(this, event)">
+    <div class="bt-dropzone__inner">
+      <button class="bt-btn bt-btn--xs bt-btn--primary-ghost"
+        onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">Select Files</button>
+      <div class="bt-dropzone__status">
+        <span>Drag and drop files here to upload</span>
+      </div>
+    </div>
+  </div>
+  <div class="bt-upload__files"></div>
+</div>
+```
+
+**State modifiers:** `bt-dropzone--uploading` | `bt-dropzone--completed` | `bt-dropzone--failed` | `bt-dropzone--disabled`
+
+**Status icons (inline SVG, 16×16):**
+- Uploading: `arrow-up-from-line`
+- Completed: `circle-check`
+- Failed: `circle-alert`
+- Disabled: `<button ... disabled>` → `bt-btn--primary-ghost:disabled` otomatik muted renk verir
+
+```css
+.bt-dropzone {
+  display: flex; flex-direction: column;
+  border: 1px dashed var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+  width: 100%;
+}
+.bt-dropzone__inner {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--bt-space-xs, 4px); padding: var(--bt-space-md, 8px);
+}
+/* Select Files butonu gerçek design system button'u — sadece underline eklenir */
+.bt-dropzone .bt-btn { text-decoration: underline; }
+.bt-dropzone__status {
+  display: flex; align-items: center; gap: var(--bt-space-xs, 4px);
+  font-size: var(--bt-text-xs-size, 12px); line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-primary-default, #1a1a1a); white-space: nowrap;
+}
+.bt-dropzone--disabled  .bt-dropzone__status { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-dropzone--uploading .bt-dropzone__status { color: var(--bt-text-brand-default, #0d4e97); }
+.bt-dropzone--completed .bt-dropzone__status { color: var(--bt-text-success-default, #2d584b); }
+.bt-dropzone--failed    .bt-dropzone__status { color: var(--bt-text-error-default, #b31d38); }
+.bt-dropzone__status-icon { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex-shrink: 0; }
+.bt-dropzone__status-icon svg { width: 16px; height: 16px; }
+```
+
+### 12.2 Upload File (`.bt-upload-file`)
+
+İkon ve butonlar inline SVG. Action butonları `bt-upload-file__btn` custom class'ıdır (24×24px icon button).
+
+```html
+<!-- Uploading -->
+<div class="bt-upload-file">
+  <div class="bt-upload-file__content">
+    <div class="bt-upload-file__icon"><!-- file SVG --></div>
+    <div class="bt-upload-file__info">
+      <span class="bt-upload-file__name">Document.pdf</span>
+      <span class="bt-upload-file__size">225.68 KB</span>
+    </div>
+    <div class="bt-upload-file__controls">
+      <span class="bt-upload-file__pct">%25</span>
+      <button class="bt-upload-file__btn" onclick="btUplRemove(this)"><!-- x SVG --></button>
+    </div>
+  </div>
+  <div class="bt-upload-file__progress">
+    <div class="bt-upload-file__progress-fill" style="width:25%"></div>
+  </div>
+</div>
+
+<!-- Success: bt-upload-file--success + size text değişir + pct/bar kalkar -->
+<!-- Failed:  bt-upload-file--failed  + size text değişir + retry(rotate-cw) + x buton -->
+```
+
+**Right controls per state:**
+- Uploading: `%25` pct + `x` butonu + progress bar
+- Success: `x` butonu (pct + bar kalkar)
+- Failed: `rotate-cw` butonu + `x` butonu (pct + bar kalkar)
+
+```css
+.bt-upload-file { display: flex; flex-direction: column; gap: var(--bt-space-xs, 4px); width: 100%; }
+.bt-upload-file__content { display: flex; align-items: center; gap: var(--bt-space-xs, 4px); width: 100%; }
+.bt-upload-file__icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; color: var(--bt-text-primary-default, #1a1a1a); }
+.bt-upload-file__icon svg { width: 16px; height: 16px; }
+.bt-upload-file__info { display: flex; flex-direction: column; gap: var(--bt-space-2xs, 2px); flex: 1 0 0; min-width: 0; }
+.bt-upload-file__name { font-size: var(--bt-text-xs-size, 12px); line-height: var(--bt-text-xs-lh, 16px); color: var(--bt-text-primary-default, #1a1a1a); }
+.bt-upload-file__size { font-size: var(--bt-text-2xs-size, 10px); line-height: var(--bt-text-2xs-lh, 12px); color: var(--bt-text-primary-emphasis, #727272); }
+.bt-upload-file--success .bt-upload-file__size { color: var(--bt-text-success-default, #2d584b); }
+.bt-upload-file--failed  .bt-upload-file__size { color: var(--bt-text-error-default, #b31d38); }
+.bt-upload-file__controls { display: flex; align-items: center; gap: var(--bt-space-xs, 4px); flex-shrink: 0; }
+.bt-upload-file__pct { font-size: var(--bt-text-xs-size, 12px); color: var(--bt-text-brand-default, #0d4e97); padding: 0 var(--bt-space-md, 8px); }
+.bt-upload-file__btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: var(--bt-space-xs, 4px); border-radius: var(--bt-radius-sm, 4px); border: none; background: none; cursor: pointer; box-sizing: border-box; }
+.bt-upload-file__btn:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.bt-upload-file__btn svg { width: 16px; height: 16px; pointer-events: none; }
+.bt-upload-file__progress { position: relative; width: 100%; height: 6px; border-radius: var(--bt-radius-sm, 4px); background: var(--bt-surface-primary-muted, #e6e6e6); overflow: hidden; }
+.bt-upload-file__progress-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: var(--bt-radius-sm, 4px); background: var(--bt-primary-default, #0d4e97); transition: width 0.2s ease; }
+```
+
+### 12.3 Upload container (`.bt-upload`)
+
+```html
+<div class="bt-upload">          <!-- Default: sadece dropzone -->
+<div class="bt-upload bt-upload--multiple">  <!-- Multiple: gap artıyor -->
+```
+
+```css
+.bt-upload { display: flex; flex-direction: column; gap: var(--bt-space-xs, 4px); width: 100%; }
+.bt-upload--multiple { gap: var(--bt-space-md, 8px); }
+```
+
+### 12.4 JS Davranışı
+
+`pages-web.js`'de global fonksiyonlar — başka projelere taşınırken kopyalanır:
+
+| Fonksiyon | Açıklama |
+|---|---|
+| `btUplStartUpload(upload, files)` | File array'i alır, dropzone'u uploading yapar, her dosya için progress animasyonu başlatır |
+| `btUplCompleteRow(row, success)` | Dosya satırını success/failed state'e geçirir, bar'ı kaldırır |
+| `btUplRemove(btn)` | Dosya satırını siler; kalan yoksa dropzone'u default'a döndürür |
+| `btUplRetry(btn)` | Başarısız dosyayı yeni bir satırla değiştirir, yeniden upload animasyonu başlatır |
+| `btUplDrop(dz, event)` | Drag & drop event handler — `ondrop` ile bağlanır |
+| `btUplSetDzState(dz, state)` | Drop zone class + status HTML'ini günceller (`'default'|'uploading'|'completed'|'failed'`) |
+| `btUplFormatSize(bytes)` | Baytı KB/MB string'e çevirir |

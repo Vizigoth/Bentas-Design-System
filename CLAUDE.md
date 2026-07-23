@@ -19,6 +19,24 @@ Sabit piksel değeri sadece **token karşılığı olmayan** boyutlarda kabul ed
 
 O component'in CSS bloğunda hardcoded px/hex değer kalmadığından emin ol — yalnızca `var(--bt-*, fallback)` deseninin fallback kısmında px/hex görünmeli. CSS selector specificity'ye dikkat: aynı elementi hedefleyen daha genel bir kural (örn. `.content p`) component'in kendi class'ını ezebilir — component class'larını yeterince spesifik yaz (örn. `.bt-x-field .bt-x__desc`).
 
+## Mevcut Component'leri Reuse Et — ZORUNLU
+
+Yeni bir component oluştururken, içinde kullanılan alt öğeler (buton, ikon, input vb.) için **özel CSS yazmak yerine tasarım sistemine eklenmiş component class'larını kullan**.
+
+- **Button**: `bt-btn bt-btn--{size} bt-btn--{variant}` — asla custom `button` stili yazma
+- **Genel kural**: O öğenin design system'de karşılığı varsa onu kullan; yoksa yeni component olarak ekle
+
+Örnek (Upload → Select Files):
+```html
+<!-- ✗ Yanlış: custom class -->
+<button class="bt-dropzone__link">Select Files</button>
+
+<!-- ✓ Doğru: gerçek button component -->
+<button class="bt-btn bt-btn--xs bt-btn--primary-ghost">Select Files</button>
+```
+
+Yeni component tasarlanırken Figma'da iç öğelerin hangi design system component'ini kullandığı `get_design_context` çıktısından (`data-name="Button"` gibi) anlaşılabilir — o component'in class'larını kullan.
+
 ## Component İsimlendirme Kuralı
 
 Bileşen adları **PascalCase** olmalı, kelimeler ayrı harf büyüklüğüyle birleştirilmeli:
@@ -34,6 +52,31 @@ Figma sayfa adı referans alınır; belirsizlik varsa major design system'lerdek
 Yeni bir component eklendiğinde sadece `registerPlayground({id: 'pgd-xxx-overview', ...})` yeterli. `isolation.html`, `window.PAGES_WEB` üzerinden tüm sayfaların `render()` fonksiyonlarını çağırarak `_pgdConfigs`'i doldurur ve ilgili playground'ı `pgd_id` URL parametresiyle bulur.
 
 `window.PGD_ISOLATE` kaydı veya `config.isolate` **artık yeni componentler için gerekli değil** — sadece Sidebar ve Alert gibi eskiden eklenmiş özel mount davranışları olan componentlerde kalır.
+
+## Playground CSS Sekmesi — ZORUNLU
+
+`registerPlayground` çağrısında **`css` callback'i her zaman eklenmelidir** — bu, playground'daki Preview / Code / **CSS** üç sekmesinin tamamının görünmesini sağlar.
+
+```javascript
+registerPlayground({
+  id: 'pgd-xxx-overview',
+  variants: VARIANTS,
+  preview: (state, p) => xxxHtml(state, p),
+  code:    (state, p) => xxxHtml(state, p),
+  css:     (state, p) => xxxCss(state, p),   // ← ZORUNLU
+})
+```
+
+`xxxCss(state, props)` fonksiyonu:
+- Seçili state/props kombinasyonuna göre **ilgili CSS kurallarını** üretir
+- Her property değerinin yanına token adı + fallback hex comment ekler: `var(--bt-text-brand-default)  /* #0d4e97 */`
+- Dosya başında top-level `const`/`function` olarak tanımlanır (render closure içinde değil)
+- Satır üretimi için `const p = (k, v) => \`  \${k}: \${v};\`` helper pattern kullanılır
+- **Return formatı ZORUNLU** — diğer componentlerle aynı `<pre>` wrapper ve HTML escape:
+```javascript
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+```
 
 ## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
 
@@ -53,3 +96,4 @@ Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ay
 - **2026-07-17**: Checkbox / Radio Button / Switch component'lerindeki hardcoded değerler retroaktif olarak `--bt-*` token'larına geçirildi.
 - **2026-07-20**: Isolation mode tüm playground'lar için standart hale getirildi; `pgd_id` URL parametresi sistemi eklendi. Repo adı `MobileDesignSystem` → `Bentas-Design-System` olarak değişti.
 - **2026-07-22**: Sidebar component'i **Standart Sidebar** (`.stb-*`, tek panel 280↔48px) ve **Hub Sidebar** (`.sbx-*`, kalıcı rail + drawer) olarak iki ayrı tipe ayrıldı; ikisi de Figma'dan tekrar tekrar doğrulanarak (padding/gap/renk/state hataları düzeltildi) yeniden inşa edildi — hover/active/selected/focus state'leri gerçek çalışıyor, searchbox gerçek SearchBox component'ini reuse ediyor. `--bt-surface-secondary-intense` eksik token'ı eklendi, `--bt-surface-primary-intense`'i ezen hatalı ikinci tanım kaldırıldı. Isolation mode Sidebar için özel "app gibi" tam ekran görünüm aldı. Standart Sidebar, Medusa Dashboard projesine (`medusa-demo/dashboard.html`) de taşındı — bkz. design.md §6.
+- **2026-07-23**: **Upload** component'i eklendi (`.bt-dropzone`, `.bt-upload-file`, `.bt-upload`). Figma Desktop Bridge ile 5 bileşen incelendi. Tamamen interaktif: `btUplStartUpload/CompleteRow/Remove/Retry/Drop/SetDzState` global fonksiyonları. `Select Files` butonu `bt-btn bt-btn--xs bt-btn--primary-ghost` (design system button reuse kuralı bununla standartlaştı). Playground CSS sekmesi standartlaştı (`esc + <pre class="code-block">` return formatı). Playground zemin + isolation mode background `--bt-surface-subtle` → `--bt-surface-light` düzeltildi. design.md §12 + CLAUDE.md güncellendi.
