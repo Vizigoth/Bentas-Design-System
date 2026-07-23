@@ -3873,7 +3873,7 @@ function alertCss(type, props = {}) {
 function alertPlaygroundMarkup(variantKey, props = {}) {
   const theme    = props.theme || 'stroke';
   const closeBtn = props.closeBtn === 'on';
-  return `<div style="max-width:440px;width:100%;">${alertEl({ type: variantKey, theme, closeBtn, alertTitle: `${ALERT_TYPE_LABEL[variantKey]} Alert` })}</div>`;
+  return `<div style="max-width:440px;width:100%;margin:0 auto;">${alertEl({ type: variantKey, theme, closeBtn, alertTitle: `${ALERT_TYPE_LABEL[variantKey]} Alert` })}</div>`;
 }
 function alertPlaygroundCode(variantKey, props = {}) {
   const theme    = props.theme || 'stroke';

@@ -53,6 +53,22 @@ Yeni bir component eklendiğinde sadece `registerPlayground({id: 'pgd-xxx-overvi
 
 `window.PGD_ISOLATE` kaydı veya `config.isolate` **artık yeni componentler için gerekli değil** — sadece Sidebar ve Alert gibi eskiden eklenmiş özel mount davranışları olan componentlerde kalır.
 
+## Playground Preview Centering — ZORUNLU
+
+`registerPlayground`'daki `preview` callback'i döndürdüğü HTML'i her zaman bir centering wrapper'a sarmalıdır — aksi hâlde component playground'da sola yaslanır.
+
+İki standart kalıp:
+
+```javascript
+// Küçük / buton / ikon tipi bileşenler:
+return `<div style="display:flex;align-items:center;justify-content:center;padding:16px;">${html}</div>`;
+
+// Form / full-width bileşenler:
+return `<div style="max-width:440px;width:100%;margin:0 auto;">${html}</div>`;
+```
+
+Yeni bir component eklenirken bu wrapper **zorunludur** — eklenmezse playground'da sola yaslanır.
+
 ## Playground CSS Sekmesi — ZORUNLU
 
 `registerPlayground` çağrısında **`css` callback'i her zaman eklenmelidir** — bu, playground'daki Preview / Code / **CSS** üç sekmesinin tamamının görünmesini sağlar.
