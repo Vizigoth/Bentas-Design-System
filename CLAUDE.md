@@ -35,7 +35,21 @@ Yeni bir component eklendiğinde sadece `registerPlayground({id: 'pgd-xxx-overvi
 
 `window.PGD_ISOLATE` kaydı veya `config.isolate` **artık yeni componentler için gerekli değil** — sadece Sidebar ve Alert gibi eskiden eklenmiş özel mount davranışları olan componentlerde kalır.
 
+## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
+
+Bu projede oluşturulan component'ler (markup + CSS + JS davranışı) **bundan sonraki
+Bentaş projelerinde de kullanılacak** — yani bu repo sadece kendi docs sitesi değil,
+aynı zamanda diğer projelerin kopyalayıp yapıştıracağı bir referans kaynağı.
+Bu yüzden bir component eklendiğinde/değiştirildiğinde:
+
+1. `docs/css/styles.css` + `docs/js/pages-web.js` (gerçek implementasyon) güncellenir.
+2. **`design.md`** o component'in ilgili bölümü (yapı + CSS + JS davranışı, taşınabilir/token-adı-agnostik anlatımla) güncellenir — yeni bir projede bu dosya tek başına yeterli olmalı.
+3. **`CLAUDE.md`**'nin "Geçmiş" bölümüne kısa bir not eklenir.
+
+Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ayrıca hatırlatmasın.
+
 ## Geçmiş
 
 - **2026-07-17**: Checkbox / Radio Button / Switch component'lerindeki hardcoded değerler retroaktif olarak `--bt-*` token'larına geçirildi.
 - **2026-07-20**: Isolation mode tüm playground'lar için standart hale getirildi; `pgd_id` URL parametresi sistemi eklendi. Repo adı `MobileDesignSystem` → `Bentas-Design-System` olarak değişti.
+- **2026-07-22**: Sidebar component'i **Standart Sidebar** (`.stb-*`, tek panel 280↔48px) ve **Hub Sidebar** (`.sbx-*`, kalıcı rail + drawer) olarak iki ayrı tipe ayrıldı; ikisi de Figma'dan tekrar tekrar doğrulanarak (padding/gap/renk/state hataları düzeltildi) yeniden inşa edildi — hover/active/selected/focus state'leri gerçek çalışıyor, searchbox gerçek SearchBox component'ini reuse ediyor. `--bt-surface-secondary-intense` eksik token'ı eklendi, `--bt-surface-primary-intense`'i ezen hatalı ikinci tanım kaldırıldı. Isolation mode Sidebar için özel "app gibi" tam ekran görünüm aldı. Standart Sidebar, Medusa Dashboard projesine (`medusa-demo/dashboard.html`) de taşındı — bkz. design.md §6.

@@ -531,156 +531,173 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font-text); }
 
 ---
 
-## 6. Sidebar
+## 6. Sidebar — Standart Sidebar
+
+> **2026-07-22 güncellemesi:** Bu bölüm eskiden Medusa'nın kendi bespoke sidebar'ını
+> (`.sidebar-header`, `.nav-item-btn` vb.) belgeliyordu. O yapı artık **Bentas Design
+> System'in Standart Sidebar component'ine** (`.stb-*`, Figma node `502:18421`)
+> geçirildi — Medusa'nın `dashboard.html`'i bu component'in gerçek bir tüketicisi.
+> Aşağıdaki CSS, Bentas-Design-System'in `docs/css/styles.css`'teki `.stb-*` bloğu
+> ile **birebir aynı** (sadece token isimleri host projeye göre değişir — bkz. not).
+> Design system'in kendi dokümantasyonunda ayrıca bir **Hub Sidebar** (`.sbx-*`,
+> kalıcı ikon rail + ayrı toggle edilebilir drawer) varyantı da var; Medusa bunu
+> kullanmıyor, o yüzden burada belgelenmedi — gerekirse Bentas-Design-System'in
+> `components/sidebar` sayfasına bakılabilir.
 
 ### Yapı
 
 ```
-.sidebar
-  ├── .sidebar-top
-  │     ├── .sidebar-header       ← logo + menu-toggle (mavi bg)
-  │     ├── .sidebar-search       ← arama çubuğu
-  │     └── .nav-items            ← nav linkleri
-  └── .sidebar-bottom             ← kullanıcı satırı + overflow menu
+.stb-shell                        ← tek panel, kendi üst butonuyla 280px ↔ 48px
+  ├── .stb-top                    ← her zaman görünür: menu-toggle + logo + başlık
+  │     ├── .stb-menu-btn
+  │     └── .stb-brand            ← .stb-logo + .stb-title (collapsed'de gizlenir)
+  └── .stb-body                   ← flex:1, column
+        ├── .stb-search-wrap      ← .bt-searchbox (gerçek SearchBox component'i)
+        │                           (collapsed'de gizlenir)
+        ├── .stb-list             ← flex:1, scroll — nav item'lar (.stb-item)
+        └── (proje-özel alt bölüm ── Medusa'da: kullanıcı satırı + overflow menü,
+             kendi class'larını korur, Standart Sidebar'ın parçası değildir)
 ```
 
-### CSS
+**Kritik prensip:** Collapsed/expanded state DOM değişmez — `.stb-shell.is-collapsed`
+class'ı eklenir, `.stb-item-label` ve arama alanı `display:none` ile gizlenir. Bu
+yüzden state geçişi CSS `transition: width` ile pürüzsüz animasyonlanır.
+
+### CSS (token isimleri Bentas-Design-System'in `--bt-*` sistemine göre; Medusa gibi
+kısaltılmış token seti kullanan projelerde `--bt-space-*`→`--space-*`,
+`--bt-radius-*`→`--radius-*` şeklinde eşleştirin — **değerler aynı, sadece isim**)
 
 ```css
-.sidebar {
+.stb-shell {
   width: 280px; flex-shrink: 0;
   display: flex; flex-direction: column;
-  justify-content: space-between;
   height: 100%;
   background: var(--bt-surface-primary-default);
   border-right: 1px solid var(--bt-border-primary-default);
   overflow: hidden;
+  transition: width 200ms ease;
 }
+.stb-shell.is-collapsed { width: 48px; }
 
-/* Header — mavi arka plan */
-.sidebar-header {
+.stb-top {
   display: flex; align-items: center;
+  gap: var(--bt-space-md);
+  height: 48px;
+  padding: var(--bt-space-sm) var(--bt-space-lg);
   background: var(--bt-primary-default);
+  box-sizing: border-box; flex-shrink: 0;
 }
+.stb-shell.is-collapsed .stb-top { justify-content: center; padding: var(--bt-space-lg); }
 
-.menu-toggle {
+.stb-menu-btn {
+  width: 28px; height: 28px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  width: 48px; height: 48px; padding: 6px;
+  border: none; padding: 0;
+  border-radius: var(--bt-radius-sm);
   background: var(--bt-primary-default);
   color: var(--bt-text-primary-inverted);
-  flex-shrink: 0;
-  border-radius: var(--radius-xs);
-  transition: background 0.15s, transform 0.1s;
+  cursor: pointer; transition: background 100ms;
 }
-.menu-toggle:hover  { background: var(--bt-primary-hover); }
-.menu-toggle:active { background: var(--bt-primary-active); transform: scale(0.95); }
-.menu-toggle i { width: 14px; height: 14px; display: block; }
+.stb-menu-btn:hover { background: var(--bt-primary-intense); } /* Medusa: --bt-primary-hover/-active kendi token'ı */
 
-/* Logo alanı */
-.logo-icon-wrap {
-  display: flex; align-items: center; justify-content: center;
-  width: 48px; height: 48px; padding: 6px 8px;
-}
-.logo-icon { width: 36px; height: 36px; border-radius: 8px; object-fit: contain; }
-.logo-text-wrap {
-  display: flex; flex-direction: column; justify-content: center;
-  height: 48px; padding: 8px 10px 8px 0;
-}
-.logo-text {
-  font-family: var(--font-title); font-size: var(--text-xl);
-  font-weight: 500; line-height: var(--lh-xl);
+.stb-brand { display: flex; align-items: center; gap: var(--bt-space-sm); min-width: 0; overflow: hidden; }
+.stb-shell.is-collapsed .stb-brand { display: none; }
+
+/* Bentas'ta placeholder gradient logo; gerçek bir logo görseli varsa
+   (Medusa gibi) bu kutu sadece 36×36/radius-md container'dır, içine <img> konur */
+.stb-logo { width: 36px; height: 36px; border-radius: var(--bt-radius-md); flex-shrink: 0; overflow: hidden; }
+.stb-title {
+  font-family: var(--font-title); font-weight: 500;
+  font-size: var(--bt-text-lg-size, 18px); line-height: var(--bt-text-lg-lh, 24px);
   color: var(--bt-text-primary-inverted); white-space: nowrap;
 }
 
-/* Search */
-.sidebar-search {
-  padding: var(--space-xl) var(--space-xl) var(--space-md);
-}
-.sidebar-searchbar {
-  display: flex; align-items: center; justify-content: space-between;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-xs);
-  background: var(--bt-surface-primary-default);
-  padding: 6px 10px;
-}
-.shortcut-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 3px 4px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-2xs);
-  font-size: var(--text-2xs); color: var(--bt-text-primary-emphasis);
-}
+.stb-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.stb-shell.is-collapsed .stb-body { padding-top: var(--bt-space-2xl); }
 
-/* Nav items */
-.nav-items { display: flex; flex-direction: column; }
-.nav-item { padding: var(--space-xs) var(--space-md); }
-.nav-item-btn {
+/* Search — gerçek .bt-searchbox (md: 32px yükseklik) reuse edilir, statik taklit değil */
+.stb-search-wrap { padding: var(--bt-space-xl) var(--bt-space-lg) var(--bt-space-md); flex-shrink: 0; }
+.stb-shell.is-collapsed .stb-search-wrap { display: none; }
+
+.stb-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--bt-space-2xs); }
+.stb-item { padding: 0 var(--bt-space-md); flex-shrink: 0; box-sizing: border-box; }
+.stb-item-inner {
   display: flex; align-items: center;
-  border-radius: var(--radius-xs);
   height: 32px; width: 100%;
+  border-radius: var(--bt-radius-md);
   background: var(--bt-surface-primary-default);
-  transition: background 0.1s;
-}
-.nav-item-btn:hover:not(.active):not(.subtle) { background: var(--bt-surface-primary-subtle); }
-.nav-item-btn.subtle  { background: var(--bt-surface-primary-subtle); }
-.nav-item-btn.active  { background: var(--bt-primary-default); }
-.nav-item-btn.active .nav-icon,
-.nav-item-btn.active .nav-label { color: var(--bt-text-primary-inverted); }
-
-.nav-icon-wrap {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; padding: 6px; flex-shrink: 0;
-}
-.nav-icon { width: 16px; height: 16px; display: block; color: var(--bt-text-primary-default); }
-.nav-label {
-  font-size: var(--text-1); font-weight: 400; line-height: var(--lh-xs);
   color: var(--bt-text-primary-default);
+  text-align: left; cursor: pointer; box-sizing: border-box;
+  transition: background 100ms, color 100ms;
+}
+.stb-item-inner:hover { background: var(--bt-surface-primary-subtle); }
+.stb-item-inner:active { background: var(--bt-base-emphasis); }
+.stb-item-inner.is-selected { background: var(--bt-surface-brand-default); color: var(--bt-text-primary-inverted); }
+.stb-item-inner.is-selected .stb-item-icon { color: var(--bt-text-primary-inverted); }
+.stb-item-inner.is-selected:hover,
+.stb-item-inner.is-selected:active { background: var(--bt-primary-intense); }
+
+.stb-item-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: var(--bt-space-xs); /* 4px pad + 24px ikon = 32px kontrol */
+  color: var(--bt-icon-primary-strong); box-sizing: border-box; flex-shrink: 0;
+}
+.stb-item-label {
+  flex: 1; min-width: 0; padding: var(--bt-space-md) 2px;
+  font-size: 13px; line-height: 16px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-
-/* User row (alt) */
-.sidebar-bottom { padding: var(--space-sm) var(--space-xl); position: relative; }
-.user-row {
-  display: flex; align-items: center;
-  border-radius: var(--radius-xs); height: 32px;
-}
-.user-avatar {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; padding: 6px; flex-shrink: 0;
-}
-.user-more:hover { background: var(--bt-surface-primary-subtle); border-radius: var(--radius-xs); }
-
-/* User overflow menu — position:absolute, bottom:calc(100%+4px) */
-.user-widget {
-  position: absolute; bottom: calc(100% + 4px);
-  left: var(--space-xl); right: var(--space-xl);
-  background: var(--bt-surface-primary-default);
-  border-radius: var(--radius-md); padding: var(--space-md);
-  display: flex; flex-direction: column; gap: var(--space-xs);
-  box-shadow: 0px 1px 2px rgba(16,24,40,0.06), 0px 1px 3px rgba(16,24,40,0.10);
-  z-index: 50;
-  opacity: 0; pointer-events: none;
-  transform: translateY(6px);
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.user-widget.is-open { opacity: 1; pointer-events: all; transform: translateY(0); }
-
-.uw-item {
-  display: flex; align-items: center;
-  border-radius: var(--radius-xs);
-  cursor: pointer; transition: background 0.12s;
-}
-.uw-item:hover { background: var(--bt-surface-primary-subtle); }
-.uw-divider { height: 1px; background: var(--bt-border-primary-default); }
+.stb-shell.is-collapsed .stb-item-label { display: none; }
+.stb-shell.is-collapsed .stb-item-inner { justify-content: center; } /* label gidince tek kalan ikon ortalanır */
 ```
 
-### Sidebar Collapse (JS Davranışı)
+### JS Davranışı
 
-Menu toggle'a tıklandığında sidebar daraltılır:
-- Normal: `width: 280px`
-- Collapsed: `width: 48px` (sadece ikonlar görünür)
-- `.sidebar.is-collapsed` class'ı eklenir
-- `.logo-text-wrap`, `.nav-label-wrap`, `.sidebar-search`, `.user-info` gizlenir (`overflow:hidden` ile)
+```js
+window._stbToggle = function (btn) {
+  const shell = btn.closest('.stb-shell');
+  if (shell) shell.classList.toggle('is-collapsed');
+};
+// onclick="window._stbToggle(this)" — menu-toggle butonunda
+
+// Nav seçimi (tek seçim, kendi .stb-list'i içinde):
+window._stbSelectItem = function (el) {
+  const list = el.closest('.stb-list');
+  if (!list) return;
+  const current = list.querySelector('.stb-item-inner.is-selected');
+  if (current && current !== el) current.classList.remove('is-selected');
+  el.classList.add('is-selected');
+};
+```
+
+### ⚠️ Lucide icon tuzağı (bir consuming projede tekrar yaşandı)
+
+Lucide `createIcons()` çalıştığında `<i data-lucide="...">` etiketini **`<svg>`'ye
+dönüştürür** (tag adı değişir, class'lar/attribute'lar korunur). Bu yüzden
+`.stb-item-icon i { width:16px }` gibi **tag-tabanlı descendant seçiciler** işlem
+sonrası hiçbir şeye eşleşmez — DOM'da artık `i` yok, `svg` var. Doğrusu: boyut
+class'ını **doğrudan ikon elementinin üzerine** yaz (`<i data-lucide="menu"
+class="stb-menu-icon">`), `.stb-menu-icon { width:14px; height:14px; }` gibi bir
+class seçiciyle hedefle — Lucide bu class'ı yeni `<svg>`'ye aktarır, güvenilir
+şekilde çalışır.
+
+### Consuming proje örneği: Medusa Dashboard
+
+`medusa-demo/dashboard.html` bu component'i gerçek bir üründe kullanıyor — bkz.
+[[project_medusa_dashboard]]. Adaptasyonda dikkat edilenler:
+- İçerik (logo görseli, uygulama adı, nav item'ların ikon/etiketleri, arama
+  placeholder'ı) tamamen korundu — sadece yapı/state sistemi değişti.
+- Kullanıcı satırı + overflow menü (`.user-widget`/`.uw-*`) Standart Sidebar'ın
+  parçası **değil** — Medusa'ya özel bir alt bölüm olarak `.stb-body` içine,
+  `.stb-list`'ten sonra üçüncü çocuk olarak eklendi, kendi class'larıyla
+  dokunulmadan bırakıldı; sadece collapsed state'te `.user-info` metni gizlenecek
+  tek bir ek kural eklendi.
+- Token isimleri host projenin kendi kısaltılmış setine çevrildi (`--bt-space-lg`,
+  `--bt-text-lg-size/-lh`, `--bt-base-emphasis` gibi eksik olanlar host'un
+  `:root`'una eklendi).
+- Nav item'lar `<div role="button">` değil gerçek `<button>` olarak yazıldı —
+  klavye (Enter/Space) native çalışsın diye, orijinal Medusa markup'ı da zaten
+  `<button>` kullanıyordu.
 
 ---
 
