@@ -453,23 +453,32 @@ Kısa isimler, tam semantik token'lara alias:
 
 ---
 
-### 3.8 Tipografi Scale
+### 3.8 Typography
 
-`--bt-text-{size}-size` (font-size) + `--bt-text-{size}-lh` (line-height):
+Eski ayrık `--bt-text-{size}-size` / `--bt-text-{size}-lh` scale token'ları **kaldırıldı** (2026-07-24) — artık tek kaynak, Figma'nın "Semantic Typography" koleksiyonundan (112 değişken) birebir taşınan composite `font` shorthand token'ları. `Font/Family/Text|Title|Label|Subtitle` × `Font/Weight/Regular|Medium|SemiBold|Bold` × boyut kombinasyonlarının her biri, tek bir CSS değişkenine karşılık gelir:
+
+`--bt-{family}-{size}-{weight}` — örn. `--bt-title-lg-semibold`, `--bt-label-sm-regular`
+
+- **family**: `text` (2xs–xl, 6 boyut), `title` (xs–6xl, 10 boyut), `label` (2xs–xl, 6 boyut), `subtitle` (2xs–xl, 6 boyut)
+- **weight**: `regular` (400), `medium` (500), `semibold` (600), `bold` (700)
+- Toplam: 6×4 + 10×4 + 6×4 + 6×4 = **112 token**
+
+Boyut → px/line-height eşlemesi (artık her token'ın içine literal olarak gömülü, ayrı bir scale token'ı yok):
+
+```
+2xs=10/12  xs=12/16  sm=14/16  md=16/24  lg=18/24  xl=20/28
+2xl=24/32  3xl=28/36  4xl=32/40  5xl=36/44  6xl=40/48
+```
 
 ```css
---bt-text-2xs-size: 10px;  --bt-text-2xs-lh: 12px;
---bt-text-xs-size:  12px;  --bt-text-xs-lh:  16px;
---bt-text-sm-size:  14px;  --bt-text-sm-lh:  16px;
---bt-text-md-size:  16px;  --bt-text-md-lh:  24px;
---bt-text-lg-size:  18px;  --bt-text-lg-lh:  24px;
---bt-text-xl-size:  20px;  --bt-text-xl-lh:  28px;
---bt-text-2xl-size: 24px;  --bt-text-2xl-lh: 32px;
---bt-text-3xl-size: 28px;  --bt-text-3xl-lh: 36px;
---bt-text-4xl-size: 32px;  --bt-text-4xl-lh: 40px;
---bt-text-5xl-size: 36px;  --bt-text-5xl-lh: 44px;
---bt-text-6xl-size: 40px;  --bt-text-6xl-lh: 48px;
+--bt-title-lg-semibold: 600 18px/24px var(--font);
 ```
+
+Kullanım: `font: var(--bt-title-lg-semibold, 600 18px/24px 'Geist');` — tek satırda font-weight, font-size, line-height ve font-family birden ayarlanır.
+
+> **Not:** Figma'da bu koleksiyonun `Text`/`Title`/`Label`/`Subtitle` ailelerinin hepsi aynı `Geist` font ailesini kullanıyor — şu an semantik olarak birbirinden ayrışmıyorlar (örn. `Title/md/Regular` ile `Text/md/Regular` aynı görünür), ama Figma'da ayrı koleksiyon olarak tanımlı oldukları için burada da ayrı tutuldu.
+
+> **Sadece font-size/line-height gerekip font shorthand'ın uygun olmadığı yerler** (örn. bir `min-height`'ı bir satırın line-height'ıyla eşleştirmek): artık karşılık gelen bir token yok, literal px değeri kullanılır (bkz. `.bt-checkbox__label-row` / `.bt-radio__label-row` / `.bt-switch__label-row` — `min-height: 16px` = Text/sm'nin line-height'ı).
 
 ---
 
@@ -607,8 +616,7 @@ kısaltılmış token seti kullanan projelerde `--bt-space-*`→`--space-*`,
    (Medusa gibi) bu kutu sadece 36×36/radius-md container'dır, içine <img> konur */
 .stb-logo { width: 36px; height: 36px; border-radius: var(--bt-radius-md); flex-shrink: 0; overflow: hidden; }
 .stb-title {
-  font-family: var(--font-title); font-weight: 500;
-  font-size: var(--bt-text-lg-size, 18px); line-height: var(--bt-text-lg-lh, 24px);
+  font: var(--bt-title-lg-medium, 500 18px/24px var(--font-title));
   color: var(--bt-text-primary-inverted); white-space: nowrap;
 }
 
@@ -644,7 +652,7 @@ kısaltılmış token seti kullanan projelerde `--bt-space-*`→`--space-*`,
 }
 .stb-item-label {
   flex: 1; min-width: 0; padding: var(--bt-space-md) 2px;
-  font-size: 13px; line-height: 16px;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .stb-shell.is-collapsed .stb-item-label { display: none; }
@@ -2259,14 +2267,16 @@ kullan.
 
 ### 20.4 Line-height her zaman bir token'a denk gelmeyebilir
 
-Token skalası: `--bt-text-sm-lh` = **16px** (14px/16 çifti), `--bt-text-md-lh` = 24px.
-Bazı component'lerde (örn. Alert Dialog description'ı, Accordion body'si) description
-metninin line-height'ı **20px** olarak Figma'da manuel override edilmiş — bu değer
-skaladaki hiçbir `--bt-text-*-lh` token'ına denk gelmiyor. Böyle durumlarda değeri yanlış
-bir token'a zorla bağlamak (örn. `var(--bt-text-sm-lh, 20px)`) **sessizce yanlış render**
-üretir, çünkü fallback değeri değil gerçek token değeri (16px) uygulanır. Kural: font-size
-token'ı eşleşiyorsa tokenize et, line-height eşleşmiyorsa literal px olarak bırak ve yanına
-kısa bir yorum düş.
+Typography token'ları (`--bt-text-sm-regular` vb.) font-weight + font-size + line-height'ı
+tek bir composite `font` shorthand'ında birlikte taşır (Text/sm ailesi = 14px/16px, Text/md
+ailesi = 16px/24px). Bazı component'lerde (örn. Alert Dialog description'ı, Accordion
+body'si) description metninin line-height'ı **20px** olarak Figma'da manuel override
+edilmiş — bu çift (font-size + 20px) skaladaki hiçbir composite token'a denk gelmiyor.
+Böyle durumlarda en yakın token'ı zorla bağlamak (örn. `var(--bt-text-sm-regular, 400
+14px/20px var(--font))` gibi fallback'i kırpıp gerçek token'ı kullanmak) **sessizce yanlış
+render** üretir, çünkü fallback değil gerçek token değeri (16px) uygulanır. Kural:
+size+lh çifti tam eşleşiyorsa composite token'ı kullan, eşleşmiyorsa `font-size` +
+`line-height`'ı ayrı ayrı literal px olarak yaz ve yanına kısa bir yorum düş.
 
 ### 20.5 Alert Notification (banner) — doğrulanmış tam spec
 
@@ -2282,7 +2292,7 @@ Filled  bg=--bt-surface-{type}-default          border=none
         icon=--bt-icon-inverted
 
 İkon slotu: 40×40 hit-area, --bt-space-md (8px) padding → 24×24 gerçek ikon boyutu
-Title:  --bt-text-md-size/-lh (16/24)   Description: --bt-text-sm-size/-lh (14/16)
+Title:  --bt-title-md-regular (16/24)   Description: --bt-text-sm-regular (14/16)
 ```
 
 Success/Light arka planı `--bt-surface-success-light` = Green/50 = `#e8f3ee`'dir —
@@ -2411,7 +2421,7 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-dropzone .bt-btn { text-decoration: underline; }
 .bt-dropzone__status {
   display: flex; align-items: center; gap: var(--bt-space-xs, 4px);
-  font-size: var(--bt-text-xs-size, 12px); line-height: var(--bt-text-xs-lh, 16px);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-default, #1a1a1a); white-space: nowrap;
 }
 .bt-dropzone--disabled  .bt-dropzone__status { color: var(--bt-text-primary-muted, #a3a3a3); }
@@ -2460,12 +2470,12 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-upload-file__icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; color: var(--bt-text-primary-default, #1a1a1a); }
 .bt-upload-file__icon svg { width: 16px; height: 16px; }
 .bt-upload-file__info { display: flex; flex-direction: column; gap: var(--bt-space-2xs, 2px); flex: 1 0 0; min-width: 0; }
-.bt-upload-file__name { font-size: var(--bt-text-xs-size, 12px); line-height: var(--bt-text-xs-lh, 16px); color: var(--bt-text-primary-default, #1a1a1a); }
-.bt-upload-file__size { font-size: var(--bt-text-2xs-size, 10px); line-height: var(--bt-text-2xs-lh, 12px); color: var(--bt-text-primary-emphasis, #727272); }
+.bt-upload-file__name { font: var(--bt-text-xs-regular, 400 12px/16px var(--font)); color: var(--bt-text-primary-default, #1a1a1a); }
+.bt-upload-file__size { font: var(--bt-text-2xs-regular, 400 10px/12px var(--font)); color: var(--bt-text-primary-emphasis, #727272); }
 .bt-upload-file--success .bt-upload-file__size { color: var(--bt-text-success-default, #2d584b); }
 .bt-upload-file--failed  .bt-upload-file__size { color: var(--bt-text-error-default, #b31d38); }
 .bt-upload-file__controls { display: flex; align-items: center; gap: var(--bt-space-xs, 4px); flex-shrink: 0; }
-.bt-upload-file__pct { font-size: var(--bt-text-xs-size, 12px); color: var(--bt-text-brand-default, #0d4e97); padding: 0 var(--bt-space-md, 8px); }
+.bt-upload-file__pct { font: var(--bt-text-xs-regular, 400 12px/16px var(--font)); color: var(--bt-text-brand-default, #0d4e97); padding: 0 var(--bt-space-md, 8px); }
 .bt-upload-file__btn { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: var(--bt-space-xs, 4px); border-radius: var(--bt-radius-sm, 4px); border: none; background: none; cursor: pointer; box-sizing: border-box; }
 .bt-upload-file__btn:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
 .bt-upload-file__btn svg { width: 16px; height: 16px; pointer-events: none; }

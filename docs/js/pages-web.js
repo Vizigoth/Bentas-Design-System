@@ -775,10 +775,10 @@ PAGES_WEB['components/sidebar'] = {
           <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>Left/right control padding (24px icon → 32px control)</td></tr>
           <tr><td><span class="token-name">--bt-space-xl</span></td><td>12px</td><td>Search wrap vertical padding</td></tr>
           <tr><td><span class="token-name">--bt-space-2xl</span></td><td>16px</td><td>Pinned item vertical padding</td></tr>
-          <tr><td><span class="token-name">--bt-text-lg-size / -lh</span></td><td>18px / 24px</td><td>Title text</td></tr>
+          <tr><td><span class="token-name">--bt-title-lg-medium</span></td><td>500 · 18px / 24px</td><td>Title text</td></tr>
           <tr><td><span class="token-name">--bt-blue-100 / -600 / -700</span></td><td>#e2edfc / #0e62bb / #0d4e97</td><td>App logo placeholder border / gradient</td></tr>
-          <tr><td><span class="token-name">--bt-text-xs-size / -lh</span></td><td>12px / 16px</td><td>Searchbox placeholder text</td></tr>
-          <tr><td><span class="token-name">--bt-text-2xs-size / -lh</span></td><td>10px / 12px</td><td>Shortcut badge text</td></tr>
+          <tr><td><span class="token-name">--bt-text-xs-regular</span></td><td>400 · 12px / 16px</td><td>Searchbox placeholder text</td></tr>
+          <tr><td><span class="token-name">--bt-text-2xs-regular</span></td><td>400 · 10px / 12px</td><td>Shortcut badge text</td></tr>
         </tbody>
       </table>
 
@@ -854,7 +854,7 @@ PAGES_WEB['components/sidebar'] = {
       <p class="page-desc">Two sidebar types, each with an Expanded and Collapsed state. <strong>Standart Sidebar</strong> — a single panel whose own top button toggles its width between a 48px icon rail and a 280px full panel with search + labelled items. <strong>Hub Sidebar</strong> — a persistent dark icon rail paired with a separately-toggleable 280px drawer; best for complex B2B apps with two navigation levels.</p>
 
       <h2 id="Structure">Structure</h2>
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Standart Sidebar</p>
+      <p style="font:var(--bt-text-xs-regular, 400 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin-bottom:var(--bt-space-md, 8px)">Standart Sidebar</p>
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>Zone</th><th>Contents</th></tr></thead>
         <tbody>
@@ -865,7 +865,7 @@ PAGES_WEB['components/sidebar'] = {
         </tbody>
       </table>
 
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Hub Sidebar</p>
+      <p style="font:var(--bt-text-xs-regular, 400 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin-bottom:var(--bt-space-md, 8px)">Hub Sidebar</p>
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>Zone</th><th>Contents</th></tr></thead>
         <tbody>
@@ -879,7 +879,7 @@ PAGES_WEB['components/sidebar'] = {
       </table>
 
       <h2 id="Anatomy">Anatomy</h2>
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Standart Sidebar</p>
+      <p style="font:var(--bt-text-xs-regular, 400 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin-bottom:var(--bt-space-md, 8px)">Standart Sidebar</p>
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
         <tbody>
@@ -895,11 +895,11 @@ PAGES_WEB['components/sidebar'] = {
           <tr><td>Search</td><td>Component</td><td>—</td><td>Reuses <code style="font-family:var(--mono);font-size:12px;">.bt-searchbox--md</code> from the SearchBox component (32px, real input)</td></tr>
           <tr><td rowspan="2">Item row</td><td>Height</td><td>—</td><td>32px</td></tr>
           <tr><td>Selected background</td><td>${tk('Surface/Brand default')}</td><td>#0d4e97 · text/icon #ffffff</td></tr>
-          <tr><td>Item label</td><td>—</td><td>13px / 400 / 16px · #1a1a1a</td></tr>
+          <tr><td>Item label</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px · #1a1a1a</td></tr>
         </tbody>
       </table>
 
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Hub Sidebar</p>
+      <p style="font:var(--bt-text-xs-regular, 400 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin-bottom:var(--bt-space-md, 8px)">Hub Sidebar</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
         <tbody>
@@ -920,12 +920,12 @@ PAGES_WEB['components/sidebar'] = {
           <tr><td>Left control</td><td>—</td><td>32 × 32px (24px icon + 4px padding)</td></tr>
           <tr><td>Hover / Active &amp; Selected background</td><td>${tk('Base/subtle')} · ${tk('Surface/Primary muted')}</td><td>#f5f5f5 · #e6e6e6 — text/icon colour never changes</td></tr>
           <tr><td>Focus</td><td>—</td><td>white bg · 0 0 0 3px rgba(212,212,212,.5) ring</td></tr>
-          <tr><td>Label</td><td>${tk('Text-1/Regular')}</td><td>13px / 400 / 16px · #1a1a1a</td></tr>
+          <tr><td>Label</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px · #1a1a1a</td></tr>
         </tbody>
       </table>
 
       <h2 id="States">States</h2>
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Item row (Standart Sidebar) — the same states apply to the collapsed rail's icon-only rows, since it's the same markup with the label hidden.</p>
+      <p style="font:var(--bt-text-xs-regular, 400 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin-bottom:var(--bt-space-md, 8px)">Item row (Standart Sidebar) — the same states apply to the collapsed rail's icon-only rows, since it's the same markup with the label hidden.</p>
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>State</th><th>Preview</th></tr></thead>
         <tbody>
@@ -937,7 +937,7 @@ PAGES_WEB['components/sidebar'] = {
         </tbody>
       </table>
 
-      <p style="font-size:13px;color:var(--bt-text-primary-muted);margin-bottom:8px">Drawer item (Hub Sidebar)</p>
+      <p style="font:var(--bt-text-xs-regular, 400 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin-bottom:var(--bt-space-md, 8px)">Drawer item (Hub Sidebar)</p>
       <table class="token-table">
         <thead><tr><th>State</th><th>Preview</th></tr></thead>
         <tbody>
@@ -1325,7 +1325,7 @@ PAGES_WEB['components/split-button'] = {
 
       <h2 id="States">States</h2>
       ${BTN_THEME_OPTS.map(theme => `
-      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.label}</h3>
+      <h3 style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${theme.label}</h3>
       ${_spltStateTable(theme.key)}`).join('')}
     `};
   }
@@ -2625,7 +2625,7 @@ PAGES_WEB['components/searchbox'] = {
           <tr><td>border-radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
           <tr><td>background (Default/Hover/Active/Filled)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
           <tr><td>Placeholder metin rengi</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
           <tr><td>Icon kutusu</td><td>—</td><td>24 × 24px (search ikon 14×14, clear ikon 10×10)</td></tr>
         </tbody>
       </table>
@@ -3362,7 +3362,7 @@ PAGES_WEB['components/button'] = {
 
       <h2 id="States">States</h2>
       ${BTN_THEME_OPTS.map(theme => `
-      <h3 style="font-size:13px;font-weight:600;color:var(--bt-text-primary);margin:20px 0 12px;text-transform:capitalize;">${theme.label}</h3>
+      <h3 style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${theme.label}</h3>
       ${_btnStateTable(theme.key)}`).join('')}
     `};
   }
@@ -3565,7 +3565,7 @@ PAGES_WEB['components/textbox'] = {
           <tr><td>Label rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Required field rengi</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
           <tr><td>Helper text rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
           <tr><td>Control kutusu</td><td>—</td><td>24 × 24px (validation ikon 15×15, clear ikon 10×10)</td></tr>
         </tbody>
       </table>
@@ -4430,7 +4430,7 @@ PAGES_WEB['components/multi-select'] = {
           <tr><td>padding</td><td>${tk('--bt-space-2xs')} / ${tk('--bt-space-xs')}</td><td>2px / 4px</td></tr>
           <tr><td>gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
           <tr><td>text color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
           <tr><td>remove icon color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
         </tbody>
       </table>
@@ -4710,7 +4710,7 @@ PAGES_WEB['components/date-picker'] = {
           <tr><td>Değer metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Calendar ikon rengi</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
           <tr><td>Calendar ikon rengi (disabled)</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
         </tbody>
       </table>
       <h2>Class Reference</h2>
@@ -4860,7 +4860,7 @@ PAGES_WEB['components/text-field'] = {
           <tr><td>Label rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Required field rengi</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
           <tr><td>Helper text rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>font-size / line-height</td><td>${tk('--bt-text-xs-size')} / ${tk('--bt-text-xs-lh')}</td><td>12px / 16px</td></tr>
+          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
           <tr><td>resize</td><td>—</td><td>vertical (disabled/readonly: none)</td></tr>
         </tbody>
       </table>
@@ -5256,11 +5256,11 @@ function _uplCss(segment) {
     lines.push(p('width', '100%'));
     lines.push('}');
     lines.push('.bt-upload-file__name {');
-    lines.push(p('font-size', 'var(--bt-text-xs-size)  /* 12px */'));
+    lines.push(p('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'));
     lines.push(p('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
     lines.push('}');
     lines.push('.bt-upload-file__size {');
-    lines.push(p('font-size', 'var(--bt-text-2xs-size)  /* 10px */'));
+    lines.push(p('font', 'var(--bt-text-2xs-regular)  /* 400 10px/12px */'));
     lines.push(p('color', 'var(--bt-text-primary-emphasis)  /* #727272 */'));
     lines.push('}');
   }
@@ -5386,9 +5386,9 @@ PAGES_WEB['components/upload'] = {
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td rowspan="2">File name</td><td>Font size</td><td>${tk('--bt-text-xs-size')}</td><td>12px</td></tr>
+          <tr><td rowspan="2">File name</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
           <tr><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td rowspan="3">File size / status</td><td>Font size</td><td>${tk('--bt-text-2xs-size')}</td><td>10px</td></tr>
+          <tr><td rowspan="3">File size / status</td><td>Font</td><td>${tk('--bt-text-2xs-regular')}</td><td>400 · 10px/12px</td></tr>
           <tr><td>Color (Default)</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
           <tr><td>Color (Success)</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
           <tr><td>File status (Failed)</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>

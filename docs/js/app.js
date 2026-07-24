@@ -92,13 +92,15 @@ function renderSidebar() {
     return `
       <div class="${childCls} group-trigger" onclick="toggleGroup('${item.label}')">
         <span>${item.label}</span>
-        <svg class="nav-chevron ${isOpen ? 'open' : ''}" width="12" height="12"
+        <svg class="nav-chevron ${isOpen ? 'open' : ''}" data-group-chevron="${item.label}" width="12" height="12"
              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
         </svg>
       </div>
-      <div class="${kidCls} ${isOpen ? 'open' : ''}">
-        ${item.children.map(c => renderItem(c, depth+1)).join('')}
+      <div class="${kidCls} ${isOpen ? 'open' : ''}" data-group-panel="${item.label}">
+        <div class="nav-group-inner">
+          ${item.children.map(c => renderItem(c, depth+1)).join('')}
+        </div>
       </div>
     `;
   }
@@ -107,8 +109,13 @@ function renderSidebar() {
 }
 
 window.toggleGroup = function(label) {
-  openGroups.has(label) ? openGroups.delete(label) : openGroups.add(label);
-  renderSidebar();
+  const wasOpen = openGroups.has(label);
+  wasOpen ? openGroups.delete(label) : openGroups.add(label);
+
+  const panel   = document.querySelector(`[data-group-panel="${label}"]`);
+  const chevron = document.querySelector(`[data-group-chevron="${label}"]`);
+  if (panel)   panel.classList.toggle('open', !wasOpen);
+  if (chevron) chevron.classList.toggle('open', !wasOpen);
 };
 
 // ── Tabs ────────────────────────────────────────────────────
@@ -144,9 +151,12 @@ function renderContent(page) {
 }
 
 // ── TOC ─────────────────────────────────────────────────────
+let _tocObserver = null;
+
 function renderToc(page) {
   const col = document.getElementById('toc-col');
   const el  = document.getElementById('toc');
+  if (_tocObserver) { _tocObserver.disconnect(); _tocObserver = null; }
   if (!page.toc || page.toc.length === 0) {
     col.style.display = 'none';
     return;
@@ -161,9 +171,16 @@ function renderToc(page) {
       <div class="toc-label">On this page</div>
       ${page.toc.map(({ group, items }) => `
         <div class="toc-group-label">${group}</div>
-        ${items.map(t => {
+        ${items.map(item => {
+          const isSub = typeof item === 'object' && item !== null;
+          const label = isSub ? item.label : item;
           const cls = firstLink ? (firstLink = false, 'active') : '';
-          return `<div class="toc-link ${cls}" onclick="scrollToSection('${t}')">${t}</div>`;
+          const parentLink = `<div class="toc-link ${cls}" data-target="${label}" onclick="scrollToSection('${label}')">${label}</div>`;
+          if (!isSub || !item.sub || !item.sub.length) return parentLink;
+          const subLinks = item.sub.map(s =>
+            `<div class="toc-link toc-link--sub" data-target="${label}-${s}" onclick="scrollToSection('${label}-${s}')">${s}</div>`
+          ).join('');
+          return parentLink + subLinks;
         }).join('')}
       `).join('')}
     `;
@@ -171,15 +188,47 @@ function renderToc(page) {
     el.innerHTML = `
       <div class="toc-label">On this page</div>
       ${page.toc.map((t,i) => `
-        <div class="toc-link ${i === 0 ? 'active' : ''}" onclick="scrollToSection('${t}')">${t}</div>
+        <div class="toc-link ${i === 0 ? 'active' : ''}" data-target="${t}" onclick="scrollToSection('${t}')">${t}</div>
       `).join('')}
     `;
   }
+
+  setupTocScrollSpy();
+}
+
+function setActiveTocLink(id) {
+  document.querySelectorAll('#toc .toc-link').forEach(link => {
+    link.classList.toggle('active', link.dataset.target === id);
+  });
+}
+
+function setupTocScrollSpy() {
+  const links = Array.from(document.querySelectorAll('#toc .toc-link'));
+  const targets = links
+    .map(link => document.getElementById(link.dataset.target))
+    .filter(Boolean);
+  if (!targets.length) return;
+
+  // Page scrolls at document level (window) — .main-header is sticky (68px), so
+  // headings must clear it before counting as "in view".
+  _tocObserver = new IntersectionObserver(entries => {
+    const visible = entries.filter(e => e.isIntersecting);
+    if (!visible.length) return;
+    visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    setActiveTocLink(visible[0].target.id);
+  }, {
+    root: null,
+    rootMargin: '-76px 0px -70% 0px',
+    threshold: 0
+  });
+
+  targets.forEach(t => _tocObserver.observe(t));
 }
 
 window.scrollToSection = function(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setActiveTocLink(id);
 };
 
 window.switchTokenView = function(sectionId, view, btn) {
@@ -189,10 +238,8 @@ window.switchTokenView = function(sectionId, view, btn) {
   const isPreview = view === 'preview';
   preview.style.display = isPreview ? '' : 'none';
   json.style.display    = isPreview ? 'none' : '';
-  btn.closest('.seg-ctrl').querySelectorAll('.seg-btn').forEach(b => {
-    const active = b === btn;
-    b.style.background = active ? 'var(--bt-blue-700)' : 'transparent';
-    b.style.color      = active ? '#fff' : 'var(--bt-text-default)';
+  btn.closest('.pgd-seg-ctrl').querySelectorAll('.pgd-seg-btn').forEach(b => {
+    b.classList.toggle('active', b === btn);
   });
 };
 

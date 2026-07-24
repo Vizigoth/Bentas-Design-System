@@ -113,7 +113,7 @@ const PAGES = {
   'foundations/tokens/our-tokens': {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
     toc: [
-      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', 'Typography', 'Primitive Colors', 'Semantic Colors'] },
+      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', { label: 'Typography', sub: ['Text', 'Title', 'Label', 'Subtitle'] }, 'Primitive Colors', 'Semantic Colors'] },
       { group: 'Theme Tokens',      items: ['Background', 'Text', 'Border', 'Icon'] },
     ],
     render: (tab) => {
@@ -208,20 +208,6 @@ const PAGES = {
         ['radius-full', '—',        '9999px', 9999],
       ];
 
-      // ── Typography (Figma: Font/Size/* + Font/Line-Height/*)
-      const typeScale = [
-        ['text-2xs', '10px', '12px'],
-        ['text-xs',  '12px', '16px'],
-        ['text-sm',  '14px', '16px'],
-        ['text-md',  '16px', '24px'],
-        ['text-lg',  '18px', '24px'],
-        ['text-xl',  '20px', '28px'],
-        ['text-2xl', '24px', '32px'],
-        ['text-3xl', '28px', '36px'],
-        ['text-4xl', '32px', '40px'],
-        ['text-5xl', '36px', '44px'],
-        ['text-6xl', '40px', '48px'],
-      ];
 
       // ── Colors (Figma: Primitive Colors)
       const palettes = {
@@ -262,7 +248,7 @@ const PAGES = {
         </div>
       `).join('');
 
-      const _seg = id => `<div class="seg-ctrl" style="display:inline-flex;align-items:center;background:var(--bt-surface-primary-subtle, #f5f5f5);border-radius:var(--bt-radius-lg, 8px);padding:4px;gap:0;margin-bottom:16px;"><button class="seg-btn seg-btn--active" onclick="switchTokenView('${id}','preview',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:var(--bt-radius-md, 6px);border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:var(--bt-blue-700);color:var(--bt-text-inverted, #ffffff);transition:background 120ms,color 120ms;">Preview</button><button class="seg-btn" onclick="switchTokenView('${id}','json',this)" style="display:flex;align-items:center;justify-content:center;padding:8px 20px;border-radius:var(--bt-radius-md, 6px);border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:500;line-height:16px;background:transparent;color:var(--bt-text-default);transition:background 120ms,color 120ms;">Json</button></div>`;
+      const _seg = id => `<div class="pgd-seg-row"><div class="pgd-seg-ctrl"><button class="pgd-seg-btn active" onclick="switchTokenView('${id}','preview',this)">Preview</button><button class="pgd-seg-btn" onclick="switchTokenView('${id}','json',this)">Json</button></div></div>`;
       const _ci = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
       const _jv  = (id, data) => `<div id="token-view-json-${id}" style="display:none;"><div style="position:relative;"><button class="copy-btn" onclick="copyText(document.getElementById('token-json-${id}').textContent,this)" title="Copy JSON" style="position:absolute;top:12px;right:12px;width:32px;height:32px;background:var(--bt-surface-subtle);border-radius:6px;color:var(--bt-text-emphasis);">${_ci}</button><pre id="token-json-${id}" style="background:var(--bt-surface-subtle);color:var(--bt-text-default);border:1px solid var(--bt-border-muted);border-radius:8px;padding:20px 48px 20px 20px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:0;">${JSON.stringify(data, null, 2)}</pre></div></div>`;
 
@@ -393,33 +379,49 @@ const PAGES = {
         <h2 id="Typography">Typography</h2>
         ${_seg('typography')}
         <div id="token-view-preview-typography">
-        <table class="token-table">
-          <thead><tr><th>Token</th><th>Size</th><th>Line Height</th><th>Preview</th></tr></thead>
-          <tbody>
-            ${typeScale.map(([token, size, lh]) => `
-              <tr>
-                <td><span class="token-name">${token}</span></td>
-                <td>${size}</td>
-                <td>${lh}</td>
-                <td><span style="font-size:${size};line-height:${lh};color:var(--bt-text-default)">Aa</span></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+        ${(() => {
+          const weights = [['Regular','400'],['Medium','500'],['SemiBold','600'],['Bold','700']];
+          const families = [
+            ['Text',     'text',     ['2xs','xs','sm','md','lg','xl']],
+            ['Title',    'title',    ['xs','sm','md','lg','xl','2xl','3xl','4xl','5xl','6xl']],
+            ['Label',    'label',    ['2xs','xs','sm','md','lg','xl']],
+            ['Subtitle', 'subtitle', ['2xs','xs','sm','md','lg','xl']],
+          ];
+          const sizePx = { '2xs':[10,12], xs:[12,16], sm:[14,16], md:[16,24], lg:[18,24], xl:[20,28], '2xl':[24,32], '3xl':[28,36], '4xl':[32,40], '5xl':[36,44], '6xl':[40,48] };
+          const _cpBtn = (val) => `<button class="copy-btn" onclick="copyText('${val}',this)" title="Copy"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>`;
+          return families.map(([label, slug, sizes], fi) => `
+            <p class="section-label" id="Typography-${label}" style="margin-top:${fi === 0 ? '0' : '32px'};margin-bottom:8px;">${label}</p>
+            <table class="token-table">
+              <thead><tr><th>Example</th><th>Variable Token</th><th>Size / LH</th><th>Weight</th></tr></thead>
+              <tbody>
+                ${sizes.flatMap(size => weights.map(([wLabel, wNum]) => {
+                  const token = `--bt-${slug}-${size}-${wLabel.toLowerCase()}`;
+                  const [px, lh] = sizePx[size];
+                  return `
+                  <tr>
+                    <td><span style="font:var(${token}, ${wNum} ${px}px/${lh}px var(--font));color:var(--bt-text-default);">Aa</span></td>
+                    <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span>${_cpBtn(token)}</div></td>
+                    <td>${px}px / ${lh}px</td>
+                    <td>${wLabel} (${wNum})</td>
+                  </tr>`;
+                })).join('')}
+              </tbody>
+            </table>`).join('');
+        })()}
         </div>
-        ${_jv('typography', Object.fromEntries([
-          ['--bt-text-2xs', { fontSize: 'var(--bt-base-sizing-lg)',   lineHeight: 'var(--bt-base-sizing-xl)' }],
-          ['--bt-text-xs',  { fontSize: 'var(--bt-base-sizing-xl)',   lineHeight: 'var(--bt-base-sizing-3xl)' }],
-          ['--bt-text-sm',  { fontSize: 'var(--bt-base-sizing-2xl)',  lineHeight: 'var(--bt-base-sizing-3xl)' }],
-          ['--bt-text-md',  { fontSize: 'var(--bt-base-sizing-3xl)',  lineHeight: 'var(--bt-base-sizing-6xl)' }],
-          ['--bt-text-lg',  { fontSize: 'var(--bt-base-sizing-4xl)',  lineHeight: 'var(--bt-base-sizing-6xl)' }],
-          ['--bt-text-xl',  { fontSize: 'var(--bt-base-sizing-5xl)',  lineHeight: 'var(--bt-base-sizing-7xl)' }],
-          ['--bt-text-2xl', { fontSize: 'var(--bt-base-sizing-6xl)',  lineHeight: 'var(--bt-base-sizing-8xl)' }],
-          ['--bt-text-3xl', { fontSize: 'var(--bt-base-sizing-7xl)',  lineHeight: 'var(--bt-base-sizing-9xl)' }],
-          ['--bt-text-4xl', { fontSize: 'var(--bt-base-sizing-8xl)',  lineHeight: 'var(--bt-base-sizing-10xl)' }],
-          ['--bt-text-5xl', { fontSize: 'var(--bt-base-sizing-9xl)',  lineHeight: 'var(--bt-base-sizing-11xl)' }],
-          ['--bt-text-6xl', { fontSize: 'var(--bt-base-sizing-10xl)', lineHeight: 'var(--bt-base-sizing-12xl)' }],
-        ]))}
+        ${_jv('typography', (() => {
+          const weights = [['regular','400'],['medium','500'],['semibold','600'],['bold','700']];
+          const families = { text:['2xs','xs','sm','md','lg','xl'], title:['xs','sm','md','lg','xl','2xl','3xl','4xl','5xl','6xl'], label:['2xs','xs','sm','md','lg','xl'], subtitle:['2xs','xs','sm','md','lg','xl'] };
+          const sizePx = { '2xs':[10,12], xs:[12,16], sm:[14,16], md:[16,24], lg:[18,24], xl:[20,28], '2xl':[24,32], '3xl':[28,36], '4xl':[32,40], '5xl':[36,44], '6xl':[40,48] };
+          const out = {};
+          Object.entries(families).forEach(([slug, sizes]) => {
+            sizes.forEach(size => weights.forEach(([w, wNum]) => {
+              const [px, lh] = sizePx[size];
+              out[`--bt-${slug}-${size}-${w}`] = `${wNum} ${px}px/${lh}px var(--font)`;
+            }));
+          });
+          return out;
+        })())}
 
         <h2 id="Primitive Colors">Primitive Colors</h2>
         ${_seg('primitive-colors')}
