@@ -453,6 +453,26 @@ Kısa isimler, tam semantik token'lara alias:
 
 ---
 
+### 3.7b Shadow (Elevation)
+
+Figma'nın "Shadow" Effect Style'larından (xs–3xl, 7 seviye) birebir taşındı — `--bt-shadow-{step}`:
+
+```css
+--bt-shadow-xs:  0 1px 2px rgba(16,24,40,0.051);
+--bt-shadow-sm:  0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10);
+--bt-shadow-md:  0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10);
+--bt-shadow-lg:  0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078);
+--bt-shadow-xl:  0 8px 8px rgba(16,24,40,0.031), 0 20px 24px rgba(16,24,40,0.078);
+--bt-shadow-2xl: 0 24px 48px rgba(16,24,40,0.18);
+--bt-shadow-3xl: 0 32px 64px rgba(16,24,40,0.141);
+```
+
+Kullanım: `box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));` — `var()`'ın fallback kısmı virgül içerse de (birden fazla shadow layer'ı) geçerlidir, çünkü `var()`'ın ilk virgülünden sonraki her şey tek bir fallback değeri sayılır.
+
+Şu an projede kullanılan seviyeler: **md** (`.bt-switch__thumb`, `.bt-win-dropdown__list`), **lg** (`.bt-dd-options` Dropdown, `.bt-cal` Date Picker, `.platform-dropdown`). `xs`/`sm`/`xl`/`2xl`/`3xl` henüz kullanılmıyor ama token olarak tanımlı.
+
+---
+
 ### 3.8 Typography
 
 Eski ayrık `--bt-text-{size}-size` / `--bt-text-{size}-lh` scale token'ları **kaldırıldı** (2026-07-24) — artık tek kaynak, Figma'nın "Semantic Typography" koleksiyonundan (112 değişken) birebir taşınan composite `font` shorthand token'ları. `Font/Family/Text|Title|Label|Subtitle` × `Font/Weight/Regular|Medium|SemiBold|Bold` × boyut kombinasyonlarının her biri, tek bir CSS değişkenine karşılık gelir:

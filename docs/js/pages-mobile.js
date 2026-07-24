@@ -113,7 +113,7 @@ const PAGES = {
   'foundations/tokens/our-tokens': {
     tabs: ['Overview', 'Our Tokens', 'Applying Tokens'],
     toc: [
-      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', { label: 'Typography', sub: ['Text', 'Title', 'Label', 'Subtitle'] }, 'Primitive Colors', 'Semantic Colors'] },
+      { group: 'Foundation Tokens', items: ['Sizing', 'Spacing', 'Radius', 'Shadow', { label: 'Typography', sub: ['Text', 'Title', 'Label', 'Subtitle'] }, 'Primitive Colors', 'Semantic Colors'] },
       { group: 'Theme Tokens',      items: ['Background', 'Text', 'Border', 'Icon'] },
     ],
     render: (tab) => {
@@ -374,6 +374,44 @@ const PAGES = {
           ['--bt-radius-5xl',  'var(--bt-base-sizing-5xl)'],
           ['--bt-radius-6xl',  'var(--bt-base-sizing-6xl)'],
           ['--bt-radius-full', 'var(--bt-base-sizing-full)'],
+        ]))}
+
+        <h2 id="Shadow">Shadow</h2>
+        ${_seg('shadow')}
+        <div id="token-view-preview-shadow">
+        ${(() => {
+          const shadows = [
+            ['--bt-shadow-xs',  '0 1px 2px rgba(16,24,40,0.051)'],
+            ['--bt-shadow-sm',  '0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10)'],
+            ['--bt-shadow-md',  '0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10)'],
+            ['--bt-shadow-lg',  '0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078)'],
+            ['--bt-shadow-xl',  '0 8px 8px rgba(16,24,40,0.031), 0 20px 24px rgba(16,24,40,0.078)'],
+            ['--bt-shadow-2xl', '0 24px 48px rgba(16,24,40,0.18)'],
+            ['--bt-shadow-3xl', '0 32px 64px rgba(16,24,40,0.141)'],
+          ];
+          const _cpBtnSh = (val) => `<button class="copy-btn" onclick="copyText('${val}',this)" title="Copy"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>`;
+          return `
+            <table class="token-table">
+              <thead><tr><th>Example</th><th>Variable Token</th><th>Value</th></tr></thead>
+              <tbody>
+                ${shadows.map(([token, val]) => `
+                  <tr>
+                    <td><div style="width:56px;height:40px;border-radius:var(--bt-radius-lg, 8px);background:#ffffff;box-shadow:var(${token}, ${val});"></div></td>
+                    <td><div style="display:inline-flex;align-items:center;gap:6px;"><span class="token-name">${token}</span>${_cpBtnSh(token)}</div></td>
+                    <td><div style="display:inline-flex;align-items:center;gap:6px;"><span>${val}</span>${_cpBtnSh(val)}</div></td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>`;
+        })()}
+        </div>
+        ${_jv('shadow', Object.fromEntries([
+          ['--bt-shadow-xs',  '0 1px 2px rgba(16,24,40,0.051)'],
+          ['--bt-shadow-sm',  '0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10)'],
+          ['--bt-shadow-md',  '0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10)'],
+          ['--bt-shadow-lg',  '0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078)'],
+          ['--bt-shadow-xl',  '0 8px 8px rgba(16,24,40,0.031), 0 20px 24px rgba(16,24,40,0.078)'],
+          ['--bt-shadow-2xl', '0 24px 48px rgba(16,24,40,0.18)'],
+          ['--bt-shadow-3xl', '0 32px 64px rgba(16,24,40,0.141)'],
         ]))}
 
         <h2 id="Typography">Typography</h2>

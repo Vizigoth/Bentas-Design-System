@@ -45,7 +45,7 @@ const NAV_WEB = [
       { label: 'Skeleton',          id: 'components/skeleton' },
       { label: 'Snackbar',          id: 'components/snackbar' },
       { label: 'Switch',            id: 'components/switch' },
-      { label: 'Text Field',        id: 'components/text-field' },
+      { label: 'Textarea',          id: 'components/textarea' },
       { label: 'TextBox',           id: 'components/textbox' },
       { label: 'Select LookUp',     id: 'components/select-lookup' },
       { label: 'MultiSelect',       id: 'components/multi-select' },
@@ -654,7 +654,7 @@ function sidebarCss(type, props) {
     lines.push('.sbx-btn.is-active,');
     lines.push('.sbx-btn.is-selected { background: var(--bt-secondary-solid); }  /* #535353 */');
     lines.push('.sbx-btn:focus-visible,');
-    lines.push('.sbx-btn.is-focus { box-shadow: 0 0 0 3px rgba(212,212,212,0.5); }');
+    lines.push('.sbx-btn.is-focus { box-shadow: 0 0 0 3px rgba(212,212,212,0.25); }');
     lines.push('');
     lines.push('.sbx-drawer {');
     lines.push(p('width', collapsed ? '0px' : '280px'));
@@ -677,7 +677,7 @@ function sidebarCss(type, props) {
     lines.push('.sbx-item-inner:focus-visible,');
     lines.push('.sbx-item-inner.is-focus {');
     lines.push(p('background', 'var(--bt-base-default)'));
-    lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.5)'));
+    lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.25)'));
     lines.push('}');
   }
 
@@ -1004,10 +1004,10 @@ const _spltCssProps = {
   'success-outline':   { border:'var(--bt-border-success-default)', color:'var(--bt-text-success-default)', divider:'var(--bt-border-success-default)', hover:{bg:'var(--bt-success-subtle)'}, active:{bg:'var(--bt-success-subtle)'},  focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
   'success-flat':      { color:'var(--bt-text-success-default)',    divider:'rgba(68,135,113,0.25)',   hover:{bg:'var(--bt-success-subtle)'},      active:{bg:'var(--bt-success-subtle)'},     focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
   'success-ghost':     { color:'var(--bt-text-success-default)',    divider:'rgba(68,135,113,0.25)',   hover:{color:'var(--bt-success-intense)'},  active:{color:'var(--bt-success-default)'}, focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-solid':     { bg:'var(--bt-warning-default)',    color:'var(--bt-text-primary-inverted)',  divider:'rgba(0,0,0,0.15)',                hover:{bg:'var(--bt-warning-intense)'},     active:{bg:'var(--bt-warning-intense)'},    focus:'rgba(212,175,44,.24)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'warning-outline':   { border:'var(--bt-border-warning-default)', color:'var(--bt-text-warning-default)', divider:'var(--bt-border-warning-default)', hover:{bg:'var(--bt-warning-subtle)'}, active:{bg:'var(--bt-warning-subtle)'},  focus:'rgba(212,175,44,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-flat':      { color:'var(--bt-text-warning-default)',    divider:'rgba(212,175,44,0.35)',   hover:{bg:'var(--bt-warning-subtle)'},      active:{bg:'var(--bt-warning-subtle)'},     focus:'rgba(212,175,44,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-ghost':     { color:'var(--bt-text-warning-default)',    divider:'rgba(212,175,44,0.35)',   hover:{color:'var(--bt-warning-intense)'},  active:{color:'var(--bt-warning-default)'}, focus:'rgba(212,175,44,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-solid':     { bg:'var(--bt-warning-default)',    color:'var(--bt-text-primary-inverted)',  divider:'rgba(0,0,0,0.15)',                hover:{bg:'var(--bt-warning-intense)'},     active:{bg:'var(--bt-warning-intense)'},    focus:'rgba(212,175,44,0.25)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
+  'warning-outline':   { border:'var(--bt-border-warning-default)', color:'var(--bt-text-warning-default)', divider:'var(--bt-border-warning-default)', hover:{bg:'var(--bt-warning-subtle)'}, active:{bg:'var(--bt-warning-subtle)'},  focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-flat':      { color:'var(--bt-text-warning-default)',    divider:'rgba(212,175,44,0.25)',   hover:{bg:'var(--bt-warning-subtle)'},      active:{bg:'var(--bt-warning-subtle)'},     focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-ghost':     { color:'var(--bt-text-warning-default)',    divider:'rgba(212,175,44,0.25)',   hover:{color:'var(--bt-warning-intense)'},  active:{color:'var(--bt-warning-default)'}, focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
   'error-solid':       { bg:'var(--bt-error-default)',      color:'var(--bt-text-primary-inverted)',  divider:'rgba(255,255,255,0.30)',           hover:{bg:'var(--bt-error-intense)'},       active:{bg:'var(--bt-error-intense)'},      focus:'rgba(232,75,91,.24)',  dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'error-outline':     { border:'var(--bt-border-error-default)', color:'var(--bt-text-error-default)', divider:'var(--bt-border-error-default)', hover:{bg:'var(--bt-error-subtle)'},        active:{bg:'var(--bt-error-subtle)'},       focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
   'error-flat':        { color:'var(--bt-text-error-default)',      divider:'rgba(232,75,91,0.25)',    hover:{bg:'var(--bt-error-subtle)'},        active:{bg:'var(--bt-error-subtle)'},       focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
@@ -1478,10 +1478,10 @@ function chkCss(state, props = {}) {
       lines.push(`${stateLabel} {`);
       if (!isChecked) {
         lines.push(p('border-color', 'var(--bt-border-primary-strong)  /* #727272 */'));
-        lines.push(p('box-shadow',   '0 0 0 3px rgba(212,212,212,0.5)'));
+        lines.push(p('box-shadow',   '0 0 0 3px rgba(212,212,212,0.25)'));
       } else {
         lines.push(p('background',   'var(--bt-surface-brand-intense)  /* #0f447d */'));
-        lines.push(p('box-shadow',   '0 0 0 3px rgba(13,78,151,0.5)'));
+        lines.push(p('box-shadow',   '0 0 0 3px rgba(13,78,151,0.25)'));
       }
       lines.push('}');
     }
@@ -1583,8 +1583,8 @@ PAGES_WEB['components/checkbox'] = {
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Hover</td><td>Off</td><td>border-color</td><td>${tk('--bt-border-primary-strong')}</td><td>#727272</td></tr>
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
-          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.5)</td></tr>
-          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.25)</td></tr>
+          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
           <tr><td rowspan="2">Invalid</td><td>Off</td><td>border-color</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
@@ -1825,7 +1825,7 @@ function rdCss(state, props = {}) {
     } else if (state === 'focused') {
       lines.push('.bt-radio__dot--focused:not(.bt-radio__dot--selected) {');
       lines.push(p('border-color', 'var(--bt-border-primary-strong, #727272)'));
-      lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.5)'));
+      lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.25)'));
       lines.push('}');
     } else if (state === 'disabled') {
       lines.push('.bt-radio__dot--disabled:not(.bt-radio__dot--selected) {');
@@ -1860,7 +1860,7 @@ function rdCss(state, props = {}) {
       lines.push('');
       lines.push('.bt-radio__dot--selected.bt-radio__dot--focused {');
       lines.push(p('background', 'var(--bt-surface-brand-intense, #0f447d)'));
-      lines.push(p('box-shadow', '0 0 0 3px rgba(13,78,151,0.5)'));
+      lines.push(p('box-shadow', '0 0 0 3px rgba(13,78,151,0.25)'));
       lines.push('}');
     } else if (state === 'disabled') {
       lines.push('');
@@ -1942,8 +1942,8 @@ PAGES_WEB['components/radio-button'] = {
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Hover</td><td>Off</td><td>border-color</td><td>${tk('--bt-border-primary-strong')}</td><td>#727272</td></tr>
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
-          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.5)</td></tr>
-          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.25)</td></tr>
+          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
           <tr><td rowspan="2">Invalid</td><td>Off</td><td>border-color</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
@@ -2208,10 +2208,10 @@ function swCss(state, props = {}) {
       lines.push(`${stateLabel} {`);
       if (!isOn) {
         lines.push(p('background',  'var(--bt-surface-primary-strong)  /* #a3a3a3 */'));
-        lines.push(p('box-shadow',  '0 0 0 3px rgba(212,212,212,0.5)'));
+        lines.push(p('box-shadow',  '0 0 0 3px rgba(212,212,212,0.25)'));
       } else {
         lines.push(p('background',  'var(--bt-surface-brand-intense)  /* #0f447d */'));
-        lines.push(p('box-shadow',  '0 0 0 3px rgba(13,78,151,0.5)'));
+        lines.push(p('box-shadow',  '0 0 0 3px rgba(13,78,151,0.25)'));
       }
       lines.push('}');
     }
@@ -2310,8 +2310,8 @@ PAGES_WEB['components/switch'] = {
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Hover</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-strong')}</td><td>#a3a3a3</td></tr>
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
-          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.5)</td></tr>
-          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td rowspan="2">Focused</td><td>Off</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(212,212,212,0.25)</td></tr>
+          <tr><td>On</td><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>Off</td><td>background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
           <tr><td>On</td><td>background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
         </tbody>
@@ -2550,7 +2550,7 @@ function sbxCss(state, props = {}) {
   lines.push(p('background', state === 'disabled' ? 'var(--bt-surface-secondary-subtle)  /* #e6e6e6 */' : 'var(--bt-surface-primary-default)  /* #ffffff */'));
   const borderColor = (state === 'hover' || state === 'active') ? 'var(--bt-border-brand-default)  /* #0d4e97 */' : 'var(--bt-border-primary-default)  /* #d4d4d4 */';
   lines.push(p('border', `1px solid ${borderColor}`));
-  if (state === 'active') lines.push(p('box-shadow', '0 0 0 3px rgba(13,78,151,0.5)'));
+  if (state === 'active') lines.push(p('box-shadow', '0 0 0 3px rgba(13,78,151,0.25)'));
   lines.push('}');
 
   lines.push('');
@@ -2612,7 +2612,7 @@ PAGES_WEB['components/searchbox'] = {
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td>Filled</td><td>color (text)</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-secondary-subtle')}</td><td>#e6e6e6</td></tr>
           <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4 (değişmez)</td></tr>
@@ -2655,7 +2655,7 @@ PAGES_WEB['components/searchbox'] = {
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li>SearchBox'ı genel bir form text field'ı olarak kullanma — o iş için Text Field bileşenini tercih et</li>
+        <li>SearchBox'ı genel bir form text field'ı olarak kullanma — o iş için Textarea bileşenini tercih et</li>
         <li>Disabled durumda arama sonucu gösterme; boş/yükleniyor state'i ayrıca ele al</li>
         <li>Token dışında hardcoded renk/spacing kullanma; her zaman <code style="font-family:var(--mono)">--bt-*</code> tokenlarını kullan</li>
       </ul>
@@ -2722,7 +2722,7 @@ const _bgrpDivider = {
   'base-flat':         'rgba(163,163,163,0.40)',  'base-ghost':         'rgba(163,163,163,0.40)',
   'secondary-flat':    'rgba(163,163,163,0.40)',  'secondary-ghost':    'rgba(163,163,163,0.40)',
   'success-flat':      'rgba(68,135,113,0.25)',   'success-ghost':      'rgba(68,135,113,0.25)',
-  'warning-flat':      'rgba(212,175,44,0.35)',   'warning-ghost':      'rgba(212,175,44,0.35)',
+  'warning-flat':      'rgba(212,175,44,0.25)',   'warning-ghost':      'rgba(212,175,44,0.25)',
   'error-flat':        'rgba(232,75,91,0.25)',    'error-ghost':        'rgba(232,75,91,0.25)',
   'information-flat':  'rgba(13,78,151,0.25)',    'information-ghost':  'rgba(13,78,151,0.25)',
 };
@@ -3079,10 +3079,10 @@ const _btnCssProps = {
   'success-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-success-default)',color:'var(--bt-text-success-default)'},                                                              focus:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-success-default), 0 0 0 3px rgba(68,135,113,.24)'},hover:{bg:'var(--bt-success-subtle)'},  active:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-success-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
   'success-flat':       { default:{color:'var(--bt-text-success-default)'},                                         hover:{bg:'var(--bt-success-subtle)'},                                         focus:{bg:'var(--bt-success-subtle)',shadow:'0 0 0 3px rgba(68,135,113,.24)'},                                                active:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-success-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
   'success-ghost':      { default:{color:'var(--bt-text-success-default)'},                                         hover:{color:'var(--bt-success-intense)'},                                     focus:{shadow:'0 0 0 3px rgba(68,135,113,.24)'},                                                                             active:{color:'var(--bt-success-default)'},                                           dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-solid':      { default:{bg:'var(--bt-warning-default)',color:'var(--bt-text-primary-inverted)'},          hover:{bg:'var(--bt-warning-intense)'},                                        focus:{shadow:'0 0 0 3px rgba(212,175,44,.24)'},                                                                             active:{bg:'var(--bt-warning-intense)'},                                              dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'warning-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-warning-default)',color:'var(--bt-text-warning-default)'},                                                              focus:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-warning-default), 0 0 0 3px rgba(212,175,44,.24)'},hover:{bg:'var(--bt-warning-subtle)'},  active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
-  'warning-flat':       { default:{color:'var(--bt-text-warning-default)'},                                         hover:{bg:'var(--bt-warning-subtle)'},                                         focus:{bg:'var(--bt-warning-subtle)',shadow:'0 0 0 3px rgba(212,175,44,.24)'},                                                active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-ghost':      { default:{color:'var(--bt-text-warning-default)'},                                         hover:{color:'var(--bt-warning-intense)'},                                     focus:{shadow:'0 0 0 3px rgba(212,175,44,.24)'},                                                                             active:{color:'var(--bt-warning-default)'},                                           dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-solid':      { default:{bg:'var(--bt-warning-default)',color:'var(--bt-text-primary-inverted)'},          hover:{bg:'var(--bt-warning-intense)'},                                        focus:{shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                                             active:{bg:'var(--bt-warning-intense)'},                                              dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
+  'warning-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-warning-default)',color:'var(--bt-text-warning-default)'},                                                              focus:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-warning-default), 0 0 0 3px rgba(212,175,44,0.25)'},hover:{bg:'var(--bt-warning-subtle)'},  active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
+  'warning-flat':       { default:{color:'var(--bt-text-warning-default)'},                                         hover:{bg:'var(--bt-warning-subtle)'},                                         focus:{bg:'var(--bt-warning-subtle)',shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-ghost':      { default:{color:'var(--bt-text-warning-default)'},                                         hover:{color:'var(--bt-warning-intense)'},                                     focus:{shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                                             active:{color:'var(--bt-warning-default)'},                                           dis:{color:'var(--bt-text-primary-muted)'} },
   'error-solid':        { default:{bg:'var(--bt-error-default)',color:'var(--bt-text-primary-inverted)'},            hover:{bg:'var(--bt-error-intense)'},                                          focus:{shadow:'0 0 0 3px rgba(232,75,91,.24)'},                                                                              active:{bg:'var(--bt-error-intense)'},                                                dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'error-outline':      { default:{shadow:'inset 0 0 0 1px var(--bt-border-error-default)',color:'var(--bt-text-error-default)'},                                                                  focus:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-error-default), 0 0 0 3px rgba(232,75,91,.24)'},   hover:{bg:'var(--bt-error-subtle)'},     active:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-error-default)'},         dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
   'error-flat':         { default:{color:'var(--bt-text-error-default)'},                                           hover:{bg:'var(--bt-error-subtle)'},                                           focus:{bg:'var(--bt-error-subtle)',shadow:'0 0 0 3px rgba(232,75,91,.24)'},                                                   active:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-error-default)'},         dis:{color:'var(--bt-text-primary-muted)'} },
@@ -3475,7 +3475,7 @@ function tbxCss(state, props = {}) {
         : 'var(--bt-border-primary-default)  /* #d4d4d4 */'
   }`));
   if (isFocused) lines.push(p('box-shadow',
-    isError ? '0 0 0 3px rgba(179,29,56,0.5)' : '0 0 0 3px rgba(13,78,151,0.5)'));
+    isError ? '0 0 0 3px rgba(232,75,91,0.25)' : '0 0 0 3px rgba(13,78,151,0.25)'));
   lines.push('}');
 
   lines.push('');
@@ -3543,7 +3543,7 @@ PAGES_WEB['components/textbox'] = {
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
@@ -3551,7 +3551,7 @@ PAGES_WEB['components/textbox'] = {
           <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
           <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
           <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
       <h2>Shared Tokens</h2>
@@ -3639,8 +3639,8 @@ PAGES_WEB['components/textbox'] = {
           <tr><td>Color</td><td>${tk('Text/Primary/--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Required field</td><td>Color</td><td>${tk('Text/Primary/--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
           <tr><td>Placeholder</td><td>Color</td><td>${tk('Text/Primary/--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Focus ring</td><td>box-shadow</td><td>${tk('Focus Ring/primary')}</td><td>0 0 0 3px rgba(13,78,151,0.5)</td></tr>
-          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>${tk('Focus Ring/primary')}</td><td>0 0 0 3px rgba(13,78,151,0.25)</td></tr>
+          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
 
@@ -3793,13 +3793,13 @@ PAGES_WEB['components/select-lookup'] = {
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>text</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
           <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
           <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
           <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
       <h2>Class Reference</h2>
@@ -4057,7 +4057,7 @@ PAGES_WEB['components/dropdown'] = {
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Hover / Focused</td><td>right control bg</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
@@ -4065,7 +4065,7 @@ PAGES_WEB['components/dropdown'] = {
           <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
           <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
           <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
       <h2>Class Reference</h2>
@@ -4134,8 +4134,8 @@ PAGES_WEB['components/dropdown'] = {
           <tr><td>Chevron kontrol</td><td>bg (hover/focused)</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>Placeholder</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
           <tr><td>Seçili değer</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.5)</td></tr>
-          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.25)</td></tr>
+          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
 
@@ -4185,7 +4185,7 @@ PAGES_WEB['components/dropdown'] = {
   },
 };
 
-// ── Text Field (TextArea) ─────────────────────────────────────────
+// ── Textarea ─────────────────────────────────────────────────────
 const TXA_STATE_VARIANTS = [
   { key: 'default',       label: 'Default'       },
   { key: 'hover',         label: 'Hover'         },
@@ -4225,12 +4225,14 @@ function txaPreview(state, props = {}) {
   const requiredHtml = required === 'yes' ? `<span class="bt-txa__required">Required Field</span>` : '';
   const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-txa__meta">${labelHtml}${requiredHtml}</div>` : '';
   const helperHtml   = helper   === 'yes' ? `<span class="bt-txa__helper">Helper Text</span>` : '';
+  const clearHtml    = state === 'filled' ? `<button type="button" class="bt-tbx__clear bt-txa__clear">${_tbxIconClear}</button>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_txaCls(state, size)}">
         ${metaHtml}
         <div class="bt-txa__input">
           <textarea class="bt-txa__text" placeholder="Placeholder Text"${textAttrs}>${content}</textarea>
+          ${clearHtml}
         </div>
         ${helperHtml}
       </div>
@@ -4250,8 +4252,9 @@ function txaCode(state, props = {}) {
   const helperBlock = helper === 'yes' ? `\n<span class="bt-txa__helper">Helper Text</span>` : '';
   const textAttrs   = (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   const content     = isFilled ? '...' : '';
+  const clearLine   = state === 'filled' ? `\n  <button type="button" class="bt-tbx__clear bt-txa__clear">...</button>` : '';
   const code = `${metaBlock}<div class="bt-txa__input">
-  <textarea class="bt-txa__text" placeholder="Placeholder Text"${textAttrs}>${content}</textarea>
+  <textarea class="bt-txa__text" placeholder="Placeholder Text"${textAttrs}>${content}</textarea>${clearLine}
 </div>${helperBlock}`;
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
@@ -4265,10 +4268,7 @@ function txaCss(state, props = {}) {
   const isFocused = state === 'focused' || state === 'active' || state === 'error-focused';
   const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
   const minH  = size === 'lg' ? '96px' : size === 'md' ? '76px' : '56px';
-  const py    = size === 'lg' ? 'var(--bt-space-md)  /* 8px */'
-              : size === 'md' ? 'var(--bt-space-sm)  /* 6px */'
-              :                 'var(--bt-space-xs)  /* 4px */';
-  lines.push(`/* Text Field · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push(`/* Textarea · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
   lines.push('');
   lines.push('.bt-txa__input {');
   lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
@@ -4284,13 +4284,21 @@ function txaCss(state, props = {}) {
         : 'var(--bt-border-primary-default)  /* #d4d4d4 */'
   }`));
   if (isFocused) lines.push(p('box-shadow',
-    isError ? '0 0 0 3px rgba(179,29,56,0.5)' : '0 0 0 3px rgba(13,78,151,0.5)'));
+    isError ? '0 0 0 3px rgba(232,75,91,0.25)' : '0 0 0 3px rgba(13,78,151,0.25)'));
   lines.push('}');
   lines.push('');
   lines.push('.bt-txa__text {');
   lines.push(p('min-height', minH));
-  lines.push(p('padding', `${py} var(--bt-space-xl)  /* 12px */`));
+  lines.push(p('padding', 'var(--bt-space-sm)  /* 6px, constant across sizes */'));
   lines.push('}');
+  if (state === 'filled') {
+    lines.push('');
+    lines.push('.bt-txa__clear {');
+    lines.push(p('position', 'absolute'));
+    lines.push(p('top', '2px'));
+    lines.push(p('right', '2px'));
+    lines.push('}');
+  }
   if (isError) {
     lines.push('');
     lines.push('.bt-txa__label,');
@@ -4413,7 +4421,7 @@ PAGES_WEB['components/multi-select'] = {
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>chip opacity</td><td colspan="2">0.6</td></tr>
           <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
@@ -4689,7 +4697,7 @@ PAGES_WEB['components/date-picker'] = {
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
@@ -4697,7 +4705,7 @@ PAGES_WEB['components/date-picker'] = {
           <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
           <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
           <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
       <h2>Shared Tokens</h2>
@@ -4794,11 +4802,11 @@ PAGES_WEB['components/date-picker'] = {
   }
 };
 
-PAGES_WEB['components/text-field'] = {
+PAGES_WEB['components/textarea'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
   toc:  ['Anatomy', 'States', 'Sizes'],
   render(tab) {
-    const title = 'Text Field';
+    const title = 'Textarea';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     const sharedProps = [
@@ -4821,14 +4829,14 @@ PAGES_WEB['components/text-field'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Text Field için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">Textarea için kullanılan design token–CSS değişken eşleşmeleri.</p>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Min Height</th><th>Padding</th></tr></thead>
         <tbody>
-          <tr><td><span class="token-name">Sm</span></td><td>56px</td><td>${tk('--bt-space-xs')} top/bot (4px) · ${tk('--bt-space-xl')} left/right (12px)</td></tr>
-          <tr><td><span class="token-name">Md</span></td><td>76px</td><td>${tk('--bt-space-sm')} top/bot (6px) · ${tk('--bt-space-xl')} left/right (12px)</td></tr>
-          <tr><td><span class="token-name">Lg</span></td><td>96px</td><td>${tk('--bt-space-md')} top/bot (8px) · ${tk('--bt-space-xl')} left/right (12px)</td></tr>
+          <tr><td><span class="token-name">Sm</span></td><td>56px</td><td rowspan="3">${tk('--bt-space-sm')} — all sides (6px), constant across sizes</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>76px</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>96px</td></tr>
         </tbody>
       </table>
       <h2>State Tokens</h2>
@@ -4838,7 +4846,7 @@ PAGES_WEB['components/text-field'] = {
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
           <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
@@ -4846,7 +4854,7 @@ PAGES_WEB['components/text-field'] = {
           <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
           <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
           <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
       <h2>Shared Tokens</h2>
@@ -4875,13 +4883,14 @@ PAGES_WEB['components/text-field'] = {
           <tr><td>${tk('.bt-txa__required')}</td><td>Zorunluk işareti</td><td>color: --bt-text-primary-emphasis (error: --bt-text-error-default)</td></tr>
           <tr><td>${tk('.bt-txa__input')}</td><td>Input kutusu</td><td>border, radius, bg — tüm state border/shadow değişimleri burada</td></tr>
           <tr><td>${tk('.bt-txa__text')}</td><td>&lt;textarea&gt;</td><td>Gerçek HTML textarea elemanı; resize: vertical</td></tr>
+          <tr><td>${tk('.bt-tbx__clear')} + ${tk('.bt-txa__clear')}</td><td>Temizle butonu</td><td>Filled state'te sağ üstte gösterilir (absolute, top/right: 2px)</td></tr>
           <tr><td>${tk('.bt-txa__helper')}</td><td>Yardım metni</td><td>color: --bt-text-primary-default</td></tr>
         </tbody>
       </table>
     `};
 
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Text Field kullanım kuralları.</p>
+      <p class="page-desc">Textarea kullanım kuralları.</p>
       <h2>When to use</h2>
       <ul>
         <li>Kullanıcının birden fazla satır metin gireceği form alanlarında</li>
@@ -4894,11 +4903,12 @@ PAGES_WEB['components/text-field'] = {
         <li>Zorunlu alanları <code style="font-family:var(--mono)">.bt-txa__required</code> ile işaretle</li>
         <li>Hata mesajını helper text olarak göster, error state ile birlikte kullan</li>
         <li>Yeterli min-height ile başla — kullanıcı dikey resize yapabilir</li>
+        <li><strong>Clear control</strong> — filled state'te sağ üstte <code style="font-family:var(--mono)">.bt-txa__clear</code> × butonu göster</li>
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li>Label'sız Text Field bırakma — erişilebilirlik için label zorunlu</li>
-        <li>Tek satırlık girişler için Text Field kullanma — bunun yerine TextBox kullan</li>
+        <li>Label'sız Textarea bırakma — erişilebilirlik için label zorunlu</li>
+        <li>Tek satırlık girişler için Textarea kullanma — bunun yerine TextBox kullan</li>
         <li>Error state'te yalnızca border'ı kırmızı yapma — label ve required field da dönmeli</li>
       </ul>
     `};
@@ -4930,8 +4940,8 @@ PAGES_WEB['components/text-field'] = {
           <tr><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Required field</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
           <tr><td>Placeholder</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.5)</td></tr>
-          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(179,29,56,0.5)</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.25)</td></tr>
+          <tr><td>Error focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
 
