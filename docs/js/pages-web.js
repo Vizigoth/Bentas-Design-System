@@ -26,15 +26,12 @@ const NAV_WEB = [
       { label: 'Alert Toaster',     id: 'components/alert' },
       { label: 'Avatar',            id: 'components/avatar' },
       { label: 'Badge',             id: 'components/badge' },
-      { label: 'Bottom Sheet',      id: 'components/bottom-sheet' },
-      { label: 'Bottom Tab Bar',    id: 'components/bottom-tab-bar' },
       { label: 'Button',            id: 'components/button' },
       { label: 'Button Group',      id: 'components/button-group' },
       { label: 'Split Button',      id: 'components/split-button' },
       { label: 'Card',              id: 'components/card' },
       { label: 'Checkbox',          id: 'components/checkbox' },
       { label: 'Dialog',            id: 'components/dialog' },
-      { label: 'FAB',               id: 'components/fab' },
       { label: 'Icon Button',       id: 'components/icon-button' },
       { label: 'List Item',         id: 'components/list-item' },
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
@@ -43,7 +40,6 @@ const NAV_WEB = [
       { label: 'SearchBox',          id: 'components/searchbox' },
       { label: 'Sidebar',           id: 'components/sidebar' },
       { label: 'Skeleton',          id: 'components/skeleton' },
-      { label: 'Snackbar',          id: 'components/snackbar' },
       { label: 'Switch',            id: 'components/switch' },
       { label: 'Textarea',          id: 'components/textarea' },
       { label: 'TextBox',           id: 'components/textbox' },
@@ -51,8 +47,6 @@ const NAV_WEB = [
       { label: 'MultiSelect',       id: 'components/multi-select' },
       { label: 'Date Picker',       id: 'components/date-picker' },
       { label: 'Dropdown',          id: 'components/dropdown' },
-      { label: 'Toggle',            id: 'components/toggle' },
-      { label: 'Top App Bar',       id: 'components/top-app-bar' },
       { label: 'Upload',            id: 'components/upload' },
     ]
   },
@@ -988,34 +982,34 @@ const SPLT_CONTENT_OPTS = [
 // Her entry: { bg?, border?, color, divider, hover:{bg?,color?,effect?},
 //             active?:{bg?,color?}, focus, dis:{bg?,color} }
 const _spltCssProps = {
-  'base-solid':        { bg:'var(--bt-base-light)',          color:'var(--bt-text-primary-default)',   divider:'var(--bt-border-primary-default)', hover:{bg:'var(--bt-base-emphasis)'},      active:{bg:'var(--bt-base-emphasis)'},      focus:'rgba(212,212,212,.50)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'base-outline':      { border:'var(--bt-border-primary-default)', color:'var(--bt-text-primary-default)', divider:'var(--bt-border-primary-default)', hover:{bg:'var(--bt-base-emphasis)'},  active:{bg:'var(--bt-base-emphasis)'},      focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'base-flat':         { color:'var(--bt-text-primary-default)',   divider:'rgba(163,163,163,0.40)',   hover:{bg:'var(--bt-base-emphasis)'},      active:{bg:'var(--bt-base-emphasis)'},      focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'base-ghost':        { color:'var(--bt-text-primary-default)',   divider:'rgba(163,163,163,0.40)',   hover:{effect:'text-decoration: underline'},                                            focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'base-solid':        { bg:'var(--bt-base-light)',          color:'var(--bt-text-primary-default)',   divider:'var(--bt-border-primary-default)', hover:{bg:'var(--bt-base-emphasis)'},      active:{bg:'var(--bt-primary-subtle)',border:'var(--bt-primary-default)'},      focus:'rgba(212,212,212,.50)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
+  'base-outline':      { border:'var(--bt-border-primary-default)', color:'var(--bt-text-primary-default)', divider:'var(--bt-border-primary-default)', hover:{bg:'var(--bt-base-emphasis)'},  active:{bg:'var(--bt-primary-subtle)',border:'var(--bt-primary-default)'},      focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'base-flat':         { color:'var(--bt-text-primary-default)',   divider:'var(--bt-border-primary-default)',   hover:{bg:'var(--bt-base-emphasis)'},      active:{bg:'var(--bt-primary-subtle)',border:'var(--bt-primary-default)'},      focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'base-ghost':        { color:'var(--bt-text-primary-default)',   divider:'var(--bt-border-primary-default)',   hover:{effect:'text-decoration: underline'},                                            focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
   'primary-solid':     { bg:'var(--bt-primary-default)',    color:'var(--bt-text-primary-inverted)',  divider:'var(--bt-primary-solid)',          hover:{bg:'var(--bt-primary-intense)'},     active:{bg:'var(--bt-primary-intense)'},    focus:'rgba(13,78,151,.50)',   dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'primary-outline':   { border:'var(--bt-primary-default)', color:'var(--bt-primary-default)',       divider:'var(--bt-primary-default)',        hover:{bg:'var(--bt-primary-subtle)'},      active:{bg:'var(--bt-primary-subtle)'},     focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
-  'primary-flat':      { color:'var(--bt-primary-default)',        divider:'rgba(13,78,151,0.25)',     hover:{bg:'var(--bt-primary-subtle)'},      active:{bg:'var(--bt-primary-subtle)'},     focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
-  'primary-ghost':     { color:'var(--bt-primary-default)',        divider:'rgba(13,78,151,0.25)',     hover:{color:'var(--bt-primary-intense)'}, active:{color:'var(--bt-primary-default)'}, focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
-  'secondary-solid':   { bg:'var(--bt-secondary-default)',  color:'var(--bt-text-primary-inverted)',  divider:'rgba(255,255,255,0.30)',           hover:{bg:'var(--bt-secondary-intense)'},   active:{bg:'var(--bt-secondary-intense)'},  focus:'rgba(212,212,212,.50)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'secondary-outline': { border:'var(--bt-border-primary-default)', color:'var(--bt-text-primary-default)', divider:'var(--bt-border-primary-default)', hover:{bg:'var(--bt-secondary-emphasis)'}, active:{bg:'var(--bt-secondary-emphasis)'}, focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'secondary-flat':    { color:'var(--bt-text-primary-default)',   divider:'rgba(163,163,163,0.40)',   hover:{bg:'var(--bt-secondary-emphasis)'}, active:{bg:'var(--bt-secondary-emphasis)'}, focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'secondary-ghost':   { color:'var(--bt-text-primary-default)',   divider:'rgba(163,163,163,0.40)',   hover:{effect:'text-decoration: underline'},                                            focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'primary-outline':   { border:'var(--bt-primary-default)', color:'var(--bt-primary-default)',       divider:'var(--bt-primary-solid)',        hover:{bg:'var(--bt-primary-subtle)'},      active:{bg:'var(--bt-primary-subtle)'},     focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
+  'primary-flat':      { color:'var(--bt-primary-default)',        divider:'var(--bt-primary-solid)',     hover:{bg:'var(--bt-primary-subtle)'},      active:{bg:'var(--bt-primary-subtle)',border:'var(--bt-primary-default)'},     focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
+  'primary-ghost':     { color:'var(--bt-primary-default)',        divider:'var(--bt-primary-solid)',     hover:{color:'var(--bt-primary-intense)'}, active:{color:'var(--bt-primary-default)'}, focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
+  'secondary-solid':   { bg:'var(--bt-secondary-default)',  color:'var(--bt-text-primary-inverted)',  divider:'rgba(255,255,255,0.30)',           hover:{bg:'var(--bt-secondary-intense)'},   active:{bg:'var(--bt-secondary-intense)'},  focus:'rgba(212,212,212,.50)', dis:{bg:'var(--bt-secondary-muted)',color:'var(--bt-text-primary-muted)'} },
+  'secondary-outline': { border:'var(--bt-border-primary-default)', color:'var(--bt-text-primary-default)', divider:'var(--bt-border-primary-default)', hover:{bg:'var(--bt-secondary-emphasis)'}, active:{bg:'var(--bt-primary-subtle)',border:'var(--bt-primary-default)'}, focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'secondary-flat':    { color:'var(--bt-text-primary-default)',   divider:'var(--bt-border-primary-default)',   hover:{bg:'var(--bt-secondary-emphasis)'}, active:{bg:'var(--bt-primary-subtle)',border:'var(--bt-primary-default)'}, focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'secondary-ghost':   { color:'var(--bt-text-primary-default)',   divider:'var(--bt-border-primary-default)',   hover:{effect:'text-decoration: underline'},                                            focus:'rgba(212,212,212,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
   'success-solid':     { bg:'var(--bt-success-default)',    color:'var(--bt-text-primary-inverted)',  divider:'rgba(255,255,255,0.30)',           hover:{bg:'var(--bt-success-intense)'},     active:{bg:'var(--bt-success-intense)'},    focus:'rgba(68,135,113,.24)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'success-outline':   { border:'var(--bt-border-success-default)', color:'var(--bt-text-success-default)', divider:'var(--bt-border-success-default)', hover:{bg:'var(--bt-success-subtle)'}, active:{bg:'var(--bt-success-subtle)'},  focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'success-flat':      { color:'var(--bt-text-success-default)',    divider:'rgba(68,135,113,0.25)',   hover:{bg:'var(--bt-success-subtle)'},      active:{bg:'var(--bt-success-subtle)'},     focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'success-ghost':     { color:'var(--bt-text-success-default)',    divider:'rgba(68,135,113,0.25)',   hover:{color:'var(--bt-success-intense)'},  active:{color:'var(--bt-success-default)'}, focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'success-flat':      { color:'var(--bt-text-success-default)',    divider:'var(--bt-border-success-default)',   hover:{bg:'var(--bt-success-subtle)'},      active:{bg:'var(--bt-success-subtle)',border:'var(--bt-success-default)'},     focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'success-ghost':     { color:'var(--bt-text-success-default)',    divider:'var(--bt-border-success-default)',   hover:{color:'var(--bt-success-intense)'},  active:{color:'var(--bt-success-default)'}, focus:'rgba(68,135,113,.24)', dis:{color:'var(--bt-text-primary-muted)'} },
   'warning-solid':     { bg:'var(--bt-warning-default)',    color:'var(--bt-text-primary-inverted)',  divider:'rgba(0,0,0,0.15)',                hover:{bg:'var(--bt-warning-intense)'},     active:{bg:'var(--bt-warning-intense)'},    focus:'rgba(212,175,44,0.25)', dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'warning-outline':   { border:'var(--bt-border-warning-default)', color:'var(--bt-text-warning-default)', divider:'var(--bt-border-warning-default)', hover:{bg:'var(--bt-warning-subtle)'}, active:{bg:'var(--bt-warning-subtle)'},  focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-flat':      { color:'var(--bt-text-warning-default)',    divider:'rgba(212,175,44,0.25)',   hover:{bg:'var(--bt-warning-subtle)'},      active:{bg:'var(--bt-warning-subtle)'},     focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'warning-ghost':     { color:'var(--bt-text-warning-default)',    divider:'rgba(212,175,44,0.25)',   hover:{color:'var(--bt-warning-intense)'},  active:{color:'var(--bt-warning-default)'}, focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-flat':      { color:'var(--bt-text-warning-default)',    divider:'var(--bt-border-warning-default)',   hover:{bg:'var(--bt-warning-subtle)'},      active:{bg:'var(--bt-warning-subtle)',border:'var(--bt-warning-default)'},     focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-ghost':     { color:'var(--bt-text-warning-default)',    divider:'var(--bt-border-warning-default)',   hover:{color:'var(--bt-warning-intense)'},  active:{color:'var(--bt-warning-default)'}, focus:'rgba(212,175,44,0.25)', dis:{color:'var(--bt-text-primary-muted)'} },
   'error-solid':       { bg:'var(--bt-error-default)',      color:'var(--bt-text-primary-inverted)',  divider:'rgba(255,255,255,0.30)',           hover:{bg:'var(--bt-error-intense)'},       active:{bg:'var(--bt-error-intense)'},      focus:'rgba(232,75,91,.24)',  dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'error-outline':     { border:'var(--bt-border-error-default)', color:'var(--bt-text-error-default)', divider:'var(--bt-border-error-default)', hover:{bg:'var(--bt-error-subtle)'},        active:{bg:'var(--bt-error-subtle)'},       focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
-  'error-flat':        { color:'var(--bt-text-error-default)',      divider:'rgba(232,75,91,0.25)',    hover:{bg:'var(--bt-error-subtle)'},        active:{bg:'var(--bt-error-subtle)'},       focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
-  'error-ghost':       { color:'var(--bt-text-error-default)',      divider:'rgba(232,75,91,0.25)',    hover:{color:'var(--bt-error-intense)'},    active:{color:'var(--bt-error-default)'},   focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
+  'error-flat':        { color:'var(--bt-text-error-default)',      divider:'var(--bt-border-error-default)',    hover:{bg:'var(--bt-error-subtle)'},        active:{bg:'var(--bt-error-subtle)',border:'var(--bt-error-default)'},       focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
+  'error-ghost':       { color:'var(--bt-text-error-default)',      divider:'var(--bt-border-error-default)',    hover:{color:'var(--bt-error-intense)'},    active:{color:'var(--bt-error-default)'},   focus:'rgba(232,75,91,.24)',  dis:{color:'var(--bt-text-primary-muted)'} },
   'information-solid': { bg:'var(--bt-information-default)', color:'var(--bt-text-primary-inverted)', divider:'rgba(255,255,255,0.30)',           hover:{bg:'var(--bt-information-intense)'}, active:{bg:'var(--bt-information-intense)'},focus:'rgba(13,78,151,.50)',   dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'information-outline':{ border:'var(--bt-border-information-default)', color:'var(--bt-information-default)', divider:'var(--bt-border-information-default)', hover:{bg:'var(--bt-information-subtle)'}, active:{bg:'var(--bt-information-subtle)'}, focus:'rgba(13,78,151,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
-  'information-flat':  { color:'var(--bt-information-default)',     divider:'rgba(13,78,151,0.25)',    hover:{bg:'var(--bt-information-subtle)'},  active:{bg:'var(--bt-information-subtle)'}, focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
-  'information-ghost': { color:'var(--bt-information-default)',     divider:'rgba(13,78,151,0.25)',    hover:{color:'var(--bt-information-intense)'}, active:{color:'var(--bt-information-default)'}, focus:'rgba(13,78,151,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
+  'information-flat':  { color:'var(--bt-information-default)',     divider:'var(--bt-border-information-default)',    hover:{bg:'var(--bt-information-subtle)'},  active:{bg:'var(--bt-information-subtle)',border:'var(--bt-information-default)'}, focus:'rgba(13,78,151,.50)',   dis:{color:'var(--bt-text-primary-muted)'} },
+  'information-ghost': { color:'var(--bt-information-default)',     divider:'var(--bt-border-information-default)',    hover:{color:'var(--bt-information-intense)'}, active:{color:'var(--bt-information-default)'}, focus:'rgba(13,78,151,.50)', dis:{color:'var(--bt-text-primary-muted)'} },
 };
 
 const _spltSizePyToken = { '2xs':'var(--bt-space-2xs)', 'xs':'var(--bt-space-xs)', 'sm':'var(--bt-space-sm)', 'md':'var(--bt-space-md)', 'lg':'var(--bt-space-lg)', 'xl':'var(--bt-space-xl)', '2xl':'var(--bt-space-2xl)' };
@@ -1064,8 +1058,9 @@ function spltCss(fill, props) {
     lines.push('');
     lines.push(`.bt-split-btn--${theme}-${fill} .bt-split-btn__button:active,`);
     lines.push(`.bt-split-btn--${theme}-${fill} .bt-split-btn__split:active {`);
-    if (d.active.bg)    lines.push(prop('background', d.active.bg));
-    if (d.active.color) lines.push(prop('color', d.active.color));
+    if (d.active.bg)     lines.push(prop('background', d.active.bg));
+    if (d.active.color)  lines.push(prop('color', d.active.color));
+    if (d.active.border) lines.push(prop('box-shadow', `inset 0 0 0 1px ${d.active.border}`));
     lines.push('}');
   }
 
@@ -3064,8 +3059,8 @@ const BTN_THEME_OPTS = [
 // ── Button CSS Properties data (fill × theme) ───────────────────
 const _btnCssProps = {
   'primary-solid':      { default:{bg:'var(--bt-primary-default)',color:'var(--bt-text-primary-inverted)'},         hover:{bg:'var(--bt-primary-intense)'},                                        focus:{shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                                                              active:{bg:'var(--bt-primary-intense)'},                                             dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'primary-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-primary-default)',color:'var(--bt-primary-default)'},                                                                          focus:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default), 0 0 0 3px rgba(13,78,151,.50)'},     hover:{bg:'var(--bt-primary-subtle)'},   active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
-  'primary-flat':       { default:{color:'var(--bt-primary-default)'},                                              hover:{bg:'var(--bt-primary-subtle)'},                                         focus:{bg:'var(--bt-primary-subtle)',shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                                 active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{color:'var(--bt-text-primary-muted)'} },
+  'primary-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-primary-default)',color:'var(--bt-primary-default)'},                                                                          focus:{shadow:'inset 0 0 0 1px var(--bt-primary-default), 0 0 0 3px rgba(13,78,151,.50)'},     hover:{bg:'var(--bt-primary-subtle)'},   active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
+  'primary-flat':       { default:{color:'var(--bt-primary-default)'},                                              hover:{bg:'var(--bt-primary-subtle)'},                                         focus:{shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                                 active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{color:'var(--bt-text-primary-muted)'} },
   'primary-ghost':      { default:{color:'var(--bt-primary-default)'},                                              hover:{color:'var(--bt-primary-intense)'},                                     focus:{shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                                                              active:{color:'var(--bt-primary-default)'},                                           dis:{color:'var(--bt-text-primary-muted)'} },
   'base-solid':         { default:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-default)'},               hover:{bg:'var(--bt-base-emphasis)'},                                          focus:{shadow:'0 0 0 3px rgba(212,212,212,.50)'},                                                                            active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
   'base-outline':       { default:{shadow:'inset 0 0 0 1px var(--bt-border-primary-default)',color:'var(--bt-text-primary-default)'},                                                              focus:{shadow:'inset 0 0 0 1px var(--bt-border-primary-default), 0 0 0 3px rgba(212,212,212,.50)'},                          hover:{bg:'var(--bt-base-emphasis)'},    active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-border-primary-default)'} },
@@ -3076,20 +3071,20 @@ const _btnCssProps = {
   'secondary-flat':     { default:{color:'var(--bt-text-primary-default)'},                                         hover:{bg:'var(--bt-secondary-emphasis)'},                                     focus:{shadow:'0 0 0 3px rgba(212,212,212,.50)'},                                                                            active:{bg:'var(--bt-primary-subtle)',shadow:'inset 0 0 0 1px var(--bt-primary-default)'},     dis:{color:'var(--bt-text-primary-muted)'} },
   'secondary-ghost':    { default:{color:'var(--bt-text-primary-default)'},                                         hover:{effect:'text-decoration: underline'},                                   focus:{shadow:'0 0 0 3px rgba(212,212,212,.50)'},                                                                            active:{},                                                                            dis:{color:'var(--bt-text-primary-muted)'} },
   'success-solid':      { default:{bg:'var(--bt-success-default)',color:'var(--bt-text-primary-inverted)'},          hover:{bg:'var(--bt-success-intense)'},                                        focus:{shadow:'0 0 0 3px rgba(68,135,113,.24)'},                                                                             active:{bg:'var(--bt-success-intense)'},                                              dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'success-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-success-default)',color:'var(--bt-text-success-default)'},                                                              focus:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-success-default), 0 0 0 3px rgba(68,135,113,.24)'},hover:{bg:'var(--bt-success-subtle)'},  active:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-success-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
-  'success-flat':       { default:{color:'var(--bt-text-success-default)'},                                         hover:{bg:'var(--bt-success-subtle)'},                                         focus:{bg:'var(--bt-success-subtle)',shadow:'0 0 0 3px rgba(68,135,113,.24)'},                                                active:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-success-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
+  'success-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-success-default)',color:'var(--bt-text-success-default)'},                                                              focus:{shadow:'inset 0 0 0 1px var(--bt-border-success-default), 0 0 0 3px rgba(68,135,113,.24)'},hover:{bg:'var(--bt-success-subtle)'},  active:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-success-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
+  'success-flat':       { default:{color:'var(--bt-text-success-default)'},                                         hover:{bg:'var(--bt-success-subtle)'},                                         focus:{shadow:'0 0 0 3px rgba(68,135,113,.24)'},                                                active:{bg:'var(--bt-success-subtle)',shadow:'inset 0 0 0 1px var(--bt-success-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
   'success-ghost':      { default:{color:'var(--bt-text-success-default)'},                                         hover:{color:'var(--bt-success-intense)'},                                     focus:{shadow:'0 0 0 3px rgba(68,135,113,.24)'},                                                                             active:{color:'var(--bt-success-default)'},                                           dis:{color:'var(--bt-text-primary-muted)'} },
   'warning-solid':      { default:{bg:'var(--bt-warning-default)',color:'var(--bt-text-primary-inverted)'},          hover:{bg:'var(--bt-warning-intense)'},                                        focus:{shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                                             active:{bg:'var(--bt-warning-intense)'},                                              dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'warning-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-warning-default)',color:'var(--bt-text-warning-default)'},                                                              focus:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-warning-default), 0 0 0 3px rgba(212,175,44,0.25)'},hover:{bg:'var(--bt-warning-subtle)'},  active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
-  'warning-flat':       { default:{color:'var(--bt-text-warning-default)'},                                         hover:{bg:'var(--bt-warning-subtle)'},                                         focus:{bg:'var(--bt-warning-subtle)',shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
+  'warning-outline':    { default:{shadow:'inset 0 0 0 1px var(--bt-border-warning-default)',color:'var(--bt-text-warning-default)'},                                                              focus:{shadow:'inset 0 0 0 1px var(--bt-border-warning-default), 0 0 0 3px rgba(212,175,44,0.25)'},hover:{bg:'var(--bt-warning-subtle)'},  active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
+  'warning-flat':       { default:{color:'var(--bt-text-warning-default)'},                                         hover:{bg:'var(--bt-warning-subtle)'},                                         focus:{shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                active:{bg:'var(--bt-warning-subtle)',shadow:'inset 0 0 0 1px var(--bt-warning-default)'},      dis:{color:'var(--bt-text-primary-muted)'} },
   'warning-ghost':      { default:{color:'var(--bt-text-warning-default)'},                                         hover:{color:'var(--bt-warning-intense)'},                                     focus:{shadow:'0 0 0 3px rgba(212,175,44,0.25)'},                                                                             active:{color:'var(--bt-warning-default)'},                                           dis:{color:'var(--bt-text-primary-muted)'} },
   'error-solid':        { default:{bg:'var(--bt-error-default)',color:'var(--bt-text-primary-inverted)'},            hover:{bg:'var(--bt-error-intense)'},                                          focus:{shadow:'0 0 0 3px rgba(232,75,91,.24)'},                                                                              active:{bg:'var(--bt-error-intense)'},                                                dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'error-outline':      { default:{shadow:'inset 0 0 0 1px var(--bt-border-error-default)',color:'var(--bt-text-error-default)'},                                                                  focus:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-error-default), 0 0 0 3px rgba(232,75,91,.24)'},   hover:{bg:'var(--bt-error-subtle)'},     active:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-error-default)'},         dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
-  'error-flat':         { default:{color:'var(--bt-text-error-default)'},                                           hover:{bg:'var(--bt-error-subtle)'},                                           focus:{bg:'var(--bt-error-subtle)',shadow:'0 0 0 3px rgba(232,75,91,.24)'},                                                   active:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-error-default)'},         dis:{color:'var(--bt-text-primary-muted)'} },
+  'error-outline':      { default:{shadow:'inset 0 0 0 1px var(--bt-border-error-default)',color:'var(--bt-text-error-default)'},                                                                  focus:{shadow:'inset 0 0 0 1px var(--bt-border-error-default), 0 0 0 3px rgba(232,75,91,.24)'},   hover:{bg:'var(--bt-error-subtle)'},     active:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-error-default)'},         dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
+  'error-flat':         { default:{color:'var(--bt-text-error-default)'},                                           hover:{bg:'var(--bt-error-subtle)'},                                           focus:{shadow:'0 0 0 3px rgba(232,75,91,.24)'},                                                   active:{bg:'var(--bt-error-subtle)',shadow:'inset 0 0 0 1px var(--bt-error-default)'},         dis:{color:'var(--bt-text-primary-muted)'} },
   'error-ghost':        { default:{color:'var(--bt-text-error-default)'},                                           hover:{color:'var(--bt-error-intense)'},                                       focus:{shadow:'0 0 0 3px rgba(232,75,91,.24)'},                                                                              active:{color:'var(--bt-error-default)'},                                             dis:{color:'var(--bt-text-primary-muted)'} },
   'information-solid':  { default:{bg:'var(--bt-information-default)',color:'var(--bt-text-primary-inverted)'},      hover:{bg:'var(--bt-information-intense)'},                                    focus:{shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                                                              active:{bg:'var(--bt-information-intense)'},                                          dis:{bg:'var(--bt-base-muted)',color:'var(--bt-text-primary-muted)'} },
-  'information-outline':{ default:{shadow:'inset 0 0 0 1px var(--bt-border-information-default)',color:'var(--bt-information-default)'},                                                           focus:{bg:'var(--bt-information-subtle)',shadow:'inset 0 0 0 1px var(--bt-border-information-default), 0 0 0 3px rgba(13,78,151,.50)'},hover:{bg:'var(--bt-information-subtle)'},active:{bg:'var(--bt-information-subtle)',shadow:'inset 0 0 0 1px var(--bt-information-default)'},dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
-  'information-flat':   { default:{color:'var(--bt-information-default)'},                                          hover:{bg:'var(--bt-information-subtle)'},                                     focus:{bg:'var(--bt-information-subtle)',shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                             active:{bg:'var(--bt-information-subtle)',shadow:'inset 0 0 0 1px var(--bt-information-default)'},dis:{color:'var(--bt-text-primary-muted)'} },
+  'information-outline':{ default:{shadow:'inset 0 0 0 1px var(--bt-border-information-default)',color:'var(--bt-information-default)'},                                                           focus:{shadow:'inset 0 0 0 1px var(--bt-border-information-default), 0 0 0 3px rgba(13,78,151,.50)'},hover:{bg:'var(--bt-information-subtle)'},active:{bg:'var(--bt-information-subtle)',shadow:'inset 0 0 0 1px var(--bt-information-default)'},dis:{color:'var(--bt-text-primary-muted)',shadow:'inset 0 0 0 1px var(--bt-base-muted)'} },
+  'information-flat':   { default:{color:'var(--bt-information-default)'},                                          hover:{bg:'var(--bt-information-subtle)'},                                     focus:{shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                             active:{bg:'var(--bt-information-subtle)',shadow:'inset 0 0 0 1px var(--bt-information-default)'},dis:{color:'var(--bt-text-primary-muted)'} },
   'information-ghost':  { default:{color:'var(--bt-information-default)'},                                          hover:{color:'var(--bt-information-intense)'},                                 focus:{shadow:'0 0 0 3px rgba(13,78,151,.50)'},                                                                              active:{color:'var(--bt-information-default)'},                                       dis:{color:'var(--bt-text-primary-muted)'} },
 };
 
@@ -4992,6 +4987,551 @@ PAGES_WEB['components/textarea'] = {
   },
 };
 
+// ── Avatar ─────────────────────────────────────────────────
+// Figma node 205:25278. Icon her boyutta SABİT 24×24 (avatar boyutuna göre
+// büyümez — Figma'nın tüm 6 boyutunda ayrı ayrı doğrulandı). Border her iki
+// temada da ortak (--bt-border-primary-default) — Brand'de arka plan koyu
+// olsa da border kalkmıyor, Figma'da iki tema da aynı border class'ını paylaşıyor.
+// İkon, Figma'nın "Circle-User-Round" asset'inden birebir alınan fill-path'i —
+// lucide'ın stroke-tabanlı circle-user-round'ından farklı, bu yüzden hazır
+// lucide path'i kullanılmadı.
+const _avatarIconUser = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14.844 11.0827C14.844 9.51198 13.5709 8.23851 12.0003 8.23841C10.4295 8.23841 9.15603 9.51192 9.15603 11.0827C9.15603 12.6457 10.417 13.9135 11.9772 13.9258H12.0218C13.5825 13.9142 14.844 12.6461 14.844 11.0827ZM12.0003 15.5783C11.9928 15.5783 11.9852 15.5772 11.9777 15.5772C10.8719 15.5824 9.80339 15.9792 8.96197 16.6975C8.2446 17.3099 7.7326 18.1222 7.48636 19.0246C8.78779 19.8626 10.3373 20.3486 12.0003 20.3486C13.6627 20.3486 15.2114 19.8626 16.5126 19.0251C16.2663 18.1223 15.7547 17.3095 15.037 16.697C14.1956 15.979 13.1273 15.5824 12.0218 15.5772C12.0146 15.5772 12.0074 15.5783 12.0003 15.5783ZM22 12.0003C21.9999 17.523 17.523 21.9999 12.0003 22C9.7954 22 7.75749 21.2859 6.10429 20.0771C6.08567 20.0646 6.06744 20.0518 6.04999 20.0379C3.59281 18.2159 2.00006 15.2942 2 12.0003C2 6.47737 6.47737 2 12.0003 2C17.5231 2.0001 22 6.47743 22 12.0003ZM16.4954 11.0827C16.4954 12.5002 15.8384 13.7631 14.8133 14.587C15.2751 14.8162 15.7111 15.1012 16.1089 15.4407C16.8994 16.1153 17.5059 16.9694 17.8839 17.9226C19.4061 16.4103 20.3486 14.3155 20.3486 12.0003C20.3486 7.38947 16.611 3.65149 12.0003 3.65139C7.38941 3.65139 3.65139 7.38941 3.65139 12.0003C3.65144 14.3152 4.59378 16.4098 6.11558 17.9221C6.49346 16.9695 7.09961 16.1161 7.88953 15.4417C8.28745 15.1021 8.72356 14.8164 9.18559 14.587C8.16098 13.7631 7.50464 12.4998 7.50464 11.0827C7.50464 8.59988 9.5175 6.58702 12.0003 6.58702C14.483 6.58712 16.4954 8.59994 16.4954 11.0827Z"/></svg>`;
+
+const AVATAR_SIZE_VARIANTS = [
+  { key: '2xs', label: '2xs' },
+  { key: 'xs',  label: 'xs' },
+  { key: 'sm',  label: 'sm' },
+  { key: 'md',  label: 'md' },
+  { key: 'lg',  label: 'lg' },
+  { key: 'xl',  label: 'xl' },
+];
+const AVATAR_THEME_OPTS = [
+  { key: 'default', label: 'Default' },
+  { key: 'brand',   label: 'Brand' },
+];
+const AVATAR_TYPE_OPTS = [
+  { key: 'initials', label: 'Initials' },
+  { key: 'icon',      label: 'Icon' },
+];
+const _avatarSizeTokenMap = { '2xs': '--bt-base-sizing-6xl', 'xs': '--bt-base-sizing-7xl', 'sm': '--bt-base-sizing-8xl', 'md': '--bt-base-sizing-10xl', 'lg': '--bt-base-sizing-12xl', 'xl': '--bt-base-sizing-14xl' };
+const _avatarSizePxMap    = { '2xs': 24, 'xs': 28, 'sm': 32, 'md': 40, 'lg': 48, 'xl': 56 };
+
+function avatarHtml(size, theme, type) {
+  const themeClass = theme === 'brand' ? ' bt-avatar--brand' : '';
+  const content = type === 'icon'
+    ? `<span class="bt-avatar__icon">${_avatarIconUser}</span>`
+    : `<span class="bt-avatar__initials">EG</span>`;
+  return `<div class="bt-avatar bt-avatar--${size}${themeClass}">${content}</div>`;
+}
+
+function avatarPreview(size, props) {
+  const theme = (props && props.theme) || 'default';
+  const type  = (props && props.type) || 'initials';
+  return `<div style="display:flex;align-items:center;justify-content:center;padding:16px;">${avatarHtml(size, theme, type)}</div>`;
+}
+
+function avatarCode(size, props) {
+  const theme = (props && props.theme) || 'default';
+  const type  = (props && props.type) || 'initials';
+  const themeClass = theme === 'brand' ? ' bt-avatar--brand' : '';
+  const inner = type === 'icon'
+    ? `\n  <span class="bt-avatar__icon">\n    <!-- circle-user-round icon, 24×24, sabit -->\n  </span>\n`
+    : `\n  <span class="bt-avatar__initials">EG</span>\n`;
+  return `<div class="bt-avatar bt-avatar--${size}${themeClass}">${inner}</div>`;
+}
+
+function avatarCss(size, props) {
+  const theme    = (props && props.theme) || 'default';
+  const type     = (props && props.type) || 'initials';
+  const isBrand  = theme === 'brand';
+  const isMdPlus = ['md', 'lg', 'xl'].includes(size);
+  const p = (k, v) => `  ${k}: ${v};`;
+  const lines = [];
+
+  lines.push(`/* Avatar · ${size} · ${theme.charAt(0).toUpperCase() + theme.slice(1)} · ${type.charAt(0).toUpperCase() + type.slice(1)} */`, '');
+  lines.push('.bt-avatar {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('justify-content', 'center'));
+  lines.push(p('border-radius', 'var(--bt-radius-full)  /* 9999px */'));
+  lines.push(p('border', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 — her iki temada da aynı */'));
+  lines.push(p('background', isBrand ? 'var(--bt-surface-brand-default)  /* #0d4e97 */' : 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'));
+  lines.push('}');
+  lines.push('', `.bt-avatar--${size} {`);
+  lines.push(p('width',  `var(${_avatarSizeTokenMap[size]})  /* ${_avatarSizePxMap[size]}px */`));
+  lines.push(p('height', `var(${_avatarSizeTokenMap[size]})  /* ${_avatarSizePxMap[size]}px */`));
+  lines.push('}');
+
+  if (type === 'initials') {
+    lines.push('', '.bt-avatar__initials {');
+    lines.push(p('font', isMdPlus ? 'var(--bt-text-sm-medium)  /* 500 14px/16px */' : 'var(--bt-text-xs-medium)  /* 500 12px/16px */'));
+    lines.push(p('color', isBrand ? 'var(--bt-text-primary-inverted)  /* #ffffff */' : 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+    lines.push('}');
+  } else {
+    lines.push('', '.bt-avatar__icon {');
+    lines.push(p('width', '24px  /* avatar boyutundan bağımsız, sabit */'));
+    lines.push(p('height', '24px'));
+    lines.push(p('color', isBrand ? 'var(--bt-icon-primary-inverted)  /* #ffffff */' : 'var(--bt-icon-primary-muted)  /* #a3a3a3 */'));
+    lines.push('}');
+  }
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/avatar'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Types', 'Themes', 'Sizes'],
+  render(tab) {
+    const title = 'Avatar';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Avatar bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Shape</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+          <tr><td>Container</td><td>Border (her iki tema)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Container · Brand</td><td>Background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Initials · 2xs/xs/sm</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
+          <tr><td>Initials · md/lg/xl</td><td>Font</td><td>${tk('--bt-text-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Initials · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Initials · Brand</td><td>Color</td><td>${tk('--bt-text-primary-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Icon · Default</td><td>Fill</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Icon · Brand</td><td>Fill</td><td>${tk('--bt-icon-primary-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Icon</td><td>Boyut (sabit)</td><td>—</td><td>24×24px</td></tr>
+        </tbody>
+      </table>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Size</th><th>Dimension</th><th>Token</th></tr></thead>
+        <tbody>
+          ${AVATAR_SIZE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.key}</span></td>
+            <td>${_avatarSizePxMap[s.key]} × ${_avatarSizePxMap[s.key]}px</td>
+            <td>${tk(_avatarSizeTokenMap[s.key])}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Avatar kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Kullanıcının gerçek adı biliniyorsa Initials tipini, kimliği belirsiz/genel bir bağlamda Icon tipini kullan</li>
+        <li>Initials için en fazla 2 karakter göster (örn. ad + soyad baş harfi)</li>
+        <li>Aktif/tanımlanmış kullanıcılar için Brand temayı, genel/atanmamış bağlamlar için Default temayı tercih et</li>
+        <li>Bir listede/tabloda tüm avatarları aynı boyutta tut — karışık boyut hizalamayı bozar</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Icon boyutunu avatar boyutuna göre büyütme — Figma'da bu ikon her zaman sabit 24×24'tür</li>
+        <li>Initials'a 2'den fazla karakter sığdırmaya çalışma — dairesel alan taşar</li>
+        <li>Brand temada border'ı kaldırma — iki tema da aynı border'ı paylaşır</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-avatar-overview',
+        variants: AVATAR_SIZE_VARIANTS,
+        props: [
+          { key: 'theme', label: 'Theme', options: AVATAR_THEME_OPTS, default: 'default'  },
+          { key: 'type',  label: 'Type',  options: AVATAR_TYPE_OPTS,  default: 'initials' },
+        ],
+        preview: (sz, p) => avatarPreview(sz, p),
+        code:    (sz, p) => avatarCode(sz, p),
+        css:     (sz, p) => avatarCss(sz, p),
+      })}
+
+      <p class="page-desc">Avatar, bir kullanıcıyı veya varlığı dairesel bir konteyner içinde temsil eder. Initials veya Icon tipini, Default ya da Brand temada, 6 farklı boyutta destekler.</p>
+
+      <h2 id="Types">Types</h2>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Initials</span></td>
+            <td><div style="display:flex;gap:8px;align-items:center;">${avatarHtml('md', 'default', 'initials')}${avatarHtml('md', 'brand', 'initials')}</div></td>
+            <td>Kullanıcının baş harflerini gösterir (en fazla 2 karakter).</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Icon</span></td>
+            <td><div style="display:flex;gap:8px;align-items:center;">${avatarHtml('md', 'default', 'icon')}${avatarHtml('md', 'brand', 'icon')}</div></td>
+            <td>Genel bir kullanıcı yer tutucusu olarak circle-user-round ikonunu kullanır.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="Themes">Themes</h2>
+      <table class="token-table">
+        <thead><tr><th>Theme</th><th>Initials</th><th>Icon</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Default</span></td>
+            <td>${avatarHtml('md', 'default', 'initials')}</td>
+            <td>${avatarHtml('md', 'default', 'icon')}</td>
+            <td>Açık gri arka plan, koyu metin/soluk ikon. Genel veya atanmamış bağlamlar için.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Brand</span></td>
+            <td>${avatarHtml('md', 'brand', 'initials')}</td>
+            <td>${avatarHtml('md', 'brand', 'icon')}</td>
+            <td>Marka mavisi arka plan, beyaz metin/ikon. Tanımlanmış veya aktif kullanıcılar için.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Dimension</th><th>Default</th><th>Brand</th></tr></thead>
+        <tbody>
+          ${AVATAR_SIZE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.key}</span></td>
+            <td>${_avatarSizePxMap[s.key]}px</td>
+            <td><div style="display:flex;gap:8px;">${avatarHtml(s.key, 'default', 'initials')}${avatarHtml(s.key, 'default', 'icon')}</div></td>
+            <td><div style="display:flex;gap:8px;">${avatarHtml(s.key, 'brand', 'initials')}${avatarHtml(s.key, 'brand', 'icon')}</div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Accordion ─────────────────────────────────────────────────
+// Figma node 605:30055 — 2 varyant (Basic/Bordered) × 2 içerik tipi
+// (Chevron/Plus) × state (Default/Hover/Active/Focused/Disabled).
+// Tamamen interaktif: header'a tıklayınca gerçekten açılıp kapanır
+// (btAccToggle). İkon her zaman "kapalı" glyph'iyle (chevron-down / plus)
+// render edilir — "açık" görünümü ayrı bir SVG değil, CSS transform:rotate
+// ile üretilir (chevron 180°→chevron-up, plus 45°→×), bu sayede hem daha
+// az kod hem de smooth bir dönüş animasyonu oluyor. Content her zaman
+// DOM'da durur, .is-open class'ıyla grid-template-rows 0fr↔1fr arası
+// animasyonlanır (bkz. styles.css) — [hidden] KULLANILMIYOR çünkü
+// display:none transition'ı engeller.
+
+const _accIconChevronDown = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+const _accIconPlus        = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>`;
+// Figma'nın Left Control placeholder ikonu ("Icon/placeholder") — lucide "scan",
+// asset sunucusundan gerçek path doğrulanarak birebir alındı.
+const _accIconScan        = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+
+function btAccIcon(iconType) {
+  return iconType === 'plus' ? _accIconPlus : _accIconChevronDown;
+}
+
+// Global toggle — gerçek DOM manipülasyonu, tam interaktif (Upload/Split Button ile aynı desen)
+window.btAccToggle = function(btn) {
+  if (btn.disabled) return;
+  const willOpen = !btn.classList.contains('is-active');
+  btn.classList.toggle('is-active', willOpen);
+  btn.setAttribute('aria-expanded', String(willOpen));
+  const content = btn.nextElementSibling;
+  if (content && content.classList.contains('bt-accordion__content')) {
+    content.classList.toggle('is-open', willOpen);
+  }
+};
+
+const ACC_VARIANT_OPTS = [
+  { key: 'basic',    label: 'Basic' },
+  { key: 'bordered', label: 'Bordered' },
+];
+const ACC_ICON_OPTS = [
+  { key: 'chevron', label: 'Chevron' },
+  { key: 'plus',    label: 'Plus' },
+];
+const ACC_STATE_OPTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'active',   label: 'Active' },
+  { key: 'focused',  label: 'Focused' },
+  { key: 'disabled', label: 'Disabled' },
+];
+// Figma'daki AccordionBasic/Bordered component'lerinin showDescription ve
+// showLeftControl prop'ları — proje genelindeki TBX_BOOL_OPTS (Yes/No)
+// konvansiyonuyla tutarlı olsun diye aynısı yeniden kullanılıyor.
+const ACC_DESC_OPTS = TBX_BOOL_OPTS;
+const ACC_LEFT_OPTS = TBX_BOOL_OPTS;
+
+// Tek bir header (+ opsiyonel content) bloğu üretir. state 'hover'/'focused'
+// için CSS'te is-hover/is-focused class'ı zorlanır (Figma'daki statik state
+// önizlemesi için) — buton yine de tıklanabilir/gerçek kalır.
+function accHeaderHtml({ title = 'Title Text Here', desc = 'Description', iconType = 'chevron', state = 'default', content = null, showLeftIcon = false }) {
+  const isActive   = state === 'active';
+  const isDisabled = state === 'disabled';
+  const cls = ['bt-accordion__header'];
+  if (isActive)             cls.push('is-active');
+  if (state === 'hover')    cls.push('is-hover');
+  if (state === 'focused')  cls.push('is-focused');
+  const dis      = isDisabled ? ' disabled' : '';
+  const descHtml = desc ? `<span class="bt-accordion__desc">${desc}</span>` : '';
+  const leftHtml = showLeftIcon ? `<span class="bt-accordion__control bt-accordion__control--left">${_accIconScan}</span>\n  ` : '';
+  const contentHtml = content !== null
+    ? `\n<div class="bt-accordion__content${isActive ? ' is-open' : ''}">
+  <div class="bt-accordion__content-inner"><div class="bt-accordion__content-pad">${content}</div></div>
+</div>`
+    : '';
+  return `<button class="${cls.join(' ')}" type="button" data-icon-type="${iconType}" aria-expanded="${isActive}"${dis} onclick="btAccToggle(this)">
+  ${leftHtml}<span class="bt-accordion__body">
+    <span class="bt-accordion__title">${title}</span>
+    ${descHtml}
+  </span>
+  <span class="bt-accordion__control bt-accordion__control--right">${btAccIcon(iconType)}</span>
+</button>${contentHtml}`;
+}
+
+function accGroupHtml(variant, items) {
+  return `<div class="bt-accordion bt-accordion--${variant}">
+  ${items.map(it => accHeaderHtml(it)).join('\n  ')}
+</div>`;
+}
+
+const _accContentText = 'This is the content displayed when the accordion section is expanded. It can contain additional details, descriptions, form elements, or any other information relevant to the selected section.';
+
+// TextBox bileşeninin md/readonly halini yeniden kullanarak 2x2 (2 yatay x 2 dikey) grid — Accordion içeriğinde form-elemanı örneği.
+function _accTbxCell() {
+  return `<div class="${_tbxCls('readonly', 'md')}">
+        <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+        <div class="bt-tbx__input">${_tbxInputInner('readonly')}</div>
+      </div>`;
+}
+function accTbxGridHtml() {
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--bt-space-2xl, 24px);margin-top:var(--bt-space-md, 8px);">
+      ${_accTbxCell()}${_accTbxCell()}${_accTbxCell()}${_accTbxCell()}
+    </div>`;
+}
+const _accContentWithGrid = `${_accContentText}${accTbxGridHtml()}`;
+
+// Figma'daki "Accordion Basic/Bordered With Content" örneğiyle birebir aynı
+// 4 item'lık grup (3. item açık) — playground'un variant seçici (Basic/Bordered)
+// doğrudan bu örneği gösterir, ayrı bir "Show Example" butonuna gerek kalmaz.
+function accExampleItems(iconType, showDesc, showLeftIcon) {
+  const desc = showDesc ? 'Description' : '';
+  return [
+    { title: 'Title Text Here', desc, iconType, showLeftIcon, content: _accContentWithGrid },
+    { title: 'Title Text Here', desc, iconType, showLeftIcon, content: _accContentWithGrid },
+    { title: 'Title Text Here', desc, iconType, showLeftIcon, state: 'active', content: _accContentWithGrid },
+    { title: 'Title Text Here', desc, iconType, showLeftIcon, content: _accContentWithGrid },
+  ];
+}
+
+function accPreview(variant, props) {
+  const iconType     = (props && props.icon) || 'chevron';
+  const showDesc     = (props && props.desc) !== 'no';
+  const showLeftIcon = (props && props.left) !== 'no';
+  return `<div style="max-width:440px;width:100%;margin:0 auto;">
+  ${accGroupHtml(variant, accExampleItems(iconType, showDesc, showLeftIcon))}
+</div>`;
+}
+
+function accCode(variant, props) {
+  const iconType     = (props && props.icon) || 'chevron';
+  const showDesc     = (props && props.desc) !== 'no';
+  const showLeftIcon = (props && props.left) !== 'no';
+  return accGroupHtml(variant, accExampleItems(iconType, showDesc, showLeftIcon));
+}
+
+function accCss(variant, props) {
+  const isBordered = variant === 'bordered';
+  const p = (k, v) => `  ${k}: ${v};`;
+  const lines = [];
+
+  lines.push(`/* Accordion · ${isBordered ? 'Bordered' : 'Basic'} */`, '');
+  lines.push('.bt-accordion { width: 100%; }');
+  if (isBordered) {
+    lines.push('', '.bt-accordion--bordered {');
+    lines.push(p('border', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+    lines.push(p('border-radius', 'var(--bt-radius-md)  /* 6px */'));
+    lines.push(p('overflow', 'hidden'));
+    lines.push('}');
+  }
+  lines.push('', '.bt-accordion__header {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'flex-start'));
+  lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+  lines.push(p('padding', 'var(--bt-space-md) var(--bt-space-xl)  /* 8px dikey, 12px yatay */'));
+  lines.push(p('background', 'var(--bt-base-default)  /* #ffffff */'));
+  lines.push(p('border-bottom', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+  lines.push('}');
+  lines.push('/* Açıkken (is-active) veya son elemansa (:last-child) border-bottom kalkar — bkz. design.md */');
+  lines.push('.bt-accordion__header:hover:not(:disabled) .bt-accordion__title {');
+  lines.push(p('text-decoration', 'underline'));
+  lines.push('}');
+  lines.push('.bt-accordion__header:focus-visible {');
+  lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.5)  /* Focus Ring/neutral */'));
+  lines.push('}');
+  if (isBordered) {
+    lines.push('.bt-accordion--bordered .bt-accordion__header:hover:not(:disabled) {');
+    lines.push(p('box-shadow', '0 0 0 3px rgba(212,212,212,0.5)'));
+    lines.push('}');
+  }
+  lines.push('', '.bt-accordion__control--right svg {');
+  lines.push(p('transition', 'transform 200ms ease  /* açıkken 180°(chevron)/45°(plus) döner — ayrı bir "açık" SVG yok */'));
+  lines.push('}');
+  lines.push('', '.bt-accordion__title {');
+  lines.push(p('font', 'var(--bt-title-sm-medium)  /* 500 14px/16px */'));
+  lines.push(p('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+  lines.push('}');
+  lines.push('.bt-accordion__desc {');
+  lines.push(p('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'));
+  lines.push(p('color', 'var(--bt-text-primary-emphasis)  /* #727272 */'));
+  lines.push('}');
+  lines.push('.bt-accordion__header:disabled .bt-accordion__title,');
+  lines.push('.bt-accordion__header:disabled .bt-accordion__desc,');
+  lines.push('.bt-accordion__header:disabled .bt-accordion__control--right {');
+  lines.push(p('color', 'var(--bt-text-primary-muted)  /* #a3a3a3 */'));
+  lines.push('}');
+  lines.push('', '.bt-accordion__content {');
+  lines.push(p('display', 'grid'));
+  lines.push(p('grid-template-rows', '0fr  /* .is-open → 1fr, smooth aç/kapa animasyonu */'));
+  lines.push(p('transition', 'grid-template-rows 250ms ease'));
+  lines.push(p('border-bottom', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+  lines.push('}');
+  lines.push('.bt-accordion__content-inner { overflow: hidden; }  /* grid animasyonu için zorunlu */');
+  lines.push('.bt-accordion__content-pad {');
+  lines.push(p('padding', 'var(--bt-space-xl)  /* 12px, dört yönde de */'));
+  lines.push(p('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'));
+  lines.push(p('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+  lines.push('}');
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/accordion'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Types', 'States', 'Icon Types'],
+  render(tab) {
+    const title = 'Accordion';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Accordion bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Bordered container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Bordered container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Header</td><td>Padding (dikey / yatay)</td><td>${tk('--bt-space-md')} / ${tk('--bt-space-xl')}</td><td>8px / 12px</td></tr>
+          <tr><td>Header</td><td>Icon–body gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Header · Hover</td><td>Title text-decoration</td><td>—</td><td>underline</td></tr>
+          <tr><td>Header / Content divider</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header · Focus / Bordered Hover</td><td>Ring</td><td>${tk('Focus Ring/neutral')}</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
+          <tr><td>Right icon · Active</td><td>Rotation (chevron / plus)</td><td>—</td><td>180° / 45°, 200ms ease</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Title / Description / Icon · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Left icon (opsiyonel)</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Content</td><td>Padding</td><td>${tk('--bt-space-xl')}</td><td>12px (dört yönde de)</td></tr>
+          <tr><td>Content</td><td>Açılış/kapanış</td><td>—</td><td>grid-template-rows 0fr↔1fr, 250ms ease</td></tr>
+          <tr><td>Content</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Content</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Accordion kullanım kılavuzu.</p>
+      <h2>When to use Basic</h2>
+      <ul>
+        <li>Bağımsız, tek başına duran bölümler için — bir grup/kart yapısına ihtiyaç olmadığında</li>
+        <li>Sayfa içinde her item'ın kendi divider'ıyla ayrıldığı, dış çerçevesiz bir liste görünümü istendiğinde</li>
+      </ul>
+      <h2>When to use Bordered</h2>
+      <ul>
+        <li>Birden fazla item'ın tek bir kart/grup olarak birlikte sunulması gerektiğinde</li>
+        <li>Grubun dış sınırının (border + radius) görsel olarak vurgulanması istendiğinde</li>
+      </ul>
+      <h2>Do</h2>
+      <ul>
+        <li>Aynı grup içindeki tüm item'ları aynı varyantta (Basic ya da Bordered) ve aynı içerik tipinde (Chevron ya da Plus) tut</li>
+        <li>Başlığı kısa ve tarayıcı-dostu tut; detayları content alanına bırak</li>
+        <li>Bir seferde birden fazla item'ın açık kalmasına izin ver — kullanıcı birden fazla bölümü karşılaştırmak isteyebilir</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Chevron ve Plus ikonlarını aynı grup içinde karıştırma</li>
+        <li>Disabled item'a tıklanabilir gibi davranma — cursor ve renk zaten bunu iletiyor, ayrıca metinle tekrar etme</li>
+        <li>Content alanına header'ın kendi border-bottom'ını manuel ekleme — açık header zaten bunu content'e bırakır</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-accordion-overview',
+        variants: ACC_VARIANT_OPTS,
+        props: [
+          { key: 'icon', label: 'Icon',        options: ACC_ICON_OPTS, default: 'chevron' },
+          { key: 'desc', label: 'Description', options: ACC_DESC_OPTS, default: 'yes'    },
+          { key: 'left', label: 'Left Icon',   options: ACC_LEFT_OPTS, default: 'no'     },
+        ],
+        preview: (variant, p) => accPreview(variant, p),
+        code:    (variant, p) => accCode(variant, p),
+        css:     (variant, p) => accCss(variant, p),
+      })}
+
+      <p class="page-desc">Accordion, içeriği bölümler halinde gösterip gizlemeyi sağlar. İki varyant (<strong>Basic</strong> / <strong>Bordered</strong>), iki ikon tipi (<strong>Chevron</strong> / <strong>Plus</strong>) destekler. Başlığa tıklamak bölümü gerçekten açar/kapatır. Yukarıdaki örnek Figma'daki "With Content" düzenini birebir yansıtır (3. item açık) — tam interaktif.</p>
+
+      <h2 id="Types">Types</h2>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Basic</span></td>
+            <td style="padding:8px 0;"><div style="max-width:320px;">${accGroupHtml('basic', [{ content: _accContentText }])}</div></td>
+            <td>Dış çerçevesi yok; her item kendi alt border'ıyla ayrılır.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Bordered</span></td>
+            <td style="padding:8px 0;"><div style="max-width:320px;">${accGroupHtml('bordered', [{ content: _accContentText }])}</div></td>
+            <td>Tek bir kart gibi border + radius ile çevrelenir.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th><th>Basic</th><th>Bordered</th></tr></thead>
+        <tbody>
+          ${ACC_STATE_OPTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ state: s.key, content: s.key === 'active' ? _accContentText : null })}</div></td>
+            <td style="padding:8px 0;"><div class="bt-accordion bt-accordion--bordered" style="max-width:280px;">${accHeaderHtml({ state: s.key, content: s.key === 'active' ? _accContentText : null })}</div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <p class="page-desc" style="margin-top:-8px;">Bordered'ın <strong>Hover</strong>'ı Focused ile aynı nötr ring'i kullanır — Figma'da Basic için ayrı bir Hover varyantı tanımlı değil.</p>
+
+      <h2 id="Icon Types">Icon Types</h2>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Default</th><th>Active</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Chevron</span></td>
+            <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ iconType: 'chevron' })}</div></td>
+            <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ iconType: 'chevron', state: 'active', content: _accContentText })}</div></td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Plus</span></td>
+            <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ iconType: 'plus' })}</div></td>
+            <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ iconType: 'plus', state: 'active', content: _accContentText })}</div></td>
+          </tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
 // ── Upload ─────────────────────────────────────────────────
 
 const _uplIconFile        = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>`;
@@ -5000,6 +5540,11 @@ const _uplIconArrowUp     = `<svg width="16" height="16" viewBox="0 0 24 24" fil
 const _uplIconCircleCheck = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
 const _uplIconCircleAlert = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
 const _uplIconRotateCw    = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>`;
+const _uplIconPlus        = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`;
+
+// External Drop Zone'un varsayılan (2 satırlı) durum metni — Figma'da (586:3954) "Upload Status"
+// kendisi row-flex, metin ayrı bir column-flex bloğunda (586:3955); .bt-edz__status-text bunu karşılar.
+const _edzDefaultStatusHtml = `<div class="bt-edz__status-text"><p>Drag and drop files here to upload JPG, PNG, DOC, TXT, XSLX, PDF</p><p>( Max. 1KB - 20MB )</p></div>`;
 
 // ── Upload: global interactivity functions ──────────────────
 
@@ -5009,9 +5554,24 @@ function btUplFormatSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-function btUplSetDzState(dz, state) {
-  const statusEl = dz.querySelector('.bt-dropzone__status');
-  dz.className = 'bt-dropzone' + (state !== 'default' ? ' bt-dropzone--' + state : '');
+function btUplSetDzState(zone, state) {
+  // External Drop Zone: Standart Upload'daki bt-dropzone--{state} rengi ile aynı eşleme
+  if (zone.classList.contains('bt-edz')) {
+    const statusEl = zone.querySelector('.bt-edz__status');
+    zone.className = 'bt-edz' + (state !== 'default' ? ' bt-edz--' + state : '');
+    if (state === 'uploading') {
+      statusEl.innerHTML = `<span class="bt-edz__status-icon">${_uplIconArrowUp}</span><span>Uploading Files...</span>`;
+    } else if (state === 'completed') {
+      statusEl.innerHTML = `<span class="bt-edz__status-icon">${_uplIconCircleCheck}</span><span>Upload Completed</span>`;
+    } else if (state === 'failed') {
+      statusEl.innerHTML = `<span class="bt-edz__status-icon">${_uplIconCircleAlert}</span><span>Upload Failed</span>`;
+    } else {
+      statusEl.innerHTML = _edzDefaultStatusHtml;
+    }
+    return;
+  }
+  const statusEl = zone.querySelector('.bt-dropzone__status');
+  zone.className = 'bt-dropzone' + (state !== 'default' ? ' bt-dropzone--' + state : '');
   if (state === 'uploading') {
     statusEl.innerHTML = `<span class="bt-dropzone__status-icon">${_uplIconArrowUp}</span><span>Uploading Files...</span>`;
   } else if (state === 'completed') {
@@ -5058,7 +5618,7 @@ function btUplCompleteRow(row, success) {
 
 function btUplStartUpload(upload, files) {
   if (!files.length) return;
-  const dz       = upload.querySelector('.bt-dropzone');
+  const dz       = upload.querySelector('.bt-dropzone, .bt-edz');
   const fileList = upload.querySelector('.bt-upload__files');
   btUplSetDzState(dz, 'uploading');
   upload.classList.add('bt-upload--multiple');
@@ -5099,7 +5659,7 @@ function btUplRemove(btn) {
   const upload = btn.closest('.bt-upload');
   row.remove();
   const fileList = upload.querySelector('.bt-upload__files');
-  const dz       = upload.querySelector('.bt-dropzone');
+  const dz       = upload.querySelector('.bt-dropzone, .bt-edz');
   if (!fileList.children.length) {
     upload.classList.remove('bt-upload--multiple');
     btUplSetDzState(dz, 'default');
@@ -5113,7 +5673,7 @@ function btUplRemove(btn) {
 function btUplRetry(btn) {
   const row    = btn.closest('.bt-upload-file');
   const upload = btn.closest('.bt-upload');
-  const dz     = upload.querySelector('.bt-dropzone');
+  const dz     = upload.querySelector('.bt-dropzone, .bt-edz');
   const name   = row.querySelector('.bt-upload-file__name').textContent;
   const newRow = btUplBuildFileRow(name, '—');
   row.replaceWith(newRow);
@@ -5157,6 +5717,14 @@ const DZ_STATE_VARIANTS = [
   { key: 'completed', label: 'Upload Completed' },
   { key: 'failed',    label: 'Upload Failed'    },
   { key: 'disabled',  label: 'Disabled'         },
+];
+
+// External Drop Zone'da Figma'da tanımlı 4 state — Disabled hidden frame olarak yok (Standart'tan farkı)
+const EDZ_STATE_VARIANTS = [
+  { key: 'default',   label: 'Default'         },
+  { key: 'uploading', label: 'Uploading Files'  },
+  { key: 'completed', label: 'Upload Completed' },
+  { key: 'failed',    label: 'Upload Failed'    },
 ];
 
 const UF_STATE_VARIANTS = [
@@ -5367,9 +5935,178 @@ function _uplCode(segment) {
 </div>`;
 }
 
+// ── Upload: External Drop Zone (2. tip) ──────────────────────
+// Aynı Upload File yapı taşlarını (.bt-upload-file, _ufHtml) reuse eder;
+// yalnızca dropzone kutusunun kendisi farklıdır (.bt-edz) — dikey stack,
+// gerçek design system Button'u (bt-btn--sm bt-btn--base-outline) ile.
+// Uploading/Completed/Failed durum metni rengi Standart Upload'daki
+// bt-dropzone--{state} ile aynı token eşlemesini kullanır (kullanıcı kararı —
+// Figma'nın node 586:20876 hidden state frame'lerinde metin nötr görünüyordu,
+// ama tutarlılık için Standart Upload ile aynı renklendirme tercih edildi).
+
+const UPL_TYPES = [
+  { key: 'standart', label: 'Standart Upload'    },
+  { key: 'external', label: 'External Drop Zone' },
+];
+
+function _edzHtml(state) {
+  let statusHtml = '';
+  if (state === 'uploading') {
+    statusHtml = `<span class="bt-edz__status-icon">${_uplIconArrowUp}</span><span>Uploading Files...</span>`;
+  } else if (state === 'completed') {
+    statusHtml = `<span class="bt-edz__status-icon">${_uplIconCircleCheck}</span><span>Upload Completed</span>`;
+  } else if (state === 'failed') {
+    statusHtml = `<span class="bt-edz__status-icon">${_uplIconCircleAlert}</span><span>Upload Failed</span>`;
+  } else {
+    statusHtml = _edzDefaultStatusHtml;
+  }
+  const mod = state !== 'default' ? ` bt-edz--${state}` : '';
+  return `<div class="bt-edz${mod}">
+  <button class="bt-btn bt-btn--sm bt-btn--base-outline">${_uplIconPlus}Select Files</button>
+  <div class="bt-edz__status">${statusHtml}</div>
+</div>`;
+}
+
+function _edzCss(segment) {
+  const p = (k, v) => `  ${k}: ${v};`;
+  const lines = [];
+  const isMultiple = segment === 'multiple';
+  const isSingle   = segment === 'single';
+
+  lines.push(`/* External Drop Zone · ${segment.charAt(0).toUpperCase() + segment.slice(1)} */`, '');
+
+  lines.push('.bt-upload.bt-upload--external {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('flex-direction', 'column'));
+  lines.push(p('gap', 'var(--bt-space-md)  /* 8px — segment fark etmeksizin sabit */'));
+  lines.push(p('width', '100%'));
+  lines.push('}');
+
+  lines.push('', '.bt-edz {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('flex-direction', 'column'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('justify-content', 'center'));
+  lines.push(p('gap', 'var(--bt-space-lg)  /* 10px */'));
+  lines.push(p('padding', 'var(--bt-space-md)  /* 8px */'));
+  lines.push(p('border', '1px dashed var(--bt-border-primary-default)  /* #d4d4d4 */'));
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background', 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'));
+  lines.push('}');
+  lines.push('/* Select Files → bt-btn bt-btn--sm bt-btn--base-outline (gerçek Button component) */');
+  lines.push('.bt-edz__status {');
+  lines.push(p('display', 'flex'));
+  lines.push(p('align-items', 'center'));
+  lines.push(p('justify-content', 'center'));
+  lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+  lines.push(p('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'));
+  lines.push(p('color', 'var(--bt-text-primary-default)  /* #1a1a1a — Default state */'));
+  lines.push(p('text-align', 'center'));
+  lines.push('}');
+  lines.push('/* Uploading/Completed/Failed rengi — bkz. yukarıdaki "External Drop Zone States" tablosu */');
+  lines.push('.bt-edz--uploading .bt-edz__status { color: var(--bt-text-brand-default); }    /* #0d4e97 */');
+  lines.push('.bt-edz--completed .bt-edz__status { color: var(--bt-text-success-default); }  /* #2d584b */');
+  lines.push('.bt-edz--failed    .bt-edz__status { color: var(--bt-text-error-default); }    /* #b31d38 */');
+
+  if (isSingle || isMultiple) {
+    lines.push('', '.bt-upload-file {');
+    lines.push(p('display', 'flex'));
+    lines.push(p('flex-direction', 'column'));
+    lines.push(p('gap', 'var(--bt-space-xs)  /* 4px */'));
+    lines.push(p('width', '100%'));
+    lines.push('}');
+    lines.push('/* Dosya satırları Standart Upload ile birebir aynı — bkz. .bt-upload-file */');
+  }
+
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// Interactive preview — Default segment tam fonksiyonel upload
+function _edzPreview(segment) {
+  if (segment === 'default') {
+    return `<div class="bt-upload bt-upload--external" style="max-width:440px;margin:0 auto;">
+  <input type="file" multiple class="bt-upload__input" style="display:none"
+    onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+  <div class="bt-edz"
+    ondragover="event.preventDefault(); this.classList.add('bt-edz--dragover')"
+    ondragleave="this.classList.remove('bt-edz--dragover')"
+    ondrop="btUplDrop(this, event)">
+    <button class="bt-btn bt-btn--sm bt-btn--base-outline"
+      onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">${_uplIconPlus}Select Files</button>
+    <div class="bt-edz__status">${_edzDefaultStatusHtml}</div>
+  </div>
+  <div class="bt-upload__files"></div>
+</div>`;
+  }
+  // Single / Multiple — static reference previews (Standart Upload ile aynı desen)
+  const isMultiple = segment === 'multiple';
+  const isSingle   = segment === 'single';
+  const files = isSingle
+    ? _ufHtml('success')
+    : isMultiple
+      ? [_ufHtml('failed'), _ufHtml('success'), _ufHtml('uploading')].join('\n')
+      : '';
+  return `<div class="bt-upload bt-upload--external" style="max-width:440px;margin:0 auto;">
+  ${_edzHtml('default')}${files ? '\n  ' + files.split('\n').join('\n  ') : ''}
+</div>`;
+}
+
+// Static code output (copy-paste reference, no JS)
+function _edzCode(segment) {
+  const isMultiple = segment === 'multiple';
+  const isSingle   = segment === 'single';
+  if (segment === 'default') {
+    return `<div class="bt-upload bt-upload--external">
+  <input type="file" multiple class="bt-upload__input" style="display:none"
+    onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+  <div class="bt-edz"
+    ondragover="event.preventDefault()"
+    ondrop="btUplDrop(this, event)">
+    <button class="bt-btn bt-btn--sm bt-btn--base-outline"
+      onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">
+      <!-- plus icon 16×16 -->
+      Select Files
+    </button>
+    <div class="bt-edz__status">
+      <div class="bt-edz__status-text">
+        <p>Drag and drop files here to upload JPG, PNG, DOC, TXT, XSLX, PDF</p>
+        <p>( Max. 1KB - 20MB )</p>
+      </div>
+    </div>
+  </div>
+  <div class="bt-upload__files"></div>
+</div>`;
+  }
+  const files = isSingle
+    ? _ufHtml('success')
+    : isMultiple
+      ? [_ufHtml('failed'), _ufHtml('success'), _ufHtml('uploading')].join('\n')
+      : '';
+  return `<div class="bt-upload bt-upload--external">
+  ${_edzHtml('default')}${files ? '\n  ' + files.split('\n').join('\n  ') : ''}
+</div>`;
+}
+
+// ── Unified dispatcher ────────────────────────────────────────────
+// `type` Standart Upload / External Drop Zone seçer; `props.segment`
+// (default|single|multiple) her iki tipte de aynı anlama gelir.
+function uploadPreview(type, props) {
+  const segment = (props && props.segment) || 'default';
+  return type === 'external' ? _edzPreview(segment) : _uplPreview(segment);
+}
+function uploadCode(type, props) {
+  const segment = (props && props.segment) || 'default';
+  return type === 'external' ? _edzCode(segment) : _uplCode(segment);
+}
+function uploadCss(type, props) {
+  const segment = (props && props.segment) || 'default';
+  return type === 'external' ? _edzCss(segment) : _uplCss(segment);
+}
+
 PAGES_WEB['components/upload'] = {
   tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Drop Zone States', 'Upload File States'],
+  toc:  ['Drop Zone States', 'External Drop Zone States', 'Upload File States'],
   render(tab) {
     const title = 'Upload';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
@@ -5386,6 +6123,23 @@ PAGES_WEB['components/upload'] = {
           <tr><td>Padding</td><td>—</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           <tr><td rowspan="2">Select Files link</td><td>Color (Default)</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Color (Disabled)</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Status text (Default)</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Status text (Uploading)</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Status text (Completed)</td><td>Color</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Status text (Failed)</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+      <h2>External Drop Zone</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2">Drop Zone</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Border (dashed)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border radius</td><td>—</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Padding</td><td>—</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Gap (button ↔ status)</td><td>—</td><td>${tk('--bt-space-lg')}</td><td>10px</td></tr>
+          <tr><td>Select Files button</td><td>—</td><td colspan="2">Gerçek Button component — <code>bt-btn bt-btn--sm bt-btn--base-outline</code></td></tr>
+          <tr><td>Status text</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
           <tr><td>Status text (Default)</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Status text (Uploading)</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Status text (Completed)</td><td>Color</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
@@ -5412,6 +6166,16 @@ PAGES_WEB['components/upload'] = {
 
     if (tab === 'Usage') return { title, html: `
       <p class="page-desc">Upload bileşeni kullanım kılavuzu.</p>
+      <h2>When to use Standart Upload</h2>
+      <ul>
+        <li>Formların bir parçası olarak, diğer alanların yanında kompakt bir dosya yükleme kontrolü gerektiğinde</li>
+        <li>"Select Files" ile durum metninin tek satırda yan yana durması yeterli olduğunda</li>
+      </ul>
+      <h2>When to use External Drop Zone</h2>
+      <ul>
+        <li>Dosya yüklemenin sayfanın/panelin tek başına odağı olduğu, daha vurgulu bir drop alanı gerektiğinde</li>
+        <li>Kabul edilen formatlar ve boyut sınırı gibi daha uzun açıklama metninin iki satıra yayılması gerektiğinde</li>
+      </ul>
       <h2>Do</h2>
       <ul>
         <li>Drop zone'a kabul edilen dosya formatlarını ve maksimum boyutu belirt</li>
@@ -5424,6 +6188,7 @@ PAGES_WEB['components/upload'] = {
         <li>Upload tamamlanmadan sayfayı uyarı vermeden yönlendirme yapma</li>
         <li>Dosya adı olmadan sadece progress bar gösterme</li>
         <li>Hata mesajını yalnızca renk değişimiyle ifade etme — açıklayıcı metin ekle</li>
+        <li>External Drop Zone'un durum metni rengini Standart Upload'unkinden farklılaştırma — ikisi de aynı brand/success/error token eşlemesini kullanır</li>
       </ul>
     `};
 
@@ -5431,15 +6196,16 @@ PAGES_WEB['components/upload'] = {
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-upl-overview',
-        variants: UPL_SEGMENT_VARIANTS,
-        preview: (state) => _uplPreview(state),
-        code:    (state) => _uplCode(state),
-        css:     (state) => _uplCss(state),
+        variants: UPL_TYPES,
+        props: [{ key: 'segment', label: 'Segment', options: UPL_SEGMENT_VARIANTS, default: 'default' }],
+        preview: uploadPreview,
+        code:    uploadCode,
+        css:     uploadCss,
       })}
 
-      <p class="page-desc">Dosya yükleme bileşeni. Drop Zone ve Upload File'dan oluşur; Default / Single / Multiple segment modlarını ve 5 Drop Zone state'ini destekler.</p>
+      <p class="page-desc">Dosya yükleme bileşeni. İki tip destekler — <strong>Standart Upload</strong> (tek satır dropzone) ve <strong>External Drop Zone</strong> (dikey, vurgulu drop kutusu) — ikisi de aynı Default / Single / Multiple segment modlarını ve Upload File yapı taşını paylaşır.</p>
 
-      <h2 id="Drop Zone States">Drop Zone States</h2>
+      <h2 id="Drop Zone States">Drop Zone States (Standart Upload)</h2>
       <table class="token-table">
         <thead><tr><th>State</th><th>Preview</th></tr></thead>
         <tbody>
@@ -5447,6 +6213,18 @@ PAGES_WEB['components/upload'] = {
           <tr>
             <td><span class="token-name">${s.label}</span></td>
             <td style="padding:8px 0;"><div style="max-width:380px;">${_dzHtml(s.key)}</div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="External Drop Zone States">External Drop Zone States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${EDZ_STATE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:8px 0;"><div style="max-width:380px;">${_edzHtml(s.key)}</div></td>
           </tr>`).join('')}
         </tbody>
       </table>

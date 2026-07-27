@@ -2391,7 +2391,7 @@ curl -sL "https://unpkg.com/lucide-static@latest/icons/<icon-name>.svg"
 
 ## 12. Upload
 
-Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamamen interaktif — gerçek dosya seçimi, progress animasyonu, success/failed state yönetimi.
+Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamamen interaktif — gerçek dosya seçimi, progress animasyonu, success/failed state yönetimi. İki tip destekler: **Standart Upload** (§12.1, tek satır dropzone) ve **External Drop Zone** (§12.4, dikey/vurgulu drop kutusu) — ikisi de aynı Upload File (§12.2) ve Upload container (§12.3) yapı taşlarını, aynı Default/Single/Multiple segment modlarını ve aynı JS state machine'ini (§12.5) paylaşır.
 
 ### 12.1 Drop Zone (`.bt-dropzone`)
 
@@ -2515,9 +2515,72 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-upload--multiple { gap: var(--bt-space-md, 8px); }
 ```
 
-### 12.4 JS Davranışı
+### 12.4 External Drop Zone (`.bt-edz`) — 2. tip
 
-`pages-web.js`'de global fonksiyonlar — başka projelere taşınırken kopyalanır:
+İkinci Upload tipi. Figma kaynağı: node `586:20876` (Base External Drop Zone) + `586:21058` (3 segment: Default/Single/Multiple). Upload File (§12.2) ve Upload container (§12.3) **birebir reuse edilir** — sadece dropzone kutusunun kendisi farklıdır: satır değil, dikey stack; `Select Files` de bir link değil, gerçek design system Button component'idir.
+
+```html
+<!-- Default -->
+<div class="bt-upload bt-upload--external">
+  <input type="file" multiple class="bt-upload__input" style="display:none"
+    onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+  <div class="bt-edz"
+    ondragover="event.preventDefault()"
+    ondrop="btUplDrop(this, event)">
+    <button class="bt-btn bt-btn--sm bt-btn--base-outline"
+      onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">
+      <!-- plus icon 16×16 -->
+      Select Files
+    </button>
+    <div class="bt-edz__status">
+      <div class="bt-edz__status-text">
+        <p>Drag and drop files here to upload JPG, PNG, DOC, TXT, XSLX, PDF</p>
+        <p>( Max. 1KB - 20MB )</p>
+      </div>
+    </div>
+  </div>
+  <div class="bt-upload__files"></div>
+</div>
+```
+
+**Dikkat:** `.bt-edz__status` kendisi `display:flex` (row) — iki satırlı varsayılan metin doğrudan onun içine konursa yan yana düşer. Figma'da da (node 586:3954/3955) aynı ayrım var: durum satırı row-flex, metin ayrı bir column-flex bloğunda. Bu yüzden 2 satırlı metin her zaman `.bt-edz__status-text` (column-flex) ile sarmalanmalı; ikon+tek-satır state'lerinde (Uploading/Completed/Failed) bu sarmalayıcı gerekmez, ikon+text doğrudan row içinde durur.
+
+**Durum metni rengi:** `.bt-edz__status`, Standart Upload'daki `.bt-dropzone__status` ile **aynı token eşlemesini** kullanır — `bt-edz--uploading`→brand, `bt-edz--completed`→success, `bt-edz--failed`→error (kullanıcı kararı, tutarlılık için). Not: Figma'nın hidden state frame'lerinde (node 586:3956/3959/3962) metin `text-primary-default` (nötr) görünüyordu, yalnızca ikon değişiyordu — ama iki Upload tipi arasında tutarlılık tercih edildiği için kod bilinçli olarak Figma'dan sapıp Standart Upload'un renklendirmesini izliyor.
+
+**Select Files butonu:** gerçek design system Button — `bt-btn bt-btn--sm bt-btn--base-outline` (28px, 1px border-primary-default, transparent bg, text-primary-default) + plus ikonu (16×16, lucide `plus`).
+
+**Segment container:** Standart Upload'dan farklı olarak Single/Multiple'da da sabit `--bt-space-md` (8px) gap kullanılır — dosya sayısına göre değişmez (Figma'da doğrulandı). `.bt-upload--external` modifier'ı bunu sağlar.
+
+```css
+.bt-edz {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--bt-space-lg, 10px); padding: var(--bt-space-md, 8px);
+  border: 1px dashed var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+  width: 100%; box-sizing: border-box;
+}
+.bt-edz__status {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--bt-space-xs, 4px);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  text-align: center;
+}
+.bt-edz--uploading .bt-edz__status { color: var(--bt-text-brand-default, #0d4e97); }
+.bt-edz--completed .bt-edz__status { color: var(--bt-text-success-default, #2d584b); }
+.bt-edz--failed    .bt-edz__status { color: var(--bt-text-error-default, #b31d38); }
+.bt-edz__status-text { display: flex; flex-direction: column; }
+.bt-edz__status p { margin: 0; }
+.bt-edz__status-icon { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex-shrink: 0; }
+.bt-edz__status-icon svg { width: 16px; height: 16px; }
+
+.bt-upload--external { gap: var(--bt-space-md, 8px); }
+```
+
+### 12.5 JS Davranışı
+
+`pages-web.js`'de global fonksiyonlar — başka projelere taşınırken kopyalanır. Standart Upload ve External Drop Zone **aynı fonksiyonları paylaşır**: zone lookup'ları hem `.bt-dropzone` hem `.bt-edz`'i eşleştirecek şekilde genellenmiştir (`upload.querySelector('.bt-dropzone, .bt-edz')`).
 
 | Fonksiyon | Açıklama |
 |---|---|
@@ -2526,5 +2589,250 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 | `btUplRemove(btn)` | Dosya satırını siler; kalan yoksa dropzone'u default'a döndürür |
 | `btUplRetry(btn)` | Başarısız dosyayı yeni bir satırla değiştirir, yeniden upload animasyonu başlatır |
 | `btUplDrop(dz, event)` | Drag & drop event handler — `ondrop` ile bağlanır |
-| `btUplSetDzState(dz, state)` | Drop zone class + status HTML'ini günceller (`'default'|'uploading'|'completed'|'failed'`) |
+| `btUplSetDzState(zone, state)` | Zone'un `.bt-dropzone` mu `.bt-edz` mi olduğunu tespit edip ilgili status HTML'ini + `--{state}` modifier class'ını günceller (`'default'\|'uploading'\|'completed'\|'failed'`) — iki dalda da aynı renk mantığı (brand/success/error) uygulanır |
 | `btUplFormatSize(bytes)` | Baytı KB/MB string'e çevirir |
+
+---
+
+## 13. Avatar
+
+Kullanıcı/varlık temsili için dairesel konteyner. Figma kaynağı: node `205:25278` — 6 boyut (2xs/xs/sm/md/lg/xl) × 2 tip (Initials/Icon) × 2 tema (Default/Brand). Tamamen statik — hiç JS davranışı yok.
+
+### 13.1 Yapı
+
+```html
+<!-- Initials, Default -->
+<div class="bt-avatar bt-avatar--md">
+  <span class="bt-avatar__initials">EG</span>
+</div>
+
+<!-- Icon, Brand -->
+<div class="bt-avatar bt-avatar--md bt-avatar--brand">
+  <span class="bt-avatar__icon"><!-- circle-user-round icon, 24×24 --></span>
+</div>
+```
+
+### 13.2 Figma'da doğrulanan, ilk bakışta beklenmeyen 2 detay
+
+1. **Icon her boyutta sabit 24×24'tür** — avatar container 24px'ten 56px'e büyürken (2xs→xl) icon boyutu **hiç değişmez**, sadece etrafındaki boş alan artar. Bu, 6 boyutun hepsi tek tek Figma'dan sorgulanarak doğrulandı (ilk izlenim "icon da orantılı büyür" olurdu, yanlış olurdu).
+2. **Border her iki temada da var** — Figma'nın React/Tailwind çıktısında `border border-[--bt-border-primary-default]` sınıfı Default/Brand ayrımından ÖNCE, ortak (paylaşılan) kısımda tanımlı; yani koyu mavi Brand arka plan üstünde de aynı 1px `--bt-border-primary-default` border'ı var. Kolayca "brand'de border olmaz" diye atlanabilecek bir detay.
+3. **Icon fill-tabanlı, özel bir path** — Figma'nın "Circle-User-Round" asset'i lucide'ın stroke-tabanlı `circle-user-round` ikonundan farklı, tek bir `fill` path'i. Bu yüzden lucide path'i kullanılmadı, gerçek asset SVG'si (`fill="var(--fill-0, ...)"` → `fill="currentColor"`e çevrilerek) birebir alındı.
+
+Padding değerleri Figma çıktısında `--radius-sm/-md/-lg/-2xl/-3xl/-4xl` gibi (radius token'larıyla aynı isimli, garip) değerler olarak görünüyor — bunlar **kullanılmadı**. Container `size-[Npx]` ile SABİT boyutlu, `items-center justify-center` ile içerik ortalanıyor; nominal padding + 24px icon toplamı bazı boyutlarda (örn. 2xs: 4px+4px+24px=32px > 24px container) container'ı geçiyor, yani bu padding değerleri gerçek layout'u etkilemeyen, muhtemelen "Hug"tan "Fixed"e geçişte kalmış eski auto-layout metadata'sı. Bu yüzden CSS'te padding hiç kullanılmadı, sadece fixed width/height + flex center.
+
+### 13.3 CSS
+
+```css
+.bt-avatar {
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-sizing: border-box;
+  border-radius: var(--bt-radius-full, 9999px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+  overflow: hidden;
+}
+.bt-avatar--2xs { width: var(--bt-base-sizing-6xl, 24px);  height: var(--bt-base-sizing-6xl, 24px); }
+.bt-avatar--xs  { width: var(--bt-base-sizing-7xl, 28px);  height: var(--bt-base-sizing-7xl, 28px); }
+.bt-avatar--sm  { width: var(--bt-base-sizing-8xl, 32px);  height: var(--bt-base-sizing-8xl, 32px); }
+.bt-avatar--md  { width: var(--bt-base-sizing-10xl, 40px); height: var(--bt-base-sizing-10xl, 40px); }
+.bt-avatar--lg  { width: var(--bt-base-sizing-12xl, 48px); height: var(--bt-base-sizing-12xl, 48px); }
+.bt-avatar--xl  { width: var(--bt-base-sizing-14xl, 56px); height: var(--bt-base-sizing-14xl, 56px); }
+
+.bt-avatar--brand { background: var(--bt-surface-brand-default, #0d4e97); }
+
+.bt-avatar__initials {
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));   /* 2xs/xs/sm */
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-avatar--md .bt-avatar__initials,
+.bt-avatar--lg .bt-avatar__initials,
+.bt-avatar--xl .bt-avatar__initials {
+  font: var(--bt-text-sm-medium, 500 14px/16px var(--font));   /* md/lg/xl */
+}
+.bt-avatar--brand .bt-avatar__initials { color: var(--bt-text-primary-inverted, #ffffff); }
+
+.bt-avatar__icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; flex-shrink: 0;
+  color: var(--bt-icon-primary-muted, #a3a3a3);
+}
+.bt-avatar__icon svg { width: 24px; height: 24px; }
+.bt-avatar--brand .bt-avatar__icon { color: var(--bt-icon-primary-inverted, #ffffff); }
+```
+
+### 13.4 Boyut → Token eşlemesi
+
+| Boyut | Piksel | Token |
+|---|---|---|
+| 2xs | 24×24 | `--bt-base-sizing-6xl` |
+| xs  | 28×28 | `--bt-base-sizing-7xl` |
+| sm  | 32×32 | `--bt-base-sizing-8xl` |
+| md  | 40×40 | `--bt-base-sizing-10xl` |
+| lg  | 48×48 | `--bt-base-sizing-12xl` |
+| xl  | 56×56 | `--bt-base-sizing-14xl` |
+
+### 13.5 Not: pages-mobile.js'teki eski implementasyon
+
+`pages-mobile.js`'teki `'components/avatar'` sayfası bu revizyondan **kasıtlı olarak dokunulmadan** bırakıldı — tamamen ayrı, inline `style="..."` tabanlı eski bir implementasyon (kaldırılmış `--bt-text-xs-size/-lh` gibi tokenlar, yanlış arka plan/border, orantılı büyüyen icon varsayımı). `pages-web.js`'deki yeni `.bt-avatar` component'i ile paylaşılan bir kod yolu yok. Kullanıcı isterse ayrı bir oturumda mobile tarafı da bu component'e taşınabilir.
+
+---
+
+## 14. Accordion
+
+Figma kaynağı: node `605:30055`. 2 varyant (**Basic** / **Bordered**) × 2 içerik tipi (**Chevron** / **Plus-X**) × 5 state (Default/Hover/Active/Focused/Disabled). Tamamen interaktif — başlığa tıklamak bölümü gerçekten açar/kapatır.
+
+### 14.1 Yapı — flat, pozisyon class'ı yok
+
+Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı varyantlar tanımlıyor (köşe yuvarlaklığı ve hangi kenarların border aldığını yönetmek için). Kodda bu **taklit edilmedi** — bunun yerine header'lar ve (açıkken) content'ler tek bir `.bt-accordion` konteynerinin **düz (flat) sıralı kardeşleri** olarak diziliyor, dış görünüm şöyle sağlanıyor:
+
+- `.bt-accordion--bordered` dış konteyner `border` + `border-radius` + `overflow:hidden` taşır (kart gibi) — iç elemanların KENDİ radius'una hiç gerek kalmıyor.
+- Her `.bt-accordion__header` kendi `border-bottom`'ını taşır (item'lar arası ayraç).
+- `:last-child` seçicisi, o an DOM'da **gerçekten en sonda duran** elemanın (kapalıysa bir header, açıksa bir content) border-bottom'ını kaldırıp kutuyu düzgün kapatıyor — hangi item açık olursa olsun otomatik doğru çalışır, Figma'nın First/Middle/Last mantığını manuel taşımaya gerek kalmadan.
+- Açık (`.is-active`) bir header **kendi** border-bottom'ını kaybeder — hemen altındaki `.bt-accordion__content` kendi border-bottom'ıyla o görevi devralır (Figma'nın "Bordered Active state'i top+bottom border'ı kaybediyor, content border-b/l/r ile kutuyu kapatıyor" davranışının CSS karşılığı).
+
+```html
+<div class="bt-accordion bt-accordion--bordered"> <!-- veya bt-accordion--basic -->
+  <button class="bt-accordion__header" type="button" data-icon-type="chevron"
+    aria-expanded="false" onclick="btAccToggle(this)">
+    <span class="bt-accordion__body">
+      <span class="bt-accordion__title">Title Text Here</span>
+      <span class="bt-accordion__desc">Description</span>
+    </span>
+    <span class="bt-accordion__control bt-accordion__control--right"><!-- chevron/plus icon 16×16 --></span>
+  </button>
+  <div class="bt-accordion__content" hidden>...</div> <!-- her zaman DOM'da, [hidden] ile aç/kapa -->
+  <!-- ...diğer header/content çiftleri... -->
+</div>
+```
+
+**Kritik nokta:** `.bt-accordion__content` her zaman DOM'da durur (yeniden oluşturulmaz), `.is-open` class'ıyla gösterilir/gizlenir (**`[hidden]`/`display:none` DEĞİL** — bkz. §14.2'deki animasyon notu). Bu sayede `:last-child` CSS kuralı her zaman doğru elemana denk gelir ve toggle sırasında DOM'u yeniden inşa etmeye gerek kalmaz.
+
+### 14.2 CSS
+
+> **Kullanıcı kararıyla Figma'dan sapan 3 nokta** (aşağıdaki kodda işaretli): (1) header padding'i yatay/dikey ayrıştırıldı (Figma'da ikisi de `--bt-space-md` idi), (2) hover'da title alt çizili, (3) açılış/kapanış `grid-template-rows` ile smooth animasyonlu ve ikon artık ayrı bir "açık" SVG yerine `transform:rotate` ile dönüyor.
+
+```css
+.bt-accordion { width: 100%; }
+.bt-accordion--bordered {
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-md, 6px);
+  overflow: hidden;
+}
+.bt-accordion__header {
+  display: flex; align-items: flex-start;
+  gap: var(--bt-space-xs, 4px);
+  padding: var(--bt-space-md, 8px) var(--bt-space-xl, 12px); /* dikey md, yatay xl — kullanıcı kararı */
+  background: var(--bt-base-default, #ffffff);
+  border: none; border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  width: 100%; cursor: pointer; font-family: inherit; text-align: left; box-sizing: border-box;
+}
+.bt-accordion__header:hover:not(:disabled) .bt-accordion__title { text-decoration: underline; } /* kullanıcı kararı */
+.bt-accordion__header:last-child { border-bottom: none; }
+.bt-accordion__header.is-active { border-bottom: none; }
+.bt-accordion__header:focus-visible,
+.bt-accordion__header.is-focused {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212,212,212,0.5); /* Figma: Focus Ring/neutral — 50% opaklık, butonlardaki 25%'ten farklı */
+  position: relative; z-index: 1;
+}
+/* Bordered'a özgü: Hover, Focused ile aynı ring'i alır (Basic'te ayrı Hover varyantı yok) */
+.bt-accordion--bordered .bt-accordion__header:hover:not(:disabled),
+.bt-accordion--bordered .bt-accordion__header.is-hover {
+  box-shadow: 0 0 0 3px rgba(212,212,212,0.5);
+  position: relative; z-index: 1;
+}
+.bt-accordion__header:disabled { cursor: not-allowed; }
+
+.bt-accordion__control { display: flex; align-items: center; flex-shrink: 0; width: 24px; height: 24px; justify-content: center; }
+.bt-accordion__control svg { width: 16px; height: 16px; }
+.bt-accordion__control--right { color: var(--bt-text-primary-default, #1a1a1a); }
+.bt-accordion__header:disabled .bt-accordion__control--right { color: var(--bt-text-primary-muted, #a3a3a3); }
+/* Left Control — opsiyonel (Figma'nın showLeftControl prop'u), gerçek "With Content"
+   örneklerinde varsayılan kapalı. İkon Figma'nın Icon/placeholder asset'inden (lucide
+   "scan") birebir alındı, fill rengi #535353 = --bt-icon-primary-strong'a bağlandı. */
+.bt-accordion__control--left { color: var(--bt-icon-primary-strong, #535353); }
+.bt-accordion__header:disabled .bt-accordion__control--left { color: var(--bt-text-primary-muted, #a3a3a3); }
+/* İkon her zaman "kapalı" glyph'iyle render edilir (chevron-down / plus) — açık görünüm
+   ayrı bir SVG değil, transform:rotate ile üretiliyor (kullanıcı kararı, "smooth" istendi):
+   chevron 180° dönünce chevron-up'a, plus 45° dönünce ×'e dönüşüyor. */
+.bt-accordion__control--right svg { transition: transform 200ms ease; }
+.bt-accordion__header[data-icon-type="chevron"].is-active .bt-accordion__control--right svg { transform: rotate(180deg); }
+.bt-accordion__header[data-icon-type="plus"].is-active .bt-accordion__control--right svg { transform: rotate(45deg); }
+
+.bt-accordion__body { display: flex; flex-direction: column; flex: 1 0 0; min-width: 0; }
+.bt-accordion__title {
+  font: var(--bt-title-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bt-accordion__header:disabled .bt-accordion__title { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-accordion__desc {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-emphasis, #727272);
+}
+.bt-accordion__header:disabled .bt-accordion__desc { color: var(--bt-text-primary-muted, #a3a3a3); }
+
+/* Smooth aç/kapa: grid-template-rows 0fr↔1fr + iç sarmalayıcıda overflow:hidden.
+   İçerik yüksekliği dinamik/bilinmeyen olsa da (metin uzunluğuna göre değişir) bu
+   teknik JS ile yükseklik ölçmeye gerek bırakmadan düzgün animasyonlanır (kullanıcı kararı).
+   ÖNEMLİ: border-bottom SADECE .is-open'da uygulanır — border box-model'in parçası
+   olduğu için grid-template-rows:0fr'nin yüksekliği sıfırlaması onu gizlemez; base
+   kuralda dursaydı kapalıyken de görünüp header'ın kendi border'ıyla üst üste binerdi
+   (gerçek bug, kullanıcı fark etti ve düzeltildi). */
+.bt-accordion__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  background: var(--bt-base-default, #ffffff);
+  transition: grid-template-rows 250ms ease;
+}
+.bt-accordion__content.is-open {
+  grid-template-rows: 1fr;
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-accordion__content.is-open:last-child { border-bottom: none; }
+.bt-accordion__content-inner { overflow: hidden; min-height: 0; } /* grid animasyonu için zorunlu */
+.bt-accordion__content-pad {
+  padding: var(--bt-space-xl, 12px); /* dört yönde de xl — header'ın yeni yatay padding'iyle hizalı */
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bt-accordion__content { transition: none; }
+  .bt-accordion__control--right svg { transition: none; }
+}
+```
+
+**HTML yapısı değişti:** `.bt-accordion__content` artık düz bir `<div>` değil, animasyon için iç içe iki sarmalayıcı gerektiriyor:
+
+```html
+<div class="bt-accordion__content is-open">
+  <div class="bt-accordion__content-inner"><div class="bt-accordion__content-pad">...</div></div>
+</div>
+```
+
+### 14.3 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
+
+1. **Hover/Active hiçbir yerde arka plan değiştirmiyor.** Figma'nın ürettiği React/Tailwind çıktısında Hover ve Active state'lerinin hiçbirinde `bg-[...]` override'ı yok — sadece ikon yönü (Active) ve ring (Hover, sadece Bordered'da) değişiyor. Eski `pages-mobile.js` implementasyonu bunun aksini varsayıp Active'de `--bt-surface-subtle` arka planı uyguluyordu — bu revizyonda **kasıtlı olarak yapılmadı**.
+2. **Focus Ring opaklığı %50, projenin geri kalanındaki butonlardan farklı.** Diğer bileşenlerde (Button, Split Button) nötr focus ring'i `rgba(212,212,212,0.25)` iken, Accordion'da Figma "Focus Ring/neutral" effect'i açıkça `#D4D4D480` (= %50 alpha) olarak tanımlı. Bu proje-geneli tutarsızlık gibi görünse de Figma'da doğrudan bu component için böyle tanımlanmış, düzeltilmedi.
+3. **Bordered'ın Middle pozisyonu TAM border alıyor (üst+alt dahil), sadece First/Last kenar kaldırıyor.** Eski varsayım (kod incelemesi öncesi) "Middle üst border'ını da kaldırır" olurdu — ama Figma'nın gerçek kodu Middle için sadece `border` (4 kenar) veriyor. Pratikte fark etmiyor çünkü komşu iki Middle item'ın üst-üste gelen border'ları aynı renkte, tek çizgi gibi görünüyor — ama bu proje `:last-child` tabanlı flat yaklaşımı seçtiği için bu detayın kodda hiç karşılığı yok (First/Middle/Last class'ı üretilmiyor).
+4. **Sol ikon slotu (`Left Control`) gerçek kullanım örneklerinde hep kapalı.** Figma'nın component tanımında `showLeftControl` prop'u var ve varsayılan `true`, ama "Accordion Basic With Content" / "Accordion Bordered With Content" örneklerinin HİÇBİRİ sol ikonu göstermiyor (`showLeftControl={false}`) — bu yüzden `accHeaderHtml`'in `showLeftIcon` parametresi de varsayılan `false`. Kullanıcı isteğiyle sonradan opsiyonel olarak eklendi (playground'da "Left Icon" Yes/No toggle'ı, `ACC_LEFT_OPTS`, varsayılan No — component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı) — Figma'nın kendi placeholder ikonu (`Icon/placeholder`, lucide "scan") birebir kullanılıyor.
+5. **Disabled title rengi Figma'da bir ICON token'ına bağlı** (`--icon/primary/--bt-icon-primary-muted`), description ise doğru şekilde bir TEXT token'ına (`--text/primary/--bt-text-primary-muted`). İkisi de aynı hex'e (#a3a3a3) çözümlendiği için kodda ikisi de tutarlılık adına `--bt-text-primary-muted`'a bağlandı — Figma'nın olası bir bağlama hatası, bilinçli normalize edildi.
+
+### 14.4 Kullanıcı kararıyla eklenen özelleştirmeler (Figma'nın dışında)
+
+- **Header padding'i yatay/dikey ayrıştırıldı:** dikey `--bt-space-md` (8px, Figma'yla aynı) kaldı, yatay `--bt-space-xl`'e (12px) çıkarıldı. Content'in yatay padding'i de (eskiden `--bt-space-md`) header'la hizalı kalması için aynı şekilde `--bt-space-xl`'e çekildi — Figma'da content'in kendisi `px-md py-xl` idi, bu artık `px-xl py-xl` (tek `--bt-space-xl` değeri, dört yönde de).
+- **Hover'da title alt çizili** (`text-decoration:underline`) — Figma'da böyle bir kural yok, kullanıcı isteğiyle eklendi.
+- **Smooth açılış/kapanış animasyonu:** `.bt-accordion__content` artık `[hidden]`/`display:none` yerine `grid-template-rows: 0fr → 1fr` (250ms ease) ile animasyonlanıyor — içerik metni değişken uzunlukta olsa da JS ile yükseklik ölçmeye gerek kalmadan çalışan, modern bir CSS tekniği. `prefers-reduced-motion: reduce` ile devre dışı bırakılıyor.
+- **İkon artık dönerek açılıyor, SVG değiştirmiyor:** eskiden `btAccToggle` açılışta chevron-down→chevron-up veya plus→× SVG'sini `innerHTML` ile değiştiriyordu; şimdi ikon HER ZAMAN "kapalı" glyph'iyle (chevron-down / plus) render ediliyor, `.is-active` class'ı CSS üzerinden `transform: rotate(180deg)` (chevron) veya `rotate(45deg)` (plus) uyguluyor — hem daha az kod hem de `transition: transform 200ms ease` ile smooth bir dönüş.
+- **Playground toolbar'ında Description/Left Icon toggle'ları Show/Hide değil Yes/No:** proje genelindeki `TBX_BOOL_OPTS` (Yes/No) konvansiyonuyla tutarlı olsun diye `ACC_DESC_OPTS`/`ACC_LEFT_OPTS` artık `TBX_BOOL_OPTS`'un aynısı (referans paylaşımı, kod tekrarı yok); Description varsayılanı Yes, Left Icon varsayılanı No (component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı).
+- **Content örneğine (metnin altına) 4'lü TextBox grid'i eklendi:** mevcut TextBox bileşeninin md/readonly hâli (`_tbxCls`, `_tbxInputInner`) sıfırdan yazılmadan yeniden kullanılıyor, her hücrede label görünür (`label:'yes'` davranışıyla aynı `.bt-tbx__meta`/`.bt-tbx__label` bloğu elle eklendi), 2 yatay x 2 dikey grid, hücreler arası boşluk `--bt-space-2xl` (24px).
+
+### 14.5 JS Davranışı
+
+Tek global fonksiyon, gerçek DOM manipülasyonu (Upload/Split Button ile aynı desen — sayfa yeniden render edilmiyor):
+
+| Fonksiyon | Açıklama |
+|---|---|
+| `btAccToggle(btn)` | Header butonuna tıklanınca çağrılır. `disabled` ise no-op. Değilse: `is-active` class'ını toggle'lar, `aria-expanded`'ı günceller, hemen sonraki `.bt-accordion__content` kardeşin `is-open` class'ını toggle'lar (CSS geri kalanını — ikon dönüşü + yükseklik animasyonu — hallediyor). |
+| `btAccIcon(iconType)` | `iconType`'a ('chevron'\|'plus') göre HER ZAMAN "kapalı" glyph SVG string'ini döndürür (chevron-down veya plus) — "açık" hâli CSS transform:rotate ile üretildiği için ayrı bir SVG'ye gerek yok. |
