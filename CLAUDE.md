@@ -94,6 +94,27 @@ const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&
 return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 ```
 
+## Anatomy Bölümü — ZORUNLU
+
+Her component sayfasının Overview tab'ında, her ana bölüm tablosunun (Types, Variants, States vb.) altına bir `<h2>Anatomy</h2>` başlığı ve token tablosu eklenmeli. Başlık düz `<h2>` olmalı — inline style yok, `.content h2` CSS'i otomatik uygulanır.
+
+Tablo formatı (diğer section tablolarıyla aynı `token-table` class'ı):
+```html
+<h2>Anatomy</h2>
+<table class="token-table" style="margin-top:12px">
+  <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Element adı</td><td>CSS property</td><td>${tk('--bt-token-adi')}</td><td>#hex veya px değeri</td></tr>
+    <!-- Token karşılığı olmayan sabit değerler için Token sütununa — yazılır -->
+  </tbody>
+</table>
+```
+
+- `tk(v)` helper'ı ile token adları `<code>` formatında gösterilir
+- Renk/spacing/typography tokenları her zaman yazılır
+- Sabit değerler (px, %) için Token sütunu `—` olur
+- Component'in farklı varyantları/tipleri ayrı satır olarak listelenir (örn. `Confirm · Information`, `Confirm · Error`)
+
 ## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
 
 Bu projede oluşturulan component'ler (markup + CSS + JS davranışı) **bundan sonraki
@@ -109,5 +130,5 @@ Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ay
 
 ## Son Tamamlanan Component
 
-**Accordion** — 2026-07-27, devam 18'e kadar tamamlandı.
+**Dialog** — 2026-07-28.
 Detaylı oturum geçmişi: `HISTORY.md`

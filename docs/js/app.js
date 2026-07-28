@@ -85,6 +85,14 @@ function renderSidebar() {
                    onclick="navigate('${item.id}')">${item.label}</div>`;
     }
 
+    // Static group — always visible, no chevron, no toggle
+    if (item.static) {
+      return `
+        <div class="nav-section-label">${item.label}</div>
+        ${item.children.map(c => renderItem(c, depth + 1)).join('')}
+      `;
+    }
+
     const isOpen   = openGroups.has(item.label);
     const childCls = depth === 0 ? 'nav-item' : 'nav-child';
     const kidCls   = depth === 0 ? 'nav-children' : 'nav-grandchildren';
@@ -138,6 +146,36 @@ window.switchTab = function(i) {
   renderContent(page);
 };
 
+// ── Color swatches in token tables ──────────────────────────
+function applyColorSwatches(root) {
+  root.querySelectorAll('.token-table td').forEach(td => {
+    if (td.querySelector('.bt-swatch')) return;
+    const walker = document.createTreeWalker(td, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(tn => {
+      const text = tn.nodeValue;
+      const rx = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g;
+      if (!rx.test(text)) return;
+      rx.lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      let last = 0, m;
+      while ((m = rx.exec(text))) {
+        if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        const sw = document.createElement('span');
+        sw.className = 'bt-swatch';
+        sw.style.cssText = 'display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:middle;margin-right:4px;flex-shrink:0;border:1px solid rgba(0,0,0,.1);background:' + m[0];
+        frag.appendChild(sw);
+        frag.appendChild(document.createTextNode(m[0]));
+        last = m.index + m[0].length;
+      }
+      if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      tn.parentNode.replaceChild(frag, tn);
+    });
+  });
+}
+
 // ── Content ─────────────────────────────────────────────────
 function renderContent(page) {
   const tab     = page.tabs ? page.tabs[currentTab] : null;
@@ -148,6 +186,7 @@ function renderContent(page) {
   titleEl.textContent = result.title || '';
   titleEl.style.display = result.title ? 'block' : 'none';
   bodyEl.innerHTML = result.html;
+  applyColorSwatches(bodyEl);
 }
 
 // ── TOC ─────────────────────────────────────────────────────

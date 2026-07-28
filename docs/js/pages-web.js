@@ -29,26 +29,30 @@ const NAV_WEB = [
       { label: 'Badge',             id: 'components/badge' },
       { label: 'Button',            id: 'components/button' },
       { label: 'Button Group',      id: 'components/button-group' },
-      { label: 'Split Button',      id: 'components/split-button' },
       { label: 'Card',              id: 'components/card' },
       { label: 'Checkbox',          id: 'components/checkbox' },
       { label: 'Dialog',            id: 'components/dialog' },
       { label: 'Icon Button',       id: 'components/icon-button' },
+      {
+        label: 'Inputs', static: true, children: [
+          { label: 'Date Picker',   id: 'components/date-picker' },
+          { label: 'Dropdown',      id: 'components/dropdown' },
+          { label: 'MultiSelect',   id: 'components/multi-select' },
+          { label: 'Radio Button',  id: 'components/radio-button' },
+          { label: 'SearchBox',     id: 'components/searchbox' },
+          { label: 'Select LookUp', id: 'components/select-lookup' },
+          { label: 'Switch',        id: 'components/switch' },
+          { label: 'Textarea',      id: 'components/textarea' },
+          { label: 'TextBox',       id: 'components/textbox' },
+          { label: 'Upload',        id: 'components/upload' },
+        ]
+      },
       { label: 'List Item',         id: 'components/list-item' },
       { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Progress',          id: 'components/progress' },
-      { label: 'Radio Button',      id: 'components/radio-button' },
-      { label: 'SearchBox',          id: 'components/searchbox' },
       { label: 'Sidebar',           id: 'components/sidebar' },
       { label: 'Skeleton',          id: 'components/skeleton' },
-      { label: 'Switch',            id: 'components/switch' },
-      { label: 'Textarea',          id: 'components/textarea' },
-      { label: 'TextBox',           id: 'components/textbox' },
-      { label: 'Select LookUp',     id: 'components/select-lookup' },
-      { label: 'MultiSelect',       id: 'components/multi-select' },
-      { label: 'Date Picker',       id: 'components/date-picker' },
-      { label: 'Dropdown',          id: 'components/dropdown' },
-      { label: 'Upload',            id: 'components/upload' },
+      { label: 'Split Button',      id: 'components/split-button' },
     ]
   },
   {
@@ -1648,6 +1652,23 @@ PAGES_WEB['components/checkbox'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Box · Unchecked Default</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Box · Checked Default</td><td>Background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Box · Unchecked Hover</td><td>Border color</td><td>${tk('--bt-border-primary-strong')}</td><td>#727272</td></tr>
+          <tr><td>Box · Checked Hover</td><td>Background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
+          <tr><td>Box · Unchecked Focused</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.25)</td></tr>
+          <tr><td>Box · Checked Focused</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(13,78,151,.25)</td></tr>
+          <tr><td>Box · Unchecked Disabled</td><td>Background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Box · Checked Disabled</td><td>Background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
+          <tr><td>Box · Unchecked Invalid</td><td>Border color</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Box · Checked Invalid</td><td>Background</td><td>${tk('--bt-surface-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Sizes">Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Box</th><th>Checkmark</th><th>Unchecked</th><th>Checked</th></tr></thead>
@@ -1676,6 +1697,17 @@ PAGES_WEB['components/checkbox'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Box · Lg</td><td>Size</td><td>—</td><td>20 × 20px</td></tr>
+          <tr><td>Box · Md (Default)</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
+          <tr><td>Box · Sm</td><td>Size</td><td>—</td><td>12 × 12px</td></tr>
+          <tr><td>Checkmark</td><td>Size (tüm boyutlar)</td><td>—</td><td>12 × 12px</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Label Position">Label Position</h2>
       <table class="token-table">
         <thead><tr><th>Side</th><th>Preview</th></tr></thead>
@@ -1688,6 +1720,17 @@ PAGES_WEB['components/checkbox'] = {
             <td><span class="token-name">Label Left</span></td>
             <td>${pw(chkPreview('default', { checked:'on', side:'left', desc:'show' }))}</td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Label / Required</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Description · Invalid</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>All text · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
         </tbody>
       </table>
     `};
@@ -2031,6 +2074,23 @@ PAGES_WEB['components/radio-button'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Dot · Unselected Default</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Dot · Selected Default</td><td>Background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Dot · Unselected Hover</td><td>Border color</td><td>${tk('--bt-border-primary-strong')}</td><td>#727272</td></tr>
+          <tr><td>Dot · Selected Hover</td><td>Background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
+          <tr><td>Dot · Unselected Focused</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.25)</td></tr>
+          <tr><td>Dot · Selected Focused</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(13,78,151,.25)</td></tr>
+          <tr><td>Dot · Unselected Disabled</td><td>Background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Dot · Selected Disabled</td><td>Background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
+          <tr><td>Dot · Unselected Invalid</td><td>Border color</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Dot · Selected Invalid</td><td>Background</td><td>${tk('--bt-surface-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Sizes">Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Diameter</th><th>Inner dot</th><th>Unselected</th><th>Selected</th></tr></thead>
@@ -2056,6 +2116,16 @@ PAGES_WEB['components/radio-button'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Dot · Lg</td><td>Diameter</td><td>—</td><td>20px</td></tr>
+          <tr><td>Dot · Md (Default)</td><td>Diameter</td><td>—</td><td>16px</td></tr>
+          <tr><td>Dot · Sm</td><td>Diameter</td><td>—</td><td>12px</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Label Position">Label Position</h2>
       <table class="token-table">
         <thead><tr><th>Side</th><th>Preview</th></tr></thead>
@@ -2068,6 +2138,17 @@ PAGES_WEB['components/radio-button'] = {
             <td><span class="token-name">Label Left</span></td>
             <td>${pw(rdPreview('default', { selected:'on', side:'left',  desc:'show' }))}</td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Label / Required</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Description · Invalid</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>All text · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
         </tbody>
       </table>
     `};
@@ -2415,6 +2496,21 @@ PAGES_WEB['components/switch'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Track · Off Default</td><td>Background</td><td>${tk('--bt-surface-primary-emphasis')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Track · On Default</td><td>Background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Track · Off Hover</td><td>Background</td><td>${tk('--bt-surface-primary-strong')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Track · On Hover</td><td>Background</td><td>${tk('--bt-surface-brand-intense')}</td><td>#0f447d</td></tr>
+          <tr><td>Track · Off Focused</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.25)</td></tr>
+          <tr><td>Track · On Focused</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(13,78,151,.25)</td></tr>
+          <tr><td>Track · Off Disabled</td><td>Background</td><td>${tk('--bt-surface-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Track · On Disabled</td><td>Background</td><td>${tk('--bt-surface-brand-muted')}</td><td>#bedbf9</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Sizes">Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Track</th><th>Thumb</th><th>Off</th><th>On</th></tr></thead>
@@ -2440,6 +2536,19 @@ PAGES_WEB['components/switch'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Track · Lg</td><td>Size</td><td>—</td><td>48 × 28px</td></tr>
+          <tr><td>Track · Md</td><td>Size</td><td>—</td><td>40 × 24px</td></tr>
+          <tr><td>Track · Sm (Default)</td><td>Size</td><td>—</td><td>32 × 20px</td></tr>
+          <tr><td>Thumb · Lg</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
+          <tr><td>Thumb · Md</td><td>Size</td><td>—</td><td>20 × 20px</td></tr>
+          <tr><td>Thumb · Sm</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Content Position">Content Position</h2>
       <table class="token-table">
         <thead><tr><th>Side</th><th>Preview</th></tr></thead>
@@ -2452,6 +2561,19 @@ PAGES_WEB['components/switch'] = {
             <td><span class="token-name">Content Right</span></td>
             <td>${pw(swPreview('default', { on:'on', side:'right', desc:'show' }))}</td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Thumb</td><td>Background (tüm state'lerde)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Thumb</td><td>Shadow</td><td>${tk('Shadow/md')}</td><td>0 2px 4px rgba(16,24,40,.06), 0 4px 8px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Thumb</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Label / Required</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>All text · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
         </tbody>
       </table>
     `};
@@ -2684,6 +2806,19 @@ PAGES_WEB['components/searchbox'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container · Default</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container · Hover / Active</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Container · Active</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(13,78,151,.25)</td></tr>
+          <tr><td>Container · Disabled</td><td>Background</td><td>${tk('--bt-surface-secondary-subtle')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Container</td><td>Background (Default/Hover/Active)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Sizes">Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
@@ -2691,6 +2826,19 @@ PAGES_WEB['components/searchbox'] = {
           <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${sbxPreview('default', { size: 'lg' })}</td></tr>
           <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${sbxPreview('default', { size: 'md' })}</td></tr>
           <tr><td><span class="token-name">Sm (Default)</span></td><td>28px</td><td>${sbxPreview('default', { size: 'sm' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Input text</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+          <tr><td>Input text · Filled</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Placeholder</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Icon box</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
+          <tr><td>Search icon</td><td>Size</td><td>—</td><td>14 × 14px</td></tr>
+          <tr><td>Clear icon</td><td>Size</td><td>—</td><td>10 × 10px</td></tr>
         </tbody>
       </table>
     `};
@@ -5168,6 +5316,18 @@ PAGES_WEB['components/avatar'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Shape</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Initials · 2xs / xs / sm</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px / 16px</td></tr>
+          <tr><td>Initials · md / lg / xl</td><td>Font</td><td>${tk('--bt-text-sm-medium')}</td><td>500 · 14px / 16px</td></tr>
+          <tr><td>Icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Themes">Themes</h2>
       <table class="token-table">
         <thead><tr><th>Theme</th><th>Initials</th><th>Icon</th><th>Description</th></tr></thead>
@@ -5187,6 +5347,19 @@ PAGES_WEB['components/avatar'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Container · Brand</td><td>Background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Initials · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Initials · Brand</td><td>Color</td><td>${tk('--bt-text-primary-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Icon · Default</td><td>Fill</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Icon · Brand</td><td>Fill</td><td>${tk('--bt-icon-primary-inverted')}</td><td>#ffffff</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Sizes">Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Dimension</th><th>Default</th><th>Brand</th></tr></thead>
@@ -5198,6 +5371,15 @@ PAGES_WEB['components/avatar'] = {
             <td><div style="display:flex;gap:8px;">${avatarHtml(s.key, 'default', 'initials')}${avatarHtml(s.key, 'default', 'icon')}</div></td>
             <td><div style="display:flex;gap:8px;">${avatarHtml(s.key, 'brand', 'initials')}${avatarHtml(s.key, 'brand', 'icon')}</div></td>
           </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          ${AVATAR_SIZE_VARIANTS.map(s => `
+          <tr><td>Container · ${s.key}</td><td>Width / Height</td><td>${tk(_avatarSizeTokenMap[s.key])}</td><td>${_avatarSizePxMap[s.key]} × ${_avatarSizePxMap[s.key]}px</td></tr>`).join('')}
         </tbody>
       </table>
     `};
@@ -5499,6 +5681,27 @@ PAGES_WEB['components/accordion'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container · Basic</td><td>Item divider</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container · Bordered</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container · Bordered</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Header</td><td>Padding (dikey)</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Header</td><td>Padding (yatay)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px / 16px</td></tr>
+          <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Content</td><td>Padding</td><td>${tk('--bt-space-xl')}</td><td>12px (dört yönde)</td></tr>
+          <tr><td>Content</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+          <tr><td>Content</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Content</td><td>Açılış animasyonu</td><td>—</td><td>grid-template-rows 0fr → 1fr, 250ms ease</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="States">States</h2>
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>State</th><th>Basic</th><th>Bordered</th></tr></thead>
@@ -5512,6 +5715,16 @@ PAGES_WEB['components/accordion'] = {
         </tbody>
       </table>
       <p class="page-desc" style="margin-top:-8px;">Bordered'ın <strong>Hover</strong>'ı Focused ile aynı nötr ring'i kullanır — Figma'da Basic için ayrı bir Hover varyantı tanımlı değil.</p>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Header · Hover</td><td>Title text-decoration</td><td>—</td><td>underline</td></tr>
+          <tr><td>Header · Focused / Bordered Hover</td><td>Focus ring</td><td>${tk('Focus Ring/neutral')}</td><td>0 0 0 3px rgba(212,212,212,.25)</td></tr>
+          <tr><td>Title / Description / Icon · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Icon Types">Icon Types</h2>
       <table class="token-table">
@@ -5527,6 +5740,17 @@ PAGES_WEB['components/accordion'] = {
             <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ iconType: 'plus' })}</div></td>
             <td style="padding:8px 0;"><div style="max-width:280px;">${accHeaderHtml({ iconType: 'plus', state: 'active', content: _accContentText })}</div></td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Icon · Chevron · Active</td><td>Rotation</td><td>—</td><td>180°, 200ms ease</td></tr>
+          <tr><td>Icon · Plus · Active</td><td>Rotation (→ ×)</td><td>—</td><td>45°, 200ms ease</td></tr>
+          <tr><td>Icon area</td><td>Gap (icon ↔ title)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Left icon (opsiyonel)</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
         </tbody>
       </table>
     `};
@@ -6218,6 +6442,23 @@ PAGES_WEB['components/upload'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Drop Zone</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Drop Zone</td><td>Border (dashed)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Drop Zone</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Drop Zone</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Select Files link · Default</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Select Files link · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Status text · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Status text · Uploading</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Status text · Completed</td><td>Color</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Status text · Failed</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="External Drop Zone States">External Drop Zone States</h2>
       <table class="token-table">
         <thead><tr><th>State</th><th>Preview</th></tr></thead>
@@ -6230,6 +6471,22 @@ PAGES_WEB['components/upload'] = {
         </tbody>
       </table>
 
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Drop Zone</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Drop Zone</td><td>Border (dashed)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Drop Zone</td><td>Gap (button ↔ status)</td><td>${tk('--bt-space-lg')}</td><td>10px</td></tr>
+          <tr><td>Select Files button</td><td>Class</td><td>—</td><td>bt-btn bt-btn--sm bt-btn--base-outline</td></tr>
+          <tr><td>Status text</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+          <tr><td>Status text · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Status text · Uploading</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Status text · Completed</td><td>Color</td><td>${tk('--bt-text-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Status text · Failed</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+
       <h2 id="Upload File States">Upload File States</h2>
       <table class="token-table">
         <thead><tr><th>State</th><th>Preview</th></tr></thead>
@@ -6239,6 +6496,17 @@ PAGES_WEB['components/upload'] = {
             <td><span class="token-name">${s.label}</span></td>
             <td style="padding:8px 0;"><div style="max-width:380px;">${_ufHtml(s.key)}</div></td>
           </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>File name</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+          <tr><td>File name</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>File size / status</td><td>Font</td><td>${tk('--bt-text-2xs-regular')}</td><td>400 · 10px / 12px</td></tr>
+          <tr><td>File size / status · Default</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
         </tbody>
       </table>
     `};
@@ -6271,7 +6539,7 @@ const ADLG_SEG_OPTS = [
 const _adlgIcons = {
   information: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
   error:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,
-  warning:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 22h16a2 2 0 0 0 1.73-4"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`,
+  warning:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,
   success:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
 };
 
@@ -6288,8 +6556,8 @@ function adlgHtml(p) {
   const position = (p && p.position) || 'vertical';
   const segments = parseInt((p && p.segments) || '1', 10);
 
-  const solidBtn = `<button class="bt-btn bt-btn--xs ${_adlgSolidCls[type]}" type="button">Button</button>`;
-  const ghostBtn = `<button class="bt-btn bt-btn--xs bt-btn--base-ghost" type="button">Button</button>`;
+  const solidBtn = `<button class="bt-btn bt-btn--sm ${_adlgSolidCls[type]}" type="button" data-pgd-close>Button</button>`;
+  const ghostBtn = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button" data-pgd-close>Button</button>`;
 
   let footerBtns;
   if (position === 'vertical') {
@@ -6309,7 +6577,7 @@ function adlgHtml(p) {
     <div class="bt-adlg__icon-wrap">${_adlgIcons[type] || ''}</div>
     <div class="bt-adlg__text">
       <p class="bt-adlg__title">Title Text Here</p>
-      <p class="bt-adlg__desc">Description for additional information displayed below the title to clarify the purpose of the section.</p>
+      <div class="bt-adlg__desc"><p>Description for additional information displayed below the title to clarify the purpose of the section.</p></div>
     </div>
   </div>
   <div class="bt-adlg__footer">${footerBtns}</div>
@@ -6385,6 +6653,7 @@ function adlgCss(p) {
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
 
+
 PAGES_WEB['components/alert-dialog'] = {
   tabs: ['Overview', 'CSS Properties', 'Usage'],
   toc:  ['Types', 'Button Layout'],
@@ -6449,12 +6718,13 @@ PAGES_WEB['components/alert-dialog'] = {
         variants: [{ key: 'default', label: 'Alert Dialog' }],
         props: [
           { key: 'type',     label: 'Type',            options: ADLG_TYPE_OPTS, default: 'information' },
-          { key: 'position', label: 'Button Position', options: ADLG_POS_OPTS,  default: 'vertical' },
-          { key: 'segments', label: 'Button Segments', options: ADLG_SEG_OPTS,  default: '1' },
+          { key: 'position', label: 'Button Position', options: ADLG_POS_OPTS,  default: 'horizontal' },
+          { key: 'segments', label: 'Button Segments', options: ADLG_SEG_OPTS,  default: '2' },
         ],
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${adlgHtml(p)}</div>`,
         code:    (v, p) => adlgHtml(p),
         css:     (v, p) => adlgCss(p),
+        trigger: { label: 'Click Me', modal: true },
       })}
 
       <p class="page-desc">Alert Dialog, kullanıcıdan onay gerektiren veya önemli bilgi içeren modal bir iletişim kutusudur. 4 anlam tipi, 2 buton düzeni ve 1–3 buton segmentiyle özelleştirilebilir.</p>
@@ -6487,6 +6757,24 @@ PAGES_WEB['components/alert-dialog'] = {
             <td>circle-alert</td>
             <td>Yıkıcı veya hata içeren eylemler için — silme, kaldırma vb.</td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Icon wrap · Information</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Icon wrap · Success</td><td>Background</td><td>${tk('--bt-success-subtle')}</td><td>#daede5</td></tr>
+          <tr><td>Icon wrap · Warning</td><td>Background</td><td>${tk('--bt-warning-subtle')}</td><td>#f9f2ce</td></tr>
+          <tr><td>Icon wrap · Error</td><td>Background</td><td>${tk('--bt-error-subtle')}</td><td>#fde6e6</td></tr>
+          <tr><td>Icon · Information</td><td>Color</td><td>${tk('--bt-icon-information-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Success</td><td>Color</td><td>${tk('--bt-icon-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Icon · Warning</td><td>Color</td><td>${tk('--bt-icon-warning-default')}</td><td>#aa820a</td></tr>
+          <tr><td>Icon · Error</td><td>Color</td><td>${tk('--bt-icon-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px / 20px</td></tr>
+          <tr><td>Title / Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
         </tbody>
       </table>
 
@@ -6524,6 +6812,359 @@ PAGES_WEB['components/alert-dialog'] = {
             <td>3</td>
             <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '3' })}</td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Footer</td><td>Padding (vertical)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Footer</td><td>Padding (horizontal)</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Footer</td><td>Gap between buttons</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Button · Vertical layout</td><td>Width</td><td>—</td><td>100% (full)</td></tr>
+          <tr><td>Button · Horizontal layout</td><td>Width</td><td>—</td><td>80px</td></tr>
+          <tr><td>Confirm · Information</td><td>Class</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
+          <tr><td>Confirm · Success</td><td>Class</td><td>—</td><td>${tk('bt-btn--success-solid')}</td></tr>
+          <tr><td>Confirm · Warning</td><td>Class</td><td>—</td><td>${tk('bt-btn--warning-solid')}</td></tr>
+          <tr><td>Confirm · Error</td><td>Class</td><td>—</td><td>${tk('bt-btn--error-solid')}</td></tr>
+          <tr><td>Cancel / secondary</td><td>Class</td><td>—</td><td>${tk('bt-btn--base-flat')}</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Dialog ──────────────────────────────────────────────────────
+// Figma node 639:17632 — 2 Header Type × Subtitle × 2 Button Position × 3 Button Segments
+
+const DIALOG_HEADER_OPTS = [
+  { key: 'left', label: 'Left' },
+  { key: 'flex', label: 'Flex (Centered)' },
+];
+const DIALOG_SUBTITLE_OPTS = [
+  { key: 'off', label: 'Off' },
+  { key: 'on',  label: 'On' },
+];
+const DIALOG_POS_OPTS = [
+  { key: 'horizontal', label: 'Horizontal' },
+  { key: 'vertical',   label: 'Vertical' },
+];
+const DIALOG_SEG_OPTS = [
+  { key: '1', label: '1' },
+  { key: '2', label: '2' },
+  { key: '3', label: '3' },
+];
+
+function dialogHtml(variant, props) {
+  const p = props || {};
+  const headerType = p.headerType || 'left';
+  const subtitle   = p.subtitle === 'on';
+  const btnPos     = p.btnPos || 'horizontal';
+  const segs       = parseInt(p.segments || '2', 10);
+
+  const iconSlot = headerType === 'flex' ? `
+    <div class="bt-dialog__icon-slot">
+      <i data-lucide="layout-template" style="width:24px;height:24px;"></i>
+    </div>` : '';
+
+  const subtitleRow = subtitle
+    ? `<span class="bt-dialog__subtitle">Subtitle</span>`
+    : '';
+
+  const primary   = `<button class="bt-btn bt-btn--sm bt-btn--primary-solid" type="button" data-pgd-close>Button</button>`;
+  const secondary = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button" data-pgd-close>Button</button>`;
+  const tertiary  = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button" data-pgd-close>Button</button>`;
+
+  let footerBtns;
+  if (btnPos === 'vertical') {
+    if (segs === 1) footerBtns = primary;
+    else if (segs === 2) footerBtns = primary + secondary;
+    else footerBtns = primary + secondary + tertiary;
+  } else {
+    if (segs === 1) footerBtns = primary;
+    else if (segs === 2) footerBtns = secondary + primary;
+    else footerBtns = tertiary + secondary + primary;
+  }
+
+  const bodyContent = `
+    <p class="bt-dialog__body-text">Description for additional information displayed below the title to clarify the purpose of the section.</p>
+    <div class="${_tbxCls('default', 'sm')}">
+      <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+      <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">${_ddInputInner('default')}</div>
+      <div class="bt-dd-options" style="display:none;">${_ddOptionsHtml}</div>
+    </div>
+    <div class="${_txaCls('default', 'sm')}">
+      <div class="bt-txa__meta"><span class="bt-txa__label">Label Text</span></div>
+      <div class="bt-txa__input">
+        <textarea class="bt-txa__text" placeholder="Placeholder Text"></textarea>
+      </div>
+    </div>
+    <div class="bt-upload">
+      <input type="file" multiple class="bt-upload__input" style="display:none"
+        onchange="btUplStartUpload(this.closest('.bt-upload'), Array.from(this.files)); this.value=''">
+      <div class="bt-dropzone"
+        ondragover="event.preventDefault(); this.classList.add('bt-dropzone--dragover')"
+        ondragleave="this.classList.remove('bt-dropzone--dragover')"
+        ondrop="btUplDrop(this, event)">
+        <div class="bt-dropzone__inner">
+          <button class="bt-btn bt-btn--xs bt-btn--primary-ghost"
+            onclick="this.closest('.bt-upload').querySelector('.bt-upload__input').click()">Select Files</button>
+          <div class="bt-dropzone__status"><span>Drag and drop files here to upload</span></div>
+        </div>
+      </div>
+      <div class="bt-upload__files"></div>
+    </div>`;
+
+  return `<div class="bt-dialog bt-dialog--${headerType} bt-dialog--${btnPos}">
+  <div class="bt-dialog__header">
+    ${iconSlot}
+    <div class="bt-dialog__title-wrap">
+      <span class="bt-dialog__title">Title Text Here</span>
+      ${subtitleRow}
+    </div>
+    <button class="bt-dialog__close" type="button" data-pgd-close aria-label="Close">
+      <i data-lucide="x" style="width:16px;height:16px;"></i>
+    </button>
+  </div>
+  <div class="bt-dialog__body">
+    ${bodyContent}
+  </div>
+  <div class="bt-dialog__footer">
+    ${footerBtns}
+  </div>
+</div>`;
+}
+
+function dialogCss(variant, props) {
+  const p = props || {};
+  const headerType = p.headerType || 'left';
+  const subtitle   = p.subtitle === 'on';
+  const btnPos     = p.btnPos || 'horizontal';
+
+  const ln = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const lines = [
+    `.bt-dialog {`,
+    ln('width', '420px'),
+    ln('background', 'var(--bt-base-default, #ffffff)  /* #ffffff */'),
+    ln('border-radius', 'var(--bt-radius-md, 6px)  /* 6px */'),
+    ln('overflow', 'hidden'),
+    ln('display', 'flex'),
+    ln('flex-direction', 'column'),
+    `}`,
+    ``,
+    `.bt-dialog__header {`,
+    ln('min-height', '40px'),
+    ln('background', 'var(--bt-base-subtle, #f5f5f5)  /* #f5f5f5 */'),
+    ln('border-bottom', '1px solid var(--bt-border-primary-muted, #e6e6e6)  /* #e6e6e6 */'),
+    ln('display', 'flex'),
+    ln('align-items', 'center'),
+    `}`,
+    ``,
+    `.bt-dialog__title {`,
+    ln('font', 'var(--bt-title-sm-medium, 500 14px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-default, #1a1a1a)  /* #1a1a1a */'),
+    ...(headerType === 'flex' ? [ln('text-align', 'center')] : []),
+    `}`,
+  ];
+
+  if (subtitle) {
+    lines.push(``, `.bt-dialog__subtitle {`);
+    lines.push(ln('font', 'var(--bt-text-xs-regular, 400 12px/16px var(--font))'));
+    lines.push(ln('color', 'var(--bt-text-primary-emphasis, #727272)  /* #727272 */'));
+    lines.push(`}`);
+  }
+
+  lines.push(``, `.bt-dialog__body {`);
+  lines.push(ln('min-height', '280px'));
+  lines.push(ln('padding', 'var(--bt-space-2xl, 16px)  /* 16px */'));
+  lines.push(ln('gap', 'var(--bt-space-2xl, 16px)  /* 16px */'));
+  lines.push(`}`);
+
+  lines.push(``, `.bt-dialog__footer {`);
+  lines.push(ln('border-top', '1px solid var(--bt-border-primary-muted, #e6e6e6)  /* #e6e6e6 */'));
+  lines.push(ln('padding', 'var(--bt-space-xl, 12px) var(--bt-space-2xl, 16px)  /* 12px 16px */'));
+  lines.push(ln('display', 'flex'));
+  lines.push(ln('gap', 'var(--bt-space-md, 8px)  /* 8px */'));
+  if (btnPos === 'horizontal') {
+    lines.push(ln('justify-content', 'flex-end'));
+  } else {
+    lines.push(ln('flex-direction', 'column'));
+  }
+  lines.push(`}`);
+
+  if (btnPos === 'horizontal') {
+    lines.push(``, `.bt-dialog--horizontal .bt-dialog__footer .bt-btn {`);
+    lines.push(ln('width', '80px'));
+    lines.push(ln('justify-content', 'center'));
+    lines.push(`}`);
+  } else {
+    lines.push(``, `.bt-dialog--vertical .bt-dialog__footer .bt-btn {`);
+    lines.push(ln('width', '100%'));
+    lines.push(ln('justify-content', 'center'));
+    lines.push(`}`);
+  }
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/dialog'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Header Types', 'Subtitle', 'Button Layout'],
+  render(tab) {
+    const title = 'Dialog';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Dialog bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header</td><td>Min-height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Header</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header</td><td>Border bottom</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 14px/16px</td></tr>
+          <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Subtitle</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 12px/16px</td></tr>
+          <tr><td>Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Close button</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Icon slot (Flex type)</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Footer</td><td>Padding (vertical)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Footer</td><td>Padding (horizontal)</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Footer</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Button · Horizontal</td><td>Width</td><td>—</td><td>80px</td></tr>
+          <tr><td>Button · Vertical</td><td>Width</td><td>—</td><td>100% (full)</td></tr>
+          <tr><td>Primary button</td><td>Class</td><td>—</td><td>${tk('bt-btn--sm bt-btn--primary-solid')}</td></tr>
+          <tr><td>Secondary button</td><td>Class</td><td>—</td><td>${tk('bt-btn--sm bt-btn--base-flat')}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Dialog kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Karmaşık görevler, form doldurma veya ayrıntılı bilgi sunumu için Dialog kullan</li>
+        <li>Başlık metnini kısa ve açıklayıcı tut</li>
+        <li>Primary action'ı horizontal düzende sağda, vertical düzende üstte konumlandır</li>
+        <li>Backdrop'a tıklayarak veya X butonu ile kapanabilmesini sağla</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>İç içe dialog açma</li>
+        <li>Flex header type'ı gereksiz yere kullanma — sadece özel bir ikon gerektiğinde kullan</li>
+        <li>3'ten fazla footer butonu ekleme</li>
+        <li>Body içeriğini aşırı doldurma — çok karmaşık içerik için ayrı bir sayfa tercih et</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-dialog-overview',
+        variants: [{ key: 'default', label: 'Dialog' }],
+        trigger: { label: 'Click Me', modal: true },
+        props: [
+          { key: 'headerType', label: 'Header Type',     options: DIALOG_HEADER_OPTS,   default: 'left' },
+          { key: 'subtitle',   label: 'Header Subtitle', options: DIALOG_SUBTITLE_OPTS, default: 'off' },
+          { key: 'btnPos',     label: 'Button Position', options: DIALOG_POS_OPTS,      default: 'horizontal' },
+          { key: 'segments',   label: 'Button Segments', options: DIALOG_SEG_OPTS,      default: '2' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${dialogHtml(v, p)}</div>`,
+        code:    (v, p) => dialogHtml(v, p),
+        css:     (v, p) => dialogCss(v, p),
+      })}
+
+      <p class="page-desc">Dialog, kullanıcıdan etkileşim gerektiren görevler veya ayrıntılı bilgi sunumu için kullanılan modal bir penceredir. Alert Dialog'un aksine form alanları, açıklamalar ve daha zengin içerik barındırabilir.</p>
+
+      <h2 id="Header Types">Header Types</h2>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Left</strong></td>
+            <td>${dialogHtml('default', { headerType: 'left', subtitle: 'off', btnPos: 'horizontal', segments: '1' })}</td>
+            <td>Başlık sola hizalı. Sağ üstte X butonu. Standart dialog düzeni.</td>
+          </tr>
+          <tr>
+            <td><strong>Flex (Centered)</strong></td>
+            <td>${dialogHtml('default', { headerType: 'flex', subtitle: 'off', btnPos: 'horizontal', segments: '1' })}</td>
+            <td>Sol tarafta ikon slotu, başlık ortalanmış. Özel ikon ile öne çıkarılan içerik için.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header</td><td>Min-height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Header</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header</td><td>Border bottom</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 14px/16px</td></tr>
+          <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Icon slot (Flex)</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Close button</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Subtitle">Subtitle</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Off</strong></td><td>Yalnızca başlık gösterilir. Çoğu kullanım durumu için uygundur.</td></tr>
+          <tr><td><strong>On</strong></td><td>Başlığın altında ek açıklama metni görüntülenir.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Subtitle</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 12px/16px</td></tr>
+          <tr><td>Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Button Layout">Button Layout</h2>
+      <table class="token-table">
+        <thead><tr><th>Position</th><th>Segments</th><th>Düzen</th></tr></thead>
+        <tbody>
+          <tr><td>Horizontal</td><td>1</td><td>Tek primary buton, sağa hizalı, 80px genişlik</td></tr>
+          <tr><td>Horizontal</td><td>2</td><td>Cancel + Confirm, sağa hizalı, 80px genişlik</td></tr>
+          <tr><td>Horizontal</td><td>3</td><td>Skip + Cancel + Confirm, sağa hizalı, 80px genişlik</td></tr>
+          <tr><td>Vertical</td><td>1</td><td>Tek primary buton, tam genişlik</td></tr>
+          <tr><td>Vertical</td><td>2</td><td>Confirm üstte + Cancel altta, tam genişlik</td></tr>
+          <tr><td>Vertical</td><td>3</td><td>Confirm + Cancel + Skip, tam genişlik</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Footer</td><td>Padding (vertical)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Footer</td><td>Padding (horizontal)</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Footer</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Button · Horizontal</td><td>Width</td><td>—</td><td>80px</td></tr>
+          <tr><td>Button · Vertical</td><td>Width</td><td>—</td><td>100% (full)</td></tr>
+          <tr><td>Primary button</td><td>Class</td><td>—</td><td>${tk('bt-btn--sm bt-btn--primary-solid')}</td></tr>
+          <tr><td>Secondary button</td><td>Class</td><td>—</td><td>${tk('bt-btn--sm bt-btn--base-flat')}</td></tr>
         </tbody>
       </table>
     `};

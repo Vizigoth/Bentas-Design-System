@@ -352,6 +352,22 @@ window._pgdRunTrigger = function(id) {
   const st = _pgdState[id];
   if (!config || !config.trigger) return;
 
+  // Modal mode — shows component centered over a backdrop, closes on backdrop/button click
+  if (config.trigger.modal) {
+    const existing = document.getElementById('pgd-modal-host');
+    if (existing) { existing.classList.remove('is-visible'); setTimeout(() => existing.remove(), 200); return; }
+    const host = document.createElement('div');
+    host.id = 'pgd-modal-host';
+    host.innerHTML = `<div class="pgd-modal-content">${config.preview(st.variant, st.props)}</div>`;
+    const close = () => { host.classList.remove('is-visible'); setTimeout(() => { if (document.body.contains(host)) host.remove(); }, 200); };
+    host.addEventListener('click', e => { if (e.target === host || e.target.closest('[data-pgd-close]')) close(); });
+    document.body.appendChild(host);
+    void host.offsetHeight;
+    requestAnimationFrame(() => host.classList.add('is-visible'));
+    return;
+  }
+
+  // Toast mode — slides in from the top of the screen, auto-dismisses
   const host = _pgdToastHost();
   const el = document.createElement('div');
   el.className = 'pgd-toast';

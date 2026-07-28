@@ -2836,3 +2836,92 @@ Tek global fonksiyon, gerçek DOM manipülasyonu (Upload/Split Button ile aynı 
 |---|---|
 | `btAccToggle(btn)` | Header butonuna tıklanınca çağrılır. `disabled` ise no-op. Değilse: `is-active` class'ını toggle'lar, `aria-expanded`'ı günceller, hemen sonraki `.bt-accordion__content` kardeşin `is-open` class'ını toggle'lar (CSS geri kalanını — ikon dönüşü + yükseklik animasyonu — hallediyor). |
 | `btAccIcon(iconType)` | `iconType`'a ('chevron'\|'plus') göre HER ZAMAN "kapalı" glyph SVG string'ini döndürür (chevron-down veya plus) — "açık" hâli CSS transform:rotate ile üretildiği için ayrı bir SVG'ye gerek yok. |
+
+## 15. Dialog
+
+Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button Position × 3 Button Segments.
+
+### 15.1 Markup
+
+```html
+<!-- Left header type (default), Horizontal buttons, 2 segments -->
+<div class="bt-dialog bt-dialog--left bt-dialog--horizontal">
+  <div class="bt-dialog__header">
+    <!-- Icon slot: ONLY present for Flex (centered) header type -->
+    <!-- <div class="bt-dialog__icon-slot"><i data-lucide="layout-template"></i></div> -->
+    <div class="bt-dialog__title-wrap">
+      <span class="bt-dialog__title">Dialog Title</span>
+      <!-- Subtitle: only when subtitle=On -->
+      <!-- <span class="bt-dialog__subtitle">Supporting subtitle text</span> -->
+    </div>
+    <button class="bt-dialog__close" type="button" aria-label="Close">
+      <i data-lucide="x" style="width:16px;height:16px;"></i>
+    </button>
+  </div>
+  <div class="bt-dialog__body">
+    <p class="bt-dialog__body-text">Dialog body content goes here.</p>
+  </div>
+  <div class="bt-dialog__footer">
+    <button class="bt-btn bt-btn--sm bt-btn--base-flat">Cancel</button>
+    <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Confirm</button>
+  </div>
+</div>
+```
+
+**Modifier classes:**
+- Header type: `bt-dialog--left` (default, title sola hizalı) / `bt-dialog--flex` (icon slot + centered title)
+- Button position: `bt-dialog--horizontal` / `bt-dialog--vertical`
+
+### 15.2 CSS Tokens
+
+| Element | Property | Token | Fallback |
+|---|---|---|---|
+| Container | Width | — | 420px |
+| Container | Background | `--bt-base-default` | #ffffff |
+| Container | Border radius | `--bt-radius-md` | 6px |
+| Header | Min-height | — | 40px |
+| Header | Background | `--bt-base-subtle` | #f5f5f5 |
+| Header | Border bottom | `--bt-border-primary-muted` | #e6e6e6 |
+| Title | Font | `--bt-title-sm-medium` | 500 14px/16px |
+| Title | Color | `--bt-text-primary-default` | #1a1a1a |
+| Subtitle | Font | `--bt-text-xs-regular` | 400 12px/16px |
+| Subtitle | Color | `--bt-text-secondary-default` | #666666 |
+| Close button | Width & Height | — | 40px |
+| Icon slot (Flex) | Width & Height | — | 40px |
+| Body | Min-height | — | 280px |
+| Body | Padding | `--bt-space-2xl` | 16px |
+| Body | Gap | `--bt-space-2xl` | 16px |
+| Footer | Border top | `--bt-border-primary-muted` | #e6e6e6 |
+| Footer | Padding vertical | `--bt-space-xl` | 12px |
+| Footer | Padding horizontal | `--bt-space-2xl` | 16px |
+| Footer | Gap | `--bt-space-md` | 8px |
+| Button · Horizontal | Width | — | 80px |
+| Button · Vertical | Width | — | 100% |
+
+### 15.3 Button Layout
+
+- **Horizontal:** buttons right-aligned, fixed 80px width. Ghost(s) left, primary right.
+- **Vertical:** buttons stacked full-width. Primary on top, secondary/ghost(s) below.
+- Segments 1 → primary only; 2 → Cancel + Confirm; 3 → Skip + Cancel + Confirm.
+
+### 15.4 JS Davranışı
+
+Dialog bir modal overlay içinde açılır. Backdrop'a tıklamak veya `data-pgd-close` attribute'lu herhangi bir butona tıklamak dialog'u kapatır. Uygulama kodu için:
+
+```javascript
+// Open: append to body, add is-visible class after reflow
+const host = document.createElement('div');
+host.className = 'dialog-backdrop'; // position:fixed; inset:0; ...
+host.innerHTML = dialogHtml;
+document.body.appendChild(host);
+void host.offsetHeight;
+host.classList.add('is-visible');
+
+// Close
+host.addEventListener('click', e => {
+  if (e.target === host || e.target.closest('[data-dialog-close]')) {
+    host.classList.remove('is-visible');
+    setTimeout(() => host.remove(), 200);
+  }
+});
+```
