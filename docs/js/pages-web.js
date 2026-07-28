@@ -4115,16 +4115,18 @@ function ddPreview(state, props = {}) {
   const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
   const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
   const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
-  // Options panel: always inside bt-tbx (above helper). Hidden initially for default (interactive), visible for active.
-  const optionsHtml = (isActive || isDefault) ? `<div class="bt-dd-options" style="margin-top:2px;${isDefault ? 'display:none;' : ''}">${_ddOptionsHtml}</div>` : '';
+  // Options panel: always inside bt-tbx__anchor (positioned absolute below input). Hidden initially for default (interactive), visible for active.
+  const optionsHtml = (isActive || isDefault) ? `<div class="bt-dd-options"${isDefault ? ' style="display:none;"' : ''}>${_ddOptionsHtml}</div>` : '';
   // Interactive click only for default state
   const inputAttrs  = isDefault ? ` onclick="btDdToggle(this)" style="cursor:pointer;"` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
         ${metaHtml}
-        <div class="bt-tbx__input"${inputAttrs}>${_ddInputInner(state)}</div>
-        ${optionsHtml}
+        <div class="bt-tbx__anchor">
+          <div class="bt-tbx__input"${inputAttrs}>${_ddInputInner(state)}</div>
+          ${optionsHtml}
+        </div>
         ${helperHtml}
       </div>
     </div>`;
@@ -4763,8 +4765,10 @@ function dtpPreview(state, props = {}) {
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_dtpCls(state, size)}">
         ${metaHtml}
-        <div class="bt-tbx__input"${inputAttrs}>${_dtpInputInner(state)}</div>
-        ${calHtml}
+        <div class="bt-tbx__anchor">
+          <div class="bt-tbx__input"${inputAttrs}>${_dtpInputInner(state)}</div>
+          ${calHtml}
+        </div>
         ${helperHtml}
       </div>
     </div>`;
@@ -6892,8 +6896,10 @@ function dialogHtml(variant, props) {
     <p class="bt-dialog__body-text">Description for additional information displayed below the title to clarify the purpose of the section.</p>
     <div class="${_tbxCls('default', 'sm')}">
       <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
-      <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">${_ddInputInner('default')}</div>
-      <div class="bt-dd-options" style="display:none;">${_ddOptionsHtml}</div>
+      <div class="bt-tbx__anchor">
+        <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">${_ddInputInner('default')}</div>
+        <div class="bt-dd-options" style="display:none;">${_ddOptionsHtml}</div>
+      </div>
     </div>
     <div class="${_txaCls('default', 'sm')}">
       <div class="bt-txa__meta"><span class="bt-txa__label">Label Text</span></div>

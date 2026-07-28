@@ -3956,7 +3956,17 @@ code {
    DROPDOWN OPTIONS PANEL — bt-dd-*
    ════════════════════════════════════════════════════════════════ */
 
+/* Anchor wrapper — sits between bt-tbx and bt-tbx__input; options/calendar positioned relative to it */
+.bt-tbx__anchor {
+  position: relative;
+}
 .bt-dd-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  z-index: 200;
   background: var(--bt-surface-primary-default, #ffffff);
   border-radius: var(--bt-radius-sm, 4px);
   overflow: hidden;
@@ -4000,6 +4010,12 @@ code {
    ════════════════════════════════════════════════════════════════ */
 
 .bt-cal {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  z-index: 200;
   background: var(--bt-surface-primary-default, #ffffff);
   border-radius: var(--bt-radius-sm, 4px);
   box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
