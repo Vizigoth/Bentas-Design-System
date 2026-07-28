@@ -23,6 +23,7 @@ const NAV_WEB = [
   {
     label: 'Components', children: [
       { label: 'Accordion',         id: 'components/accordion' },
+      { label: 'Alert Dialog',      id: 'components/alert-dialog' },
       { label: 'Alert Toaster',     id: 'components/alert' },
       { label: 'Avatar',            id: 'components/avatar' },
       { label: 'Badge',             id: 'components/badge' },
@@ -6238,6 +6239,291 @@ PAGES_WEB['components/upload'] = {
             <td><span class="token-name">${s.label}</span></td>
             <td style="padding:8px 0;"><div style="max-width:380px;">${_ufHtml(s.key)}</div></td>
           </tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Alert Dialog ──────────────────────────────────────────────
+// Figma node 625:1451 — 4 Type × 2 Button Position × 3 Button Segments
+// Type belirler: ikon + ikon-bg rengi + primary buton rengi
+// Button Position: Vertical (butonlar alt alta, tam genişlik) | Horizontal (yan yana, 80px sabit)
+// Button Segments: 1 (sadece solid confirm) | 2 (+1 ghost cancel) | 3 (+2 ghost)
+// Vertical'da solid ON TOP, ghost(lar) altta; Horizontal'da ghost(lar) solda, solid sağda.
+
+const ADLG_TYPE_OPTS = [
+  { key: 'information', label: 'Information' },
+  { key: 'success',     label: 'Success' },
+  { key: 'warning',     label: 'Warning' },
+  { key: 'error',       label: 'Error' },
+];
+const ADLG_POS_OPTS = [
+  { key: 'vertical',   label: 'Vertical' },
+  { key: 'horizontal', label: 'Horizontal' },
+];
+const ADLG_SEG_OPTS = [
+  { key: '1', label: '1' },
+  { key: '2', label: '2' },
+  { key: '3', label: '3' },
+];
+
+const _adlgIcons = {
+  information: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
+  error:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`,
+  warning:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 22h16a2 2 0 0 0 1.73-4"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`,
+  success:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+};
+
+// type → primary solid button class (information → primary, diğerleri kendi tema)
+const _adlgSolidCls = {
+  information: 'bt-btn--primary-solid',
+  error:       'bt-btn--error-solid',
+  warning:     'bt-btn--warning-solid',
+  success:     'bt-btn--success-solid',
+};
+
+function adlgHtml(p) {
+  const type     = (p && p.type)     || 'information';
+  const position = (p && p.position) || 'vertical';
+  const segments = parseInt((p && p.segments) || '1', 10);
+
+  const solidBtn = `<button class="bt-btn bt-btn--xs ${_adlgSolidCls[type]}" type="button">Button</button>`;
+  const ghostBtn = `<button class="bt-btn bt-btn--xs bt-btn--base-ghost" type="button">Button</button>`;
+
+  let footerBtns;
+  if (position === 'vertical') {
+    // Solid önce (üstte), ghost(lar) altta
+    if (segments === 1) footerBtns = solidBtn;
+    else if (segments === 2) footerBtns = solidBtn + ghostBtn;
+    else footerBtns = solidBtn + ghostBtn + ghostBtn;
+  } else {
+    // Ghost(lar) solda, solid sağda
+    if (segments === 1) footerBtns = solidBtn;
+    else if (segments === 2) footerBtns = ghostBtn + solidBtn;
+    else footerBtns = ghostBtn + ghostBtn + solidBtn;
+  }
+
+  return `<div class="bt-adlg bt-adlg--${type} bt-adlg--${position} bt-adlg--seg-${segments}">
+  <div class="bt-adlg__body">
+    <div class="bt-adlg__icon-wrap">${_adlgIcons[type] || ''}</div>
+    <div class="bt-adlg__text">
+      <p class="bt-adlg__title">Title Text Here</p>
+      <p class="bt-adlg__desc">Description for additional information displayed below the title to clarify the purpose of the section.</p>
+    </div>
+  </div>
+  <div class="bt-adlg__footer">${footerBtns}</div>
+</div>`;
+}
+
+const _adlgIconBg = {
+  information: 'var(--bt-primary-subtle, #e2edfc)',
+  error:       'var(--bt-error-subtle, #fde6e6)',
+  warning:     'var(--bt-warning-subtle, #f9f2ce)',
+  success:     'var(--bt-success-subtle, #daede5)',
+};
+const _adlgIconColor = {
+  information: 'var(--bt-icon-information-default, #0d4e97)',
+  error:       'var(--bt-icon-error-default, #b31d38)',
+  warning:     'var(--bt-icon-warning-default, #aa820a)',
+  success:     'var(--bt-icon-success-default, #2d584b)',
+};
+const _adlgSolidBg = {
+  information: 'var(--bt-primary-default, #0d4e97)',
+  error:       'var(--bt-error-default, #b31d38)',
+  warning:     'var(--bt-warning-default, #aa820a)',
+  success:     'var(--bt-success-default, #2d584b)',
+};
+
+function adlgCss(p) {
+  const type     = (p && p.type)     || 'information';
+  const position = (p && p.position) || 'vertical';
+  const segments = (p && p.segments) || '1';
+  const pk = (k, v) => `  ${k}: ${v};`;
+  const lines = [
+    `.bt-adlg {`,
+    pk('background',    'var(--bt-base-default, #ffffff)'),
+    pk('border-radius', 'var(--bt-radius-md, 6px)'),
+    pk('box-shadow',    'var(--bt-shadow-md)'),
+    pk('width',         '420px'),
+    `}`,
+    ``,
+    `.bt-adlg__icon-wrap {`,
+    pk('background', _adlgIconBg[type]),
+    pk('color',      _adlgIconColor[type]),
+    `}`,
+    ``,
+    `.bt-adlg__title {`,
+    pk('font',  'var(--bt-title-sm-medium)  /* 500 14px/16px */'),
+    pk('color', 'var(--bt-text-primary-default, #1a1a1a)'),
+    `}`,
+    ``,
+    `.bt-adlg__desc {`,
+    pk('font',  'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
+    pk('color', 'var(--bt-text-primary-default, #1a1a1a)'),
+    `}`,
+    ``,
+    `.bt-adlg__footer {`,
+    pk('border-top', 'var(--bt-border-primary-muted, #e6e6e6)'),
+    pk('padding',    'var(--bt-space-xl, 12px) var(--bt-space-2xl, 16px)'),
+    ...(position === 'horizontal'
+      ? [pk('justify-content', 'flex-end')]
+      : [
+          pk('flex-direction', 'column'),
+          ...(segments !== '1' ? [pk('align-items', 'flex-end')] : []),
+        ]
+    ),
+    `}`,
+    ``,
+    `/* Primary button */`,
+    `.${_adlgSolidCls[type]} {`,
+    pk('background', _adlgSolidBg[type]),
+    pk('color',      'var(--bt-text-primary-inverted, #ffffff)'),
+    `}`,
+  ];
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/alert-dialog'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Types', 'Button Layout'],
+  render(tab) {
+    const title = 'Alert Dialog';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Alert Dialog bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Container</td><td>Shadow</td><td>${tk('--bt-shadow-md')}</td><td>0 2px 4px … / 0 4px 8px …</td></tr>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+          <tr><td>Body</td><td>Gap (icon ↔ text)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Icon Wrap</td><td>Size</td><td>—</td><td>32×32px</td></tr>
+          <tr><td>Icon Wrap</td><td>Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+          <tr><td>Icon Wrap · Information</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Icon Wrap · Error</td><td>Background</td><td>${tk('--bt-error-subtle')}</td><td>#fde6e6</td></tr>
+          <tr><td>Icon Wrap · Warning</td><td>Background</td><td>${tk('--bt-warning-subtle')}</td><td>#f9f2ce</td></tr>
+          <tr><td>Icon Wrap · Success</td><td>Background</td><td>${tk('--bt-success-subtle')}</td><td>#daede5</td></tr>
+          <tr><td>Icon · Information</td><td>Color</td><td>${tk('--bt-icon-information-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Error</td><td>Color</td><td>${tk('--bt-icon-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Icon · Warning</td><td>Color</td><td>${tk('--bt-icon-warning-default')}</td><td>#aa820a</td></tr>
+          <tr><td>Icon · Success</td><td>Color</td><td>${tk('--bt-icon-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Title / Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Footer</td><td>Padding</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-2xl')}</td><td>12px / 16px</td></tr>
+          <tr><td>Footer</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Confirm Button · Horizontal</td><td>Width</td><td>—</td><td>80px</td></tr>
+          <tr><td>Confirm Button · Vertical</td><td>Width</td><td>—</td><td>100% (full)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Alert Dialog kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Type'ı içeriğin anlamsal bağlamıyla eşleştir — başarı mesajı için Success, silme onayı için Error kullan</li>
+        <li>Tek kritik eylem için Segments=1 (sadece confirm), geri alma seçeneği sunmak için Segments=2 kullan</li>
+        <li>Buton metinlerini eylemi açıkça tanımla — "Sil", "Onayla", "İptal" gibi fiiller kullan</li>
+        <li>Modal overlay ile birlikte kullan; dialog açıkken arka plan etkileşimini engelle</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Segments=3'ü gereksiz yere kullanma — kullanıcıyı 3 seçenekle bırakmak karar yorgunluğu yaratır</li>
+        <li>Aynı anda birden fazla Alert Dialog açma</li>
+        <li>Type'ı dekoratif amaçla seçme — her tipin anlamsal bir karşılığı var</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-alert-dialog-overview',
+        variants: [{ key: 'default', label: 'Alert Dialog' }],
+        props: [
+          { key: 'type',     label: 'Type',            options: ADLG_TYPE_OPTS, default: 'information' },
+          { key: 'position', label: 'Button Position', options: ADLG_POS_OPTS,  default: 'vertical' },
+          { key: 'segments', label: 'Button Segments', options: ADLG_SEG_OPTS,  default: '1' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${adlgHtml(p)}</div>`,
+        code:    (v, p) => adlgHtml(p),
+        css:     (v, p) => adlgCss(p),
+      })}
+
+      <p class="page-desc">Alert Dialog, kullanıcıdan onay gerektiren veya önemli bilgi içeren modal bir iletişim kutusudur. 4 anlam tipi, 2 buton düzeni ve 1–3 buton segmentiyle özelleştirilebilir.</p>
+
+      <h2 id="Types">Types</h2>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Icon</th><th>Kullanım</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Information</span></td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '1' })}</td>
+            <td>circle-info</td>
+            <td>Bilgilendirici, nötr içerik. Kullanıcıya bir bağlamı açıklar.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Success</span></td>
+            <td>${adlgHtml({ type: 'success', position: 'vertical', segments: '1' })}</td>
+            <td>circle-check</td>
+            <td>Başarılı tamamlanan bir eylemi onaylar.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Warning</span></td>
+            <td>${adlgHtml({ type: 'warning', position: 'vertical', segments: '1' })}</td>
+            <td>triangle-alert</td>
+            <td>Dikkat gerektiren, geri alınamaz olabilecek eylemler için.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Error</span></td>
+            <td>${adlgHtml({ type: 'error', position: 'vertical', segments: '1' })}</td>
+            <td>circle-alert</td>
+            <td>Yıkıcı veya hata içeren eylemler için — silme, kaldırma vb.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="Button Layout">Button Layout</h2>
+      <table class="token-table">
+        <thead><tr><th>Position</th><th>Segments</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Vertical</span></td>
+            <td>1</td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '1' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Vertical</span></td>
+            <td>2</td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '2' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Vertical</span></td>
+            <td>3</td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '3' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Horizontal</span></td>
+            <td>1</td>
+            <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '1' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Horizontal</span></td>
+            <td>2</td>
+            <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '2' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Horizontal</span></td>
+            <td>3</td>
+            <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '3' })}</td>
+          </tr>
         </tbody>
       </table>
     `};
