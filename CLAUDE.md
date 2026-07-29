@@ -53,6 +53,17 @@ Yeni bir component eklendiğinde sadece `registerPlayground({id: 'pgd-xxx-overvi
 
 `window.PGD_ISOLATE` kaydı veya `config.isolate` **artık yeni componentler için gerekli değil** — sadece Sidebar ve Alert gibi eskiden eklenmiş özel mount davranışları olan componentlerde kalır.
 
+## Playground Toolbar Boolean Toggle Standardı — ZORUNLU
+
+Bir playground'da bir öğeyi (icon, label, description, control vb.) tamamen göster/gizle amacıyla eklenen her toggle **`On`/`Off`** seçeneklerini kullanmalı — `Yes`/`No`, `Show`/`Hide`, `Visible`/`Hidden` gibi varyasyonlar kullanılmaz. Bu proje genelinde tek standart.
+
+- Paylaşılan seçenek dizisi: `TBX_BOOL_OPTS = [{ key: 'on', label: 'On' }, { key: 'off', label: 'Off' }]` (dosyada en üstte, Checkbox bloğundan önce tanımlı — ilk kullanım noktasından önce olması **zorunlu**, aksi halde `const` temporal-dead-zone hatası verir).
+- Yeni bir boolean toggle eklerken **ayrı bir seçenek dizisi tanımlama** — `TBX_BOOL_OPTS`'u doğrudan reuse et (`options: TBX_BOOL_OPTS`). Component'e özel bir isim gerekiyorsa (okunabilirlik için) `const XYZ_OPTS = TBX_BOOL_OPTS;` şeklinde alias ver, içeriğini kopyalama.
+- Render fonksiyonlarındaki kontroller `=== 'on'` / `!== 'off'` şeklinde yazılır (eski `=== 'yes'` / `!== 'no'` / `=== 'show'` kalıpları kullanılmaz).
+- Bu, sadece toggle'ın **iki seçeneğinin adı** için geçerli — prop'un kendi etiketi (örn. "Show Description", "Show Content") aynen kalır, sadece o etiketin altındaki Yes/No veya Show/Hide seçenekleri On/Off olur.
+
+**Geçmiş:** Bu standart 2026-07-29'da geriye dönük olarak uygulandı — önceden Checkbox/Radio/Switch `Show`/`Hide` (`CHK_SHOW_OPTS`/`CHK_DESC_OPTS`), TextBox/Textarea/Accordion/Dialog `Yes`/`No` (`TBX_BOOL_OPTS`) kullanıyordu; hepsi `On`/`Off`'a taşındı, `CHK_SHOW_OPTS`/`CHK_DESC_OPTS` kaldırılıp `TBX_BOOL_OPTS`'a alias'landı. Bkz. HISTORY.md.
+
 ## Playground Preview Centering — ZORUNLU
 
 `registerPlayground`'daki `preview` callback'i döndürdüğü HTML'i her zaman bir centering wrapper'a sarmalıdır — aksi hâlde component playground'da sola yaslanır.

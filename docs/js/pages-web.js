@@ -1331,6 +1331,12 @@ PAGES_WEB['components/split-button'] = {
   }
 };
 
+// Proje genelindeki playground boolean toggle standardı — bkz. CLAUDE.md
+// "Playground Toolbar Boolean Toggle Standardı". Checkbox/Radio/Switch/
+// TextBox/Textarea/Accordion/Dialog vb. tüm Show-Hide/Var-Yok toggle'ları
+// bunu reuse ediyor, ayrı Yes/No veya Show/Hide seçenek dizisi tanımlanmıyor.
+const TBX_BOOL_OPTS = [{ key: 'on', label: 'On' }, { key: 'off', label: 'Off' }];
+
 // ── Checkbox ────────────────────────────────────────────────────
 const _chkCheck = `<svg class="bt-checkbox__check" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5L4 7.5L8.5 2.5"/></svg>`;
 
@@ -1354,14 +1360,10 @@ const CHK_SIDE_OPTS = [
   { key: 'right', label: 'Label Right' },
   { key: 'left',  label: 'Label Left' },
 ];
-const CHK_DESC_OPTS = [
-  { key: 'show', label: 'Show' },
-  { key: 'hide', label: 'Hide' },
-];
-const CHK_SHOW_OPTS = [
-  { key: 'yes', label: 'Show' },
-  { key: 'no',  label: 'Hide' },
-];
+// Proje genelindeki On/Off standardına uysun diye TBX_BOOL_OPTS reuse ediliyor
+// (bkz. CLAUDE.md "Playground Toolbar Boolean Toggle Standardı").
+const CHK_DESC_OPTS = TBX_BOOL_OPTS;
+const CHK_SHOW_OPTS = TBX_BOOL_OPTS;
 
 function _chkBoxCls(state, checked, size) {
   const parts = ['bt-checkbox__box'];
@@ -1385,17 +1387,17 @@ function chkPreview(state, props = {}) {
     checked      = 'off',
     size         = 'md',
     side         = 'right',
-    desc         = 'show',
-    showContent  = 'yes',
-    showLabel    = 'yes',
-    showRequired = 'yes',
+    desc         = 'on',
+    showContent  = 'on',
+    showLabel    = 'on',
+    showRequired = 'on',
   } = props;
   const boxCls   = _chkBoxCls(state, checked, size);
   const fieldCls = _chkFieldCls(state, side);
-  const descHtml = desc === 'show' ? `\n        <p class="bt-checkbox__desc">Description for additional information here.</p>` : '';
-  const labelHtml    = showLabel    === 'yes' ? `<span class="bt-checkbox__label">Label Text</span>` : '';
-  const requiredHtml = showRequired === 'yes' ? `<span class="bt-checkbox__required">(Required Field)</span>` : '';
-  const contentHtml  = showContent  === 'yes' ? `
+  const descHtml = desc === 'on' ? `\n        <p class="bt-checkbox__desc">Description for additional information here.</p>` : '';
+  const labelHtml    = showLabel    === 'on' ? `<span class="bt-checkbox__label">Label Text</span>` : '';
+  const requiredHtml = showRequired === 'on' ? `<span class="bt-checkbox__required">(Required Field)</span>` : '';
+  const contentHtml  = showContent  === 'on' ? `
         <div class="bt-checkbox__content">
           <div class="bt-checkbox__label-row">
             ${labelHtml}${requiredHtml}
@@ -1417,18 +1419,18 @@ function chkCode(state, props = {}) {
     checked      = 'off',
     size         = 'md',
     side         = 'right',
-    desc         = 'show',
-    showContent  = 'yes',
-    showLabel    = 'yes',
-    showRequired = 'yes',
+    desc         = 'on',
+    showContent  = 'on',
+    showLabel    = 'on',
+    showRequired = 'on',
   } = props;
   const boxCls   = _chkBoxCls(state, checked, size);
   const fieldCls = _chkFieldCls(state, side);
   const chk      = checked === 'on' ? '\n    <!-- checkmark svg -->' : '';
-  const labelLine    = showLabel    === 'yes' ? '\n      <span class="bt-checkbox__label">Label Text</span>' : '';
-  const requiredLine = showRequired === 'yes' ? '\n      <span class="bt-checkbox__required">(Required Field)</span>' : '';
-  const descLine     = (showContent === 'yes' && desc === 'show') ? '\n    <p class="bt-checkbox__desc">Description for additional information here.</p>' : '';
-  const contentBlock = showContent === 'yes'
+  const labelLine    = showLabel    === 'on' ? '\n      <span class="bt-checkbox__label">Label Text</span>' : '';
+  const requiredLine = showRequired === 'on' ? '\n      <span class="bt-checkbox__required">(Required Field)</span>' : '';
+  const descLine     = (showContent === 'on' && desc === 'on') ? '\n    <p class="bt-checkbox__desc">Description for additional information here.</p>' : '';
+  const contentBlock = showContent === 'on'
     ? `\n  <div class="bt-checkbox__content">\n    <div class="bt-checkbox__label-row">${labelLine}${requiredLine}\n    </div>${descLine}\n  </div>`
     : '';
   const code = `<div class="${fieldCls}">
@@ -1539,10 +1541,10 @@ PAGES_WEB['components/checkbox'] = {
         props: [
           { key: 'size',         label: 'Size',            options: CHK_SIZE_OPTS,    default: 'md'    },
           { key: 'side',         label: 'Label',           options: CHK_SIDE_OPTS,    default: 'right' },
-          { key: 'showContent',  label: 'Show Content',    options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',      options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',   options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'desc',         label: 'Show Description',options: CHK_DESC_OPTS,    default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',    options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',      options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',   options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'desc',         label: 'Show Description',options: CHK_DESC_OPTS,    default: 'on'  },
         ],
         preview: (state, p) => chkPreview(state, { ...p, checked: 'off' }),
         code:    (state, p) => chkCode(state, { ...p, checked: 'off' }),
@@ -1554,10 +1556,10 @@ PAGES_WEB['components/checkbox'] = {
         props: [
           { key: 'size',         label: 'Size',            options: CHK_SIZE_OPTS,    default: 'md'    },
           { key: 'side',         label: 'Label',           options: CHK_SIDE_OPTS,    default: 'right' },
-          { key: 'showContent',  label: 'Show Content',    options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',      options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',   options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'desc',         label: 'Show Description',options: CHK_DESC_OPTS,    default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',    options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',      options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',   options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'desc',         label: 'Show Description',options: CHK_DESC_OPTS,    default: 'on'  },
         ],
         preview: (state, p) => chkPreview(state, { ...p, checked: 'on' }),
         code:    (state, p) => chkCode(state, { ...p, checked: 'on' }),
@@ -1627,10 +1629,10 @@ PAGES_WEB['components/checkbox'] = {
           { key: 'checked',      label: 'Checked',        options: CHK_CHECKED_OPTS, default: 'off'   },
           { key: 'size',         label: 'Size',            options: CHK_SIZE_OPTS,    default: 'md'    },
           { key: 'side',         label: 'Label',           options: CHK_SIDE_OPTS,    default: 'right' },
-          { key: 'showContent',  label: 'Show Content',    options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',      options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',   options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'desc',         label: 'Show Description',options: CHK_DESC_OPTS,    default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',    options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',      options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',   options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'desc',         label: 'Show Description',options: CHK_DESC_OPTS,    default: 'on'  },
         ],
         preview: (state, p) => chkPreview(state, p),
         code:    (state, p) => chkCode(state, p),
@@ -1646,8 +1648,8 @@ PAGES_WEB['components/checkbox'] = {
           ${CHK_STATE_VARIANTS.map(s => `
           <tr>
             <td><span class="token-name">${s.label}</span></td>
-            <td>${pw(chkPreview(s.key, { checked:'off', desc:'hide' }))}</td>
-            <td>${pw(chkPreview(s.key, { checked:'on',  desc:'hide' }))}</td>
+            <td>${pw(chkPreview(s.key, { checked:'off', desc:'off' }))}</td>
+            <td>${pw(chkPreview(s.key, { checked:'on',  desc:'off' }))}</td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -1677,22 +1679,22 @@ PAGES_WEB['components/checkbox'] = {
             <td><span class="token-name">Lg</span></td>
             <td>20 × 20px</td>
             <td>12 × 12px</td>
-            <td>${pw(chkPreview('default', { checked:'off', size:'lg', desc:'hide' }))}</td>
-            <td>${pw(chkPreview('default', { checked:'on',  size:'lg', desc:'hide' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'off', size:'lg', desc:'off' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'on',  size:'lg', desc:'off' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Md (Default)</span></td>
             <td>16 × 16px</td>
             <td>12 × 12px</td>
-            <td>${pw(chkPreview('default', { checked:'off', size:'md', desc:'hide' }))}</td>
-            <td>${pw(chkPreview('default', { checked:'on',  size:'md', desc:'hide' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'off', size:'md', desc:'off' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'on',  size:'md', desc:'off' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Sm</span></td>
             <td>12 × 12px</td>
             <td>12 × 12px</td>
-            <td>${pw(chkPreview('default', { checked:'off', size:'sm', desc:'hide' }))}</td>
-            <td>${pw(chkPreview('default', { checked:'on',  size:'sm', desc:'hide' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'off', size:'sm', desc:'off' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'on',  size:'sm', desc:'off' }))}</td>
           </tr>
         </tbody>
       </table>
@@ -1714,11 +1716,11 @@ PAGES_WEB['components/checkbox'] = {
         <tbody>
           <tr>
             <td><span class="token-name">Label Right</span></td>
-            <td>${pw(chkPreview('default', { checked:'on', side:'right', desc:'show' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'on', side:'right', desc:'on' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Label Left</span></td>
-            <td>${pw(chkPreview('default', { checked:'on', side:'left', desc:'show' }))}</td>
+            <td>${pw(chkPreview('default', { checked:'on', side:'left', desc:'on' }))}</td>
           </tr>
         </tbody>
       </table>
@@ -1781,17 +1783,17 @@ function rdPreview(state, props = {}) {
     selected     = 'off',
     size         = 'md',
     side         = 'right',
-    desc         = 'show',
-    showContent  = 'yes',
-    showLabel    = 'yes',
-    showRequired = 'yes',
+    desc         = 'on',
+    showContent  = 'on',
+    showLabel    = 'on',
+    showRequired = 'on',
   } = props;
   const dotCls   = _rdDotCls(state, selected, size);
   const fieldCls = _rdFieldCls(state, side);
-  const descHtml = desc === 'show' ? `\n        <p class="bt-radio__desc">Description for additional information here.</p>` : '';
-  const labelHtml    = showLabel    === 'yes' ? `<span class="bt-radio__label">Label Text</span>` : '';
-  const requiredHtml = showRequired === 'yes' ? `<span class="bt-radio__required">(Required Field)</span>` : '';
-  const contentHtml  = showContent  === 'yes' ? `
+  const descHtml = desc === 'on' ? `\n        <p class="bt-radio__desc">Description for additional information here.</p>` : '';
+  const labelHtml    = showLabel    === 'on' ? `<span class="bt-radio__label">Label Text</span>` : '';
+  const requiredHtml = showRequired === 'on' ? `<span class="bt-radio__required">(Required Field)</span>` : '';
+  const contentHtml  = showContent  === 'on' ? `
         <div class="bt-radio__content">
           <div class="bt-radio__label-row">
             ${labelHtml}${requiredHtml}
@@ -1813,17 +1815,17 @@ function rdCode(state, props = {}) {
     selected     = 'off',
     size         = 'md',
     side         = 'right',
-    desc         = 'show',
-    showContent  = 'yes',
-    showLabel    = 'yes',
-    showRequired = 'yes',
+    desc         = 'on',
+    showContent  = 'on',
+    showLabel    = 'on',
+    showRequired = 'on',
   } = props;
   const dotCls   = _rdDotCls(state, selected, size);
   const fieldCls = _rdFieldCls(state, side);
-  const labelLine    = showLabel    === 'yes' ? '\n      <span class="bt-radio__label">Label Text</span>' : '';
-  const requiredLine = showRequired === 'yes' ? '\n      <span class="bt-radio__required">(Required Field)</span>' : '';
-  const descLine     = (showContent === 'yes' && desc === 'show') ? '\n    <p class="bt-radio__desc">Description for additional information here.</p>' : '';
-  const contentBlock = showContent === 'yes'
+  const labelLine    = showLabel    === 'on' ? '\n      <span class="bt-radio__label">Label Text</span>' : '';
+  const requiredLine = showRequired === 'on' ? '\n      <span class="bt-radio__required">(Required Field)</span>' : '';
+  const descLine     = (showContent === 'on' && desc === 'on') ? '\n    <p class="bt-radio__desc">Description for additional information here.</p>' : '';
+  const contentBlock = showContent === 'on'
     ? `\n  <div class="bt-radio__content">\n    <div class="bt-radio__label-row">${labelLine}${requiredLine}\n    </div>${descLine}\n  </div>`
     : '';
   const code = `<div class="${fieldCls}">
@@ -1937,10 +1939,10 @@ PAGES_WEB['components/radio-button'] = {
         props: [
           { key: 'size',         label: 'Size',             options: RD_SIZE_OPTS,  default: 'md'    },
           { key: 'side',         label: 'Label',            options: RD_SIDE_OPTS,  default: 'right' },
-          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'on'  },
         ],
         preview: (state, p) => rdPreview(state, { ...p, selected: 'off' }),
         code:    (state, p) => rdCode(state, { ...p, selected: 'off' }),
@@ -1952,10 +1954,10 @@ PAGES_WEB['components/radio-button'] = {
         props: [
           { key: 'size',         label: 'Size',             options: RD_SIZE_OPTS,  default: 'md'    },
           { key: 'side',         label: 'Label',            options: RD_SIDE_OPTS,  default: 'right' },
-          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'on'  },
         ],
         preview: (state, p) => rdPreview(state, { ...p, selected: 'on' }),
         code:    (state, p) => rdCode(state, { ...p, selected: 'on' }),
@@ -2049,10 +2051,10 @@ PAGES_WEB['components/radio-button'] = {
           { key: 'selected',     label: 'Selected',         options: RD_SELECTED_OPTS, default: 'off'   },
           { key: 'size',         label: 'Size',             options: RD_SIZE_OPTS,     default: 'md'    },
           { key: 'side',         label: 'Label',            options: RD_SIDE_OPTS,     default: 'right' },
-          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS,    default: 'yes'   },
-          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS,    default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS,    default: 'on'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS,    default: 'on'  },
         ],
         preview: (state, p) => rdPreview(state, p),
         code:    (state, p) => rdCode(state, p),
@@ -2068,8 +2070,8 @@ PAGES_WEB['components/radio-button'] = {
           ${RD_STATE_VARIANTS.map(s => `
           <tr>
             <td><span class="token-name">${s.label}</span></td>
-            <td>${pw(rdPreview(s.key, { selected:'off', desc:'hide' }))}</td>
-            <td>${pw(rdPreview(s.key, { selected:'on',  desc:'hide' }))}</td>
+            <td>${pw(rdPreview(s.key, { selected:'off', desc:'off' }))}</td>
+            <td>${pw(rdPreview(s.key, { selected:'on',  desc:'off' }))}</td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -2098,20 +2100,20 @@ PAGES_WEB['components/radio-button'] = {
           <tr>
             <td><span class="token-name">Lg</span></td>
             <td>20px</td><td>8px</td>
-            <td>${pw(rdPreview('default', { selected:'off', size:'lg', desc:'hide' }))}</td>
-            <td>${pw(rdPreview('default', { selected:'on',  size:'lg', desc:'hide' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'off', size:'lg', desc:'off' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'on',  size:'lg', desc:'off' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Md (Default)</span></td>
             <td>16px</td><td>6px</td>
-            <td>${pw(rdPreview('default', { selected:'off', size:'md', desc:'hide' }))}</td>
-            <td>${pw(rdPreview('default', { selected:'on',  size:'md', desc:'hide' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'off', size:'md', desc:'off' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'on',  size:'md', desc:'off' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Sm</span></td>
             <td>12px</td><td>4.5px</td>
-            <td>${pw(rdPreview('default', { selected:'off', size:'sm', desc:'hide' }))}</td>
-            <td>${pw(rdPreview('default', { selected:'on',  size:'sm', desc:'hide' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'off', size:'sm', desc:'off' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'on',  size:'sm', desc:'off' }))}</td>
           </tr>
         </tbody>
       </table>
@@ -2132,11 +2134,11 @@ PAGES_WEB['components/radio-button'] = {
         <tbody>
           <tr>
             <td><span class="token-name">Label Right</span></td>
-            <td>${pw(rdPreview('default', { selected:'on', side:'right', desc:'show' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'on', side:'right', desc:'on' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Label Left</span></td>
-            <td>${pw(rdPreview('default', { selected:'on', side:'left',  desc:'show' }))}</td>
+            <td>${pw(rdPreview('default', { selected:'on', side:'left',  desc:'on' }))}</td>
           </tr>
         </tbody>
       </table>
@@ -2197,17 +2199,17 @@ function swPreview(state, props = {}) {
     on           = 'off',
     size         = 'sm',
     side         = 'left',
-    desc         = 'show',
-    showContent  = 'yes',
-    showLabel    = 'yes',
-    showRequired = 'yes',
+    desc         = 'on',
+    showContent  = 'on',
+    showLabel    = 'on',
+    showRequired = 'on',
   } = props;
   const trackCls = _swTrackCls(state, on, size);
   const fieldCls = _swFieldCls(state, side);
-  const descHtml = desc === 'show' ? `\n        <div class="bt-switch__desc-row"><p class="bt-switch__desc">Description for additional information here.</p></div>` : '';
-  const labelHtml    = showLabel    === 'yes' ? `<span class="bt-switch__label">Label Text</span>` : '';
-  const requiredHtml = showRequired === 'yes' ? `<span class="bt-switch__required">(Required Field)</span>` : '';
-  const contentHtml  = showContent  === 'yes' ? `
+  const descHtml = desc === 'on' ? `\n        <div class="bt-switch__desc-row"><p class="bt-switch__desc">Description for additional information here.</p></div>` : '';
+  const labelHtml    = showLabel    === 'on' ? `<span class="bt-switch__label">Label Text</span>` : '';
+  const requiredHtml = showRequired === 'on' ? `<span class="bt-switch__required">(Required Field)</span>` : '';
+  const contentHtml  = showContent  === 'on' ? `
         <div class="bt-switch__content">
           <div class="bt-switch__label-row">
             ${labelHtml}${requiredHtml}
@@ -2229,17 +2231,17 @@ function swCode(state, props = {}) {
     on           = 'off',
     size         = 'sm',
     side         = 'left',
-    desc         = 'show',
-    showContent  = 'yes',
-    showLabel    = 'yes',
-    showRequired = 'yes',
+    desc         = 'on',
+    showContent  = 'on',
+    showLabel    = 'on',
+    showRequired = 'on',
   } = props;
   const trackCls = _swTrackCls(state, on, size);
   const fieldCls = _swFieldCls(state, side);
-  const labelLine    = showLabel    === 'yes' ? '\n      <span class="bt-switch__label">Label Text</span>' : '';
-  const requiredLine = showRequired === 'yes' ? '\n      <span class="bt-switch__required">(Required Field)</span>' : '';
-  const descLine     = (showContent === 'yes' && desc === 'show') ? '\n    <div class="bt-switch__desc-row">\n      <p class="bt-switch__desc">Description for additional information here.</p>\n    </div>' : '';
-  const contentBlock = showContent === 'yes'
+  const labelLine    = showLabel    === 'on' ? '\n      <span class="bt-switch__label">Label Text</span>' : '';
+  const requiredLine = showRequired === 'on' ? '\n      <span class="bt-switch__required">(Required Field)</span>' : '';
+  const descLine     = (showContent === 'on' && desc === 'on') ? '\n    <div class="bt-switch__desc-row">\n      <p class="bt-switch__desc">Description for additional information here.</p>\n    </div>' : '';
+  const contentBlock = showContent === 'on'
     ? `\n  <div class="bt-switch__content">\n    <div class="bt-switch__label-row">${labelLine}${requiredLine}\n    </div>${descLine}\n  </div>`
     : '';
   const code = `<div class="${fieldCls}">${contentBlock}
@@ -2343,10 +2345,10 @@ PAGES_WEB['components/switch'] = {
         props: [
           { key: 'size',         label: 'Size',             options: SW_SIZE_OPTS,  default: 'sm'    },
           { key: 'side',         label: 'Content',          options: SW_SIDE_OPTS,  default: 'left'  },
-          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'on'  },
         ],
         preview: (state, p) => swPreview(state, { ...p, on: 'off' }),
         code:    (state, p) => swCode(state, { ...p, on: 'off' }),
@@ -2358,10 +2360,10 @@ PAGES_WEB['components/switch'] = {
         props: [
           { key: 'size',         label: 'Size',             options: SW_SIZE_OPTS,  default: 'sm'    },
           { key: 'side',         label: 'Content',          options: SW_SIDE_OPTS,  default: 'left'  },
-          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'on'  },
         ],
         preview: (state, p) => swPreview(state, { ...p, on: 'on' }),
         code:    (state, p) => swCode(state, { ...p, on: 'on' }),
@@ -2471,10 +2473,10 @@ PAGES_WEB['components/switch'] = {
           { key: 'on',           label: 'Mode',             options: SW_ON_OPTS,    default: 'off'   },
           { key: 'size',         label: 'Size',             options: SW_SIZE_OPTS,  default: 'sm'    },
           { key: 'side',         label: 'Content',          options: SW_SIDE_OPTS,  default: 'left'  },
-          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'yes'   },
-          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'show'  },
+          { key: 'showContent',  label: 'Show Content',     options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showLabel',    label: 'Show Label',       options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'showRequired', label: 'Show Required',    options: CHK_SHOW_OPTS, default: 'on'   },
+          { key: 'desc',         label: 'Show Description', options: CHK_DESC_OPTS, default: 'on'  },
         ],
         preview: (state, p) => swPreview(state, p),
         code:    (state, p) => swCode(state, p),
@@ -2490,8 +2492,8 @@ PAGES_WEB['components/switch'] = {
           ${SW_STATE_VARIANTS.map(s => `
           <tr>
             <td><span class="token-name">${s.label}</span></td>
-            <td>${pw(swPreview(s.key, { on:'off', desc:'hide' }))}</td>
-            <td>${pw(swPreview(s.key, { on:'on',  desc:'hide' }))}</td>
+            <td>${pw(swPreview(s.key, { on:'off', desc:'off' }))}</td>
+            <td>${pw(swPreview(s.key, { on:'on',  desc:'off' }))}</td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -2518,20 +2520,20 @@ PAGES_WEB['components/switch'] = {
           <tr>
             <td><span class="token-name">Lg</span></td>
             <td>48 × 28px</td><td>24 × 24px</td>
-            <td>${pw(swPreview('default', { on:'off', size:'lg', desc:'hide' }))}</td>
-            <td>${pw(swPreview('default', { on:'on',  size:'lg', desc:'hide' }))}</td>
+            <td>${pw(swPreview('default', { on:'off', size:'lg', desc:'off' }))}</td>
+            <td>${pw(swPreview('default', { on:'on',  size:'lg', desc:'off' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Md</span></td>
             <td>40 × 24px</td><td>20 × 20px</td>
-            <td>${pw(swPreview('default', { on:'off', size:'md', desc:'hide' }))}</td>
-            <td>${pw(swPreview('default', { on:'on',  size:'md', desc:'hide' }))}</td>
+            <td>${pw(swPreview('default', { on:'off', size:'md', desc:'off' }))}</td>
+            <td>${pw(swPreview('default', { on:'on',  size:'md', desc:'off' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Sm (Default)</span></td>
             <td>32 × 20px</td><td>16 × 16px</td>
-            <td>${pw(swPreview('default', { on:'off', size:'sm', desc:'hide' }))}</td>
-            <td>${pw(swPreview('default', { on:'on',  size:'sm', desc:'hide' }))}</td>
+            <td>${pw(swPreview('default', { on:'off', size:'sm', desc:'off' }))}</td>
+            <td>${pw(swPreview('default', { on:'on',  size:'sm', desc:'off' }))}</td>
           </tr>
         </tbody>
       </table>
@@ -2555,11 +2557,11 @@ PAGES_WEB['components/switch'] = {
         <tbody>
           <tr>
             <td><span class="token-name">Content Left (Default)</span></td>
-            <td>${pw(swPreview('default', { on:'on', side:'left', desc:'show' }))}</td>
+            <td>${pw(swPreview('default', { on:'on', side:'left', desc:'on' }))}</td>
           </tr>
           <tr>
             <td><span class="token-name">Content Right</span></td>
-            <td>${pw(swPreview('default', { on:'on', side:'right', desc:'show' }))}</td>
+            <td>${pw(swPreview('default', { on:'on', side:'right', desc:'on' }))}</td>
           </tr>
         </tbody>
       </table>
@@ -3528,7 +3530,6 @@ const TBX_STATE_VARIANTS = [
   { key: 'error-focused', label: 'Error Focused' },
 ];
 const TBX_SIZE_OPTS  = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md (Default)' }, { key: 'lg', label: 'Lg' }];
-const TBX_BOOL_OPTS  = [{ key: 'yes', label: 'Yes' }, { key: 'no', label: 'No' }];
 
 function _tbxCls(state, size) {
   const parts = ['bt-tbx', `bt-tbx--${size}`];
@@ -3552,11 +3553,11 @@ function _tbxInputInner(state) {
 }
 
 function tbxPreview(state, props = {}) {
-  const { size = 'sm', label = 'yes', required = 'yes', helper = 'yes' } = props;
-  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml  = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const { size = 'sm', label = 'on', required = 'on', helper = 'on' } = props;
+  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml  = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
@@ -3568,7 +3569,7 @@ function tbxPreview(state, props = {}) {
 }
 
 function tbxCode(state, props = {}) {
-  const { size = 'sm', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'sm', label = 'on', required = 'on', helper = 'on' } = props;
   const cls = _tbxCls(state, size);
   const isError    = state === 'error' || state === 'error-focused';
   const isFilled   = state === 'filled';
@@ -3576,12 +3577,12 @@ function tbxCode(state, props = {}) {
   const isReadOnly = state === 'readonly';
 
   const metaParts = [];
-  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
   const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-info icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
   const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="bt-tbx__input">
@@ -3652,9 +3653,9 @@ PAGES_WEB['components/textbox'] = {
 
     const sharedProps = [
       { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -3857,11 +3858,11 @@ function _slkInputInner(state) {
 }
 
 function slkPreview(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
-  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
+  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
@@ -3873,7 +3874,7 @@ function slkPreview(state, props = {}) {
 }
 
 function slkCode(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const cls        = _tbxCls(state, size);
   const isError    = state === 'error' || state === 'error-focused';
   const isFilled   = state === 'filled' || state === 'readonly';
@@ -3881,12 +3882,12 @@ function slkCode(state, props = {}) {
   const isReadOnly = state === 'readonly';
 
   const metaParts = [];
-  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
   const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError        ? `\n  <div class="bt-tbx__control">\n    <!-- validation icon 15×15 -->\n  </div>` : '';
   const clearBlock  = state === 'filled' ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
   const inputAttrs  = (isFilled ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="bt-tbx__input">
@@ -3911,9 +3912,9 @@ PAGES_WEB['components/select-lookup'] = {
 
     const sharedProps = [
       { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -4108,13 +4109,13 @@ window.btDdToggle = function(inputEl) {
 };
 
 function ddPreview(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const isActive  = state === 'active';
   const isDefault = state === 'default';
-  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   // Options panel: always inside bt-tbx__anchor (positioned absolute below input). Hidden initially for default (interactive), visible for active.
   const optionsHtml = (isActive || isDefault) ? `<div class="bt-dd-options"${isDefault ? ' style="display:none;"' : ''}>${_ddOptionsHtml}</div>` : '';
   // Interactive click only for default state
@@ -4133,16 +4134,16 @@ function ddPreview(state, props = {}) {
 }
 
 function ddCode(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const cls      = _tbxCls(state, size);
   const isError  = state === 'error' || state === 'error-focused';
   const isFilled = state === 'filled';
   const isActive = state === 'active';
   const metaParts = [];
-  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
   const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
-  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
   const optionsBlock = isActive ? `\n<div class="bt-dd-options">\n  <div class="bt-dd-option bt-dd-option--selected">\n    <span class="bt-dd-option__text">Option 1</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 2</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 3</span>\n  </div>\n</div>` : '';
@@ -4167,9 +4168,9 @@ PAGES_WEB['components/dropdown'] = {
 
     const sharedProps = [
       { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -4361,16 +4362,16 @@ function _txaCls(state, size) {
 }
 
 function txaPreview(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const isFilled   = state === 'filled' || state === 'readonly';
   const isDisabled = state === 'disabled';
   const isReadOnly = state === 'readonly';
   const textAttrs  = (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   const content    = isFilled ? 'Placeholder Text' : '';
-  const labelHtml    = label    === 'yes' ? `<span class="bt-txa__label">Label Text</span>` : '';
-  const requiredHtml = required === 'yes' ? `<span class="bt-txa__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-txa__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'yes' ? `<span class="bt-txa__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-txa__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-txa__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-txa__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-txa__helper">Helper Text</span>` : '';
   const clearHtml    = state === 'filled' ? `<button type="button" class="bt-tbx__clear bt-txa__clear">${_tbxIconClear}</button>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
@@ -4386,16 +4387,16 @@ function txaPreview(state, props = {}) {
 }
 
 function txaCode(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const cls        = _txaCls(state, size);
   const isFilled   = state === 'filled' || state === 'readonly';
   const isDisabled = state === 'disabled';
   const isReadOnly = state === 'readonly';
   const metaParts  = [];
-  if (label    === 'yes') metaParts.push('  <span class="bt-txa__label">Label Text</span>');
-  if (required === 'yes') metaParts.push('  <span class="bt-txa__required">Required Field</span>');
+  if (label    === 'on') metaParts.push('  <span class="bt-txa__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-txa__required">Required Field</span>');
   const metaBlock   = metaParts.length ? `<div class="bt-txa__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
-  const helperBlock = helper === 'yes' ? `\n<span class="bt-txa__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-txa__helper">Helper Text</span>` : '';
   const textAttrs   = (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   const content     = isFilled ? '...' : '';
   const clearLine   = state === 'filled' ? `\n  <button type="button" class="bt-tbx__clear bt-txa__clear">...</button>` : '';
@@ -4478,11 +4479,11 @@ function _mslInputInner(state) {
 }
 
 function mslPreview(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
-  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
+  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_mslCls(state, size)}">
@@ -4494,17 +4495,17 @@ function mslPreview(state, props = {}) {
 }
 
 function mslCode(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const cls     = _mslCls(state, size);
   const isError = state === 'error' || state === 'error-focused';
   const isFilled = state === 'filled';
   const metaParts = [];
-  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
   const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
   const code = `${metaBlock}<div class="bt-tbx__input">
   <div class="bt-tbx__control bt-tbx__control--left">
     <!-- plus icon 16×16 -->
@@ -4532,9 +4533,9 @@ PAGES_WEB['components/multi-select'] = {
 
     const sharedProps = [
       { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -4751,13 +4752,13 @@ function _dtpCls(state, size) {
 }
 
 function dtpPreview(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const isActive  = state === 'active';
   const isDefault = state === 'default';
-  const labelHtml    = label    === 'yes' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'yes' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'yes' || required === 'yes') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'yes' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   // Calendar: always rendered for active/default; hidden initially for default (interactive)
   const calHtml      = (isActive || isDefault) ? _dtpCalendarHtml().replace('<div class="bt-cal">', `<div class="bt-cal"${isDefault ? ' style="display:none;"' : ''}>`) : '';
   const inputAttrs   = isDefault ? ` onclick="btDtpToggle(this)" style="cursor:pointer;"` : '';
@@ -4775,19 +4776,19 @@ function dtpPreview(state, props = {}) {
 }
 
 function dtpCode(state, props = {}) {
-  const { size = 'md', label = 'yes', required = 'yes', helper = 'yes' } = props;
+  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const cls        = _dtpCls(state, size);
   const isError    = state === 'error' || state === 'error-focused';
   const isFilled   = state === 'filled';
   const isDisabled = state === 'disabled';
   const isReadOnly = state === 'readonly';
   const metaParts = [];
-  if (label    === 'yes') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'yes') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
+  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
   const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'yes' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
   const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   const code = `${metaBlock}<div class="bt-tbx__input">
   <div class="bt-tbx__control bt-tbx__control--left">
@@ -4810,9 +4811,9 @@ PAGES_WEB['components/date-picker'] = {
 
     const sharedProps = [
       { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -4959,9 +4960,9 @@ PAGES_WEB['components/textarea'] = {
 
     const sharedProps = [
       { key: 'size',     label: 'Size',     options: TXA_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'yes' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'yes' },
+      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -5509,8 +5510,8 @@ function accExampleItems(iconType, showDesc, showLeftIcon) {
 
 function accPreview(variant, props) {
   const iconType     = (props && props.icon) || 'chevron';
-  const showDesc     = (props && props.desc) !== 'no';
-  const showLeftIcon = (props && props.left) !== 'no';
+  const showDesc     = (props && props.desc) !== 'off';
+  const showLeftIcon = (props && props.left) !== 'off';
   return `<div style="max-width:440px;width:100%;margin:0 auto;">
   ${accGroupHtml(variant, accExampleItems(iconType, showDesc, showLeftIcon))}
 </div>`;
@@ -5518,8 +5519,8 @@ function accPreview(variant, props) {
 
 function accCode(variant, props) {
   const iconType     = (props && props.icon) || 'chevron';
-  const showDesc     = (props && props.desc) !== 'no';
-  const showLeftIcon = (props && props.left) !== 'no';
+  const showDesc     = (props && props.desc) !== 'off';
+  const showLeftIcon = (props && props.left) !== 'off';
   return accGroupHtml(variant, accExampleItems(iconType, showDesc, showLeftIcon));
 }
 
@@ -5658,8 +5659,8 @@ PAGES_WEB['components/accordion'] = {
         variants: ACC_VARIANT_OPTS,
         props: [
           { key: 'icon', label: 'Icon',        options: ACC_ICON_OPTS, default: 'chevron' },
-          { key: 'desc', label: 'Description', options: ACC_DESC_OPTS, default: 'yes'    },
-          { key: 'left', label: 'Left Icon',   options: ACC_LEFT_OPTS, default: 'no'     },
+          { key: 'desc', label: 'Description', options: ACC_DESC_OPTS, default: 'on'    },
+          { key: 'left', label: 'Left Icon',   options: ACC_LEFT_OPTS, default: 'off'     },
         ],
         preview: (variant, p) => accPreview(variant, p),
         code:    (variant, p) => accCode(variant, p),
@@ -6845,7 +6846,7 @@ PAGES_WEB['components/alert-dialog'] = {
 
 const DIALOG_HEADER_OPTS = [
   { key: 'left', label: 'Left' },
-  { key: 'flex', label: 'Flex (Centered)' },
+  { key: 'center', label: 'Center' },
 ];
 const DIALOG_SUBTITLE_OPTS = [
   { key: 'off', label: 'Off' },
@@ -6861,16 +6862,32 @@ const DIALOG_SEG_OPTS = [
   { key: '3', label: '3' },
 ];
 
+// Figma "Icon/placeholder" asset'i — Accordion'da (_accIconScan) doğrulanan
+// lucide "scan" ikonuyla aynı, screenshot ile teyit edildi. Bu proje lucide
+// runtime'ı yüklemiyor (data-lucide hiçbir yerde çalışmıyor), o yüzden diğer
+// tüm component'ler gibi inline SVG olarak gömülüyor. İkonun kendisi 16×16 —
+// 24×24'lük .bt-dialog__icon-wrap'ı doldurmuyor, içinde ortalanıyor (close
+// butonundaki 16px icon + 4px padding formülüyle aynı oran).
+const _dlgIconScan = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+const _dlgIconX    = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+
 function dialogHtml(variant, props) {
   const p = props || {};
-  const headerType = p.headerType || 'left';
-  const subtitle   = p.subtitle === 'on';
-  const btnPos     = p.btnPos || 'horizontal';
-  const segs       = parseInt(p.segments || '2', 10);
+  const headerType   = p.headerType || 'left';
+  const subtitle     = p.subtitle === 'on';
+  const btnPos       = p.btnPos || 'horizontal';
+  const segs         = parseInt(p.segments || '2', 10);
+  const leftControl  = (p.leftControl || 'on') !== 'off';
+  const rightControl = (p.rightControl || 'on') !== 'off';
 
-  const iconSlot = headerType === 'flex' ? `
-    <div class="bt-dialog__icon-slot">
-      <i data-lucide="layout-template" style="width:24px;height:24px;"></i>
+  const iconSlot = (headerType === 'center' && leftControl) ? `
+    <div class="bt-dialog__icon-slot"><div class="bt-dialog__icon-wrap">${_dlgIconScan}</div></div>` : '';
+
+  const closeControl = rightControl ? `
+    <div class="bt-dialog__control">
+      <button class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" type="button" data-pgd-close aria-label="Close">
+        ${_dlgIconX}
+      </button>
     </div>` : '';
 
   const subtitleRow = subtitle
@@ -6930,9 +6947,7 @@ function dialogHtml(variant, props) {
       <span class="bt-dialog__title">Title Text Here</span>
       ${subtitleRow}
     </div>
-    <button class="bt-dialog__close" type="button" data-pgd-close aria-label="Close">
-      <i data-lucide="x" style="width:16px;height:16px;"></i>
-    </button>
+    ${closeControl}
   </div>
   <div class="bt-dialog__body">
     ${bodyContent}
@@ -6966,14 +6981,16 @@ function dialogCss(variant, props) {
     ln('min-height', '40px'),
     ln('background', 'var(--bt-base-subtle, #f5f5f5)  /* #f5f5f5 */'),
     ln('border-bottom', '1px solid var(--bt-border-primary-muted, #e6e6e6)  /* #e6e6e6 */'),
+    ln('padding', 'var(--bt-space-none, 0px)'),
     ln('display', 'flex'),
     ln('align-items', 'center'),
     `}`,
+    ...(headerType === 'left' ? [``, `.bt-dialog--left .bt-dialog__header {`, ln('padding-left', 'var(--bt-space-xl, 12px)'), `}`] : []),
     ``,
     `.bt-dialog__title {`,
     ln('font', 'var(--bt-title-sm-medium, 500 14px/16px var(--font))'),
     ln('color', 'var(--bt-text-primary-default, #1a1a1a)  /* #1a1a1a */'),
-    ...(headerType === 'flex' ? [ln('text-align', 'center')] : []),
+    ...(headerType === 'center' ? [ln('text-align', 'center')] : []),
     `}`,
   ];
 
@@ -7035,12 +7052,15 @@ PAGES_WEB['components/dialog'] = {
           <tr><td>Header</td><td>Min-height</td><td>—</td><td>40px</td></tr>
           <tr><td>Header</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>Header</td><td>Border bottom</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Header</td><td>Padding</td><td>${tk('--bt-space-none')}</td><td>0px</td></tr>
+          <tr><td>Header · Left type</td><td>Padding-left</td><td>${tk('--bt-space-xl')}</td><td>12px (no icon slot to provide the inset)</td></tr>
           <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 14px/16px</td></tr>
           <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Subtitle</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 12px/16px</td></tr>
           <tr><td>Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
-          <tr><td>Close button</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
-          <tr><td>Icon slot (Flex type)</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Control slot (left icon / right close)</td><td>Width &amp; Height</td><td>—</td><td>40px (layout only, matches header height)</td></tr>
+          <tr><td>Close button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28, reused Button component)</td></tr>
+          <tr><td>Icon slot (Center type)</td><td>Width &amp; Height</td><td>—</td><td>24×24 wrapper (${tk('.bt-dialog__icon-wrap')}) in the 40px slot, 16×16 icon inside it</td></tr>
           <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
           <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
           <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
@@ -7067,7 +7087,7 @@ PAGES_WEB['components/dialog'] = {
       <h2>Don't</h2>
       <ul>
         <li>İç içe dialog açma</li>
-        <li>Flex header type'ı gereksiz yere kullanma — sadece özel bir ikon gerektiğinde kullan</li>
+        <li>Center header type'ı gereksiz yere kullanma — sadece özel bir ikon gerektiğinde kullan</li>
         <li>3'ten fazla footer butonu ekleme</li>
         <li>Body içeriğini aşırı doldurma — çok karmaşık içerik için ayrı bir sayfa tercih et</li>
       </ul>
@@ -7080,10 +7100,12 @@ PAGES_WEB['components/dialog'] = {
         variants: [{ key: 'default', label: 'Dialog' }],
         trigger: { label: 'Click Me', modal: true },
         props: [
-          { key: 'headerType', label: 'Header Type',     options: DIALOG_HEADER_OPTS,   default: 'left' },
-          { key: 'subtitle',   label: 'Header Subtitle', options: DIALOG_SUBTITLE_OPTS, default: 'off' },
-          { key: 'btnPos',     label: 'Button Position', options: DIALOG_POS_OPTS,      default: 'horizontal' },
-          { key: 'segments',   label: 'Button Segments', options: DIALOG_SEG_OPTS,      default: '2' },
+          { key: 'headerType',   label: 'Header Type',     options: DIALOG_HEADER_OPTS,   default: 'left' },
+          { key: 'subtitle',     label: 'Header Subtitle', options: DIALOG_SUBTITLE_OPTS, default: 'off' },
+          { key: 'leftControl',  label: 'Left Control',    options: TBX_BOOL_OPTS,        default: 'on' },
+          { key: 'rightControl', label: 'Right Control',   options: TBX_BOOL_OPTS,        default: 'on' },
+          { key: 'btnPos',       label: 'Button Position', options: DIALOG_POS_OPTS,      default: 'horizontal' },
+          { key: 'segments',     label: 'Button Segments', options: DIALOG_SEG_OPTS,      default: '2' },
         ],
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${dialogHtml(v, p)}</div>`,
         code:    (v, p) => dialogHtml(v, p),
@@ -7102,8 +7124,8 @@ PAGES_WEB['components/dialog'] = {
             <td>Başlık sola hizalı. Sağ üstte X butonu. Standart dialog düzeni.</td>
           </tr>
           <tr>
-            <td><strong>Flex (Centered)</strong></td>
-            <td>${dialogHtml('default', { headerType: 'flex', subtitle: 'off', btnPos: 'horizontal', segments: '1' })}</td>
+            <td><strong>Center</strong></td>
+            <td>${dialogHtml('default', { headerType: 'center', subtitle: 'off', btnPos: 'horizontal', segments: '1' })}</td>
             <td>Sol tarafta ikon slotu, başlık ortalanmış. Özel ikon ile öne çıkarılan içerik için.</td>
           </tr>
         </tbody>
@@ -7119,10 +7141,13 @@ PAGES_WEB['components/dialog'] = {
           <tr><td>Header</td><td>Min-height</td><td>—</td><td>40px</td></tr>
           <tr><td>Header</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>Header</td><td>Border bottom</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Header</td><td>Padding</td><td>${tk('--bt-space-none')}</td><td>0px</td></tr>
+          <tr><td>Header · Left type</td><td>Padding-left</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
           <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 14px/16px</td></tr>
           <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Icon slot (Flex)</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
-          <tr><td>Close button</td><td>Width &amp; Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Control slot (left icon / right close)</td><td>Width &amp; Height</td><td>—</td><td>40px (layout only)</td></tr>
+          <tr><td>Icon slot (Center)</td><td>Width &amp; Height</td><td>—</td><td>24×24 wrapper in the 40px slot, 16×16 icon inside it</td></tr>
+          <tr><td>Close button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
         </tbody>
       </table>
 

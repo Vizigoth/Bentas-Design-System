@@ -4796,13 +4796,30 @@ code {
   min-height: 40px;
   background: var(--bt-base-subtle, #f5f5f5);
   border-bottom: 1px solid var(--bt-border-primary-muted, #e6e6e6);
-  padding: 0 var(--bt-space-xl, 12px);
+  padding: var(--bt-space-none, 0px);
   flex-shrink: 0;
 }
-/* Left placeholder icon slot — only shown in Flex (centered) header type */
-.bt-dialog__icon-slot {
+/* Left header type has no left icon slot to provide a visual inset, so the
+   title needs its own left padding. Center type's 40×40 icon slot already
+   provides that inset, so it stays at --bt-space-none. */
+.bt-dialog--left .bt-dialog__header { padding-left: var(--bt-space-xl, 12px); }
+/* Left/right control slots — 40×40, pure layout (matches Figma "Base Dialog
+   Controls" frame + header's 40px height). Not styled themselves — they just
+   center whatever sits inside (a 24×24 icon wrapper, or a real bt-btn). */
+.bt-dialog__icon-slot,
+.bt-dialog__control {
   width: 40px;
   height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+/* Left placeholder icon — only shown in Center header type. Standard 24×24
+   icon wrapper (same pattern as .bt-avatar__icon), centered in the 40×40 slot. */
+.bt-dialog__icon-wrap {
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4822,33 +4839,16 @@ code {
   margin: 0;
 }
 /* Flex (centered) header type: left icon slot + centered title */
-.bt-dialog--flex .bt-dialog__title { text-align: center; }
+.bt-dialog--center .bt-dialog__title { text-align: center; }
 .bt-dialog__subtitle {
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-emphasis, #727272);
   margin: 0;
 }
-.bt-dialog--flex .bt-dialog__subtitle { text-align: center; }
-/* Close button — 40×40px, no border, no bg (ghost) */
-.bt-dialog__close {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--bt-text-secondary-default, #666666);
-  border-radius: 0;
-  padding: 0;
-  transition: background var(--bt-duration-fast, 120ms) ease, color var(--bt-duration-fast, 120ms) ease;
-}
-.bt-dialog__close:hover {
-  background: var(--bt-base-hover, #e8e8e8);
-  color: var(--bt-text-primary-default, #1a1a1a);
-}
+.bt-dialog--center .bt-dialog__subtitle { text-align: center; }
+/* Close control — the clickable element is a reused bt-btn (xs, base-flat,
+   icon-only, 24×24 — same as any other icon button in the system), centered
+   in a .bt-dialog__control slot. No component-specific close button styling. */
 .bt-dialog__body {
   padding: var(--bt-space-2xl, 16px);
   display: flex;
@@ -4856,7 +4856,7 @@ code {
   gap: var(--bt-space-2xl, 16px);
   overflow-y: auto;
 }
-.bt-dialog__body-text {
+.bt-dialog__body .bt-dialog__body-text {
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-default, #1a1a1a);
   margin: 0;

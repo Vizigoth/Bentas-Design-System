@@ -2816,7 +2816,7 @@ Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı 
 1. **Hover/Active hiçbir yerde arka plan değiştirmiyor.** Figma'nın ürettiği React/Tailwind çıktısında Hover ve Active state'lerinin hiçbirinde `bg-[...]` override'ı yok — sadece ikon yönü (Active) ve ring (Hover, sadece Bordered'da) değişiyor. Eski `pages-mobile.js` implementasyonu bunun aksini varsayıp Active'de `--bt-surface-subtle` arka planı uyguluyordu — bu revizyonda **kasıtlı olarak yapılmadı**.
 2. **Focus Ring opaklığı %50, projenin geri kalanındaki butonlardan farklı.** Diğer bileşenlerde (Button, Split Button) nötr focus ring'i `rgba(212,212,212,0.25)` iken, Accordion'da Figma "Focus Ring/neutral" effect'i açıkça `#D4D4D480` (= %50 alpha) olarak tanımlı. Bu proje-geneli tutarsızlık gibi görünse de Figma'da doğrudan bu component için böyle tanımlanmış, düzeltilmedi.
 3. **Bordered'ın Middle pozisyonu TAM border alıyor (üst+alt dahil), sadece First/Last kenar kaldırıyor.** Eski varsayım (kod incelemesi öncesi) "Middle üst border'ını da kaldırır" olurdu — ama Figma'nın gerçek kodu Middle için sadece `border` (4 kenar) veriyor. Pratikte fark etmiyor çünkü komşu iki Middle item'ın üst-üste gelen border'ları aynı renkte, tek çizgi gibi görünüyor — ama bu proje `:last-child` tabanlı flat yaklaşımı seçtiği için bu detayın kodda hiç karşılığı yok (First/Middle/Last class'ı üretilmiyor).
-4. **Sol ikon slotu (`Left Control`) gerçek kullanım örneklerinde hep kapalı.** Figma'nın component tanımında `showLeftControl` prop'u var ve varsayılan `true`, ama "Accordion Basic With Content" / "Accordion Bordered With Content" örneklerinin HİÇBİRİ sol ikonu göstermiyor (`showLeftControl={false}`) — bu yüzden `accHeaderHtml`'in `showLeftIcon` parametresi de varsayılan `false`. Kullanıcı isteğiyle sonradan opsiyonel olarak eklendi (playground'da "Left Icon" Yes/No toggle'ı, `ACC_LEFT_OPTS`, varsayılan No — component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı) — Figma'nın kendi placeholder ikonu (`Icon/placeholder`, lucide "scan") birebir kullanılıyor.
+4. **Sol ikon slotu (`Left Control`) gerçek kullanım örneklerinde hep kapalı.** Figma'nın component tanımında `showLeftControl` prop'u var ve varsayılan `true`, ama "Accordion Basic With Content" / "Accordion Bordered With Content" örneklerinin HİÇBİRİ sol ikonu göstermiyor (`showLeftControl={false}`) — bu yüzden `accHeaderHtml`'in `showLeftIcon` parametresi de varsayılan `false`. Kullanıcı isteğiyle sonradan opsiyonel olarak eklendi (playground'da "Left Icon" On/Off toggle'ı, `ACC_LEFT_OPTS`, varsayılan Off — component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı) — Figma'nın kendi placeholder ikonu (`Icon/placeholder`, lucide "scan") birebir kullanılıyor.
 5. **Disabled title rengi Figma'da bir ICON token'ına bağlı** (`--icon/primary/--bt-icon-primary-muted`), description ise doğru şekilde bir TEXT token'ına (`--text/primary/--bt-text-primary-muted`). İkisi de aynı hex'e (#a3a3a3) çözümlendiği için kodda ikisi de tutarlılık adına `--bt-text-primary-muted`'a bağlandı — Figma'nın olası bir bağlama hatası, bilinçli normalize edildi.
 
 ### 14.4 Kullanıcı kararıyla eklenen özelleştirmeler (Figma'nın dışında)
@@ -2825,7 +2825,7 @@ Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı 
 - **Hover'da title alt çizili** (`text-decoration:underline`) — Figma'da böyle bir kural yok, kullanıcı isteğiyle eklendi.
 - **Smooth açılış/kapanış animasyonu:** `.bt-accordion__content` artık `[hidden]`/`display:none` yerine `grid-template-rows: 0fr → 1fr` (250ms ease) ile animasyonlanıyor — içerik metni değişken uzunlukta olsa da JS ile yükseklik ölçmeye gerek kalmadan çalışan, modern bir CSS tekniği. `prefers-reduced-motion: reduce` ile devre dışı bırakılıyor.
 - **İkon artık dönerek açılıyor, SVG değiştirmiyor:** eskiden `btAccToggle` açılışta chevron-down→chevron-up veya plus→× SVG'sini `innerHTML` ile değiştiriyordu; şimdi ikon HER ZAMAN "kapalı" glyph'iyle (chevron-down / plus) render ediliyor, `.is-active` class'ı CSS üzerinden `transform: rotate(180deg)` (chevron) veya `rotate(45deg)` (plus) uyguluyor — hem daha az kod hem de `transition: transform 200ms ease` ile smooth bir dönüş.
-- **Playground toolbar'ında Description/Left Icon toggle'ları Show/Hide değil Yes/No:** proje genelindeki `TBX_BOOL_OPTS` (Yes/No) konvansiyonuyla tutarlı olsun diye `ACC_DESC_OPTS`/`ACC_LEFT_OPTS` artık `TBX_BOOL_OPTS`'un aynısı (referans paylaşımı, kod tekrarı yok); Description varsayılanı Yes, Left Icon varsayılanı No (component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı).
+- **Playground toolbar'ında Description/Left Icon toggle'ları On/Off:** proje genelindeki `TBX_BOOL_OPTS` (On/Off — bkz. CLAUDE.md "Playground Toolbar Boolean Toggle Standardı") konvansiyonuyla tutarlı olsun diye `ACC_DESC_OPTS`/`ACC_LEFT_OPTS` artık `TBX_BOOL_OPTS`'un aynısı (referans paylaşımı, kod tekrarı yok); Description varsayılanı On, Left Icon varsayılanı Off (component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı). Bu toggle'lar tarihsel olarak önce Show/Hide, sonra Yes/No, en son On/Off olarak isimlendirildi — proje genelinde tek standarda (On/Off) sabitlendi.
 - **Content örneğine (metnin altına) 4'lü TextBox grid'i eklendi:** mevcut TextBox bileşeninin md/readonly hâli (`_tbxCls`, `_tbxInputInner`) sıfırdan yazılmadan yeniden kullanılıyor, her hücrede label görünür (`label:'yes'` davranışıyla aynı `.bt-tbx__meta`/`.bt-tbx__label` bloğu elle eklendi), 2 yatay x 2 dikey grid, hücreler arası boşluk `--bt-space-2xl` (24px).
 
 ### 14.5 JS Davranışı
@@ -2841,22 +2841,41 @@ Tek global fonksiyon, gerçek DOM manipülasyonu (Upload/Split Button ile aynı 
 
 Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button Position × 3 Button Segments.
 
+**Not — isimlendirme:** Figma'nın kendi variant adı "Header Type=Left/Flex". Bu isimlendirme kullanıcı kararıyla frontend/CSS mantığına göre bilinçli olarak değiştirildi: "Flex" → **"Center"** (varyantın gerçek etkisi title'ı ortalamak; "Flex" bir layout tekniğini değil, sonucu tanımlamalı). "Left" ismi ise olduğu gibi bırakıldı (kullanıcı sadece "Left"in karşılığı olan ikinci ismi değiştirmeye karar verdi, "Left"i "Start"a çevirmedi). Kod tarafında `bt-dialog--flex` → `bt-dialog--center` olarak değişti.
+
+**Not — ikonlar:** İlk implementasyon close/icon-slot ikonlarını `<i data-lucide="...">` placeholder deseniyle yazmıştı — bu, Lucide runtime'ının (`lucide.createIcons()`) sayfada yüklü olmasına bağımlı, ve bu docs sitesi (ve varsayılan olarak yeni bir proje) Lucide script'i hiç yüklemiyorsa ikon render OLMAZ (boş görünür). Bu projenin geri kalan tüm component'leri gibi ikonlar doğrudan inline `<svg>` olarak gömülmeli — sadece Lucide'ı gerçekten yükleyen bir consuming projede (örn. Medusa Dashboard, bkz. §6 "Lucide icon tuzağı") `data-lucide` kalıbı kullanılabilir.
+
+**Not — control slot yapısı (kullanıcı düzeltmesi):** Header'daki sol/sağ 40×40'lık alanlar (Figma "Base Dialog Controls") kendileri **stillendirilmiş elemanlar değil, sadece layout slot'ları**. İlk implementasyon bunu yanlış anlayıp close butonunu doğrudan 40×40 boyutunda, kendine özel hover/renk stilleriyle bespoke bir `<button>` olarak yazmıştı. Doğrusu: 40×40 slot içinde her zaman **reuse edilen bir bt-btn** oturuyor (Figma'nın "Button" instance'ı doğrulaması: xs boyut, 4px padding + 16px icon + 4px padding = 24px). Sol taraftaki (Center type'ta görünen) ikon da aynı mantıkla bir 24×24 **icon wrapper** (`.bt-dialog__icon-wrap`) içinde duruyor, içindeki ikonun kendisi wrapper'ı doldurmayan 16×16 boyutunda — doğrudan 40×40'a gömülü değil. Bu ayrım önemli çünkü component-özel bespoke bir buton yazmak yerine projenin mevcut Button sistemini (hover/focus/active state'leri dahil) reuse etmeyi sağlıyor — CLAUDE.md'nin "Mevcut Component'leri Reuse Et" kuralıyla örtüşüyor. **Sonradan kullanıcı kararıyla** close butonunun boyutu Figma'nın xs'inden (24×24) **sm'ye (28×28)** çıkarıldı, ve header'ın `--bt-space-xl` (12px) yatay padding'i kaldırılıp `--bt-space-none`'a çevrildi — bilinçli Figma sapması. Sonra bu ikinci karar **Left header type için kısmen geri alındı**: icon slot olmadığı için title'ın kendi sol inset'i olmadan header'ın gerçek kenarına yapışık kalması istenmedi, `.bt-dialog--left .bt-dialog__header` için `padding-left: var(--bt-space-xl, 12px)` eklendi (Center type'ta hâlâ `--bt-space-none` — 40×40 icon slot zaten aynı görsel inset'i sağlıyor).
+
 ### 15.1 Markup
 
 ```html
 <!-- Left header type (default), Horizontal buttons, 2 segments -->
 <div class="bt-dialog bt-dialog--left bt-dialog--horizontal">
   <div class="bt-dialog__header">
-    <!-- Icon slot: ONLY present for Flex (centered) header type -->
-    <!-- <div class="bt-dialog__icon-slot"><i data-lucide="layout-template"></i></div> -->
+    <!-- Left control slot — 40×40, pure layout. ONLY has visible content for
+         Center header type: a 24×24 icon wrapper holding a 16×16 icon
+         (centered, NOT filling the wrapper — same 16px-icon/4px-padding
+         proportion as the close button, not the "fills exactly" pattern
+         .bt-avatar__icon uses). Figma "Icon/placeholder" asset = lucide
+         "scan" (verified via screenshot, same icon Accordion uses). -->
+    <!-- <div class="bt-dialog__icon-slot">
+      <div class="bt-dialog__icon-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+      </div>
+    </div> -->
     <div class="bt-dialog__title-wrap">
       <span class="bt-dialog__title">Dialog Title</span>
       <!-- Subtitle: only when subtitle=On -->
       <!-- <span class="bt-dialog__subtitle">Supporting subtitle text</span> -->
     </div>
-    <button class="bt-dialog__close" type="button" aria-label="Close">
-      <i data-lucide="x" style="width:16px;height:16px;"></i>
-    </button>
+    <!-- Right control slot — 40×40, pure layout. Always holds a reused Button
+         (sm, base-flat, icon-only → 28×28), NOT a bespoke 40×40 button. -->
+    <div class="bt-dialog__control">
+      <button class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" type="button" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
   </div>
   <div class="bt-dialog__body">
     <p class="bt-dialog__body-text">Dialog body content goes here.</p>
@@ -2869,8 +2888,10 @@ Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button 
 ```
 
 **Modifier classes:**
-- Header type: `bt-dialog--left` (default, title sola hizalı) / `bt-dialog--flex` (icon slot + centered title)
+- Header type: `bt-dialog--left` (default, title sola hizalı) / `bt-dialog--center` (icon slot + centered title)
 - Button position: `bt-dialog--horizontal` / `bt-dialog--vertical`
+
+**Left/Right Control görünürlüğü:** Figma'da sol icon slot'u sadece Center header type'ta gösterilir (Left'te hiç yok), sağdaki close control ise her iki tipte de her zaman gösterilir — bu ikisi arasında bağımsız bir "gizle" seçeneği Figma'da yok. Playground'a kullanıcı isteğiyle **iki bağımsız toggle** eklendi (`Left Control` / `Right Control`, On/Off, `TBX_BOOL_OPTS` reuse edilerek): markup tarafında her ikisi de boş string'e düşüp elemanı DOM'dan tamamen kaldırıyor (`[hidden]`/`display:none` değil). `Left Control`'ün görünür bir etkisi olması için Header Type'ın Center olması gerekir (Left'te icon slot zaten render edilmiyor, toggle'ın kendisi devre dışı bırakılmıyor — bu projede playground prop'ları arasında conditional/dependent görünürlük mekanizması yok). `Right Control = Off` seçildiğinde close butonu (ve onu saran 40×40 slot) tamamen kaldırılıyor, title-wrap (flex:1) kalan alanı dolduruyor — bu, Figma'nın örneklerinin dışında kullanıcı kararıyla eklenen bir esneklik (örn. kapatılamaz/zorunlu-aksiyon dialog senaryosu için).
 
 ### 15.2 CSS Tokens
 
@@ -2882,21 +2903,28 @@ Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button 
 | Header | Min-height | — | 40px |
 | Header | Background | `--bt-base-subtle` | #f5f5f5 |
 | Header | Border bottom | `--bt-border-primary-muted` | #e6e6e6 |
+| Header | Padding | `--bt-space-none` | 0px |
+| Header · Left type | Padding-left | `--bt-space-xl` | 12px (no icon slot, so title needs its own inset) |
 | Title | Font | `--bt-title-sm-medium` | 500 14px/16px |
 | Title | Color | `--bt-text-primary-default` | #1a1a1a |
 | Subtitle | Font | `--bt-text-xs-regular` | 400 12px/16px |
-| Subtitle | Color | `--bt-text-secondary-default` | #666666 |
-| Close button | Width & Height | — | 40px |
-| Icon slot (Flex) | Width & Height | — | 40px |
+| Subtitle | Color | `--bt-text-primary-emphasis` | #727272 |
+| Control slot (left icon / right close) | Width & Height | — | 40px (layout only) |
+| Close button | Class | — | `bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon` (28×28) |
+| Icon slot (Center) | Width & Height | — | 24×24 wrapper (`.bt-dialog__icon-wrap`) in the 40px slot, 16×16 icon inside it |
 | Body | Min-height | — | 280px |
 | Body | Padding | `--bt-space-2xl` | 16px |
 | Body | Gap | `--bt-space-2xl` | 16px |
+| Body text | Font | `--bt-text-xs-regular` | 400 12px/16px |
+| Body text | Color | `--bt-text-primary-default` | #1a1a1a |
 | Footer | Border top | `--bt-border-primary-muted` | #e6e6e6 |
 | Footer | Padding vertical | `--bt-space-xl` | 12px |
 | Footer | Padding horizontal | `--bt-space-2xl` | 16px |
 | Footer | Gap | `--bt-space-md` | 8px |
 | Button · Horizontal | Width | — | 80px |
 | Button · Vertical | Width | — | 100% |
+
+**Not — CSS specificity:** `.bt-dialog__body-text` bir `<p>` etiketine tek class olarak uygulanıyor (`specificity 0,1,0`). Docs sitesindeki genel `.content p` kuralı (`0,1,1`) daha spesifik olduğu için bunu ezip 14px/emphasis-color/16px-margin-bottom uygulayabilir — normal sayfa akışında (isolation mode dışında) fark edilir, isolation preview'da `.content` sarmalayıcısı olmadığı için fark edilmez. Bu yeni bir Bentaş projesine taşınırken de aynı tuzağa düşülebileceğinden selector `.bt-dialog__body .bt-dialog__body-text` (specificity `0,2,0`) olarak yazılmalı — herhangi bir `.content p`/`.prose p` benzeri genel kuraldan bağımsız olarak kazanır.
 
 ### 15.3 Button Layout
 
