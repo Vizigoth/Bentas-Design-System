@@ -2435,6 +2435,7 @@ code {
 .bt-btn--primary-ghost:hover:not(:disabled),
 .bt-btn--primary-ghost.bt-btn--state-hover {
   color: var(--bt-primary-intense);
+  text-decoration: underline;
 }
 .bt-btn--primary-ghost:focus-visible:not(:disabled),
 .bt-btn--primary-ghost.bt-btn--state-focus {
