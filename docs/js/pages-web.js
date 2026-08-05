@@ -7202,5 +7202,447 @@ PAGES_WEB['components/dialog'] = {
   },
 };
 
+// ── Card ────────────────────────────────────────────────────────
+// Figma node 670:8121 (Base Card Header, 2 type × 2 position × 3 segments) +
+// 757:7380 (Base Card Content Header — aynı yapı, body içindeki bölüm ayıracı
+// olarak reuse edilir, her zaman borderless) + 692:30381 (assembled örnek).
+// Sol/sağ control slotu bağımsız bir "içerik tipi" seçimi: Icon/Button/
+// Checkbox/Switch/Avatar/Avatar Group/Badge/Text — hepsi mevcut bt-* bileşen
+// class'ları reuse edilerek render ediliyor (Figma'nın bağımsız show* boolean
+// flag'leri yerine playground'da tek seçim kutusuna sadeleştirildi).
+
+const CARD_TYPE_OPTS = [
+  { key: 'bordered',   label: 'Bordered' },
+  { key: 'borderless', label: 'Borderless' },
+];
+const CARD_POSITION_OPTS = [
+  { key: 'center', label: 'Center' },
+  { key: 'left',   label: 'Left' },
+];
+const CARD_CONTROL_OPTS = [
+  { key: 'none',        label: 'None' },
+  { key: 'icon',         label: 'Icon' },
+  { key: 'button',       label: 'Button' },
+  { key: 'checkbox',     label: 'Checkbox' },
+  { key: 'switch',       label: 'Switch' },
+  { key: 'avatar',       label: 'Avatar' },
+  { key: 'avatarGroup',  label: 'Avatar Group' },
+  { key: 'badge',        label: 'Badge' },
+  { key: 'text',         label: 'Text' },
+];
+
+// Figma "Icon/placeholder" asset'i — Accordion/Dialog'da doğrulanan lucide
+// "scan" ikonuyla aynı (screenshot ile teyit edildi), control slotlarındaki
+// generic leading icon + Card Row Segment ikonu + Button control'ün içindeki
+// icon-only buton ikonu için tek kaynak olarak reuse ediliyor.
+const _crdIconScan = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+
+function crdControlSlot(kind) {
+  switch (kind) {
+    case 'icon':
+      return `<span class="bt-card__control-icon">${_crdIconScan}</span>`;
+    case 'button':
+      return `<span class="bt-card__control-item"><button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-label="Action">${_crdIconScan}</button></span>`;
+    // Checkbox/Switch design system'deki gerçek bileşenler — Button gibi
+    // gerçekten tıklanabilir/state değiştiren olmalı, statik önizleme değil.
+    // Checkbox/Radio/Switch sayfalarındaki aynı onclick+classList.toggle
+    // deseni reuse ediliyor (bkz. chkPreview/swPreview).
+    case 'checkbox':
+      return `<span class="bt-card__control-item" onclick="this.querySelector('.bt-checkbox__box').classList.toggle('bt-checkbox__box--checked')" style="cursor:pointer;"><span class="bt-checkbox__box">${_chkCheck}</span></span>`;
+    case 'switch':
+      return `<span class="bt-card__control-item" onclick="this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"><span class="bt-switch__track"><span class="bt-switch__thumb"></span></span></span>`;
+    case 'avatar':
+      return `<span class="bt-card__control-item"><span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span></span>`;
+    case 'avatarGroup':
+      return `<span class="bt-card__control-item bt-card__control-avatar-group">
+        <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
+        <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
+        <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
+        <span class="bt-avatar bt-avatar--xs"><span class="bt-avatar__initials">+5</span></span>
+      </span>`;
+    case 'badge':
+      return `<span class="bt-card__control-item"><span class="bt-card__control-badge">Placeholder</span></span>`;
+    case 'text':
+      return `<span class="bt-card__control-item"><span class="bt-card__control-text">Additional Text Here</span></span>`;
+    default:
+      return '';
+  }
+}
+
+// Hem ana Card Header hem body içindeki (plain:true, her zaman borderless)
+// Content Header ayracı için tek kaynak — Dialog'daki Left/Center header
+// deseniyle aynı mantık: kontrol slotu olan tarafta title'ın kendi padding'i
+// sıfırlanıyor, olmayan tarafta 16px kalıyor.
+function crdHeaderHtml(opts) {
+  const o = opts || {};
+  const type = o.type || 'bordered';
+  const position = o.position || 'center';
+  const showSubtitle = o.showSubtitle !== false;
+  const leftControl = o.leftControl || 'none';
+  const rightControl = o.rightControl || 'none';
+  const plain = !!o.plain;
+  const titleText = o.titleText || 'Card Title Here';
+  const subtitleText = o.subtitleText || 'Subtitle';
+
+  const hasLeft = leftControl !== 'none';
+  const hasRight = rightControl !== 'none';
+  const isCenter = position === 'center';
+
+  const cls = [
+    'bt-card__header',
+    plain ? 'bt-card__header--plain' : '',
+    (!plain && type === 'bordered') ? 'bt-card__header--bordered' : '',
+    isCenter ? 'bt-card__header--center' : 'bt-card__header--left',
+    hasLeft ? 'bt-card__header--has-left' : '',
+    hasRight ? 'bt-card__header--has-right' : '',
+  ].filter(Boolean).join(' ');
+
+  // Position=Center'da title gerçekten flex:1'in ortasında değil, kutunun
+  // KENDİSİNİN ortasında görünür (text-align:center) — sadece TEK tarafta
+  // control varsa flex:1 kutusu asimetrik genişler ve title yanlış tarafa
+  // kayar. Boş tarafa, karşı taraftaki control'ün BİREBİR aynı markup'ını
+  // (aynı genişlik, visibility:hidden) "ayna" olarak basarak simetri
+  // korunuyor — hangi control tipi olursa olsun (Icon/Button/Avatar Group/
+  // Badge/Text, hepsi farklı genişlikte) otomatik doğru genişlikte oluyor.
+  const leftSlot = hasLeft
+    ? `<span class="bt-card__control">${crdControlSlot(leftControl)}</span>`
+    : (isCenter && hasRight ? `<span class="bt-card__control" style="visibility:hidden" aria-hidden="true">${crdControlSlot(rightControl)}</span>` : '');
+  const rightSlot = hasRight
+    ? `<span class="bt-card__control">${crdControlSlot(rightControl)}</span>`
+    : (isCenter && hasLeft ? `<span class="bt-card__control" style="visibility:hidden" aria-hidden="true">${crdControlSlot(leftControl)}</span>` : '');
+
+  return `<div class="${cls}">
+    ${leftSlot}
+    <span class="bt-card__title-wrap">
+      <span class="bt-card__title">${titleText}</span>
+      ${showSubtitle ? `<span class="bt-card__subtitle">${subtitleText}</span>` : ''}
+    </span>
+    ${rightSlot}
+  </div>`;
+}
+
+// "Card Row Segment" — Base Card Content'in (756:6684) 4 örnek satırında da
+// aynı: 28×28 leading icon + flex1 Label (sol) + flex1 Value (sağ).
+function crdRowHtml() {
+  return `<div class="bt-card__row">
+    <span class="bt-card__row-icon"><span class="bt-card__control-icon">${_crdIconScan}</span></span>
+    <span class="bt-card__row-content">
+      <span class="bt-card__row-label">Label Text Here</span>
+      <span class="bt-card__row-value">Value Text Here</span>
+    </span>
+  </div>`;
+}
+
+function crdHtml(variant, props) {
+  const p = props || {};
+  const type = p.type || 'bordered';
+  const position = p.position || 'center';
+  const showSubtitle = (p.showSubtitle || 'on') === 'on';
+  const leftControl = p.leftControl || 'none';
+  const rightControl = p.rightControl || 'none';
+  const showContentHeader = (p.showContentHeader || 'on') === 'on';
+  const showDescription = (p.showDescription || 'on') === 'on';
+  // Content Header, Figma'da (757:7380) Card Header ile birebir aynı prop
+  // setine sahip (Position/Subtitle/sol-sağ Control) — sadece her zaman
+  // borderless/arka plansız. Playground'da da aynı özellikler açık.
+  const chPosition     = p.contentHeaderPosition || 'left';
+  const chSubtitle     = (p.contentHeaderSubtitle || 'off') === 'on';
+  const chLeftControl  = p.contentHeaderLeftControl || 'none';
+  const chRightControl = p.contentHeaderRightControl || 'none';
+
+  const header = crdHeaderHtml({ type, position, showSubtitle, leftControl, rightControl });
+  const contentHeader = showContentHeader ? crdHeaderHtml({
+    plain: true, position: chPosition, showSubtitle: chSubtitle, titleText: 'Content Title Here',
+    leftControl: chLeftControl, rightControl: chRightControl,
+  }) : '';
+  const description = showDescription
+    ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
+    : '';
+  const rows = crdRowHtml() + crdRowHtml() + crdRowHtml();
+
+  return `<div class="bt-card">
+  ${header}
+  <div class="bt-card__body">
+    ${contentHeader}
+    ${description}
+    ${rows}
+  </div>
+</div>`;
+}
+
+function crdCss(variant, props) {
+  const p = props || {};
+  const type = p.type || 'bordered';
+  const position = p.position || 'center';
+  const leftControl = p.leftControl || 'none';
+  const rightControl = p.rightControl || 'none';
+  const hasLeft = leftControl !== 'none';
+  const hasRight = rightControl !== 'none';
+
+  const ln = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const lines = [
+    `.bt-card {`,
+    ln('width', '420px'),
+    ln('background', 'var(--bt-base-default, #ffffff)  /* #ffffff */'),
+    ln('border', '1px solid var(--bt-border-primary-default, #d4d4d4)  /* #d4d4d4 */'),
+    ln('border-radius', 'var(--bt-radius-md, 6px)  /* 6px */'),
+    ln('overflow', 'hidden'),
+    `}`,
+    ``,
+    `.bt-card__header {`,
+    ln('height', '40px'),
+    ln('background', 'transparent'),
+    ln('display', 'flex'),
+    ln('align-items', 'center'),
+    ln('justify-content', 'space-between'),
+    `}`,
+    ...(type === 'bordered' ? [``, `.bt-card__header--bordered {`, ln('background', 'var(--bt-base-subtle, #f5f5f5)  /* #f5f5f5 */'), ln('border-bottom', '1px solid var(--bt-border-primary-default, #d4d4d4)  /* #d4d4d4 */'), `}`] : []),
+    ``,
+    `.bt-card__title-wrap {`,
+    ln('flex', '1 1 0'),
+    ...(position === 'center'
+      ? [ln('align-items', 'center'), ln('text-align', 'center')]
+      : [
+          ln('align-items', 'flex-start'),
+          ln('text-align', 'left'),
+          ln('padding-left',  hasLeft  ? '0' : 'var(--bt-space-2xl, 16px)  /* 16px — sol control yoksa kendi inseti gerekiyor */'),
+          ln('padding-right', hasRight ? '0' : 'var(--bt-space-2xl, 16px)  /* 16px */'),
+        ]),
+    `}`,
+    ``,
+    `.bt-card__title {`,
+    ln('font', 'var(--bt-title-sm-medium, 500 14px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-default, #1a1a1a)  /* #1a1a1a */'),
+    `}`,
+    ``,
+    `.bt-card__subtitle {`,
+    ln('font', 'var(--bt-subtitle-xs-regular, 400 12px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-emphasis, #727272)  /* #727272 */'),
+    `}`,
+    ``,
+    `.bt-card__body {`,
+    ln('padding', 'var(--bt-space-2xl, 16px)  /* 16px */'),
+    ln('display', 'flex'),
+    ln('flex-direction', 'column'),
+    ln('gap', 'var(--bt-space-md, 8px)  /* 8px */'),
+    `}`,
+    ``,
+    `.bt-card__row {`,
+    ln('display', 'flex'),
+    ln('align-items', 'center'),
+    `}`,
+    ``,
+    `.bt-card__row-icon {`,
+    ln('width', '28px'),
+    ln('height', '28px'),
+    `}`,
+    ``,
+    `.bt-card__row-icon .bt-card__control-icon {`,
+    ln('width', '24px'),
+    ln('height', '24px'),
+    ln('color', 'var(--bt-icon-primary-strong, #535353)  /* #535353 — ikon kendisi bunu doldurmaz, 16×16 kendi boyutunda ortalanır */'),
+    `}`,
+  ];
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/card'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Header Types', 'Control Slots', 'Body'],
+  render(tab) {
+    const title = 'Card';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Card bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header</td><td>Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Header · Borderless (default)</td><td>Background</td><td>—</td><td>transparent</td></tr>
+          <tr><td>Header · Bordered</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header · Bordered</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header · Left, no control</td><td>Title padding</td><td>${tk('--bt-space-2xl')}</td><td>16px (o taraftaki 40px control slotu inseti karşılıyorsa 0'a düşer)</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Subtitle</td><td>Font</td><td>${tk('--bt-subtitle-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 40px (hug content — Avatar Group/Badge/Text gibi geniş içeriklerde büyür) / 40px sabit</td></tr>
+          <tr><td>Control · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>24×24, #535353</td></tr>
+          <tr><td>Control · Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
+          <tr><td>Control · Checkbox</td><td>Class</td><td>—</td><td>${tk('bt-checkbox__box')} (16×16)</td></tr>
+          <tr><td>Control · Switch</td><td>Class</td><td>—</td><td>${tk('bt-switch__track')} (32×20)</td></tr>
+          <tr><td>Control · Avatar / Avatar Group</td><td>Class</td><td>—</td><td>${tk('bt-avatar bt-avatar--xs')} (28×28)</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Row</td><td>Icon size</td><td>—</td><td>28×28</td></tr>
+          <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Card kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Header'ı Bordered yaparak body'den net bir görsel ayrım oluştur — özellikle Header'da control varsa</li>
+        <li>Sol control slotunu bağlamsal bir gösterge (ikon, avatar, checkbox) için kullan; sağ slotu eylem (buton) veya durum (badge, switch) için kullan</li>
+        <li>Body içindeki Content Header'ı sadece birden fazla mantıksal bölüm varsa kullan — tek bir içerik bloğu için gereksiz</li>
+        <li>Row Segment listelerinde Label/Value çiftlerini tutarlı bir sırayla göster</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Hem sol hem sağ slotu doldurup Header'ı kalabalıklaştırma — 40×40'lık slotlar yalnızca tek bir kontrol için tasarlandı</li>
+        <li>Position=Center'ı sağ/sol control ile birlikte kullanma — merkezleme, controller asimetrik olduğunda bozulur</li>
+        <li>Card içine başka bir Card veya Dialog gömme</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-card-overview',
+        variants: [{ key: 'default', label: 'Card' }],
+        // group: aynı isimli kontroller (Position/Subtitle/Left-Right Control)
+        // Header ve Content Header için ayrı ayrı tekrarlandığından, toolbar'da
+        // karışmaması için iki gruba ayrıldı (bkz. playground.js prop.group —
+        // sadece group verilen sayfalarda görünür bir ayraç oluşturuyor,
+        // component'e özel ama gerektiğinde başka sayfalarda da kullanılabilir).
+        props: [
+          { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+          { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+          { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+          { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+          { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+          { key: 'showContentHeader',        label: 'Show',          group: 'Content Header', options: TBX_BOOL_OPTS,      default: 'on' },
+          { key: 'contentHeaderPosition',     label: 'Position',      group: 'Content Header', options: CARD_POSITION_OPTS, default: 'left' },
+          { key: 'contentHeaderSubtitle',     label: 'Subtitle',      group: 'Content Header', options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'contentHeaderLeftControl',  label: 'Left Control',  group: 'Content Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+          { key: 'contentHeaderRightControl', label: 'Right Control', group: 'Content Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+          { key: 'showDescription', label: 'Description', group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, p)}</div>`,
+        code:    (v, p) => crdHtml(v, p),
+        css:     (v, p) => crdCss(v, p),
+      })}
+
+      <p class="page-desc">Card, ilişkili içeriği bir Header ve bir Body olmak üzere iki bölümde gruplayan bir kapsayıcıdır. Header; Bordered/Borderless tip, Center/Left pozisyon ve sol/sağ 40×40 control slotlarıyla özelleştirilebilir. Body ise opsiyonel bir alt-bölüm başlığı (Content Header) ve Label/Value satırlarından oluşan esnek bir içerik alanıdır.</p>
+
+      <h2 id="Header Types">Header Types</h2>
+      <p class="page-desc">Figma'da Header, 3 bağımsız eksenden oluşuyor: <strong>Type</strong> (Bordered/Borderless — arka plan+ayraç, aşağıdaki Anatomy tablosunda), <strong>Position</strong> (Center/Left) ve <strong>Segments</strong> (1/2/3 — kaç control slotu dolu). Position × Segments = <strong>6 temel header düzeni</strong>; bunların her biri Bordered veya Borderless olabildiği için toplam 6 × 2 = 12 Figma varyantı var. Bu projede "Segments" ayrı bir seçenek olarak değil, sol/sağ control'lerin bağımsız içerik tipi seçimiyle (None dahil) genelleştirildi — aşağıdaki 6 satır Figma'nın kendi Segments 1/2/3 karşılıklarını gösteriyor.</p>
+      <table class="token-table">
+        <thead><tr><th style="width:120px">Layout</th><th style="width:35%">Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Center · 1 segment</td>
+            <td>${crdHeaderHtml({ position: 'center' })}</td>
+            <td>Sadece ortalanmış başlık, control yok. Segments=1'in Figma karşılığı.</td>
+          </tr>
+          <tr>
+            <td>Center · 2 segments</td>
+            <td>${crdHeaderHtml({ position: 'center', rightControl: 'button' })}</td>
+            <td>Tek control (burada sağda Button). Figma'nın kendisi de bu durumda karşı tarafa boş bir 40px "hayalet" kutu koyarak başlığı ortada tutuyor — burada aynı etki, karşı taraftaki control'ün görünmez bir "aynası" ile (herhangi bir genişlikte) sağlanıyor.</td>
+          </tr>
+          <tr>
+            <td>Center · 3 segments</td>
+            <td>${crdHeaderHtml({ position: 'center', leftControl: 'icon', rightControl: 'button' })}</td>
+            <td>İki control (sol Icon + sağ Button, Figma'nın varsayılan örneği). İki taraf da ~40px footprint'te olduğu sürece simetri bozulmaz.</td>
+          </tr>
+          <tr>
+            <td>Left · 1 segment</td>
+            <td>${crdHeaderHtml({ position: 'left' })}</td>
+            <td>Başlık sola hizalı, kendi 16px inset'iyle. Control yok.</td>
+          </tr>
+          <tr>
+            <td>Left · 2 segments</td>
+            <td>${crdHeaderHtml({ position: 'left', rightControl: 'button' })}</td>
+            <td>Tek control (sağda Button) — Left pozisyonda simetri kaygısı olmadığı için karşı tarafa hayalet/ayna gerekmiyor.</td>
+          </tr>
+          <tr>
+            <td>Left · 3 segments</td>
+            <td>${crdHeaderHtml({ position: 'left', leftControl: 'icon', rightControl: 'button' })}</td>
+            <td>İki control (sol Icon + sağ Button) — en yaygın Card header kullanımı.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header</td><td>Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Header · Borderless (default)</td><td>Background</td><td>—</td><td>transparent</td></tr>
+          <tr><td>Header · Bordered</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header · Bordered</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Control Slots">Control Slots</h2>
+      <p class="page-desc">Header'ın sol ve sağ tarafındaki 40×40 slotlar; Icon, Button, Checkbox, Switch, Avatar, Avatar Group, Badge veya Text içeriklerinden birini gösterebilir — tümü design system'deki gerçek bileşenleri reuse eder.</p>
+      <table class="token-table">
+        <thead><tr><th>Content</th><th>Preview</th><th>Reused Class</th></tr></thead>
+        <tbody>
+          <tr><td>Icon</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'icon', showSubtitle: false })}</td><td>${tk('.bt-card__control-icon')} (24×24)</td></tr>
+          <tr><td>Button</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'button', showSubtitle: false })}</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')}</td></tr>
+          <tr><td>Checkbox</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'checkbox', showSubtitle: false })}</td><td>${tk('bt-checkbox__box')}</td></tr>
+          <tr><td>Switch</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'switch', showSubtitle: false })}</td><td>${tk('bt-switch__track')}</td></tr>
+          <tr><td>Avatar</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'avatar', showSubtitle: false })}</td><td>${tk('bt-avatar bt-avatar--xs bt-avatar--brand')}</td></tr>
+          <tr><td>Avatar Group</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'avatarGroup', showSubtitle: false })}</td><td>${tk('bt-avatar bt-avatar--xs')} × N, ${tk('margin-left:-12px')}</td></tr>
+          <tr><td>Badge</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'badge', showSubtitle: false })}</td><td>${tk('.bt-card__control-badge')}</td></tr>
+          <tr><td>Text</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'text', showSubtitle: false })}</td><td>${tk('.bt-card__control-text')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 40px (hug content) / 40px sabit</td></tr>
+          <tr><td>Control · Icon</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Control · Badge</td><td>Background</td><td>${tk('--bt-base-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Control · Badge</td><td>Border radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Body">Body</h2>
+      <p class="page-desc">Body; opsiyonel bir Content Header bölüm ayracı, opsiyonel bir açıklama metni ve ikon + Label + Value düzeninde Row Segment listesinden oluşur.</p>
+      <table class="token-table">
+        <thead><tr><th>Örnek</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Content Header + Row Segment</td>
+            <td><div class="bt-card" style="width:100%">
+              ${crdHeaderHtml({ plain: true, position: 'left', showSubtitle: true, titleText: 'Content Title Here' })}
+              <div class="bt-card__body" style="padding-top:0">${crdRowHtml()}</div>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Row · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>28×28 slot, 24×24 ikon, #535353</td></tr>
+          <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Row · Label / Value</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
 // Expose for isolation.html auto-render
 window.PAGES_WEB = PAGES_WEB;

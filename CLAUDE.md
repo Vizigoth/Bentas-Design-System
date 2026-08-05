@@ -141,5 +141,5 @@ Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ay
 
 ## Son Tamamlanan Component
 
-**Dialog** — 2026-07-28.
+**Card** — 2026-08-05.
 Detaylı oturum geçmişi: `HISTORY.md`

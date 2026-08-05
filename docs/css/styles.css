@@ -1604,6 +1604,24 @@ code {
 }
 .pgd-variant-btn:hover { background: var(--bt-surface-subtle); }
 .pgd-prop-label { color: var(--bt-text-muted); font-weight: 400; }
+/* Opsiyonel prop grubu ayracı — birden fazla prop grubu aynı toolbar'da
+   aynı isimli kontrolleri (Position, Subtitle vb.) tekrarlıyorsa aralarına
+   konur (bkz. playground.js renderPlayground, prop.group). Sadece group
+   set edildiğinde render edilir, diğer tüm sayfalarda hiç görünmez. */
+.pgd-group-label {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding-left: 10px;
+  margin-left: 3px;
+  border-left: 1px solid var(--bt-border-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bt-text-muted);
+  white-space: nowrap;
+}
 .pgd-icon-btn {
   display: inline-flex;
   align-items: center;
@@ -4875,3 +4893,199 @@ code {
 /* Vertical — buttons stacked, full-width */
 .bt-dialog--vertical .bt-dialog__footer { flex-direction: column; }
 .bt-dialog--vertical .bt-dialog__footer .bt-btn { width: 100%; justify-content: center; }
+
+/* ── Card ────────────────────────────────────────────────── */
+/* Figma node 670:8121 (Base Card Header, 2 type × 2 position × 3 segments) +
+   757:7380 (Base Card Content Header — aynı yapı, body içinde bölüm ayıracı
+   olarak reuse edilir) + 692:30381 (assembled Card örneği). Figma'da dış
+   border header (üst+yan) ile body (alt+yan) arasında bölünmüş tanımlı —
+   burada tek .bt-card wrapper'ına taşındı, görsel sonuç birebir aynı ama
+   tek/standart bir çerçeve kuralı olduğu için daha az tekrarlı. */
+.bt-card {
+  width: 420px;
+  max-width: 100%;
+  background: var(--bt-base-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-md, 6px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* — Header — aynı blok, body içinde "Content Header" bölüm ayıracı olarak
+   .bt-card__header--plain ile (arka plansız) reuse ediliyor. Varsayılan
+   (Borderless) transparent — Bordered olunca hem ayraç hem subtle arka plan
+   birlikte geliyor (Borderless header/body ile tamamen kaynaşık görünür). */
+.bt-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  flex-shrink: 0;
+  background: transparent;
+}
+.bt-card__header--bordered {
+  background: var(--bt-base-subtle, #f5f5f5);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-card__header--plain { background: transparent; height: auto; min-height: 40px; }
+
+.bt-card__title-wrap {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+.bt-card__header--center .bt-card__title-wrap { align-items: center; text-align: center; }
+.bt-card__header--left .bt-card__title-wrap {
+  align-items: flex-start;
+  text-align: left;
+  padding: 0 var(--bt-space-2xl, 16px);
+}
+/* Sol/sağ control slotu varsa o taraftaki 40px slot zaten inseti sağlıyor,
+   title'ın kendi padding'i o tarafta sıfırlanıyor (Dialog'daki aynı kuralın
+   benzeri). */
+.bt-card__header--left.bt-card__header--has-left  .bt-card__title-wrap { padding-left: var(--bt-space-none, 0px); }
+.bt-card__header--left.bt-card__header--has-right .bt-card__title-wrap { padding-right: var(--bt-space-none, 0px); }
+/* Content Header (--plain) Left pozisyonda control olsun ya da olmasın HER
+   ZAMAN 0 padding — kullanıcı kararıyla doğrulandı, Card Header'ın "control
+   yoksa 16px" kuralından bilinçli olarak farklı (Content Header zaten body'nin
+   kendi 16px padding'ine oturuyor, ek bir inset'e ihtiyacı yok). */
+.bt-card__header--plain.bt-card__header--left .bt-card__title-wrap {
+  padding-left: var(--bt-space-none, 0px);
+  padding-right: var(--bt-space-none, 0px);
+}
+
+.bt-card__title {
+  font: var(--bt-title-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-card__subtitle {
+  font: var(--bt-subtitle-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-emphasis, #727272);
+}
+
+/* — Control slots (left/right, 40×40 layout box) — */
+/* Hug content — Avatar Group/Badge/Text gibi 40px'ten geniş içerikler slotu
+   büyütebilmeli (Figma'da bu içeriklerde "Base Card Controls" sabit
+   size-[40px] değil, sadece height 40 + hug-width kullanıyor). Icon/Button/
+   Checkbox/Switch/Avatar gibi dar içeriklerde min-width sayesinde yine tam
+   40px'te kalıp ortalanıyor. */
+.bt-card__control {
+  min-width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: var(--bt-space-xs, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-2xs, 2px);
+}
+/* 24×24 taşıyıcı — ikonun kendisi bunu DOLDURMAZ, kendi tanımlı boyutunda
+   (16×16, bkz. _crdIconScan) ortalanır. Avatar'ın "ikon = wrapper boyutu"
+   deseniyle karıştırılmamalı — Dialog'da da aynı ayrım not edildi
+   (.bt-dialog__icon-wrap, bkz. design.md §15). */
+.bt-card__control-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-icon-primary-strong, #535353);
+}
+/* Button/Checkbox/Text kendi içeriğiyle zaten 28×28 çıkıyor; Switch/Avatar
+   Group/Badge değişken genişlikte olduğu için sabit width verilmiyor,
+   sadece height + 2px yatay iç boşluk (Figma "…Control" slotlarıyla aynı). */
+.bt-card__control-item {
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--bt-space-2xs, 2px);
+  box-sizing: border-box;
+}
+.bt-card__control-text {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-card__control-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--bt-space-md, 8px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-full, 9999px);
+  background: var(--bt-base-muted, #e6e6e6);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-card__control-avatar-group { display: flex; align-items: center; }
+.bt-card__control-avatar-group .bt-avatar:not(:first-child) { margin-left: -12px; }
+
+/* — Body — */
+.bt-card__body {
+  padding: var(--bt-space-2xl, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-md, 8px);
+}
+/* .content p (specificity 0,1,1) tek class'lı bir <p>'yi (0,1,0) ezer — Dialog'daki
+   aynı bug (bkz. .bt-dialog__body .bt-dialog__body-text). İki class'lı selector
+   (0,2,0) kaynak sırasından bağımsız olarak kazanır. */
+.bt-card__body .bt-card__description {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  margin: 0;
+}
+
+/* — Row Segment (opsiyonel ikon + label + value, "Card Row Segment") — */
+.bt-card__row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+/* "Base Car Row Segment Controls" ile aynı 28×28 dış slot — içine 24×24
+   .bt-card__control-icon taşıyıcısı (o da ikonu doldurmaz) yerleştiriliyor,
+   header control'deki 40×40→24×24 kademesiyle aynı desen. */
+.bt-card__row-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bt-card__row-content {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.bt-card__row-label {
+  flex: 1 1 0;
+  min-width: 0;
+  font: var(--bt-label-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bt-card__row-value {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font: var(--bt-label-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

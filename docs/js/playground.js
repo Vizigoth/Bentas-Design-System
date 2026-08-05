@@ -64,10 +64,20 @@ function renderPlayground(config) {
       </div>` : ''}
     </div>` : '';
 
+  // Opsiyonel prop.group: birden fazla prop grubu aynı toolbar'da (örn. Card'ın
+  // Header + Content Header prop'ları) aynı isimli kontrolleri (Position,
+  // Subtitle, Left/Right Control) yan yana taşıyınca karışabiliyor. group
+  // set edilmeyen sayfalarda (mevcut tüm component'ler) hiçbir görsel fark
+  // olmuyor — sadece group değiştiğinde küçük bir ayraç + etiket beliriyor.
+  let _pgdPrevGroup;
   const propControls = (config.props || []).map(prop => {
     const selectedKey = st.props[prop.key];
     const selected = prop.options.find(o => o.key === selectedKey) || prop.options[0];
+    const groupLabel = (prop.group && prop.group !== _pgdPrevGroup)
+      ? `<span class="pgd-group-label">${prop.group}</span>` : '';
+    _pgdPrevGroup = prop.group;
     return `
+    ${groupLabel}
     <div class="pgd-dropdown">
       <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
         <span class="pgd-prop-label">${prop.label}</span><span>${selected.label}</span>${_pgdIconChevrons}

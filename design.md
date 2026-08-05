@@ -2336,7 +2336,14 @@ Nord Health (nordhealth.design) tarzı, Figma "Playground" toolbar'ından (Benta
 1. **Variant dropdown** — collapsible, `config.variants` listesini gösterir (örn.
    Sidebar'da Expanded/Collapsed, Alert'te Error/Warning/Success/Information)
 2. **Ek prop dropdown'ları** (opsiyonel, `config.props`) — Type dropdown'ının yanına
-   istenildiği kadar ek collapsible seçici eklenebilir (Alert'te Theme + Close Button)
+   istenildiği kadar ek collapsible seçici eklenebilir (Alert'te Theme + Close Button).
+   Bir prop'a opsiyonel `group: 'Etiket'` verilirse, bir önceki prop'un group'undan
+   farklı olduğunda aralarına küçük bir dikey ayraç + etiket (`.pgd-group-label`)
+   basılır — birden fazla prop kümesi aynı isimli kontrolleri (örn. Card'ın Header
+   VE Content Header'ının ikisinin de Position/Subtitle/Left-Right Control'ü olması)
+   tekrarlıyorsa toolbar'da karışmalarını önlemek için (bkz. §Card 16). `group`
+   set edilmezse (mevcut tüm component'ler) davranış birebir eskisi gibi kalır —
+   tamamen geriye dönük uyumlu, opt-in bir özellik.
 3. **Measure** — aktifken preview üzerinde hover edilen elementin **content box'ı mavi**
    (ortasında `W × H` etiketi), **padding'i her kenarda ayrı yeşil şerit** (o kenarın px
    değeri ortada, 0 ise gizli) — klasik DevTools box-model değil, Figma/Nord tarzı
@@ -2953,3 +2960,121 @@ host.addEventListener('click', e => {
   }
 });
 ```
+
+## 16. Card
+
+Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segments) + `757:7380` (Base Card Content Header — aynı yapı, body içindeki bölüm ayıracı olarak reuse edilir) + `692:30381` (assembled Card örneği, "Veritabanı Detayları"). Card, ilişkili içeriği bir **Header** ve bir **Body** olmak üzere iki bölümde gruplayan bir kapsayıcı.
+
+**Not — dış çerçeve (bilinçli sadeleştirme):** Figma'da Card'ın dış border'ı tek bir yerde tanımlı değil — Header (üst+sağ+sol) ile Body (alt+sağ+sol) kendi border'larını ayrı ayrı taşıyor, ikisi yan yana gelince tek bir çerçeve gibi görünüyor (Header'ın kendi border-bottom'ı hem dış çerçevenin parçası hem de header/body ayracı). Burada bu, tek bir `.bt-card` wrapper'ına taşındı: `.bt-card` tüm dış border+radius+`overflow:hidden`'ı taşıyor, `.bt-card__header`/`.bt-card__body` kendi border'larına sahip değil. Görsel sonuç birebir aynı, ama tek/standart bir çerçeve kuralı olduğu için Header'sız kullanım (varsa) veya farklı border-radius senaryolarında daha az kırılgan.
+
+**Not — control slot sistemi (bilinçli sadeleştirme):** Figma'nın "Base Card Controls" component'i sol/sağ slotlarda **bağımsız boolean flag'ler** olarak tanımlı (`showIcon`, `showButton`, `showCheckbox`, `showSwitch`, `showAvatar`, `showAvatarGroup`, `showBadge`, `showAdditionalText` — teorik olarak birden fazlası aynı anda açılabilir). Playground'da bu, kullanıcı deneyimi için **tek seçimlik bir "content type" dropdown'una** sadeleştirildi (None/Icon/Button/Checkbox/Switch/Avatar/Avatar Group/Badge/Text) — Dialog'daki Left/Right Control On/Off toggle'larının aynı mantıkla genişletilmiş hali. Her seçenek, design system'deki **gerçek bt-\* component'lerini** reuse ediyor (Checkbox → `.bt-checkbox__box`, Switch → `.bt-switch__track`/`.bt-switch__thumb`, Avatar → `.bt-avatar bt-avatar--xs`, Button → `bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon`) — CLAUDE.md'nin "Mevcut Component'leri Reuse Et" kuralı. **Badge** için ise projede henüz ayrı bir reusable `.bt-badge` component'i olmadığından (Web nav'da Badge hâlâ eski mobile inline-style sayfaya düşüyor), Card'a özel, token-tabanlı `.bt-card__control-badge` class'ı eklendi — ileride gerçek bir Badge component'i eklenirse bununla değiştirilmeli.
+
+**Not — Header/Content Header padding kuralı (Dialog'daki desenle aynı):** `Position=Left` header'ında title, o taraftaki 40×40 control slotu doluysa kendi padding'ini sıfırlıyor (slot zaten inseti sağlıyor), slot boşsa `--bt-space-2xl` (16px) kendi padding'ini alıyor — bu, sol/sağ için **bağımsız** çalışıyor (örn. sadece sağ slot doluysa, sol padding 16px kalırken sağ 0 olur). Body içinde bölüm ayıracı olarak reuse edilen Content Header (`.bt-card__header--plain`) ise Figma'da bu padding kuralına hiç girmiyor — pozisyon/control'den bağımsız her zaman 0 padding (body'nin kendi 16px padding'ine oturuyor).
+
+**Not — Body içeriği:** Figma'nın "Base Card Content" (`756:6684`) component'i canonical içerik reçetesi: opsiyonel Content Header + opsiyonel Description + N adet "Card Row Segment" (28×28 ikon + flex Label + flex Value). Gerçek kullanım örneği ("Veritabanı Detayları", `692:30381`) 12px body padding ve ikon+değer kombinasyonlu (örn. yeşil ok + "%18.2") satırlar kullanıyor — ama bu tek bir ürün ekranının özelleştirmesi, docs sitesindeki generic placeholder konvansiyonuyla (diğer tüm component'lerde "Label Text Here"/"Value Text Here" gibi) tutarlı kalmak için **canonical 16px padding + sade ikon+label+value satırları** tercih edildi.
+
+### 16.1 Markup
+
+```html
+<div class="bt-card">
+  <div class="bt-card__header bt-card__header--bordered bt-card__header--left bt-card__header--has-left bt-card__header--has-right">
+    <!-- Sol control slot — 40×40, örn. Icon -->
+    <span class="bt-card__control">
+      <span class="bt-card__control-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+      </span>
+    </span>
+    <span class="bt-card__title-wrap">
+      <span class="bt-card__title">Card Title Here</span>
+      <!-- Subtitle: opsiyonel -->
+      <span class="bt-card__subtitle">Subtitle</span>
+    </span>
+    <!-- Sağ control slot — 40×40, örn. Button -->
+    <span class="bt-card__control">
+      <span class="bt-card__control-item">
+        <button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-label="Action">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+        </button>
+      </span>
+    </span>
+  </div>
+  <div class="bt-card__body">
+    <!-- Content Header — opsiyonel bölüm ayracı, her zaman borderless -->
+    <div class="bt-card__header bt-card__header--plain bt-card__header--left">
+      <span class="bt-card__title-wrap">
+        <span class="bt-card__title">Content Title Here</span>
+      </span>
+    </div>
+    <p class="bt-card__description">Description for additional information displayed below the title.</p>
+    <!-- Row Segment — N kez tekrarlanır -->
+    <div class="bt-card__row">
+      <span class="bt-card__row-icon"><svg width="16" height="16" viewBox="0 0 24 24" ...></svg></span>
+      <span class="bt-card__row-content">
+        <span class="bt-card__row-label">Label Text Here</span>
+        <span class="bt-card__row-value">Value Text Here</span>
+      </span>
+    </div>
+  </div>
+</div>
+```
+
+**Modifier classes:**
+- Header type: `bt-card__header--bordered` (header/body arası ayraç) / yok (borderless)
+- Header position: `bt-card__header--center` / `bt-card__header--left`
+- Control varlığı: `bt-card__header--has-left` / `bt-card__header--has-right` (sadece o taraftaki title padding'ini sıfırlamak için, JS tarafında control seçimine göre otomatik ekleniyor)
+- Content Header: `bt-card__header--plain` (arka plansız, her zaman borderless/0-padding, body içinde kullanılır)
+
+### 16.2 CSS Tokens
+
+| Element | Property | Token | Fallback |
+|---|---|---|---|
+| Container | Width | — | 420px |
+| Container | Background | `--bt-base-default` | #ffffff |
+| Container | Border | `--bt-border-primary-default` | #d4d4d4 |
+| Container | Border radius | `--bt-radius-md` | 6px |
+| Header | Height | — | 40px |
+| Header | Background | `--bt-base-subtle` | #f5f5f5 |
+| Header · Bordered | Border bottom | `--bt-border-primary-default` | #d4d4d4 |
+| Header · Left, boş slot | Title padding (o taraf) | `--bt-space-2xl` | 16px |
+| Title | Font | `--bt-title-sm-medium` | 500 14px/16px |
+| Title | Color | `--bt-text-primary-default` | #1a1a1a |
+| Subtitle | Font | `--bt-subtitle-xs-regular` | 400 12px/16px |
+| Subtitle | Color | `--bt-text-primary-emphasis` | #727272 |
+| Control slot | Width & Height | — | 40×40px (layout only) |
+| Control · Icon | Size / Color | `--bt-icon-primary-strong` | 24×24, #535353 |
+| Control · Button | Class | — | `bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon` (28×28) |
+| Control · Checkbox | Class | — | `bt-checkbox__box` (16×16) |
+| Control · Switch | Class | — | `bt-switch__track` + `bt-switch__thumb` (32×20 / 16×16) |
+| Control · Avatar / Avatar Group | Class | — | `bt-avatar bt-avatar--xs` (28×28), grup için `margin-left:-12px` |
+| Control · Badge | Background / Radius | `--bt-base-muted` / `--bt-radius-full` | #e6e6e6 / 9999px |
+| Body | Padding | `--bt-space-2xl` | 16px |
+| Body | Gap | `--bt-space-md` | 8px |
+| Description | Font | `--bt-text-xs-regular` | 400 12px/16px |
+| Row · Icon | Size / Color | — / `--bt-icon-primary-strong` | 28×28 slot, 24×24 ikon, #535353 |
+| Row · Label / Value | Font | `--bt-label-xs-regular` | 400 12px/16px |
+
+**Not — Content Header, Card Header ile aynı özelliklere sahip:** Figma'da "Base Card Content Header" (`757:7380`) `Base Card Header` ile BİREBİR aynı prop setine sahip: Position (Center/Left), Segments (1/2/3 → sol/sağ control), Type (Bordered/Borderless), Subtitle. Playground'a `contentHeaderPosition`/`contentHeaderSubtitle`/`contentHeaderLeftControl`/`contentHeaderRightControl` prop'ları eklendi — Content Header artık Card Header ile tam feature-parity'de, aynı `crdHeaderHtml()` fonksiyonu (`plain:true` ile) reuse edilerek render ediliyor, bu sayede Position=Center'daki ghost-mirror simetri düzeltmesi de otomatik olarak Content Header'a da uygulanmış oluyor.
+
+**Not — sadeleştirme denemesi geri alındı, yerine `playground.js`'e genel prop gruplama eklendi:** Toplam prop sayısı 11'e çıkınca ("content ve header propertileri birlikte çok karışık" geri bildirimi üzerine) önce 4 prop playground'dan çıkarılıp statik bir tabloya taşınmıştı — kullanıcı bunun istediği çözüm olmadığını belirtip geri aldırdı, 4 prop playground'a geri kondu. Asıl çözüm olarak `docs/js/playground.js`'e opsiyonel bir **`prop.group`** alanı eklendi (`renderPlayground`'ın `propControls` üretimi): bir prop'un `group`'u bir öncekinden farklıysa aralarına küçük bir dikey ayraç + etiket (`.pgd-group-label`) basılıyor. `group` set edilmeyen sayfalarda (projedeki tüm diğer component'ler) davranış birebir aynı kalıyor — sıfır görsel fark, geriye dönük tam uyumlu. Card'ın prop'ları 3 gruba ayrıldı: **Header** (Type/Position/Subtitle/Left Control/Right Control), **Content Header** (Show/Position/Subtitle/Left Control/Right Control), **Body** (Description) — gruplandıkça tekrarlanan "Content Header " ön eki de prop label'larından kaldırıldı (artık sadece "Position"/"Subtitle" vb., ayraç etiketi zaten hangi gruba ait olduğunu gösteriyor). Bu, component'e özel bir çözüm ama altyapısı genel — başka bir component'in playground'unda aynı ihtiyaç çıkarsa `group` alanını eklemek yeterli.
+
+**Not — Content Header Left padding'i her zaman 0 (düzeltme):** Bir önceki notta, Figma node `759:7847`'deki (Content Header, Left, Segments=3 — control'lü) 0 padding'i görüp bunu Card Header'ın "control yoksa 16px, varsa 0" kuralıyla birebir aynı sanmış, `--has-left`/`--has-right`'a bırakmıştım. Kullanıcı bunun yanlış olduğunu belirtti: **Content Header, Left pozisyonda control olsun ya da olmasın HER ZAMAN 0 padding** (`--bt-space-none`) olmalı — Card Header'daki "control yoksa 16px" davranışından BİLİNÇLİ olarak farklı, çünkü Content Header zaten body'nin kendi 16px padding'ine oturuyor, ek bir inset'e ihtiyacı yok. `.bt-card__header--plain.bt-card__header--left .bt-card__title-wrap` kuralı (padding-left/right her ikisi de 0, control varlığından bağımsız) geri eklendi.
+
+**Not — Figma'nın gerçek Header eksen yapısı (Type × Position × Segments):** Figma'da "Base Card Header" 3 bağımsız eksenden oluşuyor: **Type** (Bordered/Borderless), **Position** (Center/Left), **Segments** (1/2/3 — kaç control slotu dolu) → 2×2×3 = **12 toplam varyant**. Bu projede "Segments" ayrı bir değer olarak MODELLENMEDİ — yerine sol/sağ control'ler bağımsız bir içerik-tipi seçimiyle (None dahil, + Figma'nın segments'inde olmayan Checkbox/Switch/Avatar/Avatar Group/Badge/Text seçenekleriyle) genelleştirildi, bu yüzden Position × Segments'in Figma'daki 6 karşılığı (Center-1/2/3, Left-1/2/3) burada ayrı bir enum değil, `leftControl`/`rightControl` kombinasyonlarının özel halleri olarak ortaya çıkıyor. Figma'nın kendi "Segments=2, Position=Center" örneğinde (tek control + karşı tarafta BOŞ bir 40px spacer) tasarımcı sabit-genişlikli boş bir kutuyla simetriyi koruyormuş — bu proje aynı sonucu, karşı taraftaki control'ün ne olursa olsun (Avatar Group gibi geniş içerik dahil) `visibility:hidden` bir "ayna" ile daha genel biçimde sağlıyor (bkz. bir sonraki not).
+
+**Not — Position=Center'da tek taraflı control asimetrisi:** Kullanıcı, Position=Center'da sadece sol VEYA sadece sağ control açıkken title'ın gerçek merkezden kaydığını fark etti — sebep, title-wrap'in `flex:1 1 0` olması ve tek taraflı bir control varken bu kutunun kendisinin asimetrik genişlemesiydi (`text-align:center` sadece KUTUNUN içinde ortalıyor, kutunun kendisi header'ın tam ortasında değilse title de kaymış görünüyor). Düzeltme: Position=Center'da sadece TEK taraf doluyken, boş tarafa **karşı taraftaki control'ün birebir aynı markup'ı** `visibility:hidden` (+ `aria-hidden="true"`) ile "ayna" olarak basılıyor (`crdHeaderHtml` içinde `leftSlot`/`rightSlot`) — bu sayede iki yandaki alan genişliği her zaman eşit kalıyor, control tipi ne olursa olsun (Icon/Button/Avatar Group/Badge/Text farklı genişliklerde olsa da) otomatik doğru genişlikte ayna oluşuyor, JS ile ölçüm gerekmiyor. Her iki taraf da AYNI ANDA dolu ama farklı genişlikte control'ler taşıyorsa (örn. sol Icon + sağ Avatar Group) bu teknik yardımcı olmuyor — bu zaten Usage/Don't bölümünde belgelenen bilinen bir sınırlama (Position=Center'ı asimetrik control'lerle kullanma).
+
+**Not — Control slot padding eksikti:** Figma'nın "Base Card Controls" component'i `p-[var(--radius/radius-sm,4px)]` (mislabeled bir radius token ama değeri 4px — `--bt-space-xs` karşılığı) ile tüm kenarlarda 4px padding taşıyor. İlk implementasyonda bu hiç eklenmemişti (`.bt-card__control` sadece `justify-content:center` ile ortalıyordu, padding yoktu) — dar içeriklerde (Icon/Button vb.) görsel fark yaratmıyordu (flex centering zaten eşdeğer bir sonuç veriyordu) ama Avatar Group/Badge/Text gibi "hug content" geniş içeriklerde header kenarına fazla yakın duruyorlardı. `padding: var(--bt-space-xs, 4px)` + `box-sizing: border-box` eklendi (border-box, dar içeriklerde `min-width:40px`'in padding'i de içine alıp kutuyu büyütmemesi için gerekli).
+
+**Not — Checkbox/Switch interaktivite:** İlk implementasyonda Checkbox/Switch control'leri tamamen statik (tıklanamaz) render ediliyordu. Kullanıcı düzeltmesiyle bunlar Button gibi gerçekten çalışır hale getirildi — Checkbox/Radio/Switch sayfalarının kendi playground önizlemesinde (`chkPreview`/`swPreview`) kullanılan **aynı onclick+`classList.toggle` deseni** reuse edildi: tıklayınca `.bt-checkbox__box--checked` / `.bt-switch__track--on` class'ı toggle'lanıyor, gerçek design system CSS'i (checked/on state renkleri) devreye giriyor. Checkbox'ın checkmark SVG'si (`_chkCheck`) de eklendi — daha önce kutunun içi boştu, checked class'ı toggle'lansa bile görünür bir işaret yoktu.
+
+**Not — Control slot genişliği (hug content):** İlk implementasyonda `.bt-card__control` sabit `width:40px` idi — bu, Avatar Group (76px) veya uzun bir Badge/Text içeriğinde taşmaya/kırpılmaya yol açardı. Kullanıcı düzeltmesiyle `width` → `min-width:40px` yapıldı: Icon/Button/Checkbox/Switch/Avatar gibi dar içeriklerde slot yine tam 40px'te kalıp ortalanıyor, Avatar Group/Badge/Text gibi geniş içeriklerde ise slot içeriğe göre büyüyor (hug content). `height` hâlâ sabit 40px (tüm control içerikleri ≤32px yükseklikte, her zaman header'ın 40px satır yüksekliğine sığıyor).
+
+**Not — Borderless header arka planı:** İlk implementasyonda `.bt-card__header`'ın arka planı (`--bt-base-subtle`) Type'tan bağımsız her zaman uygulanıyordu, sadece border-bottom Bordered/Borderless'a göre koşulluydu (Figma'nın "Base Card Header" component'inin raw export'unda da bg unconditional görünüyordu). Kullanıcı kararıyla düzeltildi: **Borderless artık arka planı da transparent** yapıyor — Bordered, subtle gri arka plan + alt çizgiyi BİRLİKTE getiriyor (ayraç varsa arka plan farkı da olmalı, ayraç yoksa Header/Body tamamen kaynaşık görünmeli). `.bt-card__header` base kuralı `background:transparent`'a çevrildi, `background: var(--bt-base-subtle)` `.bt-card__header--bordered` modifier'ına taşındı.
+
+**Not — icon taşıyıcı vs. icon boyutu (Dialog'daki aynı ayrım, tekrar karışmıştı):** İlk implementasyonda hem header control'ünün 24×24 taşıyıcısında (`.bt-card__control-icon svg { width:100%; height:100% }`) hem de Row Segment'in ikonunda (28×28 `.bt-card__row-icon` doğrudan `svg{width:24px;height:24px}` ile, ara taşıyıcı hiç yoktu) ikon, taşıyıcı kutuyu **dolduracak** şekilde zorlanmıştı — bu, Avatar'ın "ikon = wrapper boyutu" deseniyle YANLIŞ bir benzetme (Dialog'da da aynı hata yapılıp düzeltilmişti, bkz. §15). Doğrusu: taşıyıcı kutu kendi boyutunda sabit kalır (control slotunda 24×24, Row Segment'te 28×28 dış slot → 24×24 iç taşıyıcı), ikonun kendisi ise **kendi tanımlı boyutunda** (`_crdIconScan`, 16×16) taşıyıcının içinde ortalanır, taşıyıcıyı doldurmaz. Düzeltme: `.bt-card__control-icon svg{width:100%;height:100%}` kuralı kaldırıldı; Row Segment'e eksik olan 24×24 ara taşıyıcı (`.bt-card__row-icon` içine iç içe `.bt-card__control-icon` reuse edilerek) eklendi.
+
+**Not — CSS specificity (Dialog'daki aynı bug, tekrar yakalandı):** `.bt-card__description` bir `<p>` etiketine tek class olarak uygulanmıştı (`specificity 0,1,0`) — docs sitesinin genel `.content p` kuralı (`0,1,1`, `styles.css` satır ~1382) daha spesifik olduğu için bunu ezip 14px/emphasis-color/16px-margin-bottom uyguluyordu (bkz. §15.2'deki aynı not, `.bt-dialog__body-text`). Düzeltme: selector `.bt-card__body .bt-card__description` (`specificity 0,2,0`) yapıldı — Dialog'da kullanılan aynı çözüm. **Bu artık projede üçüncü kez tekrarlanan bir hata** (Switch/Checkbox/Radio, Dialog, şimdi Card) — yeni bir component'te herhangi bir `<p>` etiketine tek class uygulanıyorsa, component tamamlanmadan önce mutlaka iki-class'lı bir selector'a (`.bt-x__body .bt-x__description` gibi) geçirilmeli, sona bırakılmamalı.
+
+### 16.3 JS Davranışı
+
+Card'ın kendisi statik bir kapsayıcı — özel bir açma/kapama/state mekanizması yok. Playground'da `crdHeaderHtml(opts)` hem ana Header hem Content Header için tek kaynak render fonksiyonu (`plain:true` ile ayraçsız/arka plansız moda geçiyor); `crdControlSlot(kind)` sol/sağ slot içeriğini üretiyor; `crdRowHtml()` tek bir Row Segment üretiyor. Yeni bir projeye taşırken bu üç fonksiyon (+ `crdHtml` tam kart assembly'si) `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok (tamamen string template).
