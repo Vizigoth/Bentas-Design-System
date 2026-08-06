@@ -3008,12 +3008,25 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
     <p class="bt-card__description">Description for additional information displayed below the title.</p>
     <!-- Row Segment — N kez tekrarlanır -->
     <div class="bt-card__row">
-      <span class="bt-card__row-icon"><svg width="16" height="16" viewBox="0 0 24 24" ...></svg></span>
+      <span class="bt-card__row-icon"><span class="bt-card__control-icon"><svg width="16" height="16" viewBox="0 0 24 24" ...></svg></span></span>
       <span class="bt-card__row-content">
-        <span class="bt-card__row-label">Label Text Here</span>
-        <span class="bt-card__row-value">Value Text Here</span>
+        <span class="bt-card__row-col bt-card__row-col--left">
+          <span class="bt-card__row-label">Label Text Here</span>
+          <!-- opsiyonel --> <span class="bt-card__row-add">Additional Text Here</span>
+        </span>
+        <span class="bt-card__row-col bt-card__row-col--right">
+          <span class="bt-card__row-value">Value Text Here</span>
+          <!-- opsiyonel --> <span class="bt-card__row-add">Additional Text Here</span>
+        </span>
       </span>
+      <!-- opsiyonel sağ ikon slotu -->
+      <span class="bt-card__row-right"><span class="bt-card__control-icon"><svg ...></svg></span></span>
     </div>
+  </div>
+  <!-- opsiyonel footer -->
+  <div class="bt-card__footer">
+    <button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>
+    <button class="bt-btn bt-btn--sm bt-btn--primary-solid" type="button">Button</button>
   </div>
 </div>
 ```
@@ -3022,6 +3035,7 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 - Header type: `bt-card__header--bordered` (header/body arası ayraç) / yok (borderless)
 - Header position: `bt-card__header--center` / `bt-card__header--left`
 - Control varlığı: `bt-card__header--has-left` / `bt-card__header--has-right` (sadece o taraftaki title padding'ini sıfırlamak için, JS tarafında control seçimine göre otomatik ekleniyor)
+- Footer buton düzeni: `bt-card--horizontal` (sağa yaslanmış, 80px sabit) / `bt-card--vertical` (tam genişlik istifleme) — `.bt-card` wrapper'ına eklenir
 - Content Header: `bt-card__header--plain` (arka plansız, her zaman borderless/0-padding, body içinde kullanılır)
 
 ### 16.2 CSS Tokens
@@ -3050,8 +3064,19 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 | Body | Padding | `--bt-space-2xl` | 16px |
 | Body | Gap | `--bt-space-md` | 8px |
 | Description | Font | `--bt-text-xs-regular` | 400 12px/16px |
-| Row · Icon | Size / Color | — / `--bt-icon-primary-strong` | 28×28 slot, 24×24 ikon, #535353 |
+| Row · Left icon slot | Size | — | 28×28 slot, 24×24 ikon |
+| Row · Left icon | Color | `--bt-icon-primary-strong` | #535353 |
 | Row · Label / Value | Font | `--bt-label-xs-regular` | 400 12px/16px |
+| Row · Label / Value | Color | `--bt-text-primary-default` | #1a1a1a |
+| Row · Additional Text | Font | `--bt-label-xs-regular` | 400 12px/16px |
+| Row · Additional Text | Color | `--bt-text-primary-emphasis` | #727272 |
+| Row · Col gap (label ↕ additional) | Gap | `--bt-space-xs` | 4px |
+| Row · Right icon slot | Size | — | 28×28 slot, 24×24 ikon |
+| Footer | Border top | `--bt-border-primary-muted` | #e6e6e6 |
+| Footer | Padding | `--bt-space-xl` / `--bt-space-2xl` | 12px / 16px |
+| Footer | Gap | `--bt-space-md` | 8px |
+| Footer · Horizontal button | Width | — | 80px (sabit) |
+| Footer · Vertical button | Width | — | 100% |
 
 **Not — Content Header, Card Header ile aynı özelliklere sahip:** Figma'da "Base Card Content Header" (`757:7380`) `Base Card Header` ile BİREBİR aynı prop setine sahip: Position (Center/Left), Segments (1/2/3 → sol/sağ control), Type (Bordered/Borderless), Subtitle. Playground'a `contentHeaderPosition`/`contentHeaderSubtitle`/`contentHeaderLeftControl`/`contentHeaderRightControl` prop'ları eklendi — Content Header artık Card Header ile tam feature-parity'de, aynı `crdHeaderHtml()` fonksiyonu (`plain:true` ile) reuse edilerek render ediliyor, bu sayede Position=Center'daki ghost-mirror simetri düzeltmesi de otomatik olarak Content Header'a da uygulanmış oluyor.
 
@@ -3077,4 +3102,4 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 
 ### 16.3 JS Davranışı
 
-Card'ın kendisi statik bir kapsayıcı — özel bir açma/kapama/state mekanizması yok. Playground'da `crdHeaderHtml(opts)` hem ana Header hem Content Header için tek kaynak render fonksiyonu (`plain:true` ile ayraçsız/arka plansız moda geçiyor); `crdControlSlot(kind)` sol/sağ slot içeriğini üretiyor; `crdRowHtml()` tek bir Row Segment üretiyor. Yeni bir projeye taşırken bu üç fonksiyon (+ `crdHtml` tam kart assembly'si) `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok (tamamen string template).
+Card'ın kendisi statik bir kapsayıcı — özel bir açma/kapama/state mekanizması yok. Playground'da `crdHeaderHtml(opts)` hem ana Header hem Content Header için tek kaynak render fonksiyonu (`plain:true` ile ayraçsız/arka plansız moda geçiyor); `crdControlSlot(kind)` sol/sağ slot içeriğini üretiyor; `crdRowHtml(opts)` tek bir Row Segment üretiyor (`opts.showAdditionalText` / `opts.showRightControl` boolean'larıyla). Yeni bir projeye taşırken bu üç fonksiyon (+ `crdHtml` tam kart assembly'si) `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok (tamamen string template).

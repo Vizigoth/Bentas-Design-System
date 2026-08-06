@@ -7219,6 +7219,15 @@ const CARD_POSITION_OPTS = [
   { key: 'center', label: 'Center' },
   { key: 'left',   label: 'Left' },
 ];
+const CARD_BTN_POS_OPTS = [
+  { key: 'horizontal', label: 'Horizontal' },
+  { key: 'vertical',   label: 'Vertical' },
+];
+const CARD_SEG_OPTS = [
+  { key: '1', label: '1' },
+  { key: '2', label: '2' },
+  { key: '3', label: '3' },
+];
 const CARD_CONTROL_OPTS = [
   { key: 'none',        label: 'None' },
   { key: 'icon',         label: 'Icon' },
@@ -7323,18 +7332,32 @@ function crdHeaderHtml(opts) {
 
 // "Card Row Segment" — Base Card Content'in (756:6684) 4 örnek satırında da
 // aynı: 28×28 leading icon + flex1 Label (sol) + flex1 Value (sağ).
-function crdRowHtml() {
+// opts: { showAdditionalText: bool, showRightControl: bool }
+function crdRowHtml(opts) {
+  const o = opts || {};
+  const addText = o.showAdditionalText
+    ? `<span class="bt-card__row-add">Additional Text Here</span>` : '';
+  const rightSlot = o.showRightControl
+    ? `<span class="bt-card__row-right"><span class="bt-card__control-icon">${_crdIconScan}</span></span>` : '';
   return `<div class="bt-card__row">
     <span class="bt-card__row-icon"><span class="bt-card__control-icon">${_crdIconScan}</span></span>
     <span class="bt-card__row-content">
-      <span class="bt-card__row-label">Label Text Here</span>
-      <span class="bt-card__row-value">Value Text Here</span>
+      <span class="bt-card__row-col bt-card__row-col--left">
+        <span class="bt-card__row-label">Label Text Here</span>
+        ${addText}
+      </span>
+      <span class="bt-card__row-col bt-card__row-col--right">
+        <span class="bt-card__row-value">Value Text Here</span>
+        ${addText}
+      </span>
     </span>
+    ${rightSlot}
   </div>`;
 }
 
 function crdHtml(variant, props) {
   const p = props || {};
+  const showHeader = (p.showHeader || 'on') === 'on';
   const type = p.type || 'bordered';
   const position = p.position || 'center';
   const showSubtitle = (p.showSubtitle || 'on') === 'on';
@@ -7349,8 +7372,17 @@ function crdHtml(variant, props) {
   const chSubtitle     = (p.contentHeaderSubtitle || 'off') === 'on';
   const chLeftControl  = p.contentHeaderLeftControl || 'none';
   const chRightControl = p.contentHeaderRightControl || 'none';
+  const showRowAdd   = (p.rowAdditionalText || 'off') === 'on';
+  const showRowRight = (p.rowRightControl   || 'off') === 'on';
+  const showSegments = (p.showSegments || 'on') === 'on';
+  const activeSegs   = showSegments
+    ? (p.activeSegments != null ? p.activeSegments : '1,2,3,4,5').split(',').filter(Boolean)
+    : [];
+  const showFooter   = (p.showFooter || 'on') === 'on';
+  const footerBtnPos = p.footerBtnPos || 'horizontal';
+  const footerSegs   = parseInt(p.footerSegments || '2', 10);
 
-  const header = crdHeaderHtml({ type, position, showSubtitle, leftControl, rightControl });
+  const header = showHeader ? crdHeaderHtml({ type, position, showSubtitle, leftControl, rightControl }) : '';
   const contentHeader = showContentHeader ? crdHeaderHtml({
     plain: true, position: chPosition, showSubtitle: chSubtitle, titleText: 'Content Title Here',
     leftControl: chLeftControl, rightControl: chRightControl,
@@ -7358,15 +7390,32 @@ function crdHtml(variant, props) {
   const description = showDescription
     ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
     : '';
-  const rows = crdRowHtml() + crdRowHtml() + crdRowHtml();
+  const rowOpts = { showAdditionalText: showRowAdd, showRightControl: showRowRight };
+  const rows = [1,2,3,4,5].filter(i => activeSegs.includes(String(i))).map(() => crdRowHtml(rowOpts)).join('');
 
-  return `<div class="bt-card">
+  // Footer — Dialog footer'ıyla birebir aynı buton mantığı
+  const _fPrimary   = `<button class="bt-btn bt-btn--sm bt-btn--primary-solid" type="button">Button</button>`;
+  const _fSecondary = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>`;
+  const _fTertiary  = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>`;
+  let footerBtns;
+  if (footerBtnPos === 'vertical') {
+    footerBtns = footerSegs === 1 ? _fPrimary
+               : footerSegs === 2 ? _fPrimary + _fSecondary
+               : _fPrimary + _fSecondary + _fTertiary;
+  } else {
+    footerBtns = footerSegs === 1 ? _fPrimary
+               : footerSegs === 2 ? _fSecondary + _fPrimary
+               : _fTertiary + _fSecondary + _fPrimary;
+  }
+  const footer = showFooter ? `\n  <div class="bt-card__footer">${footerBtns}</div>` : '';
+
+  return `<div class="bt-card bt-card--${footerBtnPos}">
   ${header}
   <div class="bt-card__body">
     ${contentHeader}
     ${description}
     ${rows}
-  </div>
+  </div>${footer}
 </div>`;
 }
 
@@ -7378,6 +7427,7 @@ function crdCss(variant, props) {
   const rightControl = p.rightControl || 'none';
   const hasLeft = leftControl !== 'none';
   const hasRight = rightControl !== 'none';
+  const footerBtnPos = p.footerBtnPos || 'horizontal';
 
   const ln = (k, v) => `  ${k}: ${v};`;
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -7444,6 +7494,57 @@ function crdCss(variant, props) {
     ln('height', '24px'),
     ln('color', 'var(--bt-icon-primary-strong, #535353)  /* #535353 — ikon kendisi bunu doldurmaz, 16×16 kendi boyutunda ortalanır */'),
     `}`,
+    ``,
+    `.bt-card__row-col {`,
+    ln('flex', '1 1 0'),
+    ln('min-width', '0'),
+    ln('display', 'flex'),
+    ln('flex-direction', 'column'),
+    ln('gap', 'var(--bt-space-xs, 4px)  /* 4px — label ↕ additional text */'),
+    `}`,
+    ``,
+    `.bt-card__row-label, .bt-card__row-value {`,
+    ln('font', 'var(--bt-label-xs-regular, 400 12px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-default, #1a1a1a)  /* #1a1a1a */'),
+    ln('white-space', 'nowrap'),
+    ln('overflow', 'hidden'),
+    ln('text-overflow', 'ellipsis'),
+    `}`,
+    ``,
+    `.bt-card__row-add {`,
+    ln('font', 'var(--bt-label-xs-regular, 400 12px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-emphasis, #727272)  /* #727272 */'),
+    `}`,
+    ``,
+    `.bt-card__row-right {`,
+    ln('width', '28px'),
+    ln('height', '28px'),
+    `}`,
+    ``,
+    `.bt-card__footer {`,
+    ln('border-top', '1px solid var(--bt-border-primary-muted, #e6e6e6)  /* #e6e6e6 */'),
+    ln('padding', 'var(--bt-space-xl, 12px) var(--bt-space-2xl, 16px)  /* 12px 16px */'),
+    ln('display', 'flex'),
+    ln('gap', 'var(--bt-space-md, 8px)  /* 8px */'),
+    `}`,
+    ``,
+    ...(footerBtnPos === 'horizontal' ? [
+      `.bt-card--horizontal .bt-card__footer {`,
+      ln('justify-content', 'flex-end'),
+      `}`,
+      `.bt-card--horizontal .bt-card__footer .bt-btn {`,
+      ln('width', '80px'),
+      ln('justify-content', 'center'),
+      `}`,
+    ] : [
+      `.bt-card--vertical .bt-card__footer {`,
+      ln('flex-direction', 'column'),
+      `}`,
+      `.bt-card--vertical .bt-card__footer .bt-btn {`,
+      ln('width', '100%'),
+      ln('justify-content', 'center'),
+      `}`,
+    ]),
   ];
 
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
@@ -7451,7 +7552,7 @@ function crdCss(variant, props) {
 
 PAGES_WEB['components/card'] = {
   tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Header Types', 'Control Slots', 'Body'],
+  toc:  ['Header Types', 'Control Slots', 'Body', 'Footer'],
   render(tab) {
     const title = 'Card';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
@@ -7480,8 +7581,16 @@ PAGES_WEB['components/card'] = {
           <tr><td>Control · Avatar / Avatar Group</td><td>Class</td><td>—</td><td>${tk('bt-avatar bt-avatar--xs')} (28×28)</td></tr>
           <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
           <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
-          <tr><td>Row</td><td>Icon size</td><td>—</td><td>28×28</td></tr>
+          <tr><td>Row · Icon slot</td><td>Size</td><td>—</td><td>28×28 slot, 24×24 ikon</td></tr>
           <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Row · Additional Text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Row · Col gap</td><td>Gap (label ↕ additional)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Row · Right icon slot</td><td>Size</td><td>—</td><td>28×28 slot, 24×24 ikon</td></tr>
+          <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Footer</td><td>Padding</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-2xl')}</td><td>12px / 16px</td></tr>
+          <tr><td>Footer</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Footer · Horizontal button</td><td>Width</td><td>—</td><td>80px sabit</td></tr>
+          <tr><td>Footer · Vertical button</td><td>Width</td><td>—</td><td>100%</td></tr>
         </tbody>
       </table>
     `};
@@ -7514,6 +7623,7 @@ PAGES_WEB['components/card'] = {
         // sadece group verilen sayfalarda görünür bir ayraç oluşturuyor,
         // component'e özel ama gerektiğinde başka sayfalarda da kullanılabilir).
         props: [
+          { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
           { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
           { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
           { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
@@ -7524,7 +7634,14 @@ PAGES_WEB['components/card'] = {
           { key: 'contentHeaderSubtitle',     label: 'Subtitle',      group: 'Content Header', options: TBX_BOOL_OPTS,      default: 'off' },
           { key: 'contentHeaderLeftControl',  label: 'Left Control',  group: 'Content Header', options: CARD_CONTROL_OPTS,  default: 'none' },
           { key: 'contentHeaderRightControl', label: 'Right Control', group: 'Content Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-          { key: 'showDescription', label: 'Description', group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
+          { key: 'showDescription',  label: 'Description',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+          { key: 'showSegments',     label: 'Segments',       group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+          { key: 'activeSegments',   label: 'Active',         group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1,2,3,4,5' },
+          { key: 'rowAdditionalText', label: 'Additional Text', group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'rowRightControl',   label: 'Right Control',   group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'showFooter',        label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,    default: 'on' },
+          { key: 'footerBtnPos',      label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+          { key: 'footerSegments',    label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,    default: '2' },
         ],
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, p)}</div>`,
         code:    (v, p) => crdHtml(v, p),
@@ -7622,7 +7739,7 @@ PAGES_WEB['components/card'] = {
             <td>Content Header + Row Segment</td>
             <td><div class="bt-card" style="width:100%">
               ${crdHeaderHtml({ plain: true, position: 'left', showSubtitle: true, titleText: 'Content Title Here' })}
-              <div class="bt-card__body" style="padding-top:0">${crdRowHtml()}</div>
+              <div class="bt-card__body" style="padding-top:0">${crdRowHtml({})}</div>
             </div></td>
           </tr>
         </tbody>
@@ -7635,9 +7752,43 @@ PAGES_WEB['components/card'] = {
           <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
           <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
-          <tr><td>Row · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>28×28 slot, 24×24 ikon, #535353</td></tr>
+          <tr><td>Row · Left icon slot</td><td>Size</td><td>—</td><td>28×28 slot, 24×24 ikon</td></tr>
+          <tr><td>Row · Left icon</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
           <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
           <tr><td>Row · Label / Value</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Row · Additional Text</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Row · Additional Text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Row · Col gap</td><td>Gap (label ↕ additional)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Row · Right icon slot</td><td>Size</td><td>—</td><td>28×28 slot, 24×24 ikon</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Footer">Footer</h2>
+      <p class="page-desc">Footer, Dialog footer'ıyla birebir aynı yapıya sahiptir: border-top ayracı, padding ve yatay/dikey düzenlenebilir buton sırası. Modifier sınıfı (${tk('bt-card--horizontal')} / ${tk('bt-card--vertical')}) ${tk('.bt-card')} wrapper'ına eklenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Örnek</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Horizontal · 2 segments</td>
+            <td>${crdHtml('default', { type: 'bordered', position: 'left', showSubtitle: 'off', showContentHeader: 'off', showDescription: 'off', rowAdditionalText: 'off', rowRightControl: 'off', showFooter: 'on', footerBtnPos: 'horizontal', footerSegments: '2' })}</td>
+          </tr>
+          <tr>
+            <td>Vertical · 2 segments</td>
+            <td>${crdHtml('default', { type: 'bordered', position: 'left', showSubtitle: 'off', showContentHeader: 'off', showDescription: 'off', rowAdditionalText: 'off', rowRightControl: 'off', showFooter: 'on', footerBtnPos: 'vertical', footerSegments: '2' })}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Footer</td><td>Border top</td><td>${tk('--bt-border-primary-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Footer</td><td>Padding (vertical)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Footer</td><td>Padding (horizontal)</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Footer</td><td>Gap between buttons</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Footer · Horizontal button</td><td>Width</td><td>—</td><td>80px (sabit)</td></tr>
+          <tr><td>Footer · Vertical button</td><td>Width</td><td>—</td><td>100%</td></tr>
         </tbody>
       </table>
     `};

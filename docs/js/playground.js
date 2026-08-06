@@ -21,6 +21,7 @@ const _pgdIconViewport  = `<svg width="14" height="14" viewBox="0 0 24 24" fill=
 const _pgdIconIsolate   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>`;
 const _pgdIconSwap      = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>`;
 const _pgdIconClick     = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>`;
+const _pgdIconProps     = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>`;
 
 const _pgdState   = {};   // id -> { variant, props, measure, viewport, dimW, dimH, openMenu }
 const _pgdConfigs = {};   // id -> config, kept so re-renders (state changes) can rebuild the block
@@ -31,7 +32,15 @@ function _pgdEsc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replac
 function _pgdEnsureState(id, config) {
   if (!_pgdState[id]) {
     const props = {};
-    (config.props || []).forEach(p => { props[p.key] = p.default || p.options[0].key; });
+    (config.props || []).forEach(p => {
+      if (p.type === 'multiselect') {
+        props[p.key] = p.default != null
+          ? (Array.isArray(p.default) ? p.default.join(',') : p.default)
+          : p.options.map(o => o.key).join(',');
+      } else {
+        props[p.key] = p.default || p.options[0].key;
+      }
+    });
     _pgdState[id] = {
       variant: config.variants[0].key,
       props,
@@ -41,6 +50,7 @@ function _pgdEnsureState(id, config) {
       dimW: null,
       dimH: null,
       openMenu: null, // 'variant' | 'viewport' | a props[].key | null
+      propsOpen: false,
     };
   }
   return _pgdState[id];
@@ -64,21 +74,13 @@ function renderPlayground(config) {
       </div>` : ''}
     </div>` : '';
 
-  // Opsiyonel prop.group: birden fazla prop grubu aynı toolbar'da (örn. Card'ın
-  // Header + Content Header prop'ları) aynı isimli kontrolleri (Position,
-  // Subtitle, Left/Right Control) yan yana taşıyınca karışabiliyor. group
-  // set edilmeyen sayfalarda (mevcut tüm component'ler) hiçbir görsel fark
-  // olmuyor — sadece group değiştiğinde küçük bir ayraç + etiket beliriyor.
-  let _pgdPrevGroup;
-  const propControls = (config.props || []).map(prop => {
+  // prop.group olan sayfalar: grup başına ayrı bir satır (pgd-prop-group),
+  // her satırda grup etiketi + o grubun dropdown'ları. group olmayan sayfalarda
+  // (mevcut tüm diğer component'ler) eski düz liste davranışı korunur.
+  const _pgdPropDropdown = prop => {
     const selectedKey = st.props[prop.key];
     const selected = prop.options.find(o => o.key === selectedKey) || prop.options[0];
-    const groupLabel = (prop.group && prop.group !== _pgdPrevGroup)
-      ? `<span class="pgd-group-label">${prop.group}</span>` : '';
-    _pgdPrevGroup = prop.group;
-    return `
-    ${groupLabel}
-    <div class="pgd-dropdown">
+    return `<div class="pgd-dropdown">
       <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
         <span class="pgd-prop-label">${prop.label}</span><span>${selected.label}</span>${_pgdIconChevrons}
       </button>
@@ -87,7 +89,66 @@ function renderPlayground(config) {
         ${prop.options.map(o => `<button class="pgd-menu-item ${o.key===selectedKey?'active':''}" onclick="_pgdSetProp('${config.id}','${prop.key}','${o.key}')">${o.label}</button>`).join('')}
       </div>` : ''}
     </div>`;
-  }).join('');
+  };
+
+  const _pgdPropMultiselect = prop => {
+    const selectedKeys = (st.props[prop.key] || '').split(',').filter(Boolean);
+    const allCount = prop.options.length;
+    const displayText = selectedKeys.length === 0 ? 'None'
+      : selectedKeys.length === allCount ? 'All'
+      : selectedKeys.join(', ');
+    return `<div class="pgd-dropdown">
+      <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
+        <span class="pgd-prop-label">${prop.label}</span><span>${displayText}</span>${_pgdIconChevrons}
+      </button>
+      ${st.openMenu === prop.key ? `
+      <div class="pgd-menu">
+        ${prop.options.map(o => {
+          const checked = selectedKeys.includes(o.key);
+          return `<button class="pgd-menu-item pgd-menu-item--check ${checked?'active':''}" onclick="_pgdToggleMulti('${config.id}','${prop.key}','${o.key}',event)"><span class="pgd-menu-check">${checked?'✓':''}</span>${o.label}</button>`;
+        }).join('')}
+      </div>` : ''}
+    </div>`;
+  };
+
+  const _pgdPropControl = prop => prop.type === 'multiselect' ? _pgdPropMultiselect(prop) : _pgdPropDropdown(prop);
+
+  const hasGroups = (config.props || []).some(p => p.group);
+
+  // Grup listesi her zaman hesaplanır — hem toolbar hem drawer kullanır
+  const _allGroups = (() => {
+    const g = [];
+    for (const prop of (config.props || [])) {
+      const last = g[g.length - 1];
+      if (!last || last.name !== prop.group) g.push({ name: prop.group || '', props: [] });
+      g[g.length - 1].props.push(prop);
+    }
+    return g;
+  })();
+
+  // Drawer açıkken toolbar'dan prop'lar kalkar
+  let propControls = '';
+  if (!st.propsOpen) {
+    if (!hasGroups) {
+      propControls = (config.props || []).map(_pgdPropControl).join('');
+    } else {
+      propControls = `<div class="pgd-props-grouped">${
+        _allGroups.map(g => `<div class="pgd-prop-group">
+          ${g.name ? `<span class="pgd-group-label">${g.name}</span>` : ''}
+          ${g.props.map(_pgdPropControl).join('')}
+        </div>`).join('')
+      }</div>`;
+    }
+  }
+
+  // Drawer HTML — prop'ları gruplu dikey liste olarak gösterir
+  const drawerHtml = st.propsOpen ? `<div class="pgd-drawer">
+    <div class="pgd-drawer__header"><span class="pgd-drawer__title">Properties</span></div>
+    ${_allGroups.map(g => `<div class="pgd-drawer__group">
+      ${g.name ? `<div class="pgd-drawer__group-label">${g.name}</div>` : ''}
+      ${g.props.map(prop => `<div class="pgd-drawer__row">${_pgdPropControl(prop)}</div>`).join('')}
+    </div>`).join('')}
+  </div>` : '';
 
   const isDevice = vp.key !== 'desktop';
 
@@ -161,6 +222,13 @@ function renderPlayground(config) {
         </button>
       </div>`;
 
+  const propsBtn = (config.props || []).length > 0 ? `
+    <button class="pgd-icon-btn ${st.propsOpen ? 'is-active pgd-icon-btn--labeled' : ''}" title="Properties" onclick="_pgdToggleProps('${config.id}')">${_pgdIconProps}${st.propsOpen ? '<span>Properties</span>' : ''}</button>` : '';
+
+  const contentHtml = st.view === 'code' ? codeBlock
+    : st.view === 'css' && config.css ? `<div class="example-viewer-code" style="padding:0;max-height:none;">${config.css(st.variant, st.props)}</div>`
+    : previewBlock;
+
   return `
     <div id="${config.id}" style="${config.noMargin ? '' : 'margin-bottom:32px;'}">
       ${segControl}
@@ -168,12 +236,13 @@ function renderPlayground(config) {
         <div class="pgd-toolbar">
           ${variantControl}
           ${propControls}
+          ${propsBtn}
           <button class="pgd-icon-btn ${st.measure?'is-active':''}" title="Measure" onclick="_pgdToggleMeasure('${config.id}')">${_pgdIconRuler}</button>
           ${viewportControl}
           ${isolateControl}
           ${triggerControl}
         </div>
-        ${st.view === 'code' ? codeBlock : st.view === 'css' && config.css ? `<div class="example-viewer-code" style="padding:0;max-height:none;">${config.css(st.variant, st.props)}</div>` : previewBlock}
+        ${st.propsOpen ? `<div class="pgd-viewer-split">${contentHtml}${drawerHtml}</div>` : contentHtml}
       </div>
     </div>`;
 }
@@ -211,6 +280,24 @@ window._pgdSetProp = function(id, propKey, optionKey) {
   const st = _pgdState[id];
   st.props[propKey] = optionKey;
   st.openMenu = null;
+  _pgdRerender(id);
+};
+
+window._pgdToggleProps = function(id) {
+  const st = _pgdState[id];
+  st.propsOpen = !st.propsOpen;
+  st.openMenu = null;
+  _pgdRerender(id);
+};
+
+window._pgdToggleMulti = function(id, propKey, optKey, e) {
+  e.stopPropagation();
+  const st = _pgdState[id];
+  const current = (st.props[propKey] || '').split(',').filter(Boolean);
+  const idx = current.indexOf(optKey);
+  if (idx === -1) current.push(optKey); else current.splice(idx, 1);
+  st.props[propKey] = current.join(',');
+  // openMenu intentionally NOT cleared — dropdown stays open for multi-toggle
   _pgdRerender(id);
 };
 
