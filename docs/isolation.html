@@ -94,7 +94,14 @@
       const cfg = window._pgdConfigs && window._pgdConfigs[pgdId];
       if (cfg) {
         const resolvedProps = {};
-        (cfg.props || []).forEach(p => {
+        // `cfg.props` bir dizi YA DA bir fonksiyon olabilir (dinamik props, örn.
+        // Card'ın "Segment N" grupları — bkz. playground.js _pgdResolveProps).
+        // URL'den gelen ham props'u state gibi kullanıp listeyi çözümlüyoruz;
+        // önceden burada doğrudan `(cfg.props || []).forEach(...)` vardı ve
+        // fonksiyon üzerinde .forEach çağrılınca TypeError fırlatıp componenti
+        // hiç render etmeden script'i durduruyordu (Card isolation'da boş
+        // görünüyordu, bkz. HISTORY.md).
+        _pgdResolveProps(cfg, props).forEach(p => {
           resolvedProps[p.key] = props[p.key] || p.default || (p.options && p.options[0].key);
         });
         const resolvedVariant = (cfg.variants || []).find(v => v.key === variant)
