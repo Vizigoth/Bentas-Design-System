@@ -53,6 +53,15 @@ Yeni bir component eklendiğinde sadece `registerPlayground({id: 'pgd-xxx-overvi
 
 `window.PGD_ISOLATE` kaydı veya `config.isolate` **artık yeni componentler için gerekli değil** — sadece Sidebar ve Alert gibi eskiden eklenmiş özel mount davranışları olan componentlerde kalır.
 
+## Properties Drawer'da `prop.group` Kullanımı — ZORUNLU
+
+`registerPlayground`'daki Properties drawer'ı (`docs/js/playground.js`), `config.props`'taki her prop'u opsiyonel bir `group: 'Etiket'` alanına göre bölümlere ayırabilir. Bu **sadece Card'a özel bir istisna değil, karmaşık (multi-section) component'ler için proje standardıdır**:
+
+- **Header/Body/Footer gibi birbirinden ayrı, kendi içinde birden fazla prop barındıran mantıksal bölümleri olan component'lerde** (Card, Dialog gibi) her bölüm kendi `group` adıyla etiketlenmeli (örn. `group: 'Header'`, `group: 'Footer'`) — drawer'da bölüm başlıklarıyla ayrılmış, taranabilir bir liste üretir.
+- **TEK bir mantıksal yapılandırma yüzeyi olan basit component'lerde** (Button'ın Theme/Size/Content/State'i gibi düz bir prop listesi) `group` HİÇ KULLANILMAMALI — tüm prop'lar group'suz bırakılmalı, drawer'da gereksiz bölüm ayraçları göstermeden tek düz liste kalmalı.
+
+Yeni bir component eklerken hangi yaklaşımın uygun olduğuna karar vermek için: component'in Figma'daki tanımı birden fazla bağımsız alt-yapı (Header/Body/Footer gibi) içeriyorsa `group` kullan; tek bir düz varyasyon yüzeyiyse kullanma.
+
 ## Playground Toolbar Boolean Toggle Standardı — ZORUNLU
 
 Bir playground'da bir öğeyi (icon, label, description, control vb.) tamamen göster/gizle amacıyla eklenen her toggle **`On`/`Off`** seçeneklerini kullanmalı — `Yes`/`No`, `Show`/`Hide`, `Visible`/`Hidden` gibi varyasyonlar kullanılmaz. Bu proje genelinde tek standart.

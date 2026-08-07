@@ -2333,33 +2333,80 @@ Nord Health (nordhealth.design) tarzı, Figma "Playground" toolbar'ından (Benta
 
 ### Toolbar kontrolleri
 
-1. **Variant dropdown** — collapsible, `config.variants` listesini gösterir (örn.
-   Sidebar'da Expanded/Collapsed, Alert'te Error/Warning/Success/Information)
-2. **Ek prop dropdown'ları** (opsiyonel, `config.props`) — Type dropdown'ının yanına
-   istenildiği kadar ek collapsible seçici eklenebilir (Alert'te Theme + Close Button).
-   Bir prop'a opsiyonel `group: 'Etiket'` verilirse, bir önceki prop'un group'undan
-   farklı olduğunda aralarına küçük bir dikey ayraç + etiket (`.pgd-group-label`)
-   basılır — birden fazla prop kümesi aynı isimli kontrolleri (örn. Card'ın Header
-   VE Content Header'ının ikisinin de Position/Subtitle/Left-Right Control'ü olması)
-   tekrarlıyorsa toolbar'da karışmalarını önlemek için (bkz. §Card 16). `group`
-   set edilmezse (mevcut tüm component'ler) davranış birebir eskisi gibi kalır —
-   tamamen geriye dönük uyumlu, opt-in bir özellik.
-3. **Measure** — aktifken preview üzerinde hover edilen elementin **content box'ı mavi**
+Toolbar **sabit** bir buton seti gösterir — `config.props`'taki tekil prop dropdown'ları
+VE Variant seçici artık toolbar'da hiç render edilmez, hepsi Properties butonunun açtığı
+drawer'a taşındı (kullanıcı kararı, 2026-08-07: "diğer component'lerde Variant properties'e
+dahil edilmemiş, bu da properties'de gelmeli" — bkz. HISTORY.md; eskiden sadece Variant
+toolbar'da ayrı bir dropdown olarak kalmıştı). Toolbar sırası artık sabit ve component'ten
+component'e değişmiyor: Properties → Measure → Viewport → Isolation mode → (opsiyonel)
+Click Me. **Properties, Measure, Viewport ve Isolation mode** her zaman icon+label
+(`pgd-icon-btn pgd-icon-btn--labeled`) stilinde — sadece aktifken değil, varsayılan
+halde de etiket görünür (eskiden bu 4 buton karışık bir şekilde bazıları sadece ikon
+bazıları sadece aktifken etiketli render ediliyordu ve `config.props` toolbar'ı
+component başına değişken sayıda dropdown'la dolduruyordu).
+
+1. **Properties** — Variant seçimi de dahil TÜM konfigürasyon artık burada, tek yerde.
+   Buton `config.props`'u çözümleyen prop listesi boş DEĞİLSE **YA DA**
+   `config.variants.length > 1` ise render edilir (`_pgdCurrentProps.length > 0 ||
+   config.variants.length > 1`) — sadece variant'ı olup hiç prop'u olmayan sayfalarda
+   (örn. Sidebar'ın "Item States" örnekleri) bile Properties butonu görünür, aksi halde
+   variant seçimine ulaşacak hiçbir yol kalmazdı. Tıklanınca preview'ın sağında 208px'lik
+   bir drawer (`.pgd-drawer`) açılır/kapanır. Görsel tasarım Figma node `799:4657`
+   ("Properties" paneli, Bentas-DS dosyası, kullanıcının kendi hazırladığı örnek) birebir
+   referans alınarak yapıldı: drawer header'ı ve grup başlıkları (örn. "Header", "Body
+   Title/Subtitle") düz `--bt-text-sm-medium` (14px) siyah metin
+   (`.pgd-drawer__title`/`.pgd-drawer__group-label` — eskiden 11px uppercase muted
+   "eyebrow" stiliydi), her grup `--bt-space-xl`(12px) dikey + `--bt-space-md`(8px) yatay
+   padding + `--bt-space-sm`(6px) satır arası gap ile kendi altında border'a sahip. Her
+   prop kontrolü (Variant dahil) Figma'nın **"Base Input"** komponeti: `.pgd-drawer-input`
+   — sabit 28px yükseklik, `--bt-border-primary-default` border, sol tarafta muted label
+   (`--bt-text-primary-strong`, örn. "Show"), sağa yaslı güçlü-renk değer
+   (`--bt-text-primary-default`, örn. "On"), sağ kenara flush 28×28 chevron ikonu
+   (`.pgd-drawer-input__label`/`__value`/`__icon`). Variant kendi (etiketsiz) grubunda,
+   drawer'ın EN ÜSTÜNDE, diğer tüm gruplardan önce render edilir. Eski toolbar'a özel
+   `.pgd-variant-btn`/`.pgd-prop-label` CSS class'ları artık hiçbir yerde kullanılmadığı
+   için kaldırıldı — TEK bir prop-kontrol görsel dili kaldı (`.pgd-drawer-input`), hem
+   Variant hem diğer prop'lar için. Bir prop'a opsiyonel `group: 'Etiket'` verilirse aynı
+   grup drawer'da kendi başlığı altında toplanır — birden fazla prop kümesi aynı isimli
+   kontrolleri (örn. Card'ın Header VE Body Title/Subtitle'ının ikisinin de
+   Position/Subtitle/Left-Right Control'ü olması) tekrarlıyorsa karışmalarını önlemek
+   için (bkz. §Card 16). `group` set edilmezse prop'lar drawer'da tek grup gibi (bölüm
+   başlığı/ayraç olmadan, tek düz liste) art arda sıralanır. Drawer açıkken preview +
+   drawer yan yana (`.pgd-viewer-split`) durur; drawer `max-height:460px` ile preview
+   kutusuyla aynı sabit yüksekliğe kırpılır ve taşan içerik kendi içinde scroll olur —
+   playground'ın dış yüksekliği Properties açık/kapalı fark etmeksizin sabit kalır.
+
+   **`group` kullanım kuralı — ZORUNLU (kullanıcı kararı, 2026-08-07):** `prop.group`
+   Card'a özel bir istisna değil, **karmaşık (multi-section) component'ler için proje
+   standardı**. Header/Body/Footer gibi birbirinden ayrı, kendi içinde birden fazla
+   prop barındıran mantıksal bölümleri olan component'lerde (Card, Dialog gibi) her
+   bölüm kendi `group` adıyla (örn. `group: 'Header'`, `group: 'Footer'`) etiketlenmeli
+   — bu, drawer'da bölüm başlıklarıyla ayrılmış, taranabilir bir liste üretir. Buna
+   karşılık Button gibi TEK bir mantıksal yapılandırma yüzeyi olan basit component'lerde
+   (Theme/Size/Content/State gibi düz bir prop listesi) `group` HİÇ kullanılmamalı —
+   drawer'da gereksiz bölüm ayraçları göstermemesi için tüm prop'lar group'suz
+   bırakılmalı, tek düz liste olarak kalmalı. (Not: `_allGroups`'un `prop.group`'u
+   normalize etmeden kıyaslaması eskiden bir bug'a yol açıyordu — group'suz component'lerde
+   art arda gelen her prop `'' !== undefined` yüzünden kendi ayrı grubuna düşüyor, görünmez
+   etiketli ama border'lı sahte bölümler oluşturuyordu; `groupName = prop.group || ''`
+   normalize edilerek düzeltildi, bkz. HISTORY.md.)
+2. **Measure** — aktifken preview üzerinde hover edilen elementin **content box'ı mavi**
    (ortasında `W × H` etiketi), **padding'i her kenarda ayrı yeşil şerit** (o kenarın px
    değeri ortada, 0 ise gizli) — klasik DevTools box-model değil, Figma/Nord tarzı
    per-side spacing inspector
-4. **Viewport** — preset seçilince buton ikon+etiket gösteren aktif pill'e dönüşür, altında
+3. **Viewport** — buton her zaman ikon+etiket gösterir (etiket = seçili viewport adı,
+   varsayılan "Desktop"), preset seçilince aktif pill görünümüne döner ve altında
    düzenlenebilir **W/H px input + swap (⇄) butonu** açılır; frame gerçek cihaz çerçevesi
    gibi (beyaz kutu+border+shadow, sabit width×height, açık gri canvas'ta **sol üstte
    hizalı**). Presetler: Small Mobile 360×780, Large Mobile 414×896, Tablet 768×1024,
    Desktop (sınırsız/ortalanmış eski davranış)
-5. **Open in isolation mode** — her playground'da standarttır, ekstra kurulum gerekmez.
+4. **Isolation mode** — her playground'da standarttır, ekstra kurulum gerekmez.
    `pgd_id` varsa `isolation.html?pgd_id=X&variant=Y&prop=Z` açılır; `isolation.html`
    `window.PAGES_WEB` üzerinden `render()` loop'u çalıştırır (ilk eşleşmede durur),
    `_pgdConfigs[pgdId]`'yi bulur ve preview'ı doğrudan render eder. Eski
    `PGD_ISOLATE`-kayıtlı componentler (Sidebar, Alert) `component=X` param'ıyla
    çalışmaya devam eder.
-6. **Click Me** (opsiyonel, `config.trigger`) — component'in gerçek çalışma anını
+5. **Click Me** (opsiyonel, `config.trigger`) — component'in gerçek çalışma anını
    (ekranın üstünden `filter:blur()` + `translateY` ile smooth slide-in/out) gösteren bir
    toast sistemi tetikler. Art arda tıklanınca toast'lar birbirini **değiştirmez, alt alta
    yığılır** — her biri kendi zamanlayıcısıyla bağımsız kaybolur.
@@ -2367,6 +2414,36 @@ Nord Health (nordhealth.design) tarzı, Figma "Playground" toolbar'ından (Benta
 Ayrıca toolbar'ın altında, kutudan **bağımsız** (kendi arka plan/border'ı olmayan, sade)
 bir **Preview / Code segmented control** var — component sayfasının "Alert" gibi H1
 başlığının hemen altında durur, kutunun İÇİNDE değil.
+
+### Dinamik props (`config.props` bir fonksiyon olabilir)
+
+`config.props` normalde statik bir dizi ama artık `(currentProps) => [...]` şeklinde bir
+**fonksiyon** da olabilir (`_pgdResolveProps` helper'ı, `playground.js`) — prop LİSTESİNİN
+kendisinin state'e göre değişmesi gerektiği durumlar için (ilk kullanım: Card'ın "Segment N"
+grupları, kaç segment aktifse o kadar grup üretiliyor, bkz. §16). Statik dizi kullanan TÜM
+diğer playground'lar (Button, Card'ın Header/Body Title-Subtitle/Footer grupları dahil)
+hiçbir değişiklik yapmadan çalışmaya devam eder — bu tamamen opt-in bir özellik, geriye dönük
+%100 uyumlu.
+
+Fonksiyon her render'da güncel `st.props` ile çağrılır (drawer'daki bir dropdown değiştiğinde
+otomatik yeniden hesaplanır); ilk state kurulumunda (`_pgdEnsureState`) henüz hiçbir prop
+set edilmemişken boş obje `{}` ile çağrılır — bu yüzden fonksiyonun kendi iç fallback'i
+(örn. `p.activeSegments != null ? p.activeSegments : '1'`) ile ilgili prop'un kendi
+`default` alanı MUTLAKA aynı değere işaret etmeli, aksi halde ilk render ile prop
+değiştikten sonraki render'lar arasında tutarsızlık oluşur.
+
+```javascript
+props: (p) => {
+  const active = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+  const dynamicProps = [];
+  active.forEach(n => dynamicProps.push({ key: `segNField`, group: `Segment ${n}`, ... }));
+  return [ /* sabit prop'lar */ ...dynamicProps ];
+}
+```
+
+Bir prop artık listede yoksa (örn. bir segment inaktif edildi) drawer'daki grubu kaybolur
+ama `st.props` içindeki değeri SİLİNMEZ — segment tekrar aktif edilirse önceki
+özelleştirmesi (Left Control, Additional Text vb.) korunmuş olarak geri gelir.
 
 ### Kritik kural — component fonksiyonlarının konumu
 
@@ -2963,15 +3040,15 @@ host.addEventListener('click', e => {
 
 ## 16. Card
 
-Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segments) + `757:7380` (Base Card Content Header — aynı yapı, body içindeki bölüm ayıracı olarak reuse edilir) + `692:30381` (assembled Card örneği, "Veritabanı Detayları"). Card, ilişkili içeriği bir **Header** ve bir **Body** olmak üzere iki bölümde gruplayan bir kapsayıcı.
+Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segments) + `757:7380` (Figma'da "Base Card Content Header" — aynı yapı, body içindeki bölüm ayıracı olarak reuse edilir; kod ve UI'da **"Body Title/Subtitle"** olarak adlandırıldı, çünkü Card'ın zaten kendi ana Header'ı var ve body içindeki bu ikinci parçayı da "Header" olarak etiketlemek kafa karıştırıyordu — kullanıcı kararı, 2026-08-07, bkz. HISTORY.md) + `692:30381` (assembled Card örneği, "Veritabanı Detayları"). Card, ilişkili içeriği bir **Header** ve bir **Body** olmak üzere iki bölümde gruplayan bir kapsayıcı.
 
 **Not — dış çerçeve (bilinçli sadeleştirme):** Figma'da Card'ın dış border'ı tek bir yerde tanımlı değil — Header (üst+sağ+sol) ile Body (alt+sağ+sol) kendi border'larını ayrı ayrı taşıyor, ikisi yan yana gelince tek bir çerçeve gibi görünüyor (Header'ın kendi border-bottom'ı hem dış çerçevenin parçası hem de header/body ayracı). Burada bu, tek bir `.bt-card` wrapper'ına taşındı: `.bt-card` tüm dış border+radius+`overflow:hidden`'ı taşıyor, `.bt-card__header`/`.bt-card__body` kendi border'larına sahip değil. Görsel sonuç birebir aynı, ama tek/standart bir çerçeve kuralı olduğu için Header'sız kullanım (varsa) veya farklı border-radius senaryolarında daha az kırılgan.
 
 **Not — control slot sistemi (bilinçli sadeleştirme):** Figma'nın "Base Card Controls" component'i sol/sağ slotlarda **bağımsız boolean flag'ler** olarak tanımlı (`showIcon`, `showButton`, `showCheckbox`, `showSwitch`, `showAvatar`, `showAvatarGroup`, `showBadge`, `showAdditionalText` — teorik olarak birden fazlası aynı anda açılabilir). Playground'da bu, kullanıcı deneyimi için **tek seçimlik bir "content type" dropdown'una** sadeleştirildi (None/Icon/Button/Checkbox/Switch/Avatar/Avatar Group/Badge/Text) — Dialog'daki Left/Right Control On/Off toggle'larının aynı mantıkla genişletilmiş hali. Her seçenek, design system'deki **gerçek bt-\* component'lerini** reuse ediyor (Checkbox → `.bt-checkbox__box`, Switch → `.bt-switch__track`/`.bt-switch__thumb`, Avatar → `.bt-avatar bt-avatar--xs`, Button → `bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon`) — CLAUDE.md'nin "Mevcut Component'leri Reuse Et" kuralı. **Badge** için ise projede henüz ayrı bir reusable `.bt-badge` component'i olmadığından (Web nav'da Badge hâlâ eski mobile inline-style sayfaya düşüyor), Card'a özel, token-tabanlı `.bt-card__control-badge` class'ı eklendi — ileride gerçek bir Badge component'i eklenirse bununla değiştirilmeli.
 
-**Not — Header/Content Header padding kuralı (Dialog'daki desenle aynı):** `Position=Left` header'ında title, o taraftaki 40×40 control slotu doluysa kendi padding'ini sıfırlıyor (slot zaten inseti sağlıyor), slot boşsa `--bt-space-2xl` (16px) kendi padding'ini alıyor — bu, sol/sağ için **bağımsız** çalışıyor (örn. sadece sağ slot doluysa, sol padding 16px kalırken sağ 0 olur). Body içinde bölüm ayıracı olarak reuse edilen Content Header (`.bt-card__header--plain`) ise Figma'da bu padding kuralına hiç girmiyor — pozisyon/control'den bağımsız her zaman 0 padding (body'nin kendi 16px padding'ine oturuyor).
+**Not — Header/Body Title-Subtitle padding kuralı (Dialog'daki desenle aynı):** `Position=Left` header'ında title, o taraftaki 40×40 control slotu doluysa kendi padding'ini sıfırlıyor (slot zaten inseti sağlıyor), slot boşsa `--bt-space-2xl` (16px) kendi padding'ini alıyor — bu, sol/sağ için **bağımsız** çalışıyor (örn. sadece sağ slot doluysa, sol padding 16px kalırken sağ 0 olur). Body içinde bölüm ayıracı olarak reuse edilen Body Title/Subtitle (`.bt-card__header--plain`) ise Figma'da bu padding kuralına hiç girmiyor — pozisyon/control'den bağımsız her zaman 0 padding (body'nin kendi 16px padding'ine oturuyor).
 
-**Not — Body içeriği:** Figma'nın "Base Card Content" (`756:6684`) component'i canonical içerik reçetesi: opsiyonel Content Header + opsiyonel Description + N adet "Card Row Segment" (28×28 ikon + flex Label + flex Value). Gerçek kullanım örneği ("Veritabanı Detayları", `692:30381`) 12px body padding ve ikon+değer kombinasyonlu (örn. yeşil ok + "%18.2") satırlar kullanıyor — ama bu tek bir ürün ekranının özelleştirmesi, docs sitesindeki generic placeholder konvansiyonuyla (diğer tüm component'lerde "Label Text Here"/"Value Text Here" gibi) tutarlı kalmak için **canonical 16px padding + sade ikon+label+value satırları** tercih edildi.
+**Not — Body içeriği:** Figma'nın "Base Card Content" (`756:6684`) component'i canonical içerik reçetesi: opsiyonel Body Title/Subtitle + opsiyonel Description + N adet "Card Row Segment" (28×28 ikon + flex Label + flex Value). Gerçek kullanım örneği ("Veritabanı Detayları", `692:30381`) 12px body padding ve ikon+değer kombinasyonlu (örn. yeşil ok + "%18.2") satırlar kullanıyor — ama bu tek bir ürün ekranının özelleştirmesi, docs sitesindeki generic placeholder konvansiyonuyla (diğer tüm component'lerde "Label Text Here"/"Value Text Here" gibi) tutarlı kalmak için **canonical 16px padding + sade ikon+label+value satırları** tercih edildi.
 
 ### 16.1 Markup
 
@@ -2999,27 +3076,31 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
     </span>
   </div>
   <div class="bt-card__body">
-    <!-- Content Header — opsiyonel bölüm ayracı, her zaman borderless -->
+    <!-- Body Title/Subtitle — opsiyonel bölüm ayracı, her zaman borderless -->
     <div class="bt-card__header bt-card__header--plain bt-card__header--left">
       <span class="bt-card__title-wrap">
         <span class="bt-card__title">Content Title Here</span>
       </span>
     </div>
     <p class="bt-card__description">Description for additional information displayed below the title.</p>
-    <!-- Row Segment — N kez tekrarlanır -->
+    <!-- Row Segment — N kez tekrarlanır. Sol/sağ slot Header'ın control sistemiyle
+         aynı crdControlSlot() reuse ediyor (None/Icon/Button/Checkbox/Switch/Avatar/
+         Avatar Group/Badge/Text) — ikisi de opsiyonel (None ise slot hiç render edilmez),
+         varsayılan sol=Icon (eski sabit davranışla aynı), sağ=None. -->
     <div class="bt-card__row">
+      <!-- opsiyonel sol slot — leftControl='none' ise hiç render edilmez -->
       <span class="bt-card__row-icon"><span class="bt-card__control-icon"><svg width="16" height="16" viewBox="0 0 24 24" ...></svg></span></span>
       <span class="bt-card__row-content">
         <span class="bt-card__row-col bt-card__row-col--left">
           <span class="bt-card__row-label">Label Text Here</span>
-          <!-- opsiyonel --> <span class="bt-card__row-add">Additional Text Here</span>
+          <!-- opsiyonel, SAĞDAKİNDEN BAĞIMSIZ --> <span class="bt-card__row-add">Additional Text Here</span>
         </span>
         <span class="bt-card__row-col bt-card__row-col--right">
           <span class="bt-card__row-value">Value Text Here</span>
-          <!-- opsiyonel --> <span class="bt-card__row-add">Additional Text Here</span>
+          <!-- opsiyonel, SOLDAKİNDEN BAĞIMSIZ --> <span class="bt-card__row-add">Additional Text Here</span>
         </span>
       </span>
-      <!-- opsiyonel sağ ikon slotu -->
+      <!-- opsiyonel sağ slot — rightControl='none' ise hiç render edilmez -->
       <span class="bt-card__row-right"><span class="bt-card__control-icon"><svg ...></svg></span></span>
     </div>
   </div>
@@ -3036,7 +3117,7 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 - Header position: `bt-card__header--center` / `bt-card__header--left`
 - Control varlığı: `bt-card__header--has-left` / `bt-card__header--has-right` (sadece o taraftaki title padding'ini sıfırlamak için, JS tarafında control seçimine göre otomatik ekleniyor)
 - Footer buton düzeni: `bt-card--horizontal` (sağa yaslanmış, 80px sabit) / `bt-card--vertical` (tam genişlik istifleme) — `.bt-card` wrapper'ına eklenir
-- Content Header: `bt-card__header--plain` (arka plansız, her zaman borderless/0-padding, body içinde kullanılır)
+- Body Title/Subtitle: `bt-card__header--plain` (arka plansız, her zaman borderless/0-padding, body içinde kullanılır)
 
 ### 16.2 CSS Tokens
 
@@ -3078,11 +3159,11 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 | Footer · Horizontal button | Width | — | 80px (sabit) |
 | Footer · Vertical button | Width | — | 100% |
 
-**Not — Content Header, Card Header ile aynı özelliklere sahip:** Figma'da "Base Card Content Header" (`757:7380`) `Base Card Header` ile BİREBİR aynı prop setine sahip: Position (Center/Left), Segments (1/2/3 → sol/sağ control), Type (Bordered/Borderless), Subtitle. Playground'a `contentHeaderPosition`/`contentHeaderSubtitle`/`contentHeaderLeftControl`/`contentHeaderRightControl` prop'ları eklendi — Content Header artık Card Header ile tam feature-parity'de, aynı `crdHeaderHtml()` fonksiyonu (`plain:true` ile) reuse edilerek render ediliyor, bu sayede Position=Center'daki ghost-mirror simetri düzeltmesi de otomatik olarak Content Header'a da uygulanmış oluyor.
+**Not — Body Title/Subtitle, Card Header ile aynı özelliklere sahip:** Figma'da "Base Card Content Header" (`757:7380`) `Base Card Header` ile BİREBİR aynı prop setine sahip: Position (Center/Left), Segments (1/2/3 → sol/sağ control), Type (Bordered/Borderless), Subtitle. Playground'a `titleSubtitlePosition`/`titleSubtitleSubtitle`/`titleSubtitleLeftControl`/`titleSubtitleRightControl` prop'ları eklendi — Body Title/Subtitle artık Card Header ile tam feature-parity'de, aynı `crdHeaderHtml()` fonksiyonu (`plain:true` ile) reuse edilerek render ediliyor, bu sayede Position=Center'daki ghost-mirror simetri düzeltmesi de otomatik olarak Body Title/Subtitle'a da uygulanmış oluyor.
 
-**Not — sadeleştirme denemesi geri alındı, yerine `playground.js`'e genel prop gruplama eklendi:** Toplam prop sayısı 11'e çıkınca ("content ve header propertileri birlikte çok karışık" geri bildirimi üzerine) önce 4 prop playground'dan çıkarılıp statik bir tabloya taşınmıştı — kullanıcı bunun istediği çözüm olmadığını belirtip geri aldırdı, 4 prop playground'a geri kondu. Asıl çözüm olarak `docs/js/playground.js`'e opsiyonel bir **`prop.group`** alanı eklendi (`renderPlayground`'ın `propControls` üretimi): bir prop'un `group`'u bir öncekinden farklıysa aralarına küçük bir dikey ayraç + etiket (`.pgd-group-label`) basılıyor. `group` set edilmeyen sayfalarda (projedeki tüm diğer component'ler) davranış birebir aynı kalıyor — sıfır görsel fark, geriye dönük tam uyumlu. Card'ın prop'ları 3 gruba ayrıldı: **Header** (Type/Position/Subtitle/Left Control/Right Control), **Content Header** (Show/Position/Subtitle/Left Control/Right Control), **Body** (Description) — gruplandıkça tekrarlanan "Content Header " ön eki de prop label'larından kaldırıldı (artık sadece "Position"/"Subtitle" vb., ayraç etiketi zaten hangi gruba ait olduğunu gösteriyor). Bu, component'e özel bir çözüm ama altyapısı genel — başka bir component'in playground'unda aynı ihtiyaç çıkarsa `group` alanını eklemek yeterli.
+**Not — sadeleştirme denemesi geri alındı, yerine `playground.js`'e genel prop gruplama eklendi:** Toplam prop sayısı 11'e çıkınca ("content ve header propertileri birlikte çok karışık" geri bildirimi üzerine) önce 4 prop playground'dan çıkarılıp statik bir tabloya taşınmıştı — kullanıcı bunun istediği çözüm olmadığını belirtip geri aldırdı, 4 prop playground'a geri kondu. Asıl çözüm olarak `docs/js/playground.js`'e opsiyonel bir **`prop.group`** alanı eklendi (`renderPlayground`'ın `propControls` üretimi): bir prop'un `group`'u bir öncekinden farklıysa aralarına küçük bir dikey ayraç + etiket (`.pgd-group-label`) basılıyor. `group` set edilmeyen sayfalarda (projedeki tüm diğer component'ler) davranış birebir aynı kalıyor — sıfır görsel fark, geriye dönük tam uyumlu. Card'ın prop'ları 3 gruba ayrıldı: **Header** (Type/Position/Subtitle/Left Control/Right Control), **Body Title/Subtitle** (Show/Position/Subtitle/Left Control/Right Control), **Body** (Description) — gruplandıkça tekrarlanan ön ek de prop label'larından kaldırıldı (artık sadece "Position"/"Subtitle" vb., ayraç etiketi zaten hangi gruba ait olduğunu gösteriyor). Bu, component'e özel bir çözüm ama altyapısı genel — başka bir component'in playground'unda aynı ihtiyaç çıkarsa `group` alanını eklemek yeterli. **Sonradan** (2026-08-07) grup ismi "Content Header" → **"Body Title/Subtitle"**'a değiştirildi: kullanıcı, Card'ın zaten kendi ana Header'ı olduğu için body içindeki bu ikinci parçayı da "Header" olarak etiketlemenin kafa karıştırdığını belirtti — bu isim değişikliği prop key'lerine kadar indirildi (`contentHeader*` → `titleSubtitle*`), sadece Card'a özel; proje genelindeki Header/Body/Footer grup adlandırma standardına dokunulmadı.
 
-**Not — Content Header Left padding'i her zaman 0 (düzeltme):** Bir önceki notta, Figma node `759:7847`'deki (Content Header, Left, Segments=3 — control'lü) 0 padding'i görüp bunu Card Header'ın "control yoksa 16px, varsa 0" kuralıyla birebir aynı sanmış, `--has-left`/`--has-right`'a bırakmıştım. Kullanıcı bunun yanlış olduğunu belirtti: **Content Header, Left pozisyonda control olsun ya da olmasın HER ZAMAN 0 padding** (`--bt-space-none`) olmalı — Card Header'daki "control yoksa 16px" davranışından BİLİNÇLİ olarak farklı, çünkü Content Header zaten body'nin kendi 16px padding'ine oturuyor, ek bir inset'e ihtiyacı yok. `.bt-card__header--plain.bt-card__header--left .bt-card__title-wrap` kuralı (padding-left/right her ikisi de 0, control varlığından bağımsız) geri eklendi.
+**Not — Body Title/Subtitle Left padding'i her zaman 0 (düzeltme):** Bir önceki notta, Figma node `759:7847`'deki (Content Header, Left, Segments=3 — control'lü) 0 padding'i görüp bunu Card Header'ın "control yoksa 16px, varsa 0" kuralıyla birebir aynı sanmış, `--has-left`/`--has-right`'a bırakmıştım. Kullanıcı bunun yanlış olduğunu belirtti: **Body Title/Subtitle, Left pozisyonda control olsun ya da olmasın HER ZAMAN 0 padding** (`--bt-space-none`) olmalı — Card Header'daki "control yoksa 16px" davranışından BİLİNÇLİ olarak farklı, çünkü Body Title/Subtitle zaten body'nin kendi 16px padding'ine oturuyor, ek bir inset'e ihtiyacı yok. `.bt-card__header--plain.bt-card__header--left .bt-card__title-wrap` kuralı (padding-left/right her ikisi de 0, control varlığından bağımsız) geri eklendi.
 
 **Not — Figma'nın gerçek Header eksen yapısı (Type × Position × Segments):** Figma'da "Base Card Header" 3 bağımsız eksenden oluşuyor: **Type** (Bordered/Borderless), **Position** (Center/Left), **Segments** (1/2/3 — kaç control slotu dolu) → 2×2×3 = **12 toplam varyant**. Bu projede "Segments" ayrı bir değer olarak MODELLENMEDİ — yerine sol/sağ control'ler bağımsız bir içerik-tipi seçimiyle (None dahil, + Figma'nın segments'inde olmayan Checkbox/Switch/Avatar/Avatar Group/Badge/Text seçenekleriyle) genelleştirildi, bu yüzden Position × Segments'in Figma'daki 6 karşılığı (Center-1/2/3, Left-1/2/3) burada ayrı bir enum değil, `leftControl`/`rightControl` kombinasyonlarının özel halleri olarak ortaya çıkıyor. Figma'nın kendi "Segments=2, Position=Center" örneğinde (tek control + karşı tarafta BOŞ bir 40px spacer) tasarımcı sabit-genişlikli boş bir kutuyla simetriyi koruyormuş — bu proje aynı sonucu, karşı taraftaki control'ün ne olursa olsun (Avatar Group gibi geniş içerik dahil) `visibility:hidden` bir "ayna" ile daha genel biçimde sağlıyor (bkz. bir sonraki not).
 
@@ -3102,4 +3183,8 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 
 ### 16.3 JS Davranışı
 
-Card'ın kendisi statik bir kapsayıcı — özel bir açma/kapama/state mekanizması yok. Playground'da `crdHeaderHtml(opts)` hem ana Header hem Content Header için tek kaynak render fonksiyonu (`plain:true` ile ayraçsız/arka plansız moda geçiyor); `crdControlSlot(kind)` sol/sağ slot içeriğini üretiyor; `crdRowHtml(opts)` tek bir Row Segment üretiyor (`opts.showAdditionalText` / `opts.showRightControl` boolean'larıyla). Yeni bir projeye taşırken bu üç fonksiyon (+ `crdHtml` tam kart assembly'si) `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok (tamamen string template).
+Card'ın kendisi statik bir kapsayıcı — özel bir açma/kapama/state mekanizması yok. Playground'da `crdHeaderHtml(opts)` hem ana Header hem Body Title/Subtitle için tek kaynak render fonksiyonu (`plain:true` ile ayraçsız/arka plansız moda geçiyor); `crdControlSlot(kind)` Header VE Row Segment'in sol/sağ slot içeriğini üretiyor (reuse edilen tek kaynak); `crdRowHtml(opts)` tek bir Row Segment üretiyor — `opts: { leftControl, rightControl, showLeftAdditionalText, showRightAdditionalText, showValue }`. `crdHtml`, aktif her segment numarası için `crdRowHtml`'i o segmentin KENDİ `seg{N}LeftControl`/`seg{N}RightControl`/`seg{N}LeftAdditionalText`/`seg{N}RightAdditionalText`/`seg{N}ShowValue` prop'larıyla çağırıyor (bkz. aşağıdaki not — segmentler artık bağımsız). Yeni bir projeye taşırken bu üç fonksiyon (+ `crdHtml` tam kart assembly'si) `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok (tamamen string template).
+
+**Not — Row Segment control sistemi Header'la eşitlendi (2026-08-07):** Row Segment'in sol/sağ 28×28 slotları eskiden simetrik değildi ve içerik seçimi yoktu: sol ikon (`.bt-card__row-icon`) her zaman sabit/açık bir tek ikondu (toggle edilemiyordu), sağ slot (`.bt-card__row-right`) sadece on/off bir toggle'dı (yine sabit bir ikon). Ayrıca "Additional Text" TEK bir toggle'dı ve Label (sol sütun) İLE Value (sağ sütun) altına AYNI ANDA ekleniyordu, ayrı ayrı kontrol edilemiyordu. Kullanıcı kararıyla ikisi de Header'ın control sistemiyle eşitlendi: `crdControlSlot(kind)` reuse ederek None/Icon/Button/Checkbox/Switch/Avatar/Avatar Group/Badge/Text arasından seçim sunuyor (varsayılan sol=Icon — eski sabit davranışla görsel olarak birebir aynı, sağ=None — eski off ile aynı); Additional Text de Label/Value için BAĞIMSIZ iki toggle'a bölündü. `.bt-card__row-icon`/`.bt-card__row-right`'ın `width:28px` sabiti `min-width:28px`'e çevrildi (Header'ın `.bt-card__control`'ündeki "hug content" deseniyle aynı) — artık Badge/Avatar Group/Text gibi 28px'ten geniş içerik de taşabilmeden sığıyor.
+
+**Not — Row Segment control'leri PER-SEGMENT hale getirildi, `config.props` dinamikleşti (2026-08-07, devam):** Bir önceki notta eklenen Left/Right Control + Additional Text hâlâ TÜM aktif segmentler arasında PAYLAŞILAN tek bir ortak ayar setiydi (5 segment açıksa hepsi aynı control'ü/aynı additional-text durumunu gösteriyordu). Kullanıcı bunun yanlış olduğunu, bu özelliklerin segmentlere ait olduğunu belirtti — her segment KENDİ bağımsız Left Control / Right Control / Left Additional Text / Right Additional Text / **Show Value** (yeni, Value metnini gösterip gizleme) değerlerine sahip olmalı. Ayrıca varsayılan davranış "5 segment açık" yerine "sadece Segment 1 açık, diğerleri gerektikçe eklenip özelleştirilir" olarak değiştirildi. Bunu desteklemek için playground.js'e genel bir altyapı eklendi: `config.props` artık statik bir dizi yerine `(currentProps) => [...]` şeklinde bir FONKSİYON olabilir (`_pgdResolveProps` helper'ı, bkz. §21 "Dinamik props") — Card'ın props fonksiyonu, "Active Segments" seçimindeki her aktif numara için `Segment {N}` adında ayrı bir prop grubu (`seg{N}LeftControl` vb.) üretiyor; inaktif bir segmentin grubu drawer'da hiç görünmüyor. Prop key'leri `seg1LeftControl`, `seg1RightControl`, `seg1LeftAdditionalText`, `seg1RightAdditionalText`, `seg1ShowValue` (ve 2-5 için aynı desen). Bu, mevcut TÜM diğer playground'ları (statik `config.props` dizisi kullananlar) etkilemiyor — tamamen opt-in bir motor özelliği.

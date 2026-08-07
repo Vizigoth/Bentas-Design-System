@@ -1588,51 +1588,6 @@ code {
   color: var(--bt-text-brand-default);
 }
 .pgd-dropdown { position: relative; }
-.pgd-variant-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-  border: 1px solid var(--bt-border-default);
-  border-radius: 4px;
-  background: var(--bt-surface-default);
-  color: var(--bt-text-default);
-  font-family: var(--font);
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 100ms;
-}
-.pgd-variant-btn:hover { background: var(--bt-surface-subtle); }
-.pgd-prop-label { color: var(--bt-text-muted); font-weight: 400; }
-/* Gruplu prop'lar (prop.group olan sayfalar) — her grup kendi satırında.
-   Diğer sayfalarda (group yok) bu class'lar hiç render edilmez. */
-.pgd-props-grouped {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.pgd-prop-group {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-/* Satır başı grup etiketi — sabit genişlik sayesinde tüm satırlardaki
-   dropdown'lar hizalanır (Content Header en uzun etiket, ~110px). */
-.pgd-group-label {
-  display: inline-flex;
-  align-items: center;
-  height: 30px;
-  min-width: 110px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--bt-text-muted);
-  white-space: nowrap;
-}
 .pgd-icon-btn {
   display: inline-flex;
   align-items: center;
@@ -1695,45 +1650,110 @@ code {
 .pgd-menu-item-meta { color: var(--bt-text-muted); font-size: 11px; font-family: var(--mono); }
 .pgd-menu-check { display: inline-block; width: 14px; flex-shrink: 0; color: var(--bt-blue-700); }
 
-/* Properties drawer */
+/* Properties drawer — Figma node 799:4657 ("Properties" panel, Bentas-DS) */
 .pgd-viewer-split { display: flex; align-items: stretch; }
 .pgd-viewer-split > :first-child { flex: 1; min-width: 0; }
 .pgd-drawer {
-  width: 220px;
+  width: 208px;
   flex-shrink: 0;
+  max-height: 460px;
   border-left: 1px solid var(--bt-border-primary-muted, #e6e6e6);
   overflow-y: auto;
-  background: var(--bt-surface-default, #fff);
+  overflow-x: hidden;
+  background: var(--bt-base-default, #fff);
+}
+/* Açılış animasyonu — transition+rAF yerine @keyframes: `pgd-drawer--entering` class'ı
+   sadece drawer'ın AÇILDIĞI render'da eklenir (bkz. playground.js _pgdToggleProps),
+   class DOM'a elementle BİRLİKTE geldiği için animasyon JS koreografisine (rAF/reflow
+   force) gerek kalmadan otomatik oynar — transition tabanlı yaklaşımın outerHTML'le taze
+   eklenen elementlerde güvenilir tetiklenmemesi sorununu spec garantisiyle çözer. */
+@keyframes pgd-drawer-in {
+  from { width: 0; opacity: 0; }
+  to   { width: 208px; opacity: 1; }
+}
+.pgd-drawer--entering {
+  animation: pgd-drawer-in 200ms ease;
+}
+/* Kapanış — aynı keyframes'i `reverse` ile geriye oynatıyor (208px/1 → 0/0), ayrı bir
+   @keyframes tanımına gerek yok. `forwards` ZORUNLU: aksi halde animasyon bitince
+   element `.pgd-drawer`'ın normal width:208px'ine geri "zıplar" (fill-mode varsayılanı
+   none'dur) — JS (_pgdToggleProps'taki setTimeout) elementi DOM'dan kaldırana kadar
+   0 genişlik/opaklıkta kalması gerekiyor, aksi halde kapanışın son karesinde bir an
+   için tam genişliğe dönüp sonra kaybolan bir "flicker" oluşur. */
+.pgd-drawer--leaving {
+  animation: pgd-drawer-in 200ms ease reverse forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pgd-drawer--entering, .pgd-drawer--leaving { animation: none; }
 }
 .pgd-drawer__header {
-  padding: 8px 12px;
+  padding: var(--bt-space-lg, 10px);
   border-bottom: 1px solid var(--bt-border-primary-muted, #e6e6e6);
 }
 .pgd-drawer__title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--bt-text-primary-muted, #a3a3a3);
+  font: var(--bt-text-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
 }
 .pgd-drawer__group {
-  padding: 6px 0 4px;
-}
-.pgd-drawer__group + .pgd-drawer__group {
-  border-top: 1px solid var(--bt-border-primary-muted, #e6e6e6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-sm, 6px);
+  padding: var(--bt-space-xl, 12px) var(--bt-space-md, 8px);
+  border-bottom: 1px solid var(--bt-border-primary-muted, #e6e6e6);
 }
 .pgd-drawer__group-label {
-  padding: 4px 12px 6px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--bt-text-primary-muted, #a3a3a3);
+  display: flex;
+  align-items: center;
+  height: 28px;
+  font: var(--bt-text-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
 }
-.pgd-drawer__row { padding: 2px 8px; }
+.pgd-drawer__row { width: 100%; }
 .pgd-drawer__row .pgd-dropdown { width: 100%; }
-.pgd-drawer__row .pgd-variant-btn { width: 100%; justify-content: space-between; }
-.pgd-drawer__row .pgd-menu { left: 8px; right: 8px; width: auto; }
+.pgd-drawer__row .pgd-menu { left: 0; right: 0; width: auto; }
+
+/* "Base Input" style prop trigger — label left (muted) / value right (strong) /
+   28×28 chevron flush at the trailing edge, per Figma "Base Input" component. */
+.pgd-drawer-input {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-md, 8px);
+  width: 100%;
+  height: 28px;
+  padding-left: var(--bt-space-md, 8px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-base-default, #fff);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 100ms;
+}
+.pgd-drawer-input:hover { background: var(--bt-surface-subtle); }
+.pgd-drawer-input__label {
+  flex-shrink: 0;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-strong, #535353);
+  white-space: nowrap;
+}
+.pgd-drawer-input__value {
+  flex: 1 0 0;
+  min-width: 0;
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pgd-drawer-input__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--bt-text-primary-strong, #535353);
+}
 
 .pgd-preview-inner { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: auto; width: 100%; }
 .pgd-preview-inner.is-device { align-items: flex-start; margin: 0; }
@@ -4948,8 +4968,10 @@ code {
 
 /* ── Card ────────────────────────────────────────────────── */
 /* Figma node 670:8121 (Base Card Header, 2 type × 2 position × 3 segments) +
-   757:7380 (Base Card Content Header — aynı yapı, body içinde bölüm ayıracı
-   olarak reuse edilir) + 692:30381 (assembled Card örneği). Figma'da dış
+   757:7380 (Figma'da "Base Card Content Header" — aynı yapı, body içinde bölüm
+   ayıracı olarak reuse edilir; kod ve UI'da "Body Title/Subtitle" olarak adlandırıldı,
+   Card'ın kendi ana Header'ıyla adı çakışmasın diye) + 692:30381 (assembled Card
+   örneği). Figma'da dış
    border header (üst+yan) ile body (alt+yan) arasında bölünmüş tanımlı —
    burada tek .bt-card wrapper'ına taşındı, görsel sonuç birebir aynı ama
    tek/standart bir çerçeve kuralı olduğu için daha az tekrarlı. */
@@ -4964,7 +4986,7 @@ code {
   flex-direction: column;
 }
 
-/* — Header — aynı blok, body içinde "Content Header" bölüm ayıracı olarak
+/* — Header — aynı blok, body içinde "Body Title/Subtitle" bölüm ayıracı olarak
    .bt-card__header--plain ile (arka plansız) reuse ediliyor. Varsayılan
    (Borderless) transparent — Bordered olunca hem ayraç hem subtle arka plan
    birlikte geliyor (Borderless header/body ile tamamen kaynaşık görünür). */
@@ -5002,9 +5024,9 @@ code {
    benzeri). */
 .bt-card__header--left.bt-card__header--has-left  .bt-card__title-wrap { padding-left: var(--bt-space-none, 0px); }
 .bt-card__header--left.bt-card__header--has-right .bt-card__title-wrap { padding-right: var(--bt-space-none, 0px); }
-/* Content Header (--plain) Left pozisyonda control olsun ya da olmasın HER
+/* Body Title/Subtitle (--plain) Left pozisyonda control olsun ya da olmasın HER
    ZAMAN 0 padding — kullanıcı kararıyla doğrulandı, Card Header'ın "control
-   yoksa 16px" kuralından bilinçli olarak farklı (Content Header zaten body'nin
+   yoksa 16px" kuralından bilinçli olarak farklı (Body Title/Subtitle zaten body'nin
    kendi 16px padding'ine oturuyor, ek bir inset'e ihtiyacı yok). */
 .bt-card__header--plain.bt-card__header--left .bt-card__title-wrap {
   padding-left: var(--bt-space-none, 0px);
@@ -5105,9 +5127,13 @@ code {
 }
 /* "Base Car Row Segment Controls" ile aynı 28×28 dış slot — içine 24×24
    .bt-card__control-icon taşıyıcısı (o da ikonu doldurmaz) yerleştiriliyor,
-   header control'deki 40×40→24×24 kademesiyle aynı desen. */
+   header control'deki 40×40→24×24 kademesiyle aynı desen. min-width (width değil):
+   Header'ın .bt-card__control'ündeki "hug content" deseniyle aynı — Row Segment
+   slotları artık crdControlSlot() ile Icon dışında Badge/Avatar Group/Text gibi
+   28px'ten geniş içerik de taşıyabiliyor (2026-08-07, bkz. HISTORY.md), sabit
+   width bunları kırpardı/taşırırdı. */
 .bt-card__row-icon {
-  width: 28px;
+  min-width: 28px;
   height: 28px;
   flex-shrink: 0;
   display: flex;
@@ -5151,9 +5177,9 @@ code {
   text-overflow: ellipsis;
 }
 /* Sağ 28×28 ikon slotu — Figma "Base Car Row Segment Controls" (hidden by default).
-   Sol .bt-card__row-icon ile aynı boyut/layout. */
+   Sol .bt-card__row-icon ile aynı boyut/layout (min-width, aynı gerekçe). */
 .bt-card__row-right {
-  width: 28px;
+  min-width: 28px;
   height: 28px;
   flex-shrink: 0;
   display: flex;

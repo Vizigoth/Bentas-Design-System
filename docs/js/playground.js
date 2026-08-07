@@ -29,10 +29,25 @@ window._pgdConfigs = _pgdConfigs; // exposed for isolation.html
 
 function _pgdEsc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+// `config.props` normalde statik bir dizi ama artık bir FONKSİYON da olabilir:
+// `(currentProps) => [...]`. Bu, prop listesinin kendisinin state'e göre değişmesi
+// gerektiği durumlar için (örn. Card'ın "Active Segments" seçimine göre her aktif
+// segment için ayrı bir "Segment N" prop grubu üretmesi, bkz. HISTORY.md 2026-08-07).
+// Statik dizi kullanan TÜM mevcut playground'lar (Button, Card'ın diğer grupları vb.)
+// hiçbir değişiklik yapmadan çalışmaya devam eder — fonksiyon sadece opt-in.
+// İlk state kurulumunda (_pgdEnsureState) henüz `st.props` yokken boş obje `{}` ile
+// çağrılır — fonksiyonun kendi iç fallback'i (örn. `p.activeSegments || '1'`) bu
+// durumda geçerli varsayılan listeyi üretmelidir.
+function _pgdResolveProps(config, currentProps) {
+  return typeof config.props === 'function'
+    ? (config.props(currentProps || {}) || [])
+    : (config.props || []);
+}
+
 function _pgdEnsureState(id, config) {
   if (!_pgdState[id]) {
     const props = {};
-    (config.props || []).forEach(p => {
+    _pgdResolveProps(config, {}).forEach(p => {
       if (p.type === 'multiselect') {
         props[p.key] = p.default != null
           ? (Array.isArray(p.default) ? p.default.join(',') : p.default)
@@ -51,6 +66,9 @@ function _pgdEnsureState(id, config) {
       dimH: null,
       openMenu: null, // 'variant' | 'viewport' | a props[].key | null
       propsOpen: false,
+      propsEntering: false,
+      propsClosing: false,
+      propsCloseTimer: null,
     };
   }
   return _pgdState[id];
@@ -63,26 +81,32 @@ function renderPlayground(config) {
   const variantLabel = config.variants.find(v => v.key === st.variant).label;
   const vp = PGD_VIEWPORTS.find(v => v.key === st.viewport);
 
-  const variantControl = config.variants.length > 1 ? `
-    <div class="pgd-dropdown">
-      <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','variant',event)">
-        <span class="pgd-prop-label">${config.variantLabel || 'Variant'}</span><span>${variantLabel}</span>${_pgdIconChevrons}
-      </button>
-      ${st.openMenu === 'variant' ? `
-      <div class="pgd-menu">
-        ${config.variants.map(v => `<button class="pgd-menu-item ${v.key===st.variant?'active':''}" onclick="_pgdSetVariant('${config.id}','${v.key}')">${v.label}</button>`).join('')}
-      </div>` : ''}
-    </div>` : '';
+  // Variant seçici artık toolbar'da değil, Properties drawer'ının en üstünde
+  // (kendi grubunda, etiketsiz) render ediliyor — diğer prop'larla aynı
+  // `.pgd-drawer-input` görünümünü kullanıyor (kullanıcı kararı, 2026-08-07:
+  // eskiden sadece Variant toolbar'da kalmıştı, "diğer component'lerde de
+  // variant properties'e dahil edilmemiş" geri bildirimiyle taşındı — bkz.
+  // HISTORY.md). `config.variants.length <= 1` olan sayfalarda hiç render
+  // edilmez (eskiden toolbar'da da aynı koşulla gizliydi).
+  const variantDrawerRow = config.variants.length > 1 ? `<div class="pgd-drawer__row"><div class="pgd-dropdown">
+    <button class="pgd-drawer-input" onclick="_pgdToggleMenu('${config.id}','variant',event)">
+      <span class="pgd-drawer-input__label">${config.variantLabel || 'Variant'}</span><span class="pgd-drawer-input__value">${variantLabel}</span><span class="pgd-drawer-input__icon">${_pgdIconChevrons}</span>
+    </button>
+    ${st.openMenu === 'variant' ? `
+    <div class="pgd-menu">
+      ${config.variants.map(v => `<button class="pgd-menu-item ${v.key===st.variant?'active':''}" onclick="_pgdSetVariant('${config.id}','${v.key}')">${v.label}</button>`).join('')}
+    </div>` : ''}
+  </div></div>` : '';
 
-  // prop.group olan sayfalar: grup başına ayrı bir satır (pgd-prop-group),
-  // her satırda grup etiketi + o grubun dropdown'ları. group olmayan sayfalarda
-  // (mevcut tüm diğer component'ler) eski düz liste davranışı korunur.
+  // Prop kontrolleri (dropdown/multiselect) — Properties drawer'ındaki her
+  // satırda kullanılır. prop.group olan sayfalarda drawer grup etiketleriyle
+  // ayrılır (bkz. drawerHtml).
   const _pgdPropDropdown = prop => {
     const selectedKey = st.props[prop.key];
     const selected = prop.options.find(o => o.key === selectedKey) || prop.options[0];
     return `<div class="pgd-dropdown">
-      <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
-        <span class="pgd-prop-label">${prop.label}</span><span>${selected.label}</span>${_pgdIconChevrons}
+      <button class="pgd-drawer-input" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
+        <span class="pgd-drawer-input__label">${prop.label}</span><span class="pgd-drawer-input__value">${selected.label}</span><span class="pgd-drawer-input__icon">${_pgdIconChevrons}</span>
       </button>
       ${st.openMenu === prop.key ? `
       <div class="pgd-menu">
@@ -98,8 +122,8 @@ function renderPlayground(config) {
       : selectedKeys.length === allCount ? 'All'
       : selectedKeys.join(', ');
     return `<div class="pgd-dropdown">
-      <button class="pgd-variant-btn" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
-        <span class="pgd-prop-label">${prop.label}</span><span>${displayText}</span>${_pgdIconChevrons}
+      <button class="pgd-drawer-input" onclick="_pgdToggleMenu('${config.id}','${prop.key}',event)">
+        <span class="pgd-drawer-input__label">${prop.label}</span><span class="pgd-drawer-input__value">${displayText}</span><span class="pgd-drawer-input__icon">${_pgdIconChevrons}</span>
       </button>
       ${st.openMenu === prop.key ? `
       <div class="pgd-menu">
@@ -113,37 +137,39 @@ function renderPlayground(config) {
 
   const _pgdPropControl = prop => prop.type === 'multiselect' ? _pgdPropMultiselect(prop) : _pgdPropDropdown(prop);
 
-  const hasGroups = (config.props || []).some(p => p.group);
+  // Grup listesi her zaman hesaplanır — drawer kullanır. `prop.group`'u önce
+  // normalize edip (undefined→'') öyle kıyaslamak ZORUNLU: aksi halde art arda
+  // gelen, hiçbiri group taşımayan prop'lar (örn. Button — Theme/Size/Content/
+  // State) her biri kendi ayrı grubuna düşer ('' !== undefined her zaman true
+  // olduğu için) — basit component'lerde her prop arasında görünmez etiketli
+  // ama border'lı sahte bölümler oluşurdu, standart tek düz liste bozulurdu.
+  const _pgdCurrentProps = _pgdResolveProps(config, st.props);
 
-  // Grup listesi her zaman hesaplanır — hem toolbar hem drawer kullanır
   const _allGroups = (() => {
     const g = [];
-    for (const prop of (config.props || [])) {
+    for (const prop of _pgdCurrentProps) {
+      const groupName = prop.group || '';
       const last = g[g.length - 1];
-      if (!last || last.name !== prop.group) g.push({ name: prop.group || '', props: [] });
+      if (!last || last.name !== groupName) g.push({ name: groupName, props: [] });
       g[g.length - 1].props.push(prop);
     }
     return g;
   })();
 
-  // Drawer açıkken toolbar'dan prop'lar kalkar
-  let propControls = '';
-  if (!st.propsOpen) {
-    if (!hasGroups) {
-      propControls = (config.props || []).map(_pgdPropControl).join('');
-    } else {
-      propControls = `<div class="pgd-props-grouped">${
-        _allGroups.map(g => `<div class="pgd-prop-group">
-          ${g.name ? `<span class="pgd-group-label">${g.name}</span>` : ''}
-          ${g.props.map(_pgdPropControl).join('')}
-        </div>`).join('')
-      }</div>`;
-    }
-  }
+  // Prop kontrolleri artık toolbar'da hiç görünmez — sadece Properties
+  // drawer'ı içinde. Toolbar her zaman sabit 4 buton gösterir: Properties,
+  // Measure, Viewport, Isolation mode.
 
-  // Drawer HTML — prop'ları gruplu dikey liste olarak gösterir
-  const drawerHtml = st.propsOpen ? `<div class="pgd-drawer">
+  // Drawer HTML — prop'ları gruplu dikey liste olarak gösterir. `pgd-drawer--entering`
+  // sadece drawer'ın AÇILDIĞI render'da eklenir (bkz. _pgdToggleProps) — CSS @keyframes
+  // animasyonu bu class DOM'a eklenir eklenmez otomatik oynar, JS'in rAF ile "önce
+  // reflow'u boyat sonra kaldır" gibi kırılgan bir koreografi yapmasına gerek kalmaz.
+  // `pgd-drawer--leaving` ise KAPANIRKEN eklenir: propsOpen hâlâ true tutulup (drawer
+  // DOM'da kalır) animasyon oynatılır, gerçek kaldırma (propsOpen=false) animasyon
+  // süresi kadar sonra bir setTimeout ile yapılır — bkz. _pgdToggleProps.
+  const drawerHtml = st.propsOpen ? `<div class="pgd-drawer${st.propsEntering ? ' pgd-drawer--entering' : ''}${st.propsClosing ? ' pgd-drawer--leaving' : ''}">
     <div class="pgd-drawer__header"><span class="pgd-drawer__title">Properties</span></div>
+    ${variantDrawerRow ? `<div class="pgd-drawer__group">${variantDrawerRow}</div>` : ''}
     ${_allGroups.map(g => `<div class="pgd-drawer__group">
       ${g.name ? `<div class="pgd-drawer__group-label">${g.name}</div>` : ''}
       ${g.props.map(prop => `<div class="pgd-drawer__row">${_pgdPropControl(prop)}</div>`).join('')}
@@ -154,8 +180,8 @@ function renderPlayground(config) {
 
   const viewportControl = `
     <div class="pgd-dropdown">
-      <button class="pgd-icon-btn ${isDevice ? 'is-active pgd-icon-btn--labeled' : ''}" title="Viewport" onclick="_pgdToggleMenu('${config.id}','viewport',event)">
-        ${_pgdIconViewport}${isDevice ? `<span>${vp.label}</span>` : ''}
+      <button class="pgd-icon-btn pgd-icon-btn--labeled ${isDevice ? 'is-active' : ''}" title="Viewport" onclick="_pgdToggleMenu('${config.id}','viewport',event)">
+        ${_pgdIconViewport}<span>${vp.label}</span>
       </button>
       ${st.openMenu === 'viewport' ? `
       <div class="pgd-menu pgd-menu-right">
@@ -164,7 +190,7 @@ function renderPlayground(config) {
     </div>`;
 
   const isolateControl = `
-    <button class="pgd-icon-btn" title="Open in isolation mode" onclick="_pgdOpenIsolation('${config.id}')">${_pgdIconIsolate}</button>`;
+    <button class="pgd-icon-btn pgd-icon-btn--labeled" title="Open in isolation mode" onclick="_pgdOpenIsolation('${config.id}')">${_pgdIconIsolate}<span>Isolation Mode</span></button>`;
 
   const triggerControl = config.trigger ? `
     <button class="pgd-trigger-btn" onclick="_pgdRunTrigger('${config.id}')">${_pgdIconClick}<span>${(config.trigger.label) || 'Click Me'}</span></button>` : '';
@@ -222,8 +248,12 @@ function renderPlayground(config) {
         </button>
       </div>`;
 
-  const propsBtn = (config.props || []).length > 0 ? `
-    <button class="pgd-icon-btn ${st.propsOpen ? 'is-active pgd-icon-btn--labeled' : ''}" title="Properties" onclick="_pgdToggleProps('${config.id}')">${_pgdIconProps}${st.propsOpen ? '<span>Properties</span>' : ''}</button>` : '';
+  // Variant seçici artık drawer'ın içinde olduğu için, prop'u olmayan ama birden
+  // fazla variant'ı olan sayfalarda da (örn. sadece variants:[...] geçen, props
+  // içermeyen playground'lar) Properties butonu görünmeli — aksi halde variant
+  // seçimine ulaşacak hiçbir yol kalmaz.
+  const propsBtn = (_pgdCurrentProps.length > 0 || config.variants.length > 1) ? `
+    <button class="pgd-icon-btn pgd-icon-btn--labeled ${st.propsOpen ? 'is-active' : ''}" title="Properties" onclick="_pgdToggleProps('${config.id}')">${_pgdIconProps}<span>Properties</span></button>` : '';
 
   const contentHtml = st.view === 'code' ? codeBlock
     : st.view === 'css' && config.css ? `<div class="example-viewer-code" style="padding:0;max-height:none;">${config.css(st.variant, st.props)}</div>`
@@ -234,10 +264,8 @@ function renderPlayground(config) {
       ${segControl}
       <div class="example-viewer">
         <div class="pgd-toolbar">
-          ${variantControl}
-          ${propControls}
           ${propsBtn}
-          <button class="pgd-icon-btn ${st.measure?'is-active':''}" title="Measure" onclick="_pgdToggleMeasure('${config.id}')">${_pgdIconRuler}</button>
+          <button class="pgd-icon-btn pgd-icon-btn--labeled ${st.measure?'is-active':''}" title="Measure" onclick="_pgdToggleMeasure('${config.id}')">${_pgdIconRuler}<span>Measure</span></button>
           ${viewportControl}
           ${isolateControl}
           ${triggerControl}
@@ -256,7 +284,26 @@ function _pgdRerender(id) {
   const config = _pgdConfigs[id];
   const container = document.getElementById(id);
   if (!config || !container) return;
+  // outerHTML replacement destroys and recreates every node, so any live
+  // scroll position (Properties drawer, preview frame) resets to 0 unless
+  // captured here and reapplied after the swap.
+  const drawer = container.querySelector('.pgd-drawer');
+  const drawerScroll = drawer ? drawer.scrollTop : null;
+  const preview = container.querySelector('.example-viewer-preview');
+  const previewScroll = preview ? preview.scrollTop : null;
+
   container.outerHTML = renderPlayground(config);
+
+  const newContainer = document.getElementById(id);
+  if (!newContainer) return;
+  if (drawerScroll != null) {
+    const newDrawer = newContainer.querySelector('.pgd-drawer');
+    if (newDrawer) newDrawer.scrollTop = drawerScroll;
+  }
+  if (previewScroll != null) {
+    const newPreview = newContainer.querySelector('.example-viewer-preview');
+    if (newPreview) newPreview.scrollTop = previewScroll;
+  }
 }
 
 window.renderPlayground   = renderPlayground;
@@ -283,11 +330,53 @@ window._pgdSetProp = function(id, propKey, optionKey) {
   _pgdRerender(id);
 };
 
+// Açılış/kapanış animasyonu (bkz. styles.css .pgd-drawer--entering/--leaving +
+// @keyframes pgd-drawer-in): rAF ile "class ekle → reflow zorla → sonraki frame'de
+// class kaldır" denemeleri (transition tabanlı) outerHTML'le taze eklenen elementlerde
+// güvenilir çalışmadı — rAF'ın "bir sonraki boyamadan önce" çalışma garantisi, taze
+// eklenen bir element için tam olarak İLK boyamadan önce anlamına geliyor, yani
+// başlangıç karesi (width:0) hiç ekrana basılmadan class kalkabiliyordu. Çözüm:
+// transition yerine `animation` — bir class'la birlikte DOM'a eklenen elementte
+// @keyframes animasyonu JS'siz, rAF'a hiç ihtiyaç duymadan otomatik oynar (spec
+// garantisi). `st.propsEntering` SADECE drawer'ın açıldığı render'da true olacak
+// şekilde ayarlanıp hemen ardından false'a çekiliyor — böylece sonraki re-render'larda
+// (örn. içindeki bir dropdown'a tıklanınca) animasyon tekrar oynamıyor, sadece ilk
+// açılışta bir kez çalışıyor.
+//
+// Kapanış aynı numarayla yapılamaz çünkü kapanışta element DOM'dan KALKIYOR — bir
+// "leaving" class'ı animasyonun sonunu görmeden elementle birlikte hemen silinirdi.
+// Bunun yerine: kapatma tıklanınca `propsOpen` HENÜZ false yapılmıyor (drawer DOM'da
+// kalıyor), sadece `propsClosing=true` ile `--leaving` class'ı eklenip animasyon
+// başlatılıyor; animasyon süresi (`_PGD_DRAWER_ANIM_MS`, CSS'teki 200ms ile senkron)
+// kadar sonra gerçek kapatma (`propsOpen=false`) bir `setTimeout`'la yapılıyor. Kullanıcı
+// animasyon bitmeden tekrar tıklarsa bekleyen timeout iptal edilip yeniden başlatılıyor.
+const _PGD_DRAWER_ANIM_MS = 200;
+
 window._pgdToggleProps = function(id) {
   const st = _pgdState[id];
-  st.propsOpen = !st.propsOpen;
+  if (st.propsCloseTimer) { clearTimeout(st.propsCloseTimer); st.propsCloseTimer = null; }
+
+  if (st.propsOpen && !st.propsClosing) {
+    // Açıkken tıklandı → kapanış animasyonunu başlat, gerçek kaldırmayı ertele
+    st.propsClosing = true;
+    st.openMenu = null;
+    _pgdRerender(id);
+    st.propsCloseTimer = setTimeout(() => {
+      st.propsOpen = false;
+      st.propsClosing = false;
+      st.propsCloseTimer = null;
+      _pgdRerender(id);
+    }, _PGD_DRAWER_ANIM_MS);
+    return;
+  }
+
+  // Kapalıyken (ya da kapanış animasyonu sürerken) tıklandı → aç
+  st.propsOpen = true;
+  st.propsClosing = false;
   st.openMenu = null;
+  st.propsEntering = true;
   _pgdRerender(id);
+  st.propsEntering = false;
 };
 
 window._pgdToggleMulti = function(id, propKey, optKey, e) {

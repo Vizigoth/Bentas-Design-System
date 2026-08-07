@@ -7204,8 +7204,10 @@ PAGES_WEB['components/dialog'] = {
 
 // ── Card ────────────────────────────────────────────────────────
 // Figma node 670:8121 (Base Card Header, 2 type × 2 position × 3 segments) +
-// 757:7380 (Base Card Content Header — aynı yapı, body içindeki bölüm ayıracı
-// olarak reuse edilir, her zaman borderless) + 692:30381 (assembled örnek).
+// 757:7380 (Figma'da "Base Card Content Header" — aynı yapı, body içindeki
+// bölüm ayıracı olarak reuse edilir, her zaman borderless; kod ve UI'da
+// "Body Title/Subtitle" olarak adlandırıldı, Card'ın kendi ana Header'ıyla adı
+// çakışmasın diye — bkz. HISTORY.md) + 692:30381 (assembled örnek).
 // Sol/sağ control slotu bağımsız bir "içerik tipi" seçimi: Icon/Button/
 // Checkbox/Switch/Avatar/Avatar Group/Badge/Text — hepsi mevcut bt-* bileşen
 // class'ları reuse edilerek render ediliyor (Figma'nın bağımsız show* boolean
@@ -7279,7 +7281,7 @@ function crdControlSlot(kind) {
 }
 
 // Hem ana Card Header hem body içindeki (plain:true, her zaman borderless)
-// Content Header ayracı için tek kaynak — Dialog'daki Left/Center header
+// Body Title/Subtitle ayracı için tek kaynak — Dialog'daki Left/Center header
 // deseniyle aynı mantık: kontrol slotu olan tarafta title'ın kendi padding'i
 // sıfırlanıyor, olmayan tarafta 16px kalıyor.
 function crdHeaderHtml(opts) {
@@ -7331,24 +7333,37 @@ function crdHeaderHtml(opts) {
 }
 
 // "Card Row Segment" — Base Card Content'in (756:6684) 4 örnek satırında da
-// aynı: 28×28 leading icon + flex1 Label (sol) + flex1 Value (sağ).
-// opts: { showAdditionalText: bool, showRightControl: bool }
+// aynı: 28×28 leading icon + flex1 Label (sol) + flex1 Value (sağ). Sol/sağ slot
+// Header'ın control sistemiyle aynı `crdControlSlot(kind)` reuse ediyor (None/
+// Icon/Button/Checkbox/Switch/Avatar/Avatar Group/Badge/Text). Additional Text
+// Label (left) ve Value (right) için BAĞIMSIZ toggle'lanır. `showValue` — Value
+// metninin kendisini gösterip göstermeme (kullanıcı kararıyla eklendi, 2026-08-07:
+// bu prop'ların hepsi artık PER-SEGMENT — her segment kendi bağımsız değerlerine
+// sahip, bkz. crdHtml + HISTORY.md).
+// opts: { leftControl, rightControl, showLeftAdditionalText, showRightAdditionalText, showValue }
 function crdRowHtml(opts) {
   const o = opts || {};
-  const addText = o.showAdditionalText
+  const leftControl  = o.leftControl  || 'none';
+  const rightControl = o.rightControl || 'none';
+  const showValue = o.showValue !== false;
+  const leftAddText = o.showLeftAdditionalText
     ? `<span class="bt-card__row-add">Additional Text Here</span>` : '';
-  const rightSlot = o.showRightControl
-    ? `<span class="bt-card__row-right"><span class="bt-card__control-icon">${_crdIconScan}</span></span>` : '';
+  const rightAddText = o.showRightAdditionalText
+    ? `<span class="bt-card__row-add">Additional Text Here</span>` : '';
+  const leftSlot = leftControl !== 'none'
+    ? `<span class="bt-card__row-icon">${crdControlSlot(leftControl)}</span>` : '';
+  const rightSlot = rightControl !== 'none'
+    ? `<span class="bt-card__row-right">${crdControlSlot(rightControl)}</span>` : '';
   return `<div class="bt-card__row">
-    <span class="bt-card__row-icon"><span class="bt-card__control-icon">${_crdIconScan}</span></span>
+    ${leftSlot}
     <span class="bt-card__row-content">
       <span class="bt-card__row-col bt-card__row-col--left">
         <span class="bt-card__row-label">Label Text Here</span>
-        ${addText}
+        ${leftAddText}
       </span>
       <span class="bt-card__row-col bt-card__row-col--right">
-        <span class="bt-card__row-value">Value Text Here</span>
-        ${addText}
+        ${showValue ? `<span class="bt-card__row-value">Value Text Here</span>` : ''}
+        ${rightAddText}
       </span>
     </span>
     ${rightSlot}
@@ -7363,35 +7378,45 @@ function crdHtml(variant, props) {
   const showSubtitle = (p.showSubtitle || 'on') === 'on';
   const leftControl = p.leftControl || 'none';
   const rightControl = p.rightControl || 'none';
-  const showContentHeader = (p.showContentHeader || 'on') === 'on';
+  const showTitleSubtitle = (p.showTitleSubtitle || 'on') === 'on';
   const showDescription = (p.showDescription || 'on') === 'on';
-  // Content Header, Figma'da (757:7380) Card Header ile birebir aynı prop
-  // setine sahip (Position/Subtitle/sol-sağ Control) — sadece her zaman
-  // borderless/arka plansız. Playground'da da aynı özellikler açık.
-  const chPosition     = p.contentHeaderPosition || 'left';
-  const chSubtitle     = (p.contentHeaderSubtitle || 'off') === 'on';
-  const chLeftControl  = p.contentHeaderLeftControl || 'none';
-  const chRightControl = p.contentHeaderRightControl || 'none';
-  const showRowAdd   = (p.rowAdditionalText || 'off') === 'on';
-  const showRowRight = (p.rowRightControl   || 'off') === 'on';
+  // Body Title/Subtitle (Figma'da 757:7380 "Base Card Content Header" — kod ve UI'da
+  // "Body Title/Subtitle" olarak adlandırıldı, çünkü Card'ın kendi ana Header'ı zaten
+  // var; body içindeki bu ikinci ayracı da "Header" olarak etiketlemek kafa
+  // karıştırıyordu, bkz. HISTORY.md) Card Header ile birebir aynı prop setine
+  // sahip (Position/Subtitle/sol-sağ Control) — sadece her zaman borderless/arka
+  // plansız. Playground'da da aynı özellikler açık.
+  const tsPosition     = p.titleSubtitlePosition || 'left';
+  const tsSubtitle     = (p.titleSubtitleSubtitle || 'off') === 'on';
+  const tsLeftControl  = p.titleSubtitleLeftControl || 'none';
+  const tsRightControl = p.titleSubtitleRightControl || 'none';
   const showSegments = (p.showSegments || 'on') === 'on';
   const activeSegs   = showSegments
-    ? (p.activeSegments != null ? p.activeSegments : '1,2,3,4,5').split(',').filter(Boolean)
+    ? (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean)
     : [];
   const showFooter   = (p.showFooter || 'on') === 'on';
   const footerBtnPos = p.footerBtnPos || 'horizontal';
   const footerSegs   = parseInt(p.footerSegments || '2', 10);
 
   const header = showHeader ? crdHeaderHtml({ type, position, showSubtitle, leftControl, rightControl }) : '';
-  const contentHeader = showContentHeader ? crdHeaderHtml({
-    plain: true, position: chPosition, showSubtitle: chSubtitle, titleText: 'Content Title Here',
-    leftControl: chLeftControl, rightControl: chRightControl,
+  const titleSubtitle = showTitleSubtitle ? crdHeaderHtml({
+    plain: true, position: tsPosition, showSubtitle: tsSubtitle, titleText: 'Content Title Here',
+    leftControl: tsLeftControl, rightControl: tsRightControl,
   }) : '';
   const description = showDescription
     ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
     : '';
-  const rowOpts = { showAdditionalText: showRowAdd, showRightControl: showRowRight };
-  const rows = [1,2,3,4,5].filter(i => activeSegs.includes(String(i))).map(() => crdRowHtml(rowOpts)).join('');
+  // Her aktif segment KENDİ bağımsız control/additional-text/show-value
+  // değerlerini taşır (seg{N}LeftControl vb., playground.js'in dinamik
+  // `config.props` fonksiyonunun ürettiği "Segment N" gruplarından geliyor) —
+  // artık tüm segmentlerin paylaştığı tek bir ortak ayar seti yok.
+  const rows = [1,2,3,4,5].filter(i => activeSegs.includes(String(i))).map(i => crdRowHtml({
+    leftControl:  p[`seg${i}LeftControl`]  || 'icon',
+    rightControl: p[`seg${i}RightControl`] || 'none',
+    showLeftAdditionalText:  (p[`seg${i}LeftAdditionalText`]  || 'off') === 'on',
+    showRightAdditionalText: (p[`seg${i}RightAdditionalText`] || 'off') === 'on',
+    showValue: (p[`seg${i}ShowValue`] || 'on') === 'on',
+  })).join('');
 
   // Footer — Dialog footer'ıyla birebir aynı buton mantığı
   const _fPrimary   = `<button class="bt-btn bt-btn--sm bt-btn--primary-solid" type="button">Button</button>`;
@@ -7412,7 +7437,7 @@ function crdHtml(variant, props) {
   return `<div class="bt-card bt-card--${footerBtnPos}">
   ${header}
   <div class="bt-card__body">
-    ${contentHeader}
+    ${titleSubtitle}
     ${description}
     ${rows}
   </div>${footer}
@@ -7485,7 +7510,7 @@ function crdCss(variant, props) {
     `}`,
     ``,
     `.bt-card__row-icon {`,
-    ln('width', '28px'),
+    ln('min-width', '28px  /* hug content — Badge/Avatar Group/Text gibi geniş control tipleri için */'),
     ln('height', '28px'),
     `}`,
     ``,
@@ -7517,7 +7542,7 @@ function crdCss(variant, props) {
     `}`,
     ``,
     `.bt-card__row-right {`,
-    ln('width', '28px'),
+    ln('min-width', '28px  /* hug content — Badge/Avatar Group/Text gibi geniş control tipleri için */'),
     ln('height', '28px'),
     `}`,
     ``,
@@ -7601,7 +7626,7 @@ PAGES_WEB['components/card'] = {
       <ul>
         <li>Header'ı Bordered yaparak body'den net bir görsel ayrım oluştur — özellikle Header'da control varsa</li>
         <li>Sol control slotunu bağlamsal bir gösterge (ikon, avatar, checkbox) için kullan; sağ slotu eylem (buton) veya durum (badge, switch) için kullan</li>
-        <li>Body içindeki Content Header'ı sadece birden fazla mantıksal bölüm varsa kullan — tek bir içerik bloğu için gereksiz</li>
+        <li>Body Title/Subtitle ayracını sadece birden fazla mantıksal bölüm varsa kullan — tek bir içerik bloğu için gereksiz</li>
         <li>Row Segment listelerinde Label/Value çiftlerini tutarlı bir sırayla göster</li>
       </ul>
       <h2>Don't</h2>
@@ -7618,37 +7643,63 @@ PAGES_WEB['components/card'] = {
         id: 'pgd-card-overview',
         variants: [{ key: 'default', label: 'Card' }],
         // group: aynı isimli kontroller (Position/Subtitle/Left-Right Control)
-        // Header ve Content Header için ayrı ayrı tekrarlandığından, toolbar'da
-        // karışmaması için iki gruba ayrıldı (bkz. playground.js prop.group —
+        // Header ve Body Title/Subtitle için ayrı ayrı tekrarlandığından, toolbar'da
+        // karışmaması için ayrı gruplara ayrıldı (bkz. playground.js prop.group —
         // sadece group verilen sayfalarda görünür bir ayraç oluşturuyor,
         // component'e özel ama gerektiğinde başka sayfalarda da kullanılabilir).
-        props: [
-          { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
-          { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-          { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
-          { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
-          { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-          { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-          { key: 'showContentHeader',        label: 'Show',          group: 'Content Header', options: TBX_BOOL_OPTS,      default: 'on' },
-          { key: 'contentHeaderPosition',     label: 'Position',      group: 'Content Header', options: CARD_POSITION_OPTS, default: 'left' },
-          { key: 'contentHeaderSubtitle',     label: 'Subtitle',      group: 'Content Header', options: TBX_BOOL_OPTS,      default: 'off' },
-          { key: 'contentHeaderLeftControl',  label: 'Left Control',  group: 'Content Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-          { key: 'contentHeaderRightControl', label: 'Right Control', group: 'Content Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-          { key: 'showDescription',  label: 'Description',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
-          { key: 'showSegments',     label: 'Segments',       group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
-          { key: 'activeSegments',   label: 'Active',         group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1,2,3,4,5' },
-          { key: 'rowAdditionalText', label: 'Additional Text', group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
-          { key: 'rowRightControl',   label: 'Right Control',   group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
-          { key: 'showFooter',        label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,    default: 'on' },
-          { key: 'footerBtnPos',      label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
-          { key: 'footerSegments',    label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,    default: '2' },
-        ],
+        // "Body Title/Subtitle" ismi kullanıcı kararıyla seçildi: Figma'da bu bölüm
+        // ayracı "Content Header" olarak adlandırılmış ama Card'ın zaten kendi
+        // ana Header'ı olduğundan body içindeki bu ikinci parçayı da "Header"
+        // olarak etiketlemek kafa karıştırıyordu — bkz. HISTORY.md.
+        //
+        // `props` burada bir DİZİ değil bir FONKSİYON (playground.js'in dinamik
+        // props desteği, bkz. _pgdResolveProps) — çünkü Row Segment control'leri
+        // artık TÜM segmentler arasında paylaşılan tek bir ortak ayar seti değil,
+        // her aktif segmentin KENDİ bağımsız "Segment N" grubu var (Left/Right
+        // Control, Left/Right Additional Text, Show Value). "Active" multiselect'i
+        // kaç segmentin aktif olduğunu belirliyor, o segmentler için prop grubu
+        // burada dinamik üretiliyor — kapalı bir segmentin grubu drawer'da hiç
+        // görünmüyor (kullanıcı kararı, 2026-08-07, bkz. HISTORY.md). Varsayılan
+        // artık sadece Segment 1 aktif (eskiden 1-5 hepsi açık geliyordu).
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off' },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off' },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on' },
+            );
+          });
+          return [
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',       group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'activeSegments',   label: 'Active',         group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',        label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,    default: 'on' },
+            { key: 'footerBtnPos',      label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments',    label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,    default: '2' },
+          ];
+        },
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, p)}</div>`,
         code:    (v, p) => crdHtml(v, p),
         css:     (v, p) => crdCss(v, p),
       })}
 
-      <p class="page-desc">Card, ilişkili içeriği bir Header ve bir Body olmak üzere iki bölümde gruplayan bir kapsayıcıdır. Header; Bordered/Borderless tip, Center/Left pozisyon ve sol/sağ 40×40 control slotlarıyla özelleştirilebilir. Body ise opsiyonel bir alt-bölüm başlığı (Content Header) ve Label/Value satırlarından oluşan esnek bir içerik alanıdır.</p>
+      <p class="page-desc">Card, ilişkili içeriği bir Header ve bir Body olmak üzere iki bölümde gruplayan bir kapsayıcıdır. Header; Bordered/Borderless tip, Center/Left pozisyon ve sol/sağ 40×40 control slotlarıyla özelleştirilebilir. Body ise opsiyonel bir alt-bölüm başlığı (Body Title/Subtitle) ve Label/Value satırlarından oluşan esnek bir içerik alanıdır.</p>
 
       <h2 id="Header Types">Header Types</h2>
       <p class="page-desc">Figma'da Header, 3 bağımsız eksenden oluşuyor: <strong>Type</strong> (Bordered/Borderless — arka plan+ayraç, aşağıdaki Anatomy tablosunda), <strong>Position</strong> (Center/Left) ve <strong>Segments</strong> (1/2/3 — kaç control slotu dolu). Position × Segments = <strong>6 temel header düzeni</strong>; bunların her biri Bordered veya Borderless olabildiği için toplam 6 × 2 = 12 Figma varyantı var. Bu projede "Segments" ayrı bir seçenek olarak değil, sol/sağ control'lerin bağımsız içerik tipi seçimiyle (None dahil) genelleştirildi — aşağıdaki 6 satır Figma'nın kendi Segments 1/2/3 karşılıklarını gösteriyor.</p>
@@ -7731,12 +7782,12 @@ PAGES_WEB['components/card'] = {
       </table>
 
       <h2 id="Body">Body</h2>
-      <p class="page-desc">Body; opsiyonel bir Content Header bölüm ayracı, opsiyonel bir açıklama metni ve ikon + Label + Value düzeninde Row Segment listesinden oluşur.</p>
+      <p class="page-desc">Body; opsiyonel bir Body Title/Subtitle bölüm ayracı, opsiyonel bir açıklama metni ve ikon + Label + Value düzeninde Row Segment listesinden oluşur.</p>
       <table class="token-table">
         <thead><tr><th>Örnek</th><th>Preview</th></tr></thead>
         <tbody>
           <tr>
-            <td>Content Header + Row Segment</td>
+            <td>Body Title/Subtitle + Row Segment</td>
             <td><div class="bt-card" style="width:100%">
               ${crdHeaderHtml({ plain: true, position: 'left', showSubtitle: true, titleText: 'Content Title Here' })}
               <div class="bt-card__body" style="padding-top:0">${crdRowHtml({})}</div>
@@ -7770,11 +7821,11 @@ PAGES_WEB['components/card'] = {
         <tbody>
           <tr>
             <td>Horizontal · 2 segments</td>
-            <td>${crdHtml('default', { type: 'bordered', position: 'left', showSubtitle: 'off', showContentHeader: 'off', showDescription: 'off', rowAdditionalText: 'off', rowRightControl: 'off', showFooter: 'on', footerBtnPos: 'horizontal', footerSegments: '2' })}</td>
+            <td>${crdHtml('default', { type: 'bordered', position: 'left', showSubtitle: 'off', showTitleSubtitle: 'off', showDescription: 'off', showFooter: 'on', footerBtnPos: 'horizontal', footerSegments: '2' })}</td>
           </tr>
           <tr>
             <td>Vertical · 2 segments</td>
-            <td>${crdHtml('default', { type: 'bordered', position: 'left', showSubtitle: 'off', showContentHeader: 'off', showDescription: 'off', rowAdditionalText: 'off', rowRightControl: 'off', showFooter: 'on', footerBtnPos: 'vertical', footerSegments: '2' })}</td>
+            <td>${crdHtml('default', { type: 'bordered', position: 'left', showSubtitle: 'off', showTitleSubtitle: 'off', showDescription: 'off', showFooter: 'on', footerBtnPos: 'vertical', footerSegments: '2' })}</td>
           </tr>
         </tbody>
       </table>
