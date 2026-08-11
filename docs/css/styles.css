@@ -5204,6 +5204,32 @@ code {
 .bt-card--vertical .bt-card__footer { flex-direction: column; }
 .bt-card--vertical .bt-card__footer .bt-btn { width: 100%; justify-content: center; }
 
+/* Collapsible — segments kısmı toggle edilebilir */
+.bt-card__collapse-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  gap: var(--bt-space-md, 8px);
+}
+.bt-card__collapse-trigger .bt-card__title { flex: 1 1 0; }
+.bt-card__chevron {
+  flex-shrink: 0;
+  color: var(--bt-icon-primary-strong, #535353);
+  transition: transform 250ms ease;
+}
+.bt-card--expanded .bt-card__chevron { transform: rotate(90deg); }
+.bt-card__collapse-content {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 250ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-md, 8px);
+}
+.bt-card--expanded .bt-card__collapse-content { max-height: 600px; }
+
 /* Selectable — seçilebilir kart; selected toggle state'i */
 .bt-card--selectable {
   cursor: pointer;

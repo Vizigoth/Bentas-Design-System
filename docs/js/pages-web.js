@@ -20,9 +20,10 @@ const NAV_WEB = [
       { label: 'Button Group',      id: 'components/button-group' },
       {
         label: 'Card', id: 'components/card', children: [
-          { label: 'Default Card',    id: 'components/card-default' },
-          { label: 'Clickable Card',  id: 'components/card-clickable' },
-          { label: 'Selectable Card', id: 'components/card-selectable' },
+          { label: 'Default Card',     id: 'components/card-default' },
+          { label: 'Clickable Card',   id: 'components/card-clickable' },
+          { label: 'Selectable Card',  id: 'components/card-selectable' },
+          { label: 'Collapsible Card', id: 'components/card-collapsible' },
         ]
       },
       { label: 'Checkbox',          id: 'components/checkbox' },
@@ -8105,6 +8106,213 @@ PAGES_WEB['components/card-clickable'] = {
           <tr><td>Active · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Active · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
           <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Collapsible Card ─────────────────────────────────────────────
+const CARD_COLLAPSE_STATE_OPTS = [
+  { key: 'collapsed', label: 'Collapsed' },
+  { key: 'expanded',  label: 'Expanded'  },
+];
+
+function crdCollapsibleHtml(variant, props) {
+  const p        = props || {};
+  const expanded = (p.collapseState || 'collapsed') === 'expanded';
+  const expClass = expanded ? ' bt-card--expanded' : '';
+
+  const showHeader  = (p.showHeader  || 'off') === 'on';
+  const showDesc    = (p.showDescription || 'on') === 'on';
+  const showFooter  = (p.showFooter  || 'off') === 'on';
+  const footerBtnPos = p.footerBtnPos || 'horizontal';
+  const footerSegs   = parseInt(p.footerSegments || '2', 10);
+
+  const activeSegs = (p.activeSegments != null ? p.activeSegments : '1,2,3').split(',').filter(Boolean);
+  const rows = [1,2,3,4,5].filter(i => activeSegs.includes(String(i))).map(i => crdRowHtml({
+    leftControl:             p[`seg${i}LeftControl`]         || 'icon',
+    rightControl:            p[`seg${i}RightControl`]        || 'none',
+    showLeftAdditionalText:  (p[`seg${i}LeftAdditionalText`]  || 'off') === 'on',
+    showRightAdditionalText: (p[`seg${i}RightAdditionalText`] || 'off') === 'on',
+    showValue:               (p[`seg${i}ShowValue`]           || 'on')  === 'on',
+  })).join('');
+
+  const _chevron = `<svg class="bt-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+
+  const header = showHeader ? crdHeaderHtml({
+    type: p.type || 'bordered', position: p.position || 'center',
+    showSubtitle: (p.showSubtitle || 'on') === 'on',
+    leftControl: p.leftControl || 'none', rightControl: p.rightControl || 'none',
+  }) : '';
+
+  const description = showDesc
+    ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
+    : '';
+
+  const _fPrimary   = `<button class="bt-btn bt-btn--sm bt-btn--primary-solid" type="button">Button</button>`;
+  const _fSecondary = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>`;
+  const _fTertiary  = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>`;
+  let footerBtns;
+  if (footerBtnPos === 'vertical') {
+    footerBtns = footerSegs === 1 ? _fPrimary : footerSegs === 2 ? _fPrimary + _fSecondary : _fPrimary + _fSecondary + _fTertiary;
+  } else {
+    footerBtns = footerSegs === 1 ? _fPrimary : footerSegs === 2 ? _fSecondary + _fPrimary : _fTertiary + _fSecondary + _fPrimary;
+  }
+  const footer = showFooter ? `\n  <div class="bt-card__footer">${footerBtns}</div>` : '';
+
+  return `<div class="bt-card bt-card--collapsible${expClass} bt-card--${footerBtnPos}">
+  ${header}
+  <div class="bt-card__body">
+    <div class="bt-card__collapse-trigger" onclick="this.closest('.bt-card').classList.toggle('bt-card--expanded')">
+      <span class="bt-card__title">Content Title Here</span>
+      ${_chevron}
+    </div>
+    ${description}
+    <div class="bt-card__collapse-content">${rows}</div>
+  </div>${footer}
+</div>`;
+}
+
+function crdCollapsibleCss(_, props) {
+  const p = props || {};
+  const expanded = (p.collapseState || 'collapsed') === 'expanded';
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-card__collapse-trigger {',
+    ln('display',         'flex'),
+    ln('align-items',     'center'),
+    ln('justify-content', 'space-between'),
+    ln('cursor',          'pointer'),
+    ln('user-select',     'none'),
+    '}',
+    '',
+    '.bt-card__chevron {',
+    ln('transition', 'transform 250ms ease'),
+    ln('color',      'var(--bt-icon-primary-strong)  /* #535353 */'),
+    ...(expanded ? [ln('transform', 'rotate(90deg)  /* .bt-card--expanded ile tetiklenir */')] : []),
+    '}',
+    '',
+    '.bt-card__collapse-content {',
+    ln('overflow',   'hidden'),
+    ln('max-height', expanded ? '600px  /* expanded */' : '0  /* collapsed */'),
+    ln('transition', 'max-height 250ms ease'),
+    '}',
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/card-collapsible'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['States', 'Anatomy'],
+  render(tab) {
+    const title = 'Collapsible Card';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Collapsible Card bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger</td><td>Cursor</td><td>—</td><td>pointer</td></tr>
+          <tr><td>Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Chevron</td><td>Transition</td><td>—</td><td>transform 250ms ease</td></tr>
+          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(90deg)</td></tr>
+          <tr><td>Collapse Content</td><td>Max-height · Collapsed</td><td>—</td><td>0</td></tr>
+          <tr><td>Collapse Content</td><td>Max-height · Expanded</td><td>—</td><td>600px</td></tr>
+          <tr><td>Collapse Content</td><td>Transition</td><td>—</td><td>max-height 250ms ease</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Collapsible Card kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Detay bilgileri (segment satırları) ikincil önem taşıdığında ve başlangıçta gizlenmesi tercih edildiğinde kullan</li>
+        <li>Trigger olarak her zaman Body Title alanını kullan — başka alanları tıklanabilir yapma</li>
+        <li>Collapsed state'de Default Card gibi görünen temiz bir başlangıç sunumu hedefle</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Her zaman görünmesi gereken kritik bilgileri collapse content'e koyma</li>
+        <li>İç içe collapsible card'lar oluşturma</li>
+      </ul>
+    `};
+
+    const _colProps = (p) => {
+      const activeSegs = (p.activeSegments != null ? p.activeSegments : '1,2,3').split(',').filter(Boolean);
+      const segProps = [];
+      [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+        segProps.push(
+          { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+          { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+          { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+        );
+      });
+      return [
+        { key: 'collapseState',  label: 'State',           options: CARD_COLLAPSE_STATE_OPTS, default: 'collapsed' },
+        { key: 'showHeader',     label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'type',           label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+        { key: 'position',       label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+        { key: 'showSubtitle',   label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'leftControl',    label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'rightControl',   label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,        default: 'on' },
+        { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1,2,3' },
+        ...segProps,
+        { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+        { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+        { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+      ];
+    };
+
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-card-collapsible-overview',
+        variants: [{ key: 'default', label: 'Collapsible Card' }],
+        props: _colProps,
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdCollapsibleHtml(v, p)}</div>`,
+        code:    (v, p) => crdCollapsibleHtml(v, p),
+        css:     (v, p) => crdCollapsibleCss(v, p),
+      })}
+
+      <p class="page-desc">Başlık alanına tıklandığında segment satırlarını gösteren/gizleyen kart varyantı. Collapsed (varsayılan) state'de Default Card gibi görünür.</p>
+
+      <h2 id="States">States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Collapsed</span></td>
+            <td>${crdCollapsibleHtml('default', { collapseState: 'collapsed', showDescription: 'on', activeSegments: '1,2,3' })}</td>
+            <td>Segments gizli. Default Card ile aynı görünüm.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Expanded</span></td>
+            <td>${crdCollapsibleHtml('default', { collapseState: 'expanded', showDescription: 'on', activeSegments: '1,2,3' })}</td>
+            <td>Segments görünür. Başlığa tıklanarak tetiklenir.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Trigger · Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Trigger · Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(90deg)</td></tr>
+          <tr><td>Collapse Content</td><td>Transition</td><td>—</td><td>max-height 250ms ease</td></tr>
         </tbody>
       </table>
     `};
