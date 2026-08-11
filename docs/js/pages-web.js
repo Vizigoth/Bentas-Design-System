@@ -18,7 +18,12 @@ const NAV_WEB = [
       { label: 'Badge',             id: 'components/badge' },
       { label: 'Button',            id: 'components/button' },
       { label: 'Button Group',      id: 'components/button-group' },
-      { label: 'Card',              id: 'components/card' },
+      {
+        label: 'Card', children: [
+          { label: 'Card',         id: 'components/card' },
+          { label: 'Card Default', id: 'components/card-default' },
+        ]
+      },
       { label: 'Checkbox',          id: 'components/checkbox' },
       { label: 'Dialog',            id: 'components/dialog' },
       { label: 'Icon Button',       id: 'components/icon-button' },
@@ -7831,6 +7836,32 @@ PAGES_WEB['components/card'] = {
           <tr><td>Footer · Vertical button</td><td>Width</td><td>—</td><td>100%</td></tr>
         </tbody>
       </table>
+    `};
+  },
+};
+
+// ── Card Default ─────────────────────────────────────────────────
+// Header off · Segments off · Footer off varsayılan görünüm.
+PAGES_WEB['components/card-default'] = {
+  tabs: ['Overview'],
+  toc:  [],
+  render(tab) {
+    const title = 'Card Default';
+
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-card-default-overview',
+        variants: [{ key: 'default', label: 'Card Default' }],
+        props: [
+          { key: 'showTitleSubtitle', label: 'Body Title/Subtitle', options: TBX_BOOL_OPTS, default: 'on' },
+          { key: 'showDescription',   label: 'Description',         options: TBX_BOOL_OPTS, default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, { showHeader: 'off', showSegments: 'off', showFooter: 'off', ...p })}</div>`,
+        code:    (v, p) => crdHtml(v, { showHeader: 'off', showSegments: 'off', showFooter: 'off', ...p }),
+        css:     (v, p) => crdCss(v, { showHeader: 'off', showSegments: 'off', showFooter: 'off', ...p }),
+      })}
+
+      <p class="page-desc">Header, Segments ve Footer kapalı olan temel Card görünümü. Yalnızca body içeriği (opsiyonel Body Title/Subtitle + Description) gösterilir.</p>
     `};
   },
 };
