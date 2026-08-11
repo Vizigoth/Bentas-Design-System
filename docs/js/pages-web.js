@@ -8123,9 +8123,8 @@ function crdCollapsibleHtml(variant, props) {
   const expanded = (p.collapseState || 'collapsed') === 'expanded';
   const expClass = expanded ? ' bt-card--expanded' : '';
 
-  const showHeader  = (p.showHeader  || 'off') === 'on';
-  const showDesc    = (p.showDescription || 'on') === 'on';
-  const showFooter  = (p.showFooter  || 'off') === 'on';
+  const showDesc     = (p.showDescription || 'on') === 'on';
+  const showFooter   = (p.showFooter  || 'off') === 'on';
   const footerBtnPos = p.footerBtnPos || 'horizontal';
   const footerSegs   = parseInt(p.footerSegments || '2', 10);
 
@@ -8140,11 +8139,11 @@ function crdCollapsibleHtml(variant, props) {
 
   const _chevron = `<svg class="bt-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
 
-  const header = showHeader ? crdHeaderHtml({
-    type: p.type || 'bordered', position: p.position || 'center',
-    showSubtitle: (p.showSubtitle || 'on') === 'on',
-    leftControl: p.leftControl || 'none', rightControl: p.rightControl || 'none',
-  }) : '';
+  // Borderless header — tıklanınca collapse toggle
+  const header = `<div class="bt-card__header bt-card__header--left bt-card__header--has-right" onclick="this.closest('.bt-card').classList.toggle('bt-card--expanded')">
+  <span class="bt-card__title-wrap"><span class="bt-card__title">Card Title Here</span></span>
+  <span class="bt-card__control" style="display:flex;align-items:center;justify-content:center;">${_chevron}</span>
+</div>`;
 
   const description = showDesc
     ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
@@ -8164,10 +8163,6 @@ function crdCollapsibleHtml(variant, props) {
   return `<div class="bt-card bt-card--collapsible${expClass} bt-card--${footerBtnPos}">
   ${header}
   <div class="bt-card__body">
-    <div class="bt-card__collapse-trigger" onclick="this.closest('.bt-card').classList.toggle('bt-card--expanded')">
-      <span class="bt-card__title">Content Title Here</span>
-      ${_chevron}
-    </div>
     ${description}
     <div class="bt-card__collapse-content">${rows}</div>
   </div>${footer}
@@ -8215,7 +8210,8 @@ PAGES_WEB['components/card-collapsible'] = {
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Trigger</td><td>Cursor</td><td>—</td><td>pointer</td></tr>
+          <tr><td>Header (trigger)</td><td>Cursor</td><td>—</td><td>pointer</td></tr>
+          <tr><td>Header (trigger)</td><td>Style</td><td>—</td><td>Borderless (transparent bg, no border-bottom)</td></tr>
           <tr><td>Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
           <tr><td>Chevron</td><td>Transition</td><td>—</td><td>transform 250ms ease</td></tr>
           <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(90deg)</td></tr>
@@ -8256,14 +8252,8 @@ PAGES_WEB['components/card-collapsible'] = {
         );
       });
       return [
-        { key: 'collapseState',  label: 'State',           options: CARD_COLLAPSE_STATE_OPTS, default: 'collapsed' },
-        { key: 'showHeader',     label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
-        { key: 'type',           label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-        { key: 'position',       label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
-        { key: 'showSubtitle',   label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
-        { key: 'leftControl',    label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-        { key: 'rightControl',   label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-        { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,        default: 'on' },
+        { key: 'collapseState',    label: 'State',       options: CARD_COLLAPSE_STATE_OPTS, default: 'collapsed' },
+        { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
         { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1,2,3' },
         ...segProps,
         { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
