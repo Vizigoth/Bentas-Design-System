@@ -18,12 +18,8 @@ const NAV_WEB = [
       { label: 'Badge',             id: 'components/badge' },
       { label: 'Button',            id: 'components/button' },
       { label: 'Button Group',      id: 'components/button-group' },
-      {
-        label: 'Card', children: [
-          { label: 'Card',         id: 'components/card' },
-          { label: 'Card Default', id: 'components/card-default' },
-        ]
-      },
+      { label: 'Card',              id: 'components/card' },
+      { label: 'Card Default',      id: 'components/card-default' },
       { label: 'Checkbox',          id: 'components/checkbox' },
       { label: 'Dialog',            id: 'components/dialog' },
       { label: 'Icon Button',       id: 'components/icon-button' },
@@ -7842,6 +7838,7 @@ PAGES_WEB['components/card'] = {
 
 // ── Card Default ─────────────────────────────────────────────────
 // Header off · Segments off · Footer off varsayılan görünüm.
+// Tüm Card özellikleri playground'da erişilebilir.
 PAGES_WEB['components/card-default'] = {
   tabs: ['Overview'],
   toc:  [],
@@ -7852,16 +7849,45 @@ PAGES_WEB['components/card-default'] = {
       ${registerPlayground({
         id: 'pgd-card-default-overview',
         variants: [{ key: 'default', label: 'Card Default' }],
-        props: [
-          { key: 'showTitleSubtitle', label: 'Body Title/Subtitle', options: TBX_BOOL_OPTS, default: 'on' },
-          { key: 'showDescription',   label: 'Description',         options: TBX_BOOL_OPTS, default: 'on' },
-        ],
-        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, { showHeader: 'off', showSegments: 'off', showFooter: 'off', ...p })}</div>`,
-        code:    (v, p) => crdHtml(v, { showHeader: 'off', showSegments: 'off', showFooter: 'off', ...p }),
-        css:     (v, p) => crdCss(v, { showHeader: 'off', showSegments: 'off', showFooter: 'off', ...p }),
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, p)}</div>`,
+        code:    (v, p) => crdHtml(v, p),
+        css:     (v, p) => crdCss(v, p),
       })}
 
-      <p class="page-desc">Header, Segments ve Footer kapalı olan temel Card görünümü. Yalnızca body içeriği (opsiyonel Body Title/Subtitle + Description) gösterilir.</p>
+      <p class="page-desc">Header, Segments ve Footer kapalı olan temel Card görünümü. Playground'dan tüm Card özellikleri açılıp özelleştirilebilir.</p>
     `};
   },
 };
