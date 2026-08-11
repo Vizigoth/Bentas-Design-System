@@ -8139,10 +8139,10 @@ function crdCollapsibleHtml(variant, props) {
 
   const _chevron = `<svg class="bt-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
 
-  // Borderless header — tıklanınca collapse toggle
-  const header = `<div class="bt-card__header bt-card__header--left bt-card__header--has-right" onclick="this.closest('.bt-card').classList.toggle('bt-card--expanded')">
+  // Borderless header — flat icon button sağda, chevron collapse trigger
+  const header = `<div class="bt-card__header bt-card__header--left bt-card__header--has-right">
   <span class="bt-card__title-wrap"><span class="bt-card__title">Card Title Here</span></span>
-  <span class="bt-card__control" style="display:flex;align-items:center;justify-content:center;">${_chevron}</span>
+  <span class="bt-card__control"><button class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" type="button" aria-label="Toggle" onclick="this.closest('.bt-card').classList.toggle('bt-card--expanded')">${_chevron}</button></span>
 </div>`;
 
   const description = showDesc
@@ -8210,8 +8210,8 @@ PAGES_WEB['components/card-collapsible'] = {
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Header (trigger)</td><td>Cursor</td><td>—</td><td>pointer</td></tr>
-          <tr><td>Header (trigger)</td><td>Style</td><td>—</td><td>Borderless (transparent bg, no border-bottom)</td></tr>
+          <tr><td>Header</td><td>Style</td><td>—</td><td>Borderless (transparent bg, no border-bottom)</td></tr>
+          <tr><td>Collapse Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
           <tr><td>Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
           <tr><td>Chevron</td><td>Transition</td><td>—</td><td>transform 250ms ease</td></tr>
           <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(90deg)</td></tr>

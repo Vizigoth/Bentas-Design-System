@@ -5205,10 +5205,7 @@ code {
 .bt-card--vertical .bt-card__footer .bt-btn { width: 100%; justify-content: center; }
 
 /* Collapsible — borderless header collapse trigger */
-.bt-card--collapsible .bt-card__header {
-  cursor: pointer;
-  user-select: none;
-}
+/* Collapsible header trigger artık sadece icon button — header'ın kendisi tıklanabilir değil */
 .bt-card__chevron {
   flex-shrink: 0;
   color: var(--bt-icon-primary-strong, #535353);
