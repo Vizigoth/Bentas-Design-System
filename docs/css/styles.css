@@ -5204,6 +5204,22 @@ code {
 .bt-card--vertical .bt-card__footer { flex-direction: column; }
 .bt-card--vertical .bt-card__footer .bt-btn { width: 100%; justify-content: center; }
 
+/* Selectable — seçilebilir kart; selected toggle state'i */
+.bt-card--selectable {
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  user-select: none;
+}
+.bt-card--selectable:hover:not(.bt-card--selected) {
+  border-color: var(--bt-border-brand-muted, #bedbf9);
+  box-shadow: var(--bt-shadow-sm, 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10));
+}
+.bt-card--selectable.bt-card--selected {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  background: var(--bt-surface-brand-subtle, #e2edfc);
+  box-shadow: 0 0 0 1px var(--bt-border-brand-default, #0d4e97);
+}
+
 /* Clickable — tüm kart tıklanabilir; hover/active state'leri */
 .bt-card--clickable {
   cursor: pointer;

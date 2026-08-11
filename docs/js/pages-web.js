@@ -20,8 +20,9 @@ const NAV_WEB = [
       { label: 'Button Group',      id: 'components/button-group' },
       {
         label: 'Card', id: 'components/card', children: [
-          { label: 'Default Card',   id: 'components/card-default' },
-          { label: 'Clickable Card', id: 'components/card-clickable' },
+          { label: 'Default Card',    id: 'components/card-default' },
+          { label: 'Clickable Card',  id: 'components/card-clickable' },
+          { label: 'Selectable Card', id: 'components/card-selectable' },
         ]
       },
       { label: 'Checkbox',          id: 'components/checkbox' },
@@ -8023,6 +8024,131 @@ PAGES_WEB['components/card-clickable'] = {
           <tr><td>Hover · Shadow</td><td>Box Shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
           <tr><td>Active · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Active · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Selectable Card ──────────────────────────────────────────────
+// 3 kart yan yana; her biri bağımsız tıklanabilir toggle.
+// Kart genişliği 220px — 3 kart + 2×12px gap ≈ 684px preview içine sığar.
+const CARD_SEL_STATE_OPTS = [
+  { key: 'none',  label: 'None Selected' },
+  { key: 'first', label: 'First Selected' },
+  { key: 'all',   label: 'All Selected' },
+];
+
+function _crdSelCard(props, selected, cardLabel) {
+  const p = props || {};
+  const showDesc = (p.showDescription    || 'on')  !== 'off';
+  const showTS   = (p.showTitleSubtitle  || 'off') === 'on';
+  const titleSubtitle = showTS ? crdHeaderHtml({
+    plain: true, position: 'left', showSubtitle: false,
+    titleText: cardLabel, leftControl: 'none', rightControl: 'none',
+  }) : '';
+  const description = showDesc
+    ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
+    : '';
+  const sel = selected ? ' bt-card--selected' : '';
+  return `<div class="bt-card bt-card--selectable${sel}" style="width:220px;max-width:220px;" onclick="this.classList.toggle('bt-card--selected')">
+  <div class="bt-card__body">${titleSubtitle}${description}</div>
+</div>`;
+}
+
+function crdSelectableHtml(variant, props) {
+  const p     = props || {};
+  const init  = p.initialState || 'first';
+  const s1 = init === 'first' || init === 'all';
+  const s2 = init === 'all';
+  const s3 = init === 'all';
+  return `<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+  ${_crdSelCard(p, s1, 'Card Title One')}
+  ${_crdSelCard(p, s2, 'Card Title Two')}
+  ${_crdSelCard(p, s3, 'Card Title Three')}
+</div>`;
+}
+
+function crdSelectableCss() {
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-card--selectable {',
+    ln('cursor',      'pointer'),
+    ln('transition',  'border-color 150ms ease, box-shadow 150ms ease, background 150ms ease'),
+    ln('user-select', 'none'),
+    '}',
+    '',
+    '.bt-card--selectable:hover:not(.bt-card--selected) {',
+    ln('border-color', 'var(--bt-border-brand-muted)   /* #bedbf9 */'),
+    ln('box-shadow',   'var(--bt-shadow-sm)             /* 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10) */'),
+    '}',
+    '',
+    '.bt-card--selectable.bt-card--selected {',
+    ln('border-color', 'var(--bt-border-brand-default)  /* #0d4e97 */'),
+    ln('background',   'var(--bt-surface-brand-subtle)  /* #e2edfc */'),
+    ln('box-shadow',   '0 0 0 1px var(--bt-border-brand-default) /* double border effect */'),
+    '}',
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/card-selectable'] = {
+  tabs: ['Overview'],
+  toc:  ['States', 'Anatomy'],
+  render(tab) {
+    const title = 'Selectable Card';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-card-selectable-overview',
+        variants: [{ key: 'default', label: 'Selectable Card' }],
+        props: [
+          { key: 'initialState',    label: 'Initial State', options: CARD_SEL_STATE_OPTS, default: 'first' },
+          { key: 'showTitleSubtitle', label: 'Title',       options: TBX_BOOL_OPTS,       default: 'off' },
+          { key: 'showDescription', label: 'Description',   options: TBX_BOOL_OPTS,       default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdSelectableHtml(v, p)}</div>`,
+        code:    (v, p) => crdSelectableHtml(v, p),
+        css:     ()     => crdSelectableCss(),
+      })}
+
+      <p class="page-desc">Birden fazla seçilebilir kart. <code style="font-family:var(--mono);font-size:12px;">bt-card--selectable</code> modifier'ı eklenmiş her kart bağımsız toggle edilebilir; seçili kartlar <code style="font-family:var(--mono);font-size:12px;">bt-card--selected</code> class'ı alır.</p>
+
+      <h2 id="States">States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th><th>Değişen özellikler</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Default</span></td>
+            <td>${_crdSelCard({ showDescription: 'on' }, false, 'Card Title')}</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Hover</span></td>
+            <td><div class="bt-card bt-card--selectable" style="width:220px;max-width:220px;border-color:var(--bt-border-brand-muted,#bedbf9);box-shadow:var(--bt-shadow-sm)"><div class="bt-card__body"><p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p></div></div></td>
+            <td>Border → ${tk('--bt-border-brand-muted')} · Shadow → ${tk('--bt-shadow-sm')}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Selected</span></td>
+            <td>${_crdSelCard({ showDescription: 'on' }, true, 'Card Title')}</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Background → ${tk('--bt-surface-brand-subtle')} · double border ring</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default · Border</td><td>Stroke</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-muted')}</td><td>#bedbf9</td></tr>
+          <tr><td>Hover · Shadow</td><td>Box Shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Selected · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Selected · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Selected · Ring</td><td>Box Shadow</td><td>—</td><td>0 0 0 1px var(--bt-border-brand-default)</td></tr>
           <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease</td></tr>
         </tbody>
       </table>
