@@ -7845,54 +7845,134 @@ PAGES_WEB['components/card'] = {
 // Header off · Segments off · Footer off varsayılan görünüm.
 // Tüm Card özellikleri playground'da erişilebilir.
 PAGES_WEB['components/card-default'] = {
-  tabs: ['Overview'],
-  toc:  [],
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Body Content', 'Anatomy'],
   render(tab) {
     const title = 'Default Card';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const _defaultProps = (p) => {
+      const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+      const segProps = [];
+      [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+        segProps.push(
+          { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+          { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+          { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+        );
+      });
+      return [
+        { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+        { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+        { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+        { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+        ...segProps,
+        { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+        { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+        { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+      ];
+    };
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Default Card bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-sm-regular')}</td><td>400 · 14px/20px</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Body Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Body Subtitle</td><td>Font</td><td>${tk('--bt-subtitle-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Body Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Row · Additional Text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Default Card kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Başlık, açıklama veya liste satırlarından oluşan düz içeriği gruplamak için kullan</li>
+        <li>Header gerektirmeyen bağlamlarda (form alanı grubu, bilgi özeti) tercih et</li>
+        <li>Segments'i benzer yapıdaki Label/Value verilerini listelemek için kullan</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Başlık göstermek istiyorsan Header'ı kapalı bırakma — Card veya Body Title/Subtitle kullan</li>
+        <li>Çok derin iç içe card'lar oluşturma</li>
+      </ul>
+    `};
 
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-card-default-overview',
         variants: [{ key: 'default', label: 'Default Card' }],
-        props: (p) => {
-          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
-          const segProps = [];
-          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
-            segProps.push(
-              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
-              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
-              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
-              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
-              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
-            );
-          });
-          return [
-            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
-            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
-            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
-            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
-            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
-            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
-            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
-            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
-            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
-            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
-            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
-            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
-            ...segProps,
-            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
-            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
-            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
-          ];
-        },
+        props: _defaultProps,
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, p)}</div>`,
         code:    (v, p) => crdHtml(v, p),
         css:     (v, p) => crdCss(v, p),
       })}
 
-      <p class="page-desc">Header, Segments ve Footer kapalı olan temel Card görünümü. Playground'dan tüm Card özellikleri açılıp özelleştirilebilir.</p>
+      <p class="page-desc">Header, Segments ve Footer kapalı olan temel Card görünümü. Body Title/Subtitle ve Description ile içerik alanı oluşturulur; playground'dan tüm Card özellikleri açılıp özelleştirilebilir.</p>
+
+      <h2 id="Body Content">Body Content</h2>
+      <table class="token-table">
+        <thead><tr><th>Öğe</th><th>Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Description Only</strong></td>
+            <td>${crdHtml('default', { showHeader:'off', showTitleSubtitle:'off', showDescription:'on', showSegments:'off', showFooter:'off' })}</td>
+            <td>Sadece açıklama metni. En sade görünüm.</td>
+          </tr>
+          <tr>
+            <td><strong>Title + Description</strong></td>
+            <td>${crdHtml('default', { showHeader:'off', showTitleSubtitle:'on', showDescription:'on', showSegments:'off', showFooter:'off' })}</td>
+            <td>Body Title/Subtitle bölüm ayracı + açıklama metni.</td>
+          </tr>
+          <tr>
+            <td><strong>Title + Segments</strong></td>
+            <td>${crdHtml('default', { showHeader:'off', showTitleSubtitle:'on', showDescription:'off', showSegments:'on', activeSegments:'1,2,3', showFooter:'off' })}</td>
+            <td>Label/Value satırları ile veri listesi.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-sm-regular')}</td><td>400 · 14px/20px</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Body Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Body Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+        </tbody>
+      </table>
     `};
   },
 };
