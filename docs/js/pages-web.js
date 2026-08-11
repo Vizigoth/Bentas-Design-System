@@ -1,23 +1,12 @@
 /* Web Documentation — Navigation & Pages */
 
-// ── Navigation tree — Web (Get Started dahil) ────────────────
+// ── Navigation tree — Web ────────────────────────────────────
 const NAV_WEB = [
   { label: 'Welcome', id: 'welcome' },
   {
-    label: 'Get Started', children: [
-      { label: 'Introduction',  id: 'get-started/introduction' },
-      { label: "What's New",    id: 'get-started/whats-new' },
-      { label: 'Contributing',  id: 'get-started/contributing' },
-    ]
-  },
-  {
     label: 'Foundations', children: [
       { label: 'Design Examples', id: 'foundations/design-examples' },
-      {
-        label: 'Design Tokens', children: [
-          { label: 'Our Tokens',  id: 'foundations/tokens/our-tokens' },
-        ]
-      },
+      { label: 'Design Tokens',   id: 'foundations/tokens/our-tokens' },
     ]
   },
   {
@@ -7840,6 +7829,281 @@ PAGES_WEB['components/card'] = {
           <tr><td>Footer</td><td>Gap between buttons</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           <tr><td>Footer · Horizontal button</td><td>Width</td><td>—</td><td>80px (sabit)</td></tr>
           <tr><td>Footer · Vertical button</td><td>Width</td><td>—</td><td>100%</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Badge ────────────────────────────────────────────────────────
+const BADGE_TYPE_OPTS = [
+  { key: 'solid',   label: 'Solid' },
+  { key: 'flat',    label: 'Flat' },
+  { key: 'outline', label: 'Outline' },
+  { key: 'ghost',   label: 'Ghost' },
+  { key: 'custom',  label: 'Custom Color' },
+];
+const BADGE_COLOR_OPTS = [
+  { key: 'blue',    label: 'Blue' },
+  { key: 'green',   label: 'Green' },
+  { key: 'yellow',  label: 'Yellow' },
+  { key: 'red',     label: 'Red' },
+  { key: 'sky',     label: 'Sky' },
+  { key: 'purple',  label: 'Purple' },
+  { key: 'cyan',    label: 'Cyan' },
+  { key: 'emerald', label: 'Emerald' },
+  { key: 'orange',  label: 'Orange' },
+];
+const BADGE_COLOR_STYLE_OPTS = [
+  { key: 'basic',   label: 'Basic' },
+  { key: 'colored', label: 'Colored' },
+];
+
+const BADGE_TYPE_CFG = {
+  solid:   { bg: 'var(--bt-surface-brand, #0d4e97)',          border: '',                                                    text: 'var(--bt-text-inverted, #ffffff)',  icon: '#ffffff'  },
+  flat:    { bg: 'var(--bt-surface-primary-subtle, #f5f5f5)', border: '',                                                    text: 'var(--bt-text-default, #1a1a1a)',   icon: '#1a1a1a'  },
+  outline: { bg: 'var(--bt-surface-primary-subtle, #f5f5f5)', border: '1px solid var(--bt-border-default, #d4d4d4)',         text: 'var(--bt-text-default, #1a1a1a)',   icon: '#1a1a1a'  },
+  ghost:   { bg: 'transparent',                               border: '',                                                    text: 'var(--bt-text-default, #1a1a1a)',   icon: '#1a1a1a'  },
+};
+
+const BADGE_COLOR_MAP = {
+  blue:    { bgToken: '--bt-blue-100',    bgHex: '#e2edfc', accentToken: '--bt-blue-700',    accentHex: '#0d4e97' },
+  green:   { bgToken: '--bt-green-100',   bgHex: '#daede5', accentToken: '--bt-green-700',   accentHex: '#2d584b' },
+  yellow:  { bgToken: '--bt-yellow-100',  bgHex: '#f9f2ce', accentToken: '--bt-yellow-700',  accentHex: '#aa820a' },
+  red:     { bgToken: '--bt-red-100',     bgHex: '#fde6e6', accentToken: '--bt-red-700',     accentHex: '#b31d38' },
+  sky:     { bgToken: '--bt-sky-100',     bgHex: '#e0f2fe', accentToken: '--bt-sky-700',     accentHex: '#0369a1' },
+  purple:  { bgToken: '--bt-purple-100',  bgHex: '#f3e8ff', accentToken: '--bt-purple-700',  accentHex: '#7e22ce' },
+  cyan:    { bgToken: '--bt-cyan-100',    bgHex: '#cffafe', accentToken: '--bt-cyan-700',    accentHex: '#0e7490' },
+  emerald: { bgToken: '--bt-emerald-100', bgHex: '#d1fae5', accentToken: '--bt-emerald-700', accentHex: '#047857' },
+  orange:  { bgToken: '--bt-orange-100',  bgHex: '#ffedd5', accentToken: '--bt-orange-700',  accentHex: '#c2410c' },
+};
+
+const BADGE_COLORS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange'];
+
+const _bdgLoader = (clr) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
+const _bdgBase  = `display:inline-flex;align-items:center;gap:var(--bt-space-2xs, 2px);padding:var(--bt-space-2xs, 2px) var(--bt-space-md, 8px);border-radius:var(--bt-radius-full, 9999px);font-size:var(--bt-text-xs-size, 12px);font-weight:400;line-height:var(--bt-text-xs-lh, 16px);white-space:nowrap;font-family:var(--font);`;
+
+function badgeHtml(_, p) {
+  const pr       = p || {};
+  const type     = pr.type       || 'solid';
+  const color    = pr.color      || 'blue';
+  const cStyle   = pr.colorStyle || 'basic';
+  const showL    = pr.leftIcon   !== 'off';
+  const showR    = pr.rightIcon  !== 'off';
+
+  if (type === 'custom') {
+    const cm     = BADGE_COLOR_MAP[color] || BADGE_COLOR_MAP.blue;
+    const bg     = `var(${cm.bgToken}, ${cm.bgHex})`;
+    const accent = `var(${cm.accentToken}, ${cm.accentHex})`;
+    const border = cStyle === 'colored' ? accent : 'var(--bt-border-default, #d4d4d4)';
+    const text   = cStyle === 'colored' ? accent : 'var(--bt-text-default, #1a1a1a)';
+    const iconClr= cStyle === 'colored' ? cm.accentHex : '#1a1a1a';
+    return `<span style="${_bdgBase}background:${bg};border:1px solid ${border};color:${text};">${showL ? _bdgLoader(iconClr) : ''}Badge${showR ? _bdgLoader(iconClr) : ''}</span>`;
+  }
+
+  const cfg    = BADGE_TYPE_CFG[type] || BADGE_TYPE_CFG.solid;
+  const border = cfg.border ? `border:${cfg.border};` : '';
+  return `<span style="${_bdgBase}background:${cfg.bg};${border}color:${cfg.text};">${showL ? _bdgLoader(cfg.icon) : ''}Badge${showR ? _bdgLoader(cfg.icon) : ''}</span>`;
+}
+
+function badgeCss(_, p) {
+  const pr     = p || {};
+  const type   = pr.type       || 'solid';
+  const color  = pr.color      || 'blue';
+  const cStyle = pr.colorStyle || 'basic';
+  const ln = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const lines = ['.bt-badge {'];
+  lines.push(ln('display',        'inline-flex'));
+  lines.push(ln('align-items',    'center'));
+  lines.push(ln('gap',            'var(--bt-space-2xs)                    /* 2px */'));
+  lines.push(ln('padding',        'var(--bt-space-2xs) var(--bt-space-md) /* 2px 8px */'));
+  lines.push(ln('border-radius',  'var(--bt-radius-full)                  /* 9999px */'));
+  lines.push(ln('font-size',      'var(--bt-text-xs-size)                 /* 12px */'));
+  lines.push(ln('font-weight',    '400'));
+  lines.push(ln('line-height',    'var(--bt-text-xs-lh)                   /* 16px */'));
+  lines.push(ln('white-space',    'nowrap'));
+
+  if (type === 'custom') {
+    const cm = BADGE_COLOR_MAP[color] || BADGE_COLOR_MAP.blue;
+    lines.push(ln('background',   `var(${cm.bgToken})                     /* ${cm.bgHex} */`));
+    if (cStyle === 'colored') {
+      lines.push(ln('border',     `1px solid var(${cm.accentToken})       /* ${cm.accentHex} */`));
+      lines.push(ln('color',      `var(${cm.accentToken})                 /* ${cm.accentHex} */`));
+    } else {
+      lines.push(ln('border',     `1px solid var(--bt-border-default)     /* #d4d4d4 */`));
+      lines.push(ln('color',      `var(--bt-text-default)                 /* #1a1a1a */`));
+    }
+  } else {
+    const cfg = BADGE_TYPE_CFG[type] || BADGE_TYPE_CFG.solid;
+    lines.push(ln('background',   cfg.bg));
+    if (cfg.border) lines.push(ln('border',  cfg.border));
+    lines.push(ln('color',        cfg.text));
+  }
+
+  lines.push('}');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/badge'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Types', 'Custom Colors', 'With Icons', 'Anatomy'],
+  render(tab) {
+    const title = 'Badge';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+    const swatch = (token, hex) => `<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:var(${token}, ${hex});border:1px solid rgba(0,0,0,.08);flex-shrink:0;"></span><code style="font-size:11px;font-family:var(--mono)">${token}</code></span>`;
+    const secLbl = t => `<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bt-text-muted);margin-bottom:8px;">${t}</div>`;
+    const bEl = (type, left, right) => badgeHtml(null, { type, leftIcon: left ? 'on' : 'off', rightIcon: right ? 'on' : 'off' });
+    const cEl = (color, colorStyle) => badgeHtml(null, { type: 'custom', color, colorStyle });
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Badge bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Horizontal Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Container</td><td>Vertical Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Container</td><td>Gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+          <tr><td>Solid · Background</td><td>Fill</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+          <tr><td>Flat · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Outline · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Outline · Border</td><td>Stroke</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Ghost · Background</td><td>Fill</td><td>—</td><td>transparent</td></tr>
+          <tr><td>Solid · Text / Icon</td><td>Color</td><td>${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Flat / Outline / Ghost · Text / Icon</td><td>Color</td><td>${tk('--bt-text-default')} / ${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Label</td><td>Font Size</td><td>${tk('--bt-text-xs-size')}</td><td>12px</td></tr>
+          <tr><td>Label</td><td>Font Weight</td><td>—</td><td>400 (Regular)</td></tr>
+          <tr><td>Label</td><td>Line Height</td><td>${tk('--bt-text-xs-lh')}</td><td>16px</td></tr>
+          <tr><td>Icon</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
+          <tr><td>Custom · Background</td><td>Fill</td><td>${tk('--bt-{color}-100')}</td><td>color-100 tone</td></tr>
+          <tr><td>Custom Basic · Border</td><td>Stroke</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Custom Basic · Text</td><td>Color</td><td>${tk('--bt-text-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Custom Colored · Border / Text</td><td>Stroke / Color</td><td>${tk('--bt-{color}-700')}</td><td>color-700 tone</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Badge kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Durum, kategori veya metadata etiketlemek için kullan</li>
+        <li>Kısa, tek kelimelik içeriklerle kullan</li>
+        <li>Custom Color'ı anlamsal renk kodlaması gerektiğinde tercih et (kırmızı = hata, yeşil = başarı)</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Uzun veya çok satırlı metin için kullanma</li>
+        <li>Etkileşimli element yerine badge kullanma — bunun için Button kullan</li>
+        <li>Aynı alanda çok fazla farklı renkte badge gösterme</li>
+      </ul>
+    `};
+
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-badge-overview',
+        variants: [{ key: 'default', label: 'Badge' }],
+        props: [
+          { key: 'type',       label: 'Type',        options: BADGE_TYPE_OPTS,        default: 'solid'  },
+          { key: 'color',      label: 'Color',        options: BADGE_COLOR_OPTS,       default: 'blue'   },
+          { key: 'colorStyle', label: 'Color Style',  options: BADGE_COLOR_STYLE_OPTS, default: 'basic'  },
+          { key: 'leftIcon',   label: 'Left Icon',    options: TBX_BOOL_OPTS,          default: 'off'    },
+          { key: 'rightIcon',  label: 'Right Icon',   options: TBX_BOOL_OPTS,          default: 'off'    },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${badgeHtml(v, p)}</div>`,
+        code:    (v, p) => badgeHtml(v, p),
+        css:     (v, p) => badgeCss(v, p),
+      })}
+
+      <p class="page-desc">Durum, kategori veya metadata için kompakt etiketler. Solid, Flat, Outline, Ghost olmak üzere dört varyant ve dokuz renkte Basic / Colored özel renk seçenekleri mevcuttur.</p>
+
+      <h2 id="Types">Types</h2>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Solid</span></td>   <td>${bEl('solid')}</td>   <td>Marka rengi dolgu, ters metin. En yüksek görsel ağırlık.</td></tr>
+          <tr><td><span class="token-name">Flat</span></td>    <td>${bEl('flat')}</td>    <td>Hafif gri dolgu, border yok. İkincil etiketler için düşük görsel ağırlık.</td></tr>
+          <tr><td><span class="token-name">Outline</span></td> <td>${bEl('outline')}</td> <td>Gri dolgu + default border. Yüzeyle ayrım gerektiğinde kullan.</td></tr>
+          <tr><td><span class="token-name">Ghost</span></td>   <td>${bEl('ghost')}</td>   <td>Arka plan ve border yok. Yoğun veya iç içe bağlamlarda minimal kullanım.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Custom Colors">Custom Colors</h2>
+      <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;"><strong>Basic</strong>: color-100 arka plan · gri border · koyu metin. <strong>Colored</strong>: color-100 arka plan · color-700 border ve metin.</p>
+
+      <div style="margin-bottom:12px;">
+        ${secLbl('Basic — color-100 bg · gray/300 border · gray/900 text')}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">${BADGE_COLORS.map(c => cEl(c, 'basic')).join('')}</div>
+      </div>
+      <div style="margin-bottom:24px;">
+        ${secLbl('Colored — color-100 bg · color-700 border · color-700 text')}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">${BADGE_COLORS.map(c => cEl(c, 'colored')).join('')}</div>
+      </div>
+
+      <table class="token-table">
+        <thead><tr><th>Color</th><th>BG (color-100)</th><th>Accent (color-700)</th><th>Basic</th><th>Colored</th></tr></thead>
+        <tbody>
+          ${BADGE_COLORS.map(c => {
+            const cm = BADGE_COLOR_MAP[c];
+            return `<tr>
+              <td><span class="token-name">${capitalize(c)}</span></td>
+              <td>${swatch(cm.bgToken, cm.bgHex)}</td>
+              <td>${swatch(cm.accentToken, cm.accentHex)}</td>
+              <td>${cEl(c, 'basic')}</td>
+              <td>${cEl(c, 'colored')}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="With Icons">With Icons</h2>
+      <p style="font-size:13px;color:var(--bt-text-emphasis);margin-bottom:16px;">Figma'da <strong>Show Left Icon</strong> ve <strong>Show Right Icon</strong> property'leri ile kontrol edilir. İkon 16×16px, metin rengini miras alır.</p>
+      <table class="token-table">
+        <thead><tr><th>Konfigürasyon</th><th style="min-width:320px">Preview</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Sol ikon</td>
+            <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${bEl('solid',true,false)}${bEl('flat',true,false)}${bEl('outline',true,false)}${bEl('ghost',true,false)}
+            </div></td>
+          </tr>
+          <tr>
+            <td>Sağ ikon</td>
+            <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${bEl('solid',false,true)}${bEl('flat',false,true)}${bEl('outline',false,true)}${bEl('ghost',false,true)}
+            </div></td>
+          </tr>
+          <tr>
+            <td>Her iki ikon</td>
+            <td><div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${bEl('solid',true,true)}${bEl('flat',true,true)}${bEl('outline',true,true)}${bEl('ghost',true,true)}
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Horizontal Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Container</td><td>Vertical Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Container</td><td>Gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
+          <tr><td>Solid · Background</td><td>Fill</td><td>${tk('--bt-surface-brand')}</td><td>#0d4e97</td></tr>
+          <tr><td>Flat · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Outline · Background</td><td>Fill</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Outline · Border</td><td>Stroke</td><td>${tk('--bt-border-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Ghost · Background</td><td>Fill</td><td>—</td><td>transparent</td></tr>
+          <tr><td>Solid · Text / Icon</td><td>Color</td><td>${tk('--bt-text-inverted')} / ${tk('--bt-icon-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Flat / Outline / Ghost · Text / Icon</td><td>Color</td><td>${tk('--bt-text-default')} / ${tk('--bt-icon-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Label</td><td>Font Size</td><td>${tk('--bt-text-xs-size')}</td><td>12px</td></tr>
+          <tr><td>Label</td><td>Font Weight</td><td>—</td><td>400 (Regular)</td></tr>
+          <tr><td>Label</td><td>Line Height</td><td>${tk('--bt-text-xs-lh')}</td><td>16px</td></tr>
+          <tr><td>Icon</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
         </tbody>
       </table>
     `};
