@@ -8138,15 +8138,23 @@ function _crdSelCard(props, selected, cardLabel) {
 }
 
 function crdSelectableHtml(variant, props) {
-  const p     = props || {};
-  const init  = p.initialState || 'first';
+  const p    = props || {};
+  const init = p.initialState || 'first';
   const s1 = init === 'first' || init === 'all';
   const s2 = init === 'all';
   const s3 = init === 'all';
+  const onclick = `onclick="this.classList.toggle('bt-card--selected')"`;
+  const makeCard = (selected) => {
+    const selClass = selected ? ' bt-card--selected' : '';
+    return crdHtml(variant, p).replace(
+      /^<div class="(bt-card[^"]*)"/,
+      `<div class="$1 bt-card--selectable${selClass}" style="width:220px;max-width:220px;" ${onclick}`
+    );
+  };
   return `<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;">
-  ${_crdSelCard(p, s1, 'Card Title One')}
-  ${_crdSelCard(p, s2, 'Card Title Two')}
-  ${_crdSelCard(p, s3, 'Card Title Three')}
+  ${makeCard(s1)}
+  ${makeCard(s2)}
+  ${makeCard(s3)}
 </div>`;
 }
 
@@ -8185,11 +8193,40 @@ PAGES_WEB['components/card-selectable'] = {
       ${registerPlayground({
         id: 'pgd-card-selectable-overview',
         variants: [{ key: 'default', label: 'Selectable Card' }],
-        props: [
-          { key: 'initialState',    label: 'Initial State', options: CARD_SEL_STATE_OPTS, default: 'first' },
-          { key: 'showTitleSubtitle', label: 'Title',       options: TBX_BOOL_OPTS,       default: 'off' },
-          { key: 'showDescription', label: 'Description',   options: TBX_BOOL_OPTS,       default: 'on' },
-        ],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'initialState', label: 'Initial State', options: CARD_SEL_STATE_OPTS, default: 'first' },
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdSelectableHtml(v, p)}</div>`,
         code:    (v, p) => crdSelectableHtml(v, p),
         css:     ()     => crdSelectableCss(),
