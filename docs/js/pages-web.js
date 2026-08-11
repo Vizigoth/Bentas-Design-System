@@ -18,8 +18,11 @@ const NAV_WEB = [
       { label: 'Badge',             id: 'components/badge' },
       { label: 'Button',            id: 'components/button' },
       { label: 'Button Group',      id: 'components/button-group' },
-      { label: 'Card',              id: 'components/card' },
-      { label: 'Card Default',      id: 'components/card-default' },
+      {
+        label: 'Card', id: 'components/card', children: [
+          { label: 'Card Default', id: 'components/card-default' },
+        ]
+      },
       { label: 'Checkbox',          id: 'components/checkbox' },
       { label: 'Dialog',            id: 'components/dialog' },
       { label: 'Icon Button',       id: 'components/icon-button' },

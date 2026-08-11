@@ -85,6 +85,15 @@ function renderSidebar() {
                    onclick="navigate('${item.id}')">${item.label}</div>`;
     }
 
+    // Clickable parent with always-visible children (id + children, no chevron)
+    if (item.id) {
+      const cls = depth === 0 ? 'nav-item' : depth === 1 ? 'nav-child' : 'nav-grandchild';
+      return `
+        <div class="${cls} ${item.id === currentId ? 'active' : ''}" onclick="navigate('${item.id}')">${item.label}</div>
+        ${item.children.map(c => renderItem(c, depth + 1)).join('')}
+      `;
+    }
+
     // Static group — always visible, no chevron, no toggle
     if (item.static) {
       return `
