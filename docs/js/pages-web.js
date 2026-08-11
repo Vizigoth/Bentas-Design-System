@@ -20,8 +20,8 @@ const NAV_WEB = [
       { label: 'Button Group',      id: 'components/button-group' },
       {
         label: 'Card', id: 'components/card', children: [
-          { label: 'Card Default',   id: 'components/card-default' },
-          { label: 'Card Clickable', id: 'components/card-clickable' },
+          { label: 'Default Card',   id: 'components/card-default' },
+          { label: 'Clickable Card', id: 'components/card-clickable' },
         ]
       },
       { label: 'Checkbox',          id: 'components/checkbox' },
@@ -7840,19 +7840,19 @@ PAGES_WEB['components/card'] = {
   },
 };
 
-// ── Card Default ─────────────────────────────────────────────────
+// ── Default Card ─────────────────────────────────────────────────
 // Header off · Segments off · Footer off varsayılan görünüm.
 // Tüm Card özellikleri playground'da erişilebilir.
 PAGES_WEB['components/card-default'] = {
   tabs: ['Overview'],
   toc:  [],
   render(tab) {
-    const title = 'Card Default';
+    const title = 'Default Card';
 
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-card-default-overview',
-        variants: [{ key: 'default', label: 'Card Default' }],
+        variants: [{ key: 'default', label: 'Default Card' }],
         props: (p) => {
           const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
           const segProps = [];
@@ -7896,7 +7896,7 @@ PAGES_WEB['components/card-default'] = {
   },
 };
 
-// ── Card Clickable ───────────────────────────────────────────────
+// ── Clickable Card ───────────────────────────────────────────────
 const CARD_CLICKABLE_STATE_OPTS = [
   { key: 'default', label: 'Default' },
   { key: 'hover',   label: 'Hover' },
@@ -7944,13 +7944,13 @@ PAGES_WEB['components/card-clickable'] = {
   tabs: ['Overview'],
   toc:  ['States'],
   render(tab) {
-    const title = 'Card Clickable';
+    const title = 'Clickable Card';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-card-clickable-overview',
-        variants: [{ key: 'default', label: 'Card Clickable' }],
+        variants: [{ key: 'default', label: 'Clickable Card' }],
         props: (p) => {
           const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
           const segProps = [];
