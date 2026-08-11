@@ -8080,15 +8080,15 @@ function crdSelectableCss() {
     ln('user-select', 'none'),
     '}',
     '',
-    '.bt-card--selectable:hover:not(.bt-card--selected) {',
-    ln('border-color', 'var(--bt-border-brand-muted)   /* #bedbf9 */'),
+    '.bt-card--selectable:hover {',
+    ln('border-color', 'var(--bt-border-brand-default)  /* #0d4e97 */'),
     ln('box-shadow',   'var(--bt-shadow-sm)             /* 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10) */'),
     '}',
     '',
     '.bt-card--selectable.bt-card--selected {',
     ln('border-color', 'var(--bt-border-brand-default)  /* #0d4e97 */'),
     ln('background',   'var(--bt-surface-brand-subtle)  /* #e2edfc */'),
-    ln('box-shadow',   '0 0 0 1px var(--bt-border-brand-default) /* double border effect */'),
+    ln('box-shadow',   'none'),
     '}',
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
@@ -8128,13 +8128,13 @@ PAGES_WEB['components/card-selectable'] = {
           </tr>
           <tr>
             <td><span class="token-name">Hover</span></td>
-            <td><div class="bt-card bt-card--selectable" style="width:220px;max-width:220px;border-color:var(--bt-border-brand-muted,#bedbf9);box-shadow:var(--bt-shadow-sm)"><div class="bt-card__body"><p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p></div></div></td>
-            <td>Border → ${tk('--bt-border-brand-muted')} · Shadow → ${tk('--bt-shadow-sm')}</td>
+            <td><div class="bt-card bt-card--selectable" style="width:220px;max-width:220px;border-color:var(--bt-border-brand-default,#0d4e97);box-shadow:var(--bt-shadow-sm)"><div class="bt-card__body"><p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p></div></div></td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Shadow → ${tk('--bt-shadow-sm')}</td>
           </tr>
           <tr>
             <td><span class="token-name">Selected</span></td>
             <td>${_crdSelCard({ showDescription: 'on' }, true, 'Card Title')}</td>
-            <td>Border → ${tk('--bt-border-brand-default')} · Background → ${tk('--bt-surface-brand-subtle')} · double border ring</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Background → ${tk('--bt-surface-brand-subtle')}</td>
           </tr>
         </tbody>
       </table>
@@ -8144,11 +8144,10 @@ PAGES_WEB['components/card-selectable'] = {
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Default · Border</td><td>Stroke</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td>Hover · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-muted')}</td><td>#bedbf9</td></tr>
+          <tr><td>Hover · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Hover · Shadow</td><td>Box Shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
           <tr><td>Selected · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Selected · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
-          <tr><td>Selected · Ring</td><td>Box Shadow</td><td>—</td><td>0 0 0 1px var(--bt-border-brand-default)</td></tr>
           <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease</td></tr>
         </tbody>
       </table>
