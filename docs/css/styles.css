@@ -5203,3 +5203,21 @@ code {
 /* Vertical — butonlar dikey istiflenir, tam genişlik */
 .bt-card--vertical .bt-card__footer { flex-direction: column; }
 .bt-card--vertical .bt-card__footer .bt-btn { width: 100%; justify-content: center; }
+
+/* Clickable — tüm kart tıklanabilir; hover/active state'leri */
+.bt-card--clickable {
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  user-select: none;
+}
+.bt-card--clickable:hover,
+.bt-card--clickable.bt-card--hover {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  box-shadow: var(--bt-shadow-sm, 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10));
+}
+.bt-card--clickable:active,
+.bt-card--clickable.bt-card--active {
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  background: var(--bt-surface-brand-subtle, #e2edfc);
+  box-shadow: none;
+}

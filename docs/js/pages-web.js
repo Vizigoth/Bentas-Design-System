@@ -20,7 +20,8 @@ const NAV_WEB = [
       { label: 'Button Group',      id: 'components/button-group' },
       {
         label: 'Card', id: 'components/card', children: [
-          { label: 'Card Default', id: 'components/card-default' },
+          { label: 'Card Default',   id: 'components/card-default' },
+          { label: 'Card Clickable', id: 'components/card-clickable' },
         ]
       },
       { label: 'Checkbox',          id: 'components/checkbox' },
@@ -7891,6 +7892,140 @@ PAGES_WEB['components/card-default'] = {
       })}
 
       <p class="page-desc">Header, Segments ve Footer kapalı olan temel Card görünümü. Playground'dan tüm Card özellikleri açılıp özelleştirilebilir.</p>
+    `};
+  },
+};
+
+// ── Card Clickable ───────────────────────────────────────────────
+const CARD_CLICKABLE_STATE_OPTS = [
+  { key: 'default', label: 'Default' },
+  { key: 'hover',   label: 'Hover' },
+  { key: 'active',  label: 'Active' },
+];
+
+function crdClickableHtml(variant, props) {
+  const p = props || {};
+  const state = p.state || 'default';
+  const stateClass = state === 'hover' ? ' bt-card--hover' : state === 'active' ? ' bt-card--active' : '';
+  return crdHtml(variant, p).replace('class="bt-card ', `class="bt-card bt-card--clickable${stateClass} `);
+}
+
+function crdClickableCss(variant, props) {
+  const p     = props || {};
+  const state = p.state || 'default';
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const lines = ['.bt-card--clickable {'];
+  lines.push(ln('cursor',     'pointer'));
+  lines.push(ln('transition', 'border-color 150ms ease, box-shadow 150ms ease, background 150ms ease'));
+  lines.push(ln('user-select','none'));
+  lines.push('}');
+
+  if (state === 'hover') {
+    lines.push('');
+    lines.push('.bt-card--clickable:hover {');
+    lines.push(ln('border-color', 'var(--bt-border-brand-default)   /* #0d4e97 */'));
+    lines.push(ln('box-shadow',   'var(--bt-shadow-sm)              /* 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10) */'));
+    lines.push('}');
+  } else if (state === 'active') {
+    lines.push('');
+    lines.push('.bt-card--clickable:active {');
+    lines.push(ln('border-color', 'var(--bt-border-brand-default)   /* #0d4e97 */'));
+    lines.push(ln('background',   'var(--bt-surface-brand-subtle)   /* #e2edfc */'));
+    lines.push(ln('box-shadow',   'none'));
+    lines.push('}');
+  }
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/card-clickable'] = {
+  tabs: ['Overview'],
+  toc:  ['States'],
+  render(tab) {
+    const title = 'Card Clickable';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-card-clickable-overview',
+        variants: [{ key: 'default', label: 'Card Clickable' }],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'state',        label: 'State',           options: CARD_CLICKABLE_STATE_OPTS, default: 'default' },
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdClickableHtml(v, p)}</div>`,
+        code:    (v, p) => crdClickableHtml(v, p),
+        css:     (v, p) => crdClickableCss(v, p),
+      })}
+
+      <p class="page-desc">Tüm kartın tıklanabilir olduğu varyant. <code style="font-family:var(--mono);font-size:12px;">bt-card--clickable</code> modifier'ı hover ve active state'leri otomatik uygular.</p>
+
+      <h2 id="States">States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th><th>Değişen özellikler</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Default</span></td>
+            <td>${crdClickableHtml('default', { showHeader: 'off', showSegments: 'off', showFooter: 'off', state: 'default' })}</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Hover</span></td>
+            <td>${crdClickableHtml('default', { showHeader: 'off', showSegments: 'off', showFooter: 'off', state: 'hover' })}</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Shadow → ${tk('--bt-shadow-sm')}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Active</span></td>
+            <td>${crdClickableHtml('default', { showHeader: 'off', showSegments: 'off', showFooter: 'off', state: 'active' })}</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Background → ${tk('--bt-surface-brand-subtle')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default · Border</td><td>Stroke</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover · Shadow</td><td>Box Shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Active · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Active · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease</td></tr>
+        </tbody>
+      </table>
     `};
   },
 };
