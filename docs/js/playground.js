@@ -428,8 +428,14 @@ window._pgdToggleMeasure = function(id) {
 };
 
 // Figma/Nord-Health-style spacing inspector: the hovered element's content
-// box is highlighted in blue with its W×H centered inside, and its own
-// padding is shown as green strips on each side with the px value centered
+// area is highlighted in blue (visually still the content box, for padding
+// reference), but the W×H label centered inside it reports the element's
+// TOTAL border-box size (matches Figma's own frame height, which includes
+// its stroke — e.g. Grid's Header Cell 36px/Grid Cell 32px) rather than the
+// content-only size — content-box was 1-2px short of the Figma spec value
+// whenever the element has its own border, which read as a measurement bug
+// (bkz. HISTORY.md). Padding is still shown as green strips on each side,
+// unaffected, with the px value centered
 // in that strip (a side's strip is hidden when its padding is 0).
 window._pgdMeasureMove = function(e, id) {
   const st = _pgdState[id];
@@ -488,7 +494,9 @@ window._pgdMeasureMove = function(e, id) {
 
   const contentEl = document.getElementById(id + '-content');
   setRect(contentEl, contentBox);
-  contentEl.querySelector('.pgd-mb-label').textContent = `${Math.round(contentBox.width)} × ${Math.round(contentBox.height)}`;
+  // Etiket border-box (toplam görünen) boyutu raporluyor — b, fonksiyonun
+  // başında el.getBoundingClientRect() ile alınan border-box rect'i.
+  contentEl.querySelector('.pgd-mb-label').textContent = `${Math.round(b.width)} × ${Math.round(b.height)}`;
 };
 
 window._pgdMeasureLeave = function(id) {

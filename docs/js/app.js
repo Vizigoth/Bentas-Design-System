@@ -212,18 +212,25 @@ function renderToc(page) {
   col.style.display = 'block';
 
   const isGrouped = page.toc.length > 0 && typeof page.toc[0] === 'object';
-  let firstLink = true;
+
+  // "Overview" — sayfanın en üstüne (page-title / h1) atlayan standart ilk
+  // madde, TÜM sayfalarda (toc'u olan) otomatik olarak eklenir; page.toc
+  // dizisine manuel eklenmesi gerekmez, yeni bir component eklendiğinde de
+  // buraya otomatik gelir (bkz. HISTORY.md). scrollToSection zaten generic
+  // olduğu için page-title'a da aynı şekilde çalışır; scroll-spy de
+  // data-target'ı otomatik yakalar.
+  const overviewLink = `<div class="toc-link active" data-target="page-title" onclick="scrollToSection('page-title')">Overview</div>`;
 
   if (isGrouped) {
     el.innerHTML = `
       <div class="toc-label">On this page</div>
+      ${overviewLink}
       ${page.toc.map(({ group, items }) => `
         <div class="toc-group-label">${group}</div>
         ${items.map(item => {
           const isSub = typeof item === 'object' && item !== null;
           const label = isSub ? item.label : item;
-          const cls = firstLink ? (firstLink = false, 'active') : '';
-          const parentLink = `<div class="toc-link ${cls}" data-target="${label}" onclick="scrollToSection('${label}')">${label}</div>`;
+          const parentLink = `<div class="toc-link" data-target="${label}" onclick="scrollToSection('${label}')">${label}</div>`;
           if (!isSub || !item.sub || !item.sub.length) return parentLink;
           const subLinks = item.sub.map(s =>
             `<div class="toc-link toc-link--sub" data-target="${label}-${s}" onclick="scrollToSection('${label}-${s}')">${s}</div>`
@@ -235,8 +242,9 @@ function renderToc(page) {
   } else {
     el.innerHTML = `
       <div class="toc-label">On this page</div>
-      ${page.toc.map((t,i) => `
-        <div class="toc-link ${i === 0 ? 'active' : ''}" data-target="${t}" onclick="scrollToSection('${t}')">${t}</div>
+      ${overviewLink}
+      ${page.toc.map(t => `
+        <div class="toc-link" data-target="${t}" onclick="scrollToSection('${t}')">${t}</div>
       `).join('')}
     `;
   }

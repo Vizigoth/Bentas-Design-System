@@ -4987,9 +4987,10 @@ code {
 }
 
 /* — Header — aynı blok, body içinde "Body Title/Subtitle" bölüm ayıracı olarak
-   .bt-card__header--plain ile (arka plansız) reuse ediliyor. Varsayılan
-   (Borderless) transparent — Bordered olunca hem ayraç hem subtle arka plan
-   birlikte geliyor (Borderless header/body ile tamamen kaynaşık görünür). */
+   .bt-card__header--plain ile (arka plansız) reuse ediliyor. Type (Bordered/
+   Borderless) ve Background (On/Off) birbirinden BAĞIMSIZ iki eksen — Type
+   sadece alt ayracı, Background sadece arka planı kontrol eder, 4 kombinasyon
+   da mümkün. Varsayılan ikisi de açık (eski "Bordered" görünümüyle aynı). */
 .bt-card__header {
   display: flex;
   align-items: center;
@@ -5000,8 +5001,10 @@ code {
   background: transparent;
 }
 .bt-card__header--bordered {
-  background: var(--bt-base-subtle, #f5f5f5);
   border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-card__header--bg {
+  background: var(--bt-base-subtle, #f5f5f5);
 }
 .bt-card__header--plain { background: transparent; height: auto; }
 
@@ -5059,6 +5062,26 @@ code {
   justify-content: center;
   gap: var(--bt-space-2xs, 2px);
 }
+/* Body Title/Subtitle (plain header) control slotu — Figma'da Header'ın
+   40×40'ı DEĞİL, Row Segment'in .bt-card__row-icon/-right'ıyla aynı 28×28.
+   .bt-card__control ile birlikte eklenen bir modifier (specificity ile
+   min-width/height/padding'i override eder) — kullanıcı Figma'da Body/Segment
+   control'lerini 28×28 bir span içinde tasarlamıştı, kod yanlışlıkla Header'ın
+   40×40'ını reuse etmişti; Description'ın sol kenarıyla hizasızlığa yol
+   açıyordu. min-width (width DEĞİL): Avatar Group/Badge/Text gibi 28px'ten
+   geniş içerik hâlâ büyüyebilsin diye (Row Segment'teki aynı "hug content"
+   deseni). Gerçek Header (kartın üstü, 40×40) buna dokunulmadı. */
+.bt-card__control--content {
+  min-width: 28px;
+  height: 28px;
+  padding: 0;
+}
+/* Body Title/Subtitle control'leri, kutunun ortasında değil kendi kenarına
+   yaslı duruyor — Left Control sola, Right Control sağa (kullanıcı kararıyla,
+   bkz. HISTORY.md). Row Segment'in .bt-card__row-icon/-right'ıyla aynı mantık.
+   Header (40×40, gerçek header) buna dahil değil, hâlâ ortalı. */
+.bt-card__control--left  { justify-content: flex-start; }
+.bt-card__control--right { justify-content: flex-end; }
 /* 24×24 taşıyıcı — ikonun kendisi bunu DOLDURMAZ, kendi tanımlı boyutunda
    (16×16, bkz. _crdIconScan) ortalanır. Avatar'ın "ikon = wrapper boyutu"
    deseniyle karıştırılmamalı — Dialog'da da aynı ayrım not edildi
@@ -5138,7 +5161,7 @@ code {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .bt-card__row-content {
   flex: 1 1 0;
@@ -5184,7 +5207,7 @@ code {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 /* — Footer — Dialog footer'ıyla birebir aynı yapı: border-top ayraç +
@@ -5195,7 +5218,7 @@ code {
   padding: var(--bt-space-xl, 12px) var(--bt-space-2xl, 16px);
   display: flex;
   gap: var(--bt-space-md, 8px);
-  flex-shrink: 0;
+  flex-shrink: 0; /* Scrollable Card'da body scroll olurken footer sabit kalır */
 }
 /* Horizontal — butonlar sağa yaslanır, sabit 80px genişlik */
 .bt-card--horizontal .bt-card__footer { justify-content: flex-end; }
@@ -5211,16 +5234,48 @@ code {
   color: var(--bt-icon-primary-strong, #535353);
   transition: transform 250ms ease;
 }
-.bt-card--expanded .bt-card__chevron { transform: rotate(90deg); }
+.bt-card--expanded .bt-card__chevron { transform: rotate(180deg); }
+/* Collapsed'de içerik tamamen gizlenmek yerine kısa bir "teaser" olarak
+   gösterilir (32px peek — ~Segment 1'in kendisi kadar). collapse-content
+   sadece LAYOUT'u kırpar (max-height); blur/fade GÖRSEL efekti artık kendi
+   küçük kutusunda değil, .bt-card__body'nin (Description + collapse-content
+   birlikte) alt kenarında — kullanıcı, blur'un sadece segment kutusundan
+   başlamasının doğal durmadığını, Body'nin alt kenarından başlaması
+   gerektiğini belirtti (bkz. HISTORY.md). Bu yüzden ::after artık
+   `.bt-card__body`'de, sadece `.bt-card--collapsible`'da (diğer Card
+   varyantlarının body'sini etkilemez). `:has()` ile collapse-content boşsa
+   (Segments kapalı, hiçbir şey kırpılmıyor) blur/fade tamamen gizlenir. */
 .bt-card__collapse-content {
   overflow: hidden;
-  max-height: 0;
+  max-height: 32px;
   transition: max-height 250ms ease;
   display: flex;
   flex-direction: column;
   gap: var(--bt-space-md, 8px);
 }
+.bt-card__collapse-content:empty { max-height: 0; }
+.bt-card--collapsible .bt-card__body {
+  position: relative;
+}
+.bt-card--collapsible .bt-card__body::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 64px;
+  background: linear-gradient(to bottom, transparent, var(--bt-base-default, #ffffff));
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 50%);
+  mask-image: linear-gradient(to bottom, transparent, black 50%);
+  opacity: 1;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.bt-card--collapsible .bt-card__body:has(.bt-card__collapse-content:empty)::after { display: none; }
 .bt-card--expanded .bt-card__collapse-content { max-height: 600px; }
+.bt-card--expanded .bt-card__body::after { opacity: 0; }
 
 /* Selectable — seçilebilir kart; selected toggle state'i */
 .bt-card--selectable {
@@ -5254,4 +5309,363 @@ code {
   border-color: var(--bt-border-brand-default, #0d4e97);
   background: var(--bt-surface-brand-subtle, #e2edfc);
   box-shadow: none;
+}
+
+/* Scrollable — Header ve Footer sabit kalır, sadece Body scroll olur; uzun
+   metin veya çok sayıda Row Segment içeren içerikler için kullanılır. Sabit
+   `height` (max-height DEĞİL) kullanılıyor — bilinçli karar: Body'nin
+   yüksekliği içeriğe göre büyüyüp küçülmemeli, her zaman aynı "standart"
+   scroll penceresinde kalmalı. 120px — sayfanın varsayılan durumu (Header/
+   Footer açık, Body Title/Subtitle ve Segments kapalı, sadece Description
+   görünür) düşünülerek seçildi: uzun placeholder Description metni bu
+   yükseklikte taşıp scroll'u varsayılan halde bile göstersin diye 280px'ten
+   küçültüldü. height element-özel bir ölçüm, token karşılığı yok (.bt-card'ın
+   width:420px'iyle aynı gerekçe). */
+.bt-card--scrollable .bt-card__body {
+  height: 120px;
+  overflow-y: auto;
+}
+/* .bt-card__body flex column'dur (display:flex; flex-direction:column) — bir
+   flex item'ın varsayılan flex-shrink:1'i, içerik sabit yüksekliği aşınca
+   Description/Row Segment gibi çocukları SIKIŞTIRIP küçültür (metin
+   yamulur/kısalır) yerine kutunun taşıp scroll olmasını sağlamaz. Çocukları
+   flex-shrink:0 yaparak doğal boyutlarında sabit kalmaları, taşan kısmın
+   kutunun kendisinde (yukarıdaki overflow-y:auto ile) scroll olması sağlanır. */
+.bt-card--scrollable .bt-card__body > * {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Data Table (Grid) — Figma "Grid" sayfası: HeaderCell + GridCell +
+   No Record Available. Her ikisi de aynı desende: Position (Left/Middle/
+   Right — hangi dış kenar border'ları çizilecek) × State (Default/Hover/
+   Active). Position corner-radius DEĞİL, kenar border'larını kontrol eder —
+   Left: sol+alt(+üst header'da), Middle: sadece alt(+üst), Right: sağ+alt(+üst).
+   Bu sayede yan yana dizilen hücreler arasında çift border oluşmaz, sadece
+   tablonun dış sol/sağ kenarında border görünür. Figma'da her hücrenin
+   onlarca bağımsız show* boolean'ı var (Icon/Checkbox/Dot/Avatar/Avatar
+   Group/Badge/Button/Switch/Inline TextBox/Inline DropDown) — Card'daki
+   control sistemiyle aynı gerekçeyle (bkz. design.md §16) TEK bir
+   "Content Type" seçimine sadeleştirildi (Left/Right Control ise Card'daki
+   gibi ayrı, basit aç/kapa ikon slotları olarak kaldı). */
+
+.bt-grid { display: inline-flex; flex-direction: column; width: fit-content; }
+.bt-grid__row { display: flex; }
+/* Body satırlarının sarmalayıcısı — Header'dan (kendi .bt-grid__row'u, her
+   zaman sabit/scroll dışı) AYRI, kendi başına scroll olabilen bir bölge.
+   `overflow:auto` BURADA (base kuralda) DEĞİL, sadece aşağıdaki
+   `.bt-grid-container .bt-grid__body` içinde tanımlı — önceden burada da
+   vardı ("tek başına kullanımda görsel fark yaratmaz" varsayımıyla), ama
+   `position:sticky` kullanan Frozen Column sayfasında bunun görsel fark
+   YARATTIĞI ortaya çıktı: `overflow:auto` (görünürde hiç scroll olmasa bile)
+   .bt-grid__body'yi kendi başına bir scroll container'a çeviriyor, bu da
+   içindeki (header DIŞINDA kalan, çünkü header .bt-grid__body'nin dışında)
+   sticky body hücrelerinin containing block'ını YANLIŞLIKLA .bt-grid-scroll-x
+   yerine .bt-grid__body yapıyordu — .bt-grid__body kendi genişliğinde asla
+   scroll olmadığı için sticky hiç çalışmıyormuş gibi görünüyordu (kullanıcı
+   "frozen olması gereken kolonda scroll oluyor" diye bildirdi, bkz.
+   HISTORY.md). Container'sız (standalone) kullanımda artık overflow:visible
+   (varsayılan) kalıyor — Alanı Doldurma özelliği hiç etkilenmedi çünkü o
+   zaten SADECE .bt-grid-container içindeyken devreye giriyordu. */
+.bt-grid__body { display: flex; flex-direction: column; }
+
+/* Opsiyonel dış konteyner — Data Table'ı flex bir parent'ın (örn. bir tab
+   panelin) içine koyup KALAN dikey alanı doldurmasını istediğinde .bt-grid'in
+   dışına eklenir (bkz. design.md §17). Dış border (sol/sağ/alt) artık hücrelerde değil bu
+   container'IN KENDİSİNDE — bu sayede satır sayısı azken bile border
+   container'ın alt kenarına kadar (satırların altındaki boş alanın içinden)
+   devam eder; sadece satırları saran dar bir kutuda durup kalmaz. Header
+   kendi border'ını koruyup sabit kalır, .bt-grid__body scroll olur. Kullanan
+   parent'ın kendisi de display:flex;flex-direction:column + bir height/flex
+   ile boyutlanmış olmalı, aksi halde flex:1'in dolduracağı bir alan yoktur. */
+.bt-grid-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--bt-base-default, #ffffff);
+  border-left: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-right: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  box-sizing: border-box;
+}
+.bt-grid-container .bt-grid {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+.bt-grid-container .bt-grid__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+/* Container kendi sol/sağ border'ını sağladığı için hücrelerin Position
+   bazlı sol/sağ border'ları çift çizgi oluşturmasın diye bastırılır —
+   gridTableHtml/gridHeaderCellHtml/gridCellHtml markup'ı hiç değişmeden
+   aynen kalır, sadece bu context'te görünmez olur. */
+.bt-grid-container .bt-grid__cell--left,
+.bt-grid-container .bt-grid__cell--right,
+.bt-grid-container .bt-grid__header-cell--left,
+.bt-grid-container .bt-grid__header-cell--right {
+  border-left: none;
+  border-right: none;
+}
+/* 0 kayıt durumunda (No Records Available) .bt-grid__body'nin TEK çocuğu
+   .bt-grid__no-record olur — container'ın kalan yüksekliğini doldurması için
+   sabit 56px yerine flex:1 verilir, kendi sol/sağ/alt border'ı ise
+   container'ınkiyle çift çizgi oluşturmasın diye kaldırılır (üst çizgiyi zaten
+   Header'ın border-bottom'u sağlıyor). */
+.bt-grid-container .bt-grid__no-record {
+  flex: 1;
+  height: auto;
+  border: none;
+}
+
+/* Opsiyonel yatay-scroll sarmalayıcı — Frozen Column sayfasında kolon sayısı
+   fazla olup toplam genişlik konteynerden taştığında yatay scrollbar açar;
+   donmuş (sticky) kolonların left ofseti bu sarmalayıcının scroll pozisyonuna
+   göre hesaplanır (bkz. design.md §17, kullanıcı isteğiyle eklendi). */
+.bt-grid-scroll-x { overflow-x: auto; max-width: 100%; }
+
+/* — Header Cell — 36px, Figma'da hem üst hem alt border her zaman var */
+.bt-grid__header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--bt-base-default, #ffffff);
+  border-top: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  box-sizing: border-box;
+}
+.bt-grid__header-cell--left  { border-left:  1px solid var(--bt-border-primary-default, #d4d4d4); }
+.bt-grid__header-cell--right { border-right: 1px solid var(--bt-border-primary-default, #d4d4d4); }
+/* Frozen Column sayfasında (position:sticky) donmuş alanın sağ kenarını
+   kaydırılabilir kolonlardan ayırmak için — sadece son donmuş kolonda.
+   --bt-shadow-xs'in (0 1px 2px rgba(16,24,40,0.051)) rengi/blur'u AYNEN
+   kullanılıyor, sadece yönü 90° döndürülüp yatay bir "edge shadow"a
+   çevrildi (0 1px → 2px 0) — token'ın kendisi vertical elevation shadow'u
+   temsil ettiği için birebir var() ile referans verilemiyor (kullanıcı
+   isteğiyle, bkz. HISTORY.md; önceden ilgisiz bir hardcoded rgba(...,0.08)
+   kullanılıyordu). */
+.bt-grid__header-cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.051); }
+.bt-grid__header-cell--hover  { background: var(--bt-base-subtle, #f5f5f5); }
+.bt-grid__header-cell--active { background: var(--bt-surface-brand-subtle, #e2edfc); }
+/* Building Blocks'taki tekil Header Cell playground'unda gerçek mouse
+   hover'ı da çalışsın diye — state prop'undan bağımsız, ayrıca eklendi. */
+.bt-grid__header-cell:hover { background: var(--bt-base-subtle, #f5f5f5); }
+
+/* — Grid (body) Cell — 32px, sadece alt border (üst border yok — üstteki
+   satırın alt border'ı paylaşılan çizgi görevi görüyor) */
+.bt-grid__cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 32px;
+  flex-shrink: 0;
+  background: var(--bt-base-default, #ffffff);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  box-sizing: border-box;
+}
+.bt-grid__cell--left  { border-left:  1px solid var(--bt-border-primary-default, #d4d4d4); }
+.bt-grid__cell--right { border-right: 1px solid var(--bt-border-primary-default, #d4d4d4); }
+/* Frozen Column sayfasında (position:sticky) donmuş alanın sağ kenarını
+   kaydırılabilir kolonlardan ayırmak için — sadece son donmuş kolonda.
+   --bt-shadow-xs'in (0 1px 2px rgba(16,24,40,0.051)) rengi/blur'u AYNEN
+   kullanılıyor, sadece yönü 90° döndürülüp yatay bir "edge shadow"a
+   çevrildi (0 1px → 2px 0) — bkz. header cell'deki aynı kuralın notu. */
+.bt-grid__cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.051); }
+.bt-grid__cell--hover  { background: var(--bt-base-subtle, #f5f5f5); }
+.bt-grid__cell--active { background: var(--bt-surface-brand-subtle, #e2edfc); }
+/* Building Blocks'taki tekil Grid Cell playground'unda gerçek mouse hover'ı
+   da çalışsın diye — state prop'undan bağımsız, ayrıca eklendi. */
+.bt-grid__cell:hover { background: var(--bt-base-subtle, #f5f5f5); }
+
+/* Gerçek Data Table'da (gridTableHtml) satır (.bt-grid__row) seviyesinde
+   hover/click — herhangi bir hücreye değil TÜM satıra uygulanır (gerçek
+   tablo UX'i, Figma'nın per-cell State'inden farklı bir davranış katmanı).
+   Header row'da .bt-grid__cell yok (o .bt-grid__header-cell kullanıyor),
+   bu yüzden bu kural otomatik olarak sadece body row'larını etkiliyor,
+   ayrıca bir :not() gerekmiyor. Satıra tıklamak seçili/aktif yapar
+   (Selectable Card'daki aynı onclick+classList.toggle deseni) — specificity
+   hover ile eşit tutulup (üç class) kaynak sırasında SONRA tanımlanarak,
+   hover'dayken de seçili satır mavi kalmaya devam ediyor. */
+.bt-grid__row:hover .bt-grid__cell {
+  background: var(--bt-base-subtle, #f5f5f5);
+}
+.bt-grid__row.bt-grid__row--active .bt-grid__cell {
+  background: var(--bt-surface-brand-subtle, #e2edfc);
+}
+.bt-grid__row--clickable {
+  cursor: pointer;
+}
+
+/* — Ortak 28×28 control slot (Left/Right Control ikonları, Checkbox, Dot,
+   Switch) — Card'ın .bt-card__row-icon'ıyla aynı "hug content" deseni:
+   min-width (width DEĞİL), Avatar/Avatar Group/Badge/Button/Inline gibi
+   28px'ten geniş içerikler büyüyebilsin diye. */
+.bt-grid__control {
+  min-width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: var(--bt-space-2xs, 2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bt-grid__control-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-icon-primary-strong, #535353);
+}
+/* Durum noktası (Dot Control) — Figma'da sabit 8×8, tek nötr renk; renk
+   varyantı Figma'da tanımlı değil, ihtiyaç çıkarsa eklenebilir. */
+.bt-grid__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bt-icon-primary-strong, #535353);
+  flex-shrink: 0;
+}
+/* Avatar Group — Card'daki aynı -12px bindirme deseni */
+.bt-grid__avatar-group { display: flex; align-items: center; }
+.bt-grid__avatar-group .bt-avatar:not(:first-child) { margin-left: -12px; }
+
+/* — Ana içerik metni — Header 6px padding + Medium, Cell 8px padding + Regular
+   (Figma'da doğrulanan iki farklı padding/weight) */
+.bt-grid__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bt-grid__header-cell .bt-grid__content {
+  padding: var(--bt-space-sm, 6px);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-grid__cell .bt-grid__content {
+  padding: var(--bt-space-md, 8px);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+
+/* — Sort Control — up/down ikon çifti, 24×24 her biri */
+.bt-grid__sort {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+.bt-grid__sort .bt-grid__control { width: 24px; min-width: 24px; padding: 0; }
+
+/* — Trailing Control Group — birincil buton + flat-base ikon-only "more"
+   butonu (dropdown/overflow-menu tetikleyicisi), sabit küçük bir gap ile */
+.bt-grid__control-group {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-xs, 4px);
+  flex-shrink: 0;
+}
+
+/* — Actions Overflow Menu — More butonunun açtığı gerçek çalışır dropdown.
+   Görünüm BİLİNÇLİ olarak Dropdown component'inin açılır listesiyle
+   (.bt-dd-options/.bt-dd-option, "DROPDOWN OPTIONS PANEL" bloğu) aynı token
+   ve ölçülere sahip ama sınıfları PAYLAŞMIYOR — kendi bağımsız
+   .bt-grid__menu-list/.bt-grid__menu-item kuralları var. Bilinçli tercih:
+   Dropdown'ın CSS'inde ileride yapılacak bir değişiklik Data Table'ı
+   (veya tam tersi) yanlışlıkla etkilemesin diye görsel benzerlik ayrı
+   ayrı tanımlanan iki kural setiyle sağlanıyor (kullanıcı isteğiyle, bkz.
+   HISTORY.md — ilk implementasyon .bt-dd-options'ı doğrudan paylaşıyordu). */
+.bt-grid__menu {
+  position: relative;
+  display: inline-flex;
+}
+/* position:fixed + PORTAL — açılınca btGridMenuToggle (pages-web.js) listeyi
+   gerçekten document.body'nin doğrudan çocuğu yapıyor, kapanınca kendi
+   .bt-grid__menu'süne geri taşıyor. Teorik olarak position:fixed tek başına
+   yeterli olmalıydı (hiçbir ata transform/filter/contain kullanmıyor, bu
+   yüzden containing block viewport'ta kalmalıydı) ama kullanıcı hard refresh
+   sonrası bile playground içinde (isolation mode'da değil) menünün hâlâ
+   bozuk göründüğünü bildirdi — kök nedeni kesin izole edemeden, DOM'daki
+   konumundan TAMAMEN bağımsız/garanti çalışan portal deseni tercih edildi
+   (bkz. HISTORY.md). display artık JS'te doğrudan inline style ile
+   kontrol ediliyor (.bt-grid__menu--open class'ı KULLANILMIYOR), çünkü
+   liste portal'landıktan sonra .bt-grid__menu'nün alt öğesi olmaktan çıkıp
+   ata-tabanlı bir CSS selector'ın çalışmasını imkansız kılıyor. */
+.bt-grid__menu-list {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 200;
+  min-width: 140px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background: var(--bt-surface-primary-default, #ffffff);
+  border-radius: var(--bt-radius-sm, 4px);
+  overflow: hidden;
+  box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
+  box-sizing: border-box;
+}
+.bt-grid__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-xs, 4px);
+  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
+  cursor: pointer;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-grid__menu-item:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.bt-grid__menu-item-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-icon-primary-strong, #535353);
+}
+.bt-grid__menu-item--danger { color: var(--bt-text-error-default, #b31d38); }
+.bt-grid__menu-item--danger:hover { background: var(--bt-surface-error-subtle, #fde6e6); }
+.bt-grid__menu-item--danger .bt-grid__menu-item-icon { color: var(--bt-text-error-default, #b31d38); }
+
+/* — Inline TextBox/Dropdown Control — hücre içinde sadece Input alanı
+   (Label/Helper Text Figma'da gizli — tablo hücresinde gereksiz), gerçek
+   .bt-tbx yapısı reuse edilir, sadece bt-tbx__meta/helper hiç render edilmez. */
+.bt-grid__inline {
+  min-width: 120px;
+  flex-shrink: 0;
+  padding: var(--bt-space-2xs, 2px);
+  box-sizing: border-box;
+}
+.bt-grid__inline .bt-tbx { gap: 0; }
+
+/* — No Record Available — tüm tablo genişliğini kaplayan ortalı satır */
+.bt-grid__no-record {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: var(--bt-space-xl, 12px);
+  background: var(--bt-base-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-top: none;
+  box-sizing: border-box;
+}
+.bt-grid__no-record-text {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-emphasis, #727272);
 }

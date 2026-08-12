@@ -135,6 +135,27 @@ Tablo formatı (diğer section tablolarıyla aynı `token-table` class'ı):
 - Sabit değerler (px, %) için Token sütunu `—` olur
 - Component'in farklı varyantları/tipleri ayrı satır olarak listelenir (örn. `Confirm · Information`, `Confirm · Error`)
 
+## Sayfa Tab Yapısı — ZORUNLU (4 Tab Standardı)
+
+Her component sayfası (Web dokümantasyonu, `PAGES_WEB[...]`) **dört tab** taşımalı, bu sırayla:
+
+```javascript
+tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+```
+
+- **Overview** — component'in ne olduğunu tanıtan kısa açıklama + TEK bir interaktif `registerPlayground` (component'in tüm prop'larını kapsayan genel amaçlı demo) + varsa `toc`'taki bölümlerle eşleşen Anatomy/yapı tabloları.
+- **Examples** — component'in farklı varyant/tip kombinasyonlarını gösteren, genelde birden fazla küçük `registerPlayground` veya statik önizleme tablosu içeren AYRI bir tab. Overview'daki tek genel playground'un aksine, burada component'in somut kullanım senaryoları (örn. Button'daki Solid/Outline/Flat/Ghost örnekleri, Card'daki Header Types/Body Content tabloları) yer alır — Overview'a gömülmez.
+- **CSS Properties** — design token–CSS değişken eşleşme tablosu (`token-table`).
+- **Usage** — Do/Don't listeleri.
+
+Bir component'in **State/Anatomy** gibi tab-özel içerikleri varsa (örn. Clickable Card'ın Default/Hover/Active State tablosu) bunlar **Examples** tab'ına gider, Overview'da sadece genel playground + kısa açıklama kalır.
+
+**Bu, geriye dönük bir standart** — 2026-08-12'de siteye uygulandı (bkz. HISTORY.md), yeni eklenen HER component bu 4-tab yapısıyla gelmeli, `['Overview', 'CSS Properties', 'Usage']` (Examples'sız 3-tab) veya sadece `['Overview']` gibi eksik yapılar kabul edilmez.
+
+## "On this page" (TOC) — Overview Linki Otomatik
+
+`docs/js/app.js`'teki `renderToc()`, `page.toc` dizisi olan HER sayfanın "On this page" panelinin en üstüne otomatik olarak sayfanın başına (`#page-title`) atlayan bir **"Overview"** linki ekler. Bu **merkezi/otomatik** bir davranış — yeni bir component sayfası eklerken `toc` dizisine manuel `'Overview'` eklemeye gerek YOK, `renderToc()` bunu kendisi prepend ediyor. `page.toc` boşsa (`toc: []`) TOC paneli hiç gösterilmiyor, bu davranış değişmedi.
+
 ## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
 
 Bu projede oluşturulan component'ler (markup + CSS + JS davranışı) **bundan sonraki
@@ -150,5 +171,5 @@ Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ay
 
 ## Son Tamamlanan Component
 
-**Card** — 2026-08-05.
+**Data Table (Grid)** — 2026-08-12 (HeaderCell + GridCell + No Record Available + Frozen Column varyasyonu, bkz. design.md §17).
 Detaylı oturum geçmişi: `HISTORY.md`

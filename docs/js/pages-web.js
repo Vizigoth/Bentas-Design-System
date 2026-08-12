@@ -19,18 +19,26 @@ const NAV_WEB = [
       { label: 'Button',            id: 'components/button' },
       { label: 'Button Group',      id: 'components/button-group' },
       {
-        label: 'Card', id: 'components/card', children: [
+        label: 'Card', children: [
+          { label: 'Card',             id: 'components/card' },
           { label: 'Default Card',     id: 'components/card-default' },
           { label: 'Clickable Card',   id: 'components/card-clickable' },
           { label: 'Selectable Card',  id: 'components/card-selectable' },
           { label: 'Collapsible Card', id: 'components/card-collapsible' },
+          { label: 'Scrollable Card',  id: 'components/card-scrollable' },
         ]
       },
       { label: 'Checkbox',          id: 'components/checkbox' },
+      {
+        label: 'Data Table', children: [
+          { label: 'Data Table',                id: 'components/data-table' },
+          { label: 'Data Table Frozen Column',  id: 'components/data-table-frozen-column' },
+        ]
+      },
       { label: 'Dialog',            id: 'components/dialog' },
       { label: 'Icon Button',       id: 'components/icon-button' },
       {
-        label: 'Inputs', static: true, children: [
+        label: 'Inputs', children: [
           { label: 'Date Picker',   id: 'components/date-picker' },
           { label: 'Dropdown',      id: 'components/dropdown' },
           { label: 'MultiSelect',   id: 'components/multi-select' },
@@ -7231,6 +7239,7 @@ const CARD_CONTROL_OPTS = [
   { key: 'icon',         label: 'Icon' },
   { key: 'button',       label: 'Button' },
   { key: 'checkbox',     label: 'Checkbox' },
+  { key: 'radio',        label: 'Radio Button' },
   { key: 'switch',       label: 'Switch' },
   { key: 'avatar',       label: 'Avatar' },
   { key: 'avatarGroup',  label: 'Avatar Group' },
@@ -7243,12 +7252,25 @@ const CARD_CONTROL_OPTS = [
 // generic leading icon + Card Row Segment ikonu + Button control'ün içindeki
 // icon-only buton ikonu için tek kaynak olarak reuse ediliyor.
 const _crdIconScan = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>`;
+// Collapsible Card'ın "Right Control = Button" seçeneğini reuse ederken tek
+// fark: ikon chevron olur, click collapse toggle'ı tetikler (bkz. crdHtml'in
+// `opts.collapsible`'ı ve crdControlSlot'un `override` parametresi) — Right
+// Control'ün kendi yapısı (seçenek listesi, markup'ı) hiç değişmiyor.
+// Varsayılan (collapsed) durumda aşağı ok (▾) — expanded'da 180° dönüp
+// yukarı oku (▴) gösterir (bkz. styles.css .bt-card--expanded .bt-card__chevron).
+const _crdChevronIcon = `<svg class="bt-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
 
-function crdControlSlot(kind) {
+// `override` — sadece Collapsible Card'ın header'ındaki "Button" control'ünü
+// (icon/onclick/aria-label) özelleştirmek için opsiyonel; verilmezse (tüm
+// diğer sayfalarda) davranış birebir eskisiyle aynı.
+function crdControlSlot(kind, override) {
   switch (kind) {
     case 'icon':
       return `<span class="bt-card__control-icon">${_crdIconScan}</span>`;
     case 'button':
+      if (override) {
+        return `<span class="bt-card__control-item"><button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-label="${override.ariaLabel || 'Action'}" onclick="${override.onClick || ''}">${override.icon || _crdIconScan}</button></span>`;
+      }
       return `<span class="bt-card__control-item"><button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-label="Action">${_crdIconScan}</button></span>`;
     // Checkbox/Switch design system'deki gerçek bileşenler — Button gibi
     // gerçekten tıklanabilir/state değiştiren olmalı, statik önizleme değil.
@@ -7256,6 +7278,8 @@ function crdControlSlot(kind) {
     // deseni reuse ediliyor (bkz. chkPreview/swPreview).
     case 'checkbox':
       return `<span class="bt-card__control-item" onclick="this.querySelector('.bt-checkbox__box').classList.toggle('bt-checkbox__box--checked')" style="cursor:pointer;"><span class="bt-checkbox__box">${_chkCheck}</span></span>`;
+    case 'radio':
+      return `<span class="bt-card__control-item" onclick="this.querySelector('.bt-radio__dot').classList.toggle('bt-radio__dot--selected')" style="cursor:pointer;"><span class="bt-radio__dot"></span></span>`;
     case 'switch':
       return `<span class="bt-card__control-item" onclick="this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"><span class="bt-switch__track"><span class="bt-switch__thumb"></span></span></span>`;
     case 'avatar':
@@ -7283,7 +7307,10 @@ function crdControlSlot(kind) {
 function crdHeaderHtml(opts) {
   const o = opts || {};
   const type = o.type || 'bordered';
-  const position = o.position || 'center';
+  // Background, Type'tan bağımsız ayrı bir eksen — Type sadece alt ayracı
+  // kontrol eder, Background sadece arka planı (bkz. HISTORY.md).
+  const background = o.background !== 'off';
+  const position = o.position || 'left';
   const showSubtitle = o.showSubtitle !== false;
   const leftControl = o.leftControl || 'none';
   const rightControl = o.rightControl || 'none';
@@ -7299,6 +7326,7 @@ function crdHeaderHtml(opts) {
     'bt-card__header',
     plain ? 'bt-card__header--plain' : '',
     (!plain && type === 'bordered') ? 'bt-card__header--bordered' : '',
+    (!plain && background) ? 'bt-card__header--bg' : '',
     isCenter ? 'bt-card__header--center' : 'bt-card__header--left',
     hasLeft ? 'bt-card__header--has-left' : '',
     hasRight ? 'bt-card__header--has-right' : '',
@@ -7311,12 +7339,23 @@ function crdHeaderHtml(opts) {
   // (aynı genişlik, visibility:hidden) "ayna" olarak basarak simetri
   // korunuyor — hangi control tipi olursa olsun (Icon/Button/Avatar Group/
   // Badge/Text, hepsi farklı genişlikte) otomatik doğru genişlikte oluyor.
+  // rightButtonOverride sadece rightControl==='button' iken ve sadece SAĞ
+  // slotta (Collapsible Card'ın chevron trigger'ı) kullanılır — Left Control
+  // hiç etkilenmez, Left Control'ün "Button" seçeneği her zaman genel ikonu
+  // (_crdIconScan) kullanmaya devam eder.
+  const rightOverride = o.rightButtonOverride || null;
+  // Body Title/Subtitle (plain) control slotu Figma'da 28×28 — Header'ın
+  // 40×40'ından farklı, bkz. styles.css .bt-card__control--content notu.
+  // --left/--right: sadece plain modda, control kutu içinde ortalanmak yerine
+  // kendi kenarına yaslanır (Left→sola, Right→sağa) — Header (40×40) etkilenmez.
+  const controlClsLeft  = 'bt-card__control' + (plain ? ' bt-card__control--content bt-card__control--left' : '');
+  const controlClsRight = 'bt-card__control' + (plain ? ' bt-card__control--content bt-card__control--right' : '');
   const leftSlot = hasLeft
-    ? `<span class="bt-card__control">${crdControlSlot(leftControl)}</span>`
-    : (isCenter && hasRight ? `<span class="bt-card__control" style="visibility:hidden" aria-hidden="true">${crdControlSlot(rightControl)}</span>` : '');
+    ? `<span class="${controlClsLeft}">${crdControlSlot(leftControl)}</span>`
+    : (isCenter && hasRight ? `<span class="${controlClsLeft}" style="visibility:hidden" aria-hidden="true">${crdControlSlot(rightControl, rightControl === 'button' ? rightOverride : null)}</span>` : '');
   const rightSlot = hasRight
-    ? `<span class="bt-card__control">${crdControlSlot(rightControl)}</span>`
-    : (isCenter && hasLeft ? `<span class="bt-card__control" style="visibility:hidden" aria-hidden="true">${crdControlSlot(leftControl)}</span>` : '');
+    ? `<span class="${controlClsRight}">${crdControlSlot(rightControl, rightControl === 'button' ? rightOverride : null)}</span>`
+    : (isCenter && hasLeft ? `<span class="${controlClsRight}" style="visibility:hidden" aria-hidden="true">${crdControlSlot(leftControl)}</span>` : '');
 
   return `<div class="${cls}">
     ${leftSlot}
@@ -7331,16 +7370,18 @@ function crdHeaderHtml(opts) {
 // "Card Row Segment" — Base Card Content'in (756:6684) 4 örnek satırında da
 // aynı: 28×28 leading icon + flex1 Label (sol) + flex1 Value (sağ). Sol/sağ slot
 // Header'ın control sistemiyle aynı `crdControlSlot(kind)` reuse ediyor (None/
-// Icon/Button/Checkbox/Switch/Avatar/Avatar Group/Badge/Text). Additional Text
-// Label (left) ve Value (right) için BAĞIMSIZ toggle'lanır. `showValue` — Value
-// metninin kendisini gösterip göstermeme (kullanıcı kararıyla eklendi, 2026-08-07:
+// Icon/Button/Checkbox/Radio Button/Switch/Avatar/Avatar Group/Badge/Text). Additional Text
+// Label (left) ve Value (right) için BAĞIMSIZ toggle'lanır. `showValue`/`showLabel` —
+// Value/Label metninin kendisini gösterip göstermeme, birbirinden bağımsız
+// (kullanıcı kararıyla eklendi, 2026-08-07 showValue / 2026-08-12 showLabel:
 // bu prop'ların hepsi artık PER-SEGMENT — her segment kendi bağımsız değerlerine
 // sahip, bkz. crdHtml + HISTORY.md).
-// opts: { leftControl, rightControl, showLeftAdditionalText, showRightAdditionalText, showValue }
+// opts: { leftControl, rightControl, showLeftAdditionalText, showRightAdditionalText, showLabel, showValue }
 function crdRowHtml(opts) {
   const o = opts || {};
   const leftControl  = o.leftControl  || 'none';
   const rightControl = o.rightControl || 'none';
+  const showLabel = o.showLabel !== false;
   const showValue = o.showValue !== false;
   const leftAddText = o.showLeftAdditionalText
     ? `<span class="bt-card__row-add">Additional Text Here</span>` : '';
@@ -7354,7 +7395,7 @@ function crdRowHtml(opts) {
     ${leftSlot}
     <span class="bt-card__row-content">
       <span class="bt-card__row-col bt-card__row-col--left">
-        <span class="bt-card__row-label">Label Text Here</span>
+        ${showLabel ? `<span class="bt-card__row-label">Label Text Here</span>` : ''}
         ${leftAddText}
       </span>
       <span class="bt-card__row-col bt-card__row-col--right">
@@ -7366,11 +7407,20 @@ function crdRowHtml(opts) {
   </div>`;
 }
 
-function crdHtml(variant, props) {
+// opts.collapsible — Collapsible Card için opsiyonel (bkz. crdCollapsibleHtml).
+// Verilmezse (tüm diğer sayfalarda) davranış birebir eskisiyle aynı: Header/
+// Body Title-Subtitle/Body/Footer prop yapısı TÜM Card sayfalarında ortak
+// kalıyor, Collapsible tek bir opsiyonel parametreyle aynı fonksiyonu reuse
+// ediyor (kullanıcı isteğiyle, Header/Body Title-Subtitle prop gruplarının
+// eksik olmaması için — bkz. HISTORY.md).
+function crdHtml(variant, props, opts) {
   const p = props || {};
+  const collapsible = !!(opts && opts.collapsible);
+  const expanded    = !!(opts && opts.expanded);
   const showHeader = (p.showHeader || 'on') === 'on';
   const type = p.type || 'bordered';
-  const position = p.position || 'center';
+  const background = (p.background || 'on') === 'on';
+  const position = p.position || 'left';
   const showSubtitle = (p.showSubtitle || 'on') === 'on';
   const leftControl = p.leftControl || 'none';
   const rightControl = p.rightControl || 'none';
@@ -7394,7 +7444,14 @@ function crdHtml(variant, props) {
   const footerBtnPos = p.footerBtnPos || 'horizontal';
   const footerSegs   = parseInt(p.footerSegments || '2', 10);
 
-  const header = showHeader ? crdHeaderHtml({ type, position, showSubtitle, leftControl, rightControl }) : '';
+  // Collapsible Card'da Right Control'ün "Button" seçeneği chevron ikonuyla
+  // render edilir ve tıklanınca collapse toggle'lar — Right Control'ün kendi
+  // seçenek listesi/markup yapısı hiç değişmiyor, sadece bu ikon override
+  // ediliyor (bkz. crdControlSlot/crdHeaderHtml).
+  const rightButtonOverride = collapsible
+    ? { icon: _crdChevronIcon, ariaLabel: 'Toggle', onClick: "this.closest('.bt-card').classList.toggle('bt-card--expanded')" }
+    : null;
+  const header = showHeader ? crdHeaderHtml({ type, background: background ? 'on' : 'off', position, showSubtitle, leftControl, rightControl, rightButtonOverride }) : '';
   const titleSubtitle = showTitleSubtitle ? crdHeaderHtml({
     plain: true, position: tsPosition, showSubtitle: tsSubtitle, titleText: 'Content Title Here',
     leftControl: tsLeftControl, rightControl: tsRightControl,
@@ -7411,6 +7468,7 @@ function crdHtml(variant, props) {
     rightControl: p[`seg${i}RightControl`] || 'none',
     showLeftAdditionalText:  (p[`seg${i}LeftAdditionalText`]  || 'off') === 'on',
     showRightAdditionalText: (p[`seg${i}RightAdditionalText`] || 'off') === 'on',
+    showLabel: (p[`seg${i}ShowLabel`] || 'on') === 'on',
     showValue: (p[`seg${i}ShowValue`] || 'on') === 'on',
   })).join('');
 
@@ -7430,12 +7488,18 @@ function crdHtml(variant, props) {
   }
   const footer = showFooter ? `\n  <div class="bt-card__footer">${footerBtns}</div>` : '';
 
-  return `<div class="bt-card bt-card--${footerBtnPos}">
+  // Collapsible'da sadece Row Segment listesi collapse olur (Header/Body
+  // Title-Subtitle/Description her zaman görünür kalır — collapsed state'de
+  // Default Card gibi görünmesi için, bkz. HISTORY.md).
+  const rowsBlock = collapsible ? `<div class="bt-card__collapse-content">${rows}</div>` : rows;
+  const rootCls = 'bt-card bt-card--' + footerBtnPos + (collapsible ? ' bt-card--collapsible' + (expanded ? ' bt-card--expanded' : '') : '');
+
+  return `<div class="${rootCls}">
   ${header}
   <div class="bt-card__body">
     ${titleSubtitle}
     ${description}
-    ${rows}
+    ${rowsBlock}
   </div>${footer}
 </div>`;
 }
@@ -7443,7 +7507,8 @@ function crdHtml(variant, props) {
 function crdCss(variant, props) {
   const p = props || {};
   const type = p.type || 'bordered';
-  const position = p.position || 'center';
+  const background = p.background || 'on';
+  const position = p.position || 'left';
   const leftControl = p.leftControl || 'none';
   const rightControl = p.rightControl || 'none';
   const hasLeft = leftControl !== 'none';
@@ -7469,7 +7534,8 @@ function crdCss(variant, props) {
     ln('align-items', 'center'),
     ln('justify-content', 'space-between'),
     `}`,
-    ...(type === 'bordered' ? [``, `.bt-card__header--bordered {`, ln('background', 'var(--bt-base-subtle, #f5f5f5)  /* #f5f5f5 */'), ln('border-bottom', '1px solid var(--bt-border-primary-default, #d4d4d4)  /* #d4d4d4 */'), `}`] : []),
+    ...(type === 'bordered' ? [``, `.bt-card__header--bordered {`, ln('border-bottom', '1px solid var(--bt-border-primary-default, #d4d4d4)  /* #d4d4d4 */'), `}`] : []),
+    ...(background === 'on' ? [``, `.bt-card__header--bg {`, ln('background', 'var(--bt-base-subtle, #f5f5f5)  /* #f5f5f5 */'), `}`] : []),
     ``,
     `.bt-card__title-wrap {`,
     ln('flex', '1 1 0'),
@@ -7587,17 +7653,20 @@ PAGES_WEB['components/card'] = {
           <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
           <tr><td>Header</td><td>Height</td><td>—</td><td>40px</td></tr>
-          <tr><td>Header · Borderless (default)</td><td>Background</td><td>—</td><td>transparent</td></tr>
-          <tr><td>Header · Bordered</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>Header · Bordered</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header · Background Off</td><td>Background</td><td>—</td><td>transparent</td></tr>
+          <tr><td>Header · Background On</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header · Type Bordered</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header · Type Borderless</td><td>Border bottom</td><td>—</td><td>none</td></tr>
           <tr><td>Header · Left, no control</td><td>Title padding</td><td>${tk('--bt-space-2xl')}</td><td>16px (o taraftaki 40px control slotu inseti karşılıyorsa 0'a düşer)</td></tr>
           <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
           <tr><td>Subtitle</td><td>Font</td><td>${tk('--bt-subtitle-xs-regular')}</td><td>400 · 12px/16px</td></tr>
           <tr><td>Subtitle</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
-          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 40px (hug content — Avatar Group/Badge/Text gibi geniş içeriklerde büyür) / 40px sabit</td></tr>
+          <tr><td>Control slot · Header</td><td>Width / Height</td><td>—</td><td>min-width 40px (hug content — Avatar Group/Badge/Text gibi geniş içeriklerde büyür) / 40px sabit</td></tr>
+          <tr><td>Control slot · Body Title/Subtitle</td><td>Width / Height</td><td>—</td><td>min-width 28px (hug content) / 28px sabit — Header'dan farklı, Figma'da böyle tasarlanmış (${tk('.bt-card__control--content')})</td></tr>
           <tr><td>Control · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>24×24, #535353</td></tr>
           <tr><td>Control · Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
           <tr><td>Control · Checkbox</td><td>Class</td><td>—</td><td>${tk('bt-checkbox__box')} (16×16)</td></tr>
+          <tr><td>Control · Radio Button</td><td>Class</td><td>—</td><td>${tk('bt-radio__dot')} (16×16)</td></tr>
           <tr><td>Control · Switch</td><td>Class</td><td>—</td><td>${tk('bt-switch__track')} (32×20)</td></tr>
           <tr><td>Control · Avatar / Avatar Group</td><td>Class</td><td>—</td><td>${tk('bt-avatar bt-avatar--xs')} (28×28)</td></tr>
           <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
@@ -7620,7 +7689,7 @@ PAGES_WEB['components/card'] = {
       <p class="page-desc">Card kullanım kılavuzu.</p>
       <h2>Do</h2>
       <ul>
-        <li>Header'ı Bordered yaparak body'den net bir görsel ayrım oluştur — özellikle Header'da control varsa</li>
+        <li>Header'a Type=Bordered ve/veya Background=On vererek body'den net bir görsel ayrım oluştur — özellikle Header'da control varsa</li>
         <li>Sol control slotunu bağlamsal bir gösterge (ikon, avatar, checkbox) için kullan; sağ slotu eylem (buton) veya durum (badge, switch) için kullan</li>
         <li>Body Title/Subtitle ayracını sadece birden fazla mantıksal bölüm varsa kullan — tek bir içerik bloğu için gereksiz</li>
         <li>Row Segment listelerinde Label/Value çiftlerini tutarlı bir sırayla göster</li>
@@ -7666,13 +7735,15 @@ PAGES_WEB['components/card'] = {
               { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off' },
               { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
               { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off' },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on' },
               { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on' },
             );
           });
           return [
             { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
             { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
             { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
             { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
             { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
@@ -7695,10 +7766,10 @@ PAGES_WEB['components/card'] = {
         css:     (v, p) => crdCss(v, p),
       })}
 
-      <p class="page-desc">Card, ilişkili içeriği bir Header ve bir Body olmak üzere iki bölümde gruplayan bir kapsayıcıdır. Header; Bordered/Borderless tip, Center/Left pozisyon ve sol/sağ 40×40 control slotlarıyla özelleştirilebilir. Body ise opsiyonel bir alt-bölüm başlığı (Body Title/Subtitle) ve Label/Value satırlarından oluşan esnek bir içerik alanıdır.</p>
+      <p class="page-desc">Card, ilişkili içeriği bir Header ve bir Body olmak üzere iki bölümde gruplayan bir kapsayıcıdır. Header; Type (Bordered/Borderless), Background (On/Off), Center/Left pozisyon ve sol/sağ 40×40 control slotlarıyla özelleştirilebilir. Body ise opsiyonel bir alt-bölüm başlığı (Body Title/Subtitle) ve Label/Value satırlarından oluşan esnek bir içerik alanıdır.</p>
 
       <h2 id="Header Types">Header Types</h2>
-      <p class="page-desc">Figma'da Header, 3 bağımsız eksenden oluşuyor: <strong>Type</strong> (Bordered/Borderless — arka plan+ayraç, aşağıdaki Anatomy tablosunda), <strong>Position</strong> (Center/Left) ve <strong>Segments</strong> (1/2/3 — kaç control slotu dolu). Position × Segments = <strong>6 temel header düzeni</strong>; bunların her biri Bordered veya Borderless olabildiği için toplam 6 × 2 = 12 Figma varyantı var. Bu projede "Segments" ayrı bir seçenek olarak değil, sol/sağ control'lerin bağımsız içerik tipi seçimiyle (None dahil) genelleştirildi — aşağıdaki 6 satır Figma'nın kendi Segments 1/2/3 karşılıklarını gösteriyor.</p>
+      <p class="page-desc">Header, birbirinden bağımsız birkaç eksenden oluşuyor: <strong>Type</strong> (Bordered/Borderless — sadece alt ayracı kontrol eder), <strong>Background</strong> (On/Off — arka planı ayrıca kontrol eder, Type'tan bağımsız), <strong>Position</strong> (Center/Left) ve <strong>Segments</strong> (1/2/3 — kaç control slotu dolu). Type × Background 4 kombinasyon üretir (aşağıdaki Anatomy tablosunda); Position × Segments ise <strong>6 temel header düzeni</strong>. Bu projede "Segments" ayrı bir seçenek olarak değil, sol/sağ control'lerin bağımsız içerik tipi seçimiyle (None dahil) genelleştirildi — aşağıdaki 6 satır Figma'nın kendi Segments 1/2/3 karşılıklarını gösteriyor (varsayılan Type=Bordered + Background=On ile).</p>
       <table class="token-table">
         <thead><tr><th style="width:120px">Layout</th><th style="width:35%">Preview</th><th>Açıklama</th></tr></thead>
         <tbody>
@@ -7742,22 +7813,24 @@ PAGES_WEB['components/card'] = {
           <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
           <tr><td>Header</td><td>Height</td><td>—</td><td>40px</td></tr>
-          <tr><td>Header · Borderless (default)</td><td>Background</td><td>—</td><td>transparent</td></tr>
-          <tr><td>Header · Bordered</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>Header · Bordered</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header · Background Off</td><td>Background</td><td>—</td><td>transparent</td></tr>
+          <tr><td>Header · Background On</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header · Type Bordered</td><td>Border bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header · Type Borderless</td><td>Border bottom</td><td>—</td><td>none</td></tr>
           <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
           <tr><td>Title</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
         </tbody>
       </table>
 
       <h2 id="Control Slots">Control Slots</h2>
-      <p class="page-desc">Header'ın sol ve sağ tarafındaki 40×40 slotlar; Icon, Button, Checkbox, Switch, Avatar, Avatar Group, Badge veya Text içeriklerinden birini gösterebilir — tümü design system'deki gerçek bileşenleri reuse eder.</p>
+      <p class="page-desc">Header'ın sol ve sağ tarafındaki 40×40 slotlar; Icon, Button, Checkbox, Radio Button, Switch, Avatar, Avatar Group, Badge veya Text içeriklerinden birini gösterebilir — tümü design system'deki gerçek bileşenleri reuse eder.</p>
       <table class="token-table">
         <thead><tr><th>Content</th><th>Preview</th><th>Reused Class</th></tr></thead>
         <tbody>
           <tr><td>Icon</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'icon', showSubtitle: false })}</td><td>${tk('.bt-card__control-icon')} (24×24)</td></tr>
           <tr><td>Button</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'button', showSubtitle: false })}</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')}</td></tr>
           <tr><td>Checkbox</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'checkbox', showSubtitle: false })}</td><td>${tk('bt-checkbox__box')}</td></tr>
+          <tr><td>Radio Button</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'radio', showSubtitle: false })}</td><td>${tk('bt-radio__dot')}</td></tr>
           <tr><td>Switch</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'switch', showSubtitle: false })}</td><td>${tk('bt-switch__track')}</td></tr>
           <tr><td>Avatar</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'avatar', showSubtitle: false })}</td><td>${tk('bt-avatar bt-avatar--xs bt-avatar--brand')}</td></tr>
           <tr><td>Avatar Group</td><td>${crdHeaderHtml({ position: 'left', leftControl: 'avatarGroup', showSubtitle: false })}</td><td>${tk('bt-avatar bt-avatar--xs')} × N, ${tk('margin-left:-12px')}</td></tr>
@@ -7770,7 +7843,8 @@ PAGES_WEB['components/card'] = {
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 40px (hug content) / 40px sabit</td></tr>
+          <tr><td>Control slot · Header</td><td>Width / Height</td><td>—</td><td>min-width 40px (hug content) / 40px sabit</td></tr>
+          <tr><td>Control slot · Body Title/Subtitle</td><td>Width / Height</td><td>—</td><td>min-width 28px (hug content) / 28px sabit</td></tr>
           <tr><td>Control · Icon</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
           <tr><td>Control · Badge</td><td>Background</td><td>${tk('--bt-base-muted')}</td><td>#e6e6e6</td></tr>
           <tr><td>Control · Badge</td><td>Border radius</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
@@ -7861,13 +7935,15 @@ PAGES_WEB['components/card-default'] = {
           { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
           { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
           { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
           { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
         );
       });
       return [
         { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
         { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-        { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+        { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
         { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
         { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
         { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
@@ -7957,7 +8033,7 @@ PAGES_WEB['components/card-default'] = {
         </tbody>
       </table>
 
-      <h2>Anatomy</h2>
+      <h2 id="Anatomy">Anatomy</h2>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -8023,11 +8099,42 @@ function crdClickableCss(variant, props) {
 }
 
 PAGES_WEB['components/card-clickable'] = {
-  tabs: ['Overview'],
-  toc:  ['States'],
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['States', 'Anatomy'],
   render(tab) {
     const title = 'Clickable Card';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Clickable Card, Header/Body Title-Subtitle/Body/Footer için Default Card ile birebir aynı token'ları kullanır (bkz. Default Card sayfası) — burada sadece tıklanabilirliğe özel ek CSS listelenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover</td><td>Box shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Active</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Active</td><td>Background</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Cursor</td><td>—</td><td>—</td><td>pointer</td></tr>
+          <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease (border-color, box-shadow, background)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Clickable Card kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Tüm kart tek bir hedefe (detay sayfası, panel açma vb.) götürdüğünde kullan</li>
+        <li>Hover/Active geri bildirimini her zaman açık bırak — kullanıcı kartın tıklanabilir olduğunu görsel olarak anlamalı</li>
+        <li>Kart içine ayrıca tıklanabilir başka bir element (buton, link) koyma — iç içe tıklanabilir alanlar kafa karıştırır</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Kart içeriğinde birden fazla farklı aksiyon hedefi olduğunda kullanma — bunun yerine Header/Footer control'lerini (buton, checkbox vb.) kullan</li>
+        <li>Header'ın kendi Right Control'ünü (Button, Checkbox vb.) tıklanabilir bırakıp kartın tamamını da tıklanabilir yapma — olay çakışması yaratır</li>
+      </ul>
+    `};
 
     return { title, html: `
       ${registerPlayground({
@@ -8042,6 +8149,7 @@ PAGES_WEB['components/card-clickable'] = {
               { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
               { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
               { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
               { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
             );
           });
@@ -8049,7 +8157,8 @@ PAGES_WEB['components/card-clickable'] = {
             { key: 'state',        label: 'State',           options: CARD_CLICKABLE_STATE_OPTS, default: 'default' },
             { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
             { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
             { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
             { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
             { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
@@ -8096,7 +8205,7 @@ PAGES_WEB['components/card-clickable'] = {
         </tbody>
       </table>
 
-      <h2>Anatomy</h2>
+      <h2 id="Anatomy">Anatomy</h2>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -8118,55 +8227,17 @@ const CARD_COLLAPSE_STATE_OPTS = [
   { key: 'expanded',  label: 'Expanded'  },
 ];
 
+// Artık crdHtml'in ince bir sarmalayıcısı — Header/Body Title-Subtitle/Body/
+// Footer prop yapısı TÜM Card sayfalarıyla birebir aynı (kullanıcı isteğiyle,
+// bkz. HISTORY.md); tek fark playground'un varsayılanları (rightControl
+// default 'button', showHeader default 'on'). Trigger, Header'ın Right
+// Control'ü "Button" seçiliyken chevron ikonuyla render edilir (bkz.
+// crdHtml'in `opts.collapsible`'ı, crdControlSlot'un `override`'ı) — Right
+// Control'ün seçenek listesi/markup yapısı hiç değişmedi.
 function crdCollapsibleHtml(variant, props) {
   const p        = props || {};
   const expanded = (p.collapseState || 'collapsed') === 'expanded';
-  const expClass = expanded ? ' bt-card--expanded' : '';
-
-  const showDesc     = (p.showDescription || 'on') === 'on';
-  const showFooter   = (p.showFooter  || 'off') === 'on';
-  const footerBtnPos = p.footerBtnPos || 'horizontal';
-  const footerSegs   = parseInt(p.footerSegments || '2', 10);
-
-  const activeSegs = (p.activeSegments != null ? p.activeSegments : '1,2,3').split(',').filter(Boolean);
-  const rows = [1,2,3,4,5].filter(i => activeSegs.includes(String(i))).map(i => crdRowHtml({
-    leftControl:             p[`seg${i}LeftControl`]         || 'icon',
-    rightControl:            p[`seg${i}RightControl`]        || 'none',
-    showLeftAdditionalText:  (p[`seg${i}LeftAdditionalText`]  || 'off') === 'on',
-    showRightAdditionalText: (p[`seg${i}RightAdditionalText`] || 'off') === 'on',
-    showValue:               (p[`seg${i}ShowValue`]           || 'on')  === 'on',
-  })).join('');
-
-  const _chevron = `<svg class="bt-card__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
-
-  // Borderless header — flat icon button sağda, chevron collapse trigger
-  const header = `<div class="bt-card__header bt-card__header--left bt-card__header--has-right">
-  <span class="bt-card__title-wrap"><span class="bt-card__title">Card Title Here</span></span>
-  <span class="bt-card__control"><button class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" type="button" aria-label="Toggle" onclick="this.closest('.bt-card').classList.toggle('bt-card--expanded')">${_chevron}</button></span>
-</div>`;
-
-  const description = showDesc
-    ? `<p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p>`
-    : '';
-
-  const _fPrimary   = `<button class="bt-btn bt-btn--sm bt-btn--primary-solid" type="button">Button</button>`;
-  const _fSecondary = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>`;
-  const _fTertiary  = `<button class="bt-btn bt-btn--sm bt-btn--base-flat" type="button">Button</button>`;
-  let footerBtns;
-  if (footerBtnPos === 'vertical') {
-    footerBtns = footerSegs === 1 ? _fPrimary : footerSegs === 2 ? _fPrimary + _fSecondary : _fPrimary + _fSecondary + _fTertiary;
-  } else {
-    footerBtns = footerSegs === 1 ? _fPrimary : footerSegs === 2 ? _fSecondary + _fPrimary : _fTertiary + _fSecondary + _fPrimary;
-  }
-  const footer = showFooter ? `\n  <div class="bt-card__footer">${footerBtns}</div>` : '';
-
-  return `<div class="bt-card bt-card--collapsible${expClass} bt-card--${footerBtnPos}">
-  ${header}
-  <div class="bt-card__body">
-    ${description}
-    <div class="bt-card__collapse-content">${rows}</div>
-  </div>${footer}
-</div>`;
+  return crdHtml(variant, p, { collapsible: true, expanded });
 }
 
 function crdCollapsibleCss(_, props) {
@@ -8175,24 +8246,33 @@ function crdCollapsibleCss(_, props) {
   const ln  = (k, v) => `  ${k}: ${v};`;
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const lines = [
-    '.bt-card__collapse-trigger {',
-    ln('display',         'flex'),
-    ln('align-items',     'center'),
-    ln('justify-content', 'space-between'),
-    ln('cursor',          'pointer'),
-    ln('user-select',     'none'),
-    '}',
-    '',
     '.bt-card__chevron {',
     ln('transition', 'transform 250ms ease'),
     ln('color',      'var(--bt-icon-primary-strong)  /* #535353 */'),
-    ...(expanded ? [ln('transform', 'rotate(90deg)  /* .bt-card--expanded ile tetiklenir */')] : []),
+    ...(expanded ? [ln('transform', 'rotate(180deg)  /* .bt-card--expanded ile tetiklenir — aşağı ok (▾) yukarı oka (▴) döner */')] : []),
     '}',
     '',
     '.bt-card__collapse-content {',
-    ln('overflow',   'hidden'),
-    ln('max-height', expanded ? '600px  /* expanded */' : '0  /* collapsed */'),
-    ln('transition', 'max-height 250ms ease'),
+    ln('overflow',    'hidden'),
+    ln('max-height',  expanded ? '600px  /* expanded */' : '32px  /* collapsed — tamamen gizlemek yerine kısa bir "teaser" önizleme */'),
+    ln('transition',  'max-height 250ms ease'),
+    '}',
+    '',
+    '/* Blur/fade artık collapse-content\'in kendi kutusunda değil, .bt-card__body\'nin',
+    '   alt kenarında — Description + Segment birlikte doğal bir şekilde soluklaşıyor */',
+    '.bt-card--collapsible .bt-card__body {',
+    ln('position', 'relative'),
+    '}',
+    '.bt-card--collapsible .bt-card__body::after {',
+    ln('content',     `''`),
+    ln('position',    'absolute'),
+    ln('inset',       'auto 0 0 0  /* left/right/bottom 0 */'),
+    ln('height',      '64px'),
+    ln('background',  'linear-gradient(to bottom, transparent, var(--bt-base-default))  /* #ffffff */'),
+    ln('backdrop-filter', 'blur(16px)'),
+    ln('mask-image',  'linear-gradient(to bottom, transparent, black 50%)  /* blur/fade üstte görünmez, %50 yükseklikte tam belirginleşir */'),
+    ln('opacity',     expanded ? '0  /* expanded halinde gizlenir */' : '1  /* collapsed halinde daha fazla içerik olduğu ipucu */'),
+    ln('transition',  'opacity 200ms ease'),
     '}',
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
@@ -8206,20 +8286,23 @@ PAGES_WEB['components/card-collapsible'] = {
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Collapsible Card bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">Collapsible Card, Header/Body Title-Subtitle/Body/Footer için Default Card ile birebir aynı token'ları kullanır (bkz. Default Card sayfası) — burada sadece collapse'e özel ek CSS listelenir.</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Header</td><td>Style</td><td>—</td><td>Borderless (transparent bg, no border-bottom)</td></tr>
-          <tr><td>Collapse Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
+          <tr><td>Trigger</td><td>Konum</td><td>—</td><td>Header'ın Right Control'ü, "Button" seçiliyken (varsayılan)</td></tr>
+          <tr><td>Trigger · Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
           <tr><td>Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
           <tr><td>Chevron</td><td>Transition</td><td>—</td><td>transform 250ms ease</td></tr>
-          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(90deg)</td></tr>
-          <tr><td>Collapse Content</td><td>Max-height · Collapsed</td><td>—</td><td>0</td></tr>
+          <tr><td>Chevron · Collapsed (default)</td><td>Icon</td><td>—</td><td>aşağı ok (▾)</td></tr>
+          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(180deg) — yukarı ok (▴)</td></tr>
+          <tr><td>Collapse Content</td><td>Max-height · Collapsed</td><td>—</td><td>32px (tam gizli değil — kısa bir "teaser" önizleme)</td></tr>
           <tr><td>Collapse Content</td><td>Max-height · Expanded</td><td>—</td><td>600px</td></tr>
           <tr><td>Collapse Content</td><td>Transition</td><td>—</td><td>max-height 250ms ease</td></tr>
-          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
-          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Konum</td><td>—</td><td>${tk('.bt-card__body')}'nin kendi ::after'ı, alt kenarda 64px, sadece collapsed'de görünür</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>linear-gradient(transparent → #ffffff)</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Backdrop-filter</td><td>—</td><td>blur(16px)</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Mask-image</td><td>—</td><td>linear-gradient(transparent → black 50%) — üstte görünmez, %50 yükseklikte tam belirginleşir</td></tr>
         </tbody>
       </table>
     `};
@@ -8229,8 +8312,8 @@ PAGES_WEB['components/card-collapsible'] = {
       <h2>Do</h2>
       <ul>
         <li>Detay bilgileri (segment satırları) ikincil önem taşıdığında ve başlangıçta gizlenmesi tercih edildiğinde kullan</li>
-        <li>Trigger olarak her zaman Body Title alanını kullan — başka alanları tıklanabilir yapma</li>
-        <li>Collapsed state'de Default Card gibi görünen temiz bir başlangıç sunumu hedefle</li>
+        <li>Trigger olarak Header'ın Right Control'ünü "Button" (chevron) olarak bırak — bu, collapse'i tetikleyen tek kontrol</li>
+        <li>Collapsed state'deki 32px'lik teaser önizlemeyi, kullanıcıya "altında daha fazla içerik var" ipucu vermek için kullan</li>
       </ul>
       <h2>Don't</h2>
       <ul>
@@ -8248,12 +8331,28 @@ PAGES_WEB['components/card-collapsible'] = {
           { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
           { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
           { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
           { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
         );
       });
       return [
         { key: 'collapseState',    label: 'State',       options: CARD_COLLAPSE_STATE_OPTS, default: 'collapsed' },
+        { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+        { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+        { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        // rightControl varsayılanı 'button' — collapse trigger'ı (chevron) bu
+        // slotta render edilir, bkz. crdHtml'in `opts.collapsible`'ı.
+        { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'button' },
+        { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+        { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
         { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
+        { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
         { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1,2,3' },
         ...segProps,
         { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
@@ -8272,7 +8371,7 @@ PAGES_WEB['components/card-collapsible'] = {
         css:     (v, p) => crdCollapsibleCss(v, p),
       })}
 
-      <p class="page-desc">Başlık alanına tıklandığında segment satırlarını gösteren/gizleyen kart varyantı. Collapsed (varsayılan) state'de Default Card gibi görünür.</p>
+      <p class="page-desc">Header'daki chevron butonuna tıklandığında segment satırlarını gösteren/gizleyen kart varyantı. Header, Body Title/Subtitle, Body ve Footer — diğer tüm Card sayfalarıyla birebir aynı prop yapısını kullanır; tek fark Header'ın Right Control'ünün varsayılan olarak "Button" gelmesi (bu buton chevron ikonuyla render edilir ve collapse'i tetikler). Collapsed state'de segment satırları TAMAMEN gizlenmez — 32px'lik bir "teaser" önizleme gösterilir; blur/fade efekti segment kutusuyla sınırlı kalmayıp Body'nin (Description + segment birlikte) alt kenarında doğal bir şekilde belirginleşir.</p>
 
       <h2 id="States">States</h2>
       <table class="token-table">
@@ -8280,18 +8379,18 @@ PAGES_WEB['components/card-collapsible'] = {
         <tbody>
           <tr>
             <td><span class="token-name">Collapsed</span></td>
-            <td>${crdCollapsibleHtml('default', { collapseState: 'collapsed', showDescription: 'on', activeSegments: '1,2,3' })}</td>
-            <td>Segments gizli. Default Card ile aynı görünüm.</td>
+            <td>${crdCollapsibleHtml('default', { collapseState: 'collapsed', rightControl: 'button', showDescription: 'on', showSegments: 'on', activeSegments: '1,2,3' })}</td>
+            <td>Segments kısmi görünür (32px teaser, giderek belirginleşen blur/fade).</td>
           </tr>
           <tr>
             <td><span class="token-name">Expanded</span></td>
-            <td>${crdCollapsibleHtml('default', { collapseState: 'expanded', showDescription: 'on', activeSegments: '1,2,3' })}</td>
-            <td>Segments görünür. Başlığa tıklanarak tetiklenir.</td>
+            <td>${crdCollapsibleHtml('default', { collapseState: 'expanded', rightControl: 'button', showDescription: 'on', showSegments: 'on', activeSegments: '1,2,3' })}</td>
+            <td>Segments görünür. Chevron butonuna tıklanarak tetiklenir.</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>Anatomy</h2>
+      <h2 id="Anatomy">Anatomy</h2>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -8299,10 +8398,14 @@ PAGES_WEB['components/card-collapsible'] = {
           <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
           <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
           <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
-          <tr><td>Trigger · Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Header · Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
           <tr><td>Trigger · Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
-          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(90deg)</td></tr>
+          <tr><td>Chevron · Collapsed (default)</td><td>Icon</td><td>—</td><td>aşağı ok (▾)</td></tr>
+          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(180deg) — yukarı ok (▴)</td></tr>
+          <tr><td>Collapse Content · Collapsed</td><td>Max-height</td><td>—</td><td>32px (teaser, tam gizli değil)</td></tr>
           <tr><td>Collapse Content</td><td>Transition</td><td>—</td><td>max-height 250ms ease</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Konum</td><td>—</td><td>alt kenarda 64px (Description + Segment birlikte), sadece collapsed'de</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Backdrop-filter</td><td>—</td><td>blur(16px), mask-image ile üstten alta belirginleşir</td></tr>
         </tbody>
       </table>
     `};
@@ -8381,11 +8484,42 @@ function crdSelectableCss() {
 }
 
 PAGES_WEB['components/card-selectable'] = {
-  tabs: ['Overview'],
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
   toc:  ['States', 'Anatomy'],
   render(tab) {
     const title = 'Selectable Card';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Selectable Card, Header/Body Title-Subtitle/Body/Footer için Default Card ile birebir aynı token'ları kullanır (bkz. Default Card sayfası) — burada sadece seçilebilirliğe özel ek CSS listelenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover</td><td>Box shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Selected</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Selected</td><td>Background</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Cursor</td><td>—</td><td>—</td><td>pointer</td></tr>
+          <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease (border-color, box-shadow, background)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Selectable Card kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Birden fazla karttan tek veya çoklu seçim yapılması gereken listelerde kullan (örn. plan seçimi, filtre kartları)</li>
+        <li>Seçili durumu her zaman görsel olarak net şekilde ayırt et (border + background birlikte)</li>
+        <li>Kartları bir grup içinde, tutarlı boyutlarda göster</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Tek bir kart için kullanma — seçim kavramı en az iki kart arasında anlamlı olur</li>
+        <li>Header'ın kendi Right Control'ünü (Button, Checkbox vb.) tıklanabilir bırakıp kartın tamamını da seçilebilir yapma — olay çakışması yaratır</li>
+      </ul>
+    `};
 
     return { title, html: `
       ${registerPlayground({
@@ -8400,6 +8534,7 @@ PAGES_WEB['components/card-selectable'] = {
               { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
               { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
               { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
               { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
             );
           });
@@ -8407,7 +8542,8 @@ PAGES_WEB['components/card-selectable'] = {
             { key: 'initialState', label: 'Initial State', options: CARD_SEL_STATE_OPTS, default: 'first' },
             { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
             { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
-            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'center' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
             { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
             { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
             { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
@@ -8464,6 +8600,142 @@ PAGES_WEB['components/card-selectable'] = {
           <tr><td>Selected · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Selected · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
           <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Scrollable Card ─────────────────────────────────────────────
+// Header ve Footer varsayılan olarak açık ve sabit kalır — sadece Body scroll
+// oluyor. Varsayılan olarak Body Title/Subtitle VE Segments kapalı (sadece
+// Description görünür). Description metni bu sayfaya ÖZEL, daha uzun bir
+// placeholder — crdHtml'in paylaşılan metnini DEĞİŞTİRMİYORUZ (diğer Card
+// sayfalarını etkilememesi için kullanıcı kararıyla bilinçli), sadece
+// crdHtml'in çıktısı üzerinde string replace ile enjekte ediliyor (Clickable/
+// Selectable'ın class enjekte etme deseniyle aynı yöntem). Body `height`
+// (max-height DEĞİL) ile SABİT 120px — scroll alanının yüksekliği içeriğe
+// göre büyüyüp küçülmemeli, her zaman aynı standart pencerede kalmalı; 120px,
+// varsayılan haldeki uzun Description metninin bu yüksekliği taşıp scroll'u
+// varsayılan durumda bile göstermesi için seçildi. Figma'da ayrı bir node'u
+// yok, mevcut crdHtml/crdCss altyapısı üzerine `.bt-card--scrollable`
+// modifier'ı eklenerek oluşturuldu.
+const CRD_SCROLLABLE_DESC_TEXT = 'Additional information displayed below the title to provide additional context about the section, clarify its purpose and intended use, explain what type of information or content is included, and help users understand what is expected from them. This supporting text can also be used to highlight important details, provide brief guidance, or explain any requirements that may not be immediately clear from the section title alone.';
+
+function crdScrollableHtml(variant, props) {
+  const p = props || {};
+  return crdHtml(variant, p)
+    .replace('class="bt-card ', 'class="bt-card bt-card--scrollable ')
+    .replace('Description for additional information displayed below the title to clarify the purpose of the section.', CRD_SCROLLABLE_DESC_TEXT);
+}
+
+function crdScrollableCss() {
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-card--scrollable .bt-card__body {',
+    ln('height', '120px  /* sabit — max-height değil, içerik miktarından bağımsız standart bir scroll penceresi */'),
+    ln('overflow-y', 'auto'),
+    '}',
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/card-scrollable'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy'],
+  render(tab) {
+    const title = 'Scrollable Card';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const _scrollableProps = (p) => {
+      const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+      const segProps = [];
+      [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+        segProps.push(
+          { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+          { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+          { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+          { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+          { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+        );
+      });
+      return [
+        { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+        { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+        { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+        { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+        { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+        { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+        { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+        ...segProps,
+        { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'on' },
+        { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+        { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+      ];
+    };
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Scrollable Card bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Header / Footer</td><td>Position</td><td>—</td><td>sabit (flex-shrink: 0), scroll dışında kalır</td></tr>
+          <tr><td>Body</td><td>Height</td><td>—</td><td>120px sabit (max-height değil — içerik azsa da kutu küçülmez; element-özel ölçüm, token karşılığı yok)</td></tr>
+          <tr><td>Body</td><td>Overflow-y</td><td>—</td><td>auto</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Scrollable Card kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Uzun açıklama metni veya çok sayıda Row Segment içeren içerikler için kullan — Header ve Footer sabit kalırken sadece Body scroll olur</li>
+        <li>Footer'ı açık tutarak birincil aksiyonların scroll'dan bağımsız her zaman görünür kalmasını sağla</li>
+        <li>Kart yüksekliğinin içerik miktarına göre değişmemesi, her zaman aynı standart boyutta kalması gereken listelerde/uzun metinlerde tercih et — içerik kısa olsa bile Body kutusu küçülmez</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Kart yüksekliğinin içeriğe göre serbestçe büyümesi gerektiği yerlerde kullanma — Default Card kullan</li>
+        <li>Header/Footer olmadan kullanma — sabit bir çerçeve olmadan scroll alanının sınırı belirsizleşir</li>
+      </ul>
+    `};
+
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-card-scrollable-overview',
+        variants: [{ key: 'default', label: 'Scrollable Card' }],
+        props: _scrollableProps,
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdScrollableHtml(v, p)}</div>`,
+        code:    (v, p) => crdScrollableHtml(v, p),
+        css:     (v, p) => crdScrollableCss(v, p),
+      })}
+
+      <p class="page-desc">Header ve Footer'ın her zaman görünür kaldığı, sadece Body'nin scroll olduğu Card varyantı — uzun açıklama metinleri veya çok sayıda Row Segment içeren içerikler için kullanılır. <code style="font-family:var(--mono);font-size:12px;">bt-card--scrollable</code> modifier'ı <code style="font-family:var(--mono);font-size:12px;">.bt-card__body</code>'ye <code style="font-family:var(--mono);font-size:12px;">height: 120px; overflow-y: auto;</code> uygular — sabit height bilinçli bir tercih (max-height değil): Body'nin yüksekliği içeriğe göre büyüyüp küçülmez, her zaman aynı standart pencerede kalır. Varsayılan olarak Header ve Footer açık, Body Title/Subtitle ve Segments kapalı — sadece Description görünür; bu sayfaya özel, daha uzun bir placeholder metni kullanılır (diğer Card sayfalarını etkilemez), 120px'lik pencereyi taşarak varsayılan halde bile scroll'u gösterir.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Body</td><td>Height</td><td>—</td><td>120px sabit (max-height değil)</td></tr>
+          <tr><td>Body</td><td>Overflow-y</td><td>—</td><td>auto</td></tr>
+          <tr><td>Header / Footer</td><td>Flex-shrink</td><td>—</td><td>0 (scroll ile küçülmez)</td></tr>
         </tbody>
       </table>
     `};
@@ -8741,6 +9013,915 @@ PAGES_WEB['components/badge'] = {
           <tr><td>Icon</td><td>Size</td><td>—</td><td>16 × 16px</td></tr>
         </tbody>
       </table>
+    `};
+  },
+};
+
+// ── Data Table (Grid) ───────────────────────────────────────────
+// Figma "Grid" sayfası: HeaderCell (node 205:23581) + GridCell (node
+// 208:29046) + No Record Available (node 222:16015). İkisi de aynı desende:
+// Position (Left/Middle/Right) × State (Default/Hover/Active) — Position
+// corner-radius DEĞİL, hangi dış kenar border'larının çizileceğini belirler
+// (bkz. styles.css'teki büyük yorum, Figma'dan doğrulandı).
+//
+// Figma'da her hücrenin ~12 bağımsız show* boolean'ı var (Left Control,
+// Checkbox, Dot, Avatar, Avatar Group, Content/text, Badge, Button, Switch,
+// Inline TextBox, Inline DropDown, Right Control) — hepsi teorik olarak aynı
+// anda açılabilir. Card'daki control sistemiyle aynı gerekçeyle (bkz.
+// design.md §16) tek bir "content type" seçimine sadeleştirmek yerine,
+// Figma'nın kendi DOM sırası (Checkbox/Dot/Avatar/AvatarGroup METİNDEN ÖNCE,
+// Badge/Button/Switch/Inline TextBox/DropDown METİNDEN SONRA geliyor)
+// korunarak İKİ ayrı single-select'e bölündü: **Leading Control** (metinden
+// önce — Checkbox/Dot/Avatar/Avatar Group) ve **Trailing Control** (metinden
+// sonra — Badge/Button/Switch/Inline TextBox/Inline DropDown). Content
+// (metin) ayrı bağımsız bir boolean. Bu, "Avatar + isim metni" veya
+// "sadece Badge" gibi gerçekçi kombinasyonları (kullanıcının bahsettiği
+// "avatarlı, badge'li versiyonlar") tek bir dropdown'dan daha doğru
+// temsil ediyor. Left/Right Control ise Card Header'daki gibi basit
+// aç/kapa ikon slotları.
+
+const GRID_POSITION_OPTS = [
+  { key: 'left',   label: 'Left' },
+  { key: 'middle', label: 'Middle' },
+  { key: 'right',  label: 'Right' },
+];
+const GRID_STATE_OPTS = [
+  { key: 'default', label: 'Default' },
+  { key: 'hover',   label: 'Hover' },
+  { key: 'active',  label: 'Active' },
+];
+const GRID_LEADING_OPTS = [
+  { key: 'none',        label: 'None' },
+  { key: 'checkbox',    label: 'Checkbox' },
+  { key: 'dot',         label: 'Dot' },
+  { key: 'avatar',      label: 'Avatar' },
+  { key: 'avatarGroup', label: 'Avatar Group' },
+];
+const GRID_TRAILING_OPTS = [
+  { key: 'none',     label: 'None' },
+  { key: 'badge',    label: 'Badge' },
+  { key: 'button',   label: 'Button' },
+  { key: 'switch',   label: 'Switch' },
+  { key: 'textbox',  label: 'Inline TextBox' },
+  { key: 'dropdown', label: 'Inline Dropdown' },
+];
+const GRID_SORT_DIR_OPTS = [
+  { key: 'both', label: 'Both' },
+  { key: 'up',   label: 'Up' },
+  { key: 'down', label: 'Down' },
+];
+
+// Left/Right Control ve Sort/Filter/Right ikonları — Card'daki _crdIconScan
+// deseniyle aynı: lucide ikonlarından birebir, elle yaklaşık çizilmez.
+const _gridIconScan = _crdIconScan;
+const _gridIconSortUp   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>`;
+const _gridIconSortDown = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>`;
+const _gridIconFunnel   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>`;
+const _gridIconEllipsis = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+// Actions kolonundaki "More" butonu — Header/Grid Cell'in Right Control'ündeki
+// dikey (_gridIconEllipsis) ikondan FARKLI, yatay versiyon: satır içinde,
+// birincil butonun yanında yatay akışa uyduğu için tercih edildi (kullanıcı
+// isteğiyle, bkz. HISTORY.md).
+const _gridIconMoreHorizontal = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>`;
+// Overflow menu item ikonları (Düzenle/Kopyala/Sil) — lucide ikonlarından
+// birebir, elle yaklaşık çizilmez (Card/Grid'deki diğer ikonlarla aynı kural).
+const _gridIconEditItem = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>`;
+const _gridIconCopyItem = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+const _gridIconTrashItem = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+
+function gridControlIcon(icon) {
+  return `<span class="bt-grid__control-icon">${icon || _gridIconScan}</span>`;
+}
+
+// Leading control (metinden önce) — Checkbox/Dot/Avatar/Avatar Group. Gerçek
+// design system component'lerini reuse eder (Card'daki crdControlSlot ile
+// aynı gerekçe): Checkbox → .bt-checkbox__box, Avatar → .bt-avatar.
+function gridLeadingHtml(kind) {
+  switch (kind) {
+    case 'checkbox':
+      return `<span class="bt-grid__control" onclick="this.querySelector('.bt-checkbox__box').classList.toggle('bt-checkbox__box--checked')" style="cursor:pointer;"><span class="bt-checkbox__box">${_chkCheck}</span></span>`;
+    case 'dot':
+      return `<span class="bt-grid__control"><span class="bt-grid__dot"></span></span>`;
+    case 'avatar':
+      return `<span class="bt-grid__control"><span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span></span>`;
+    case 'avatarGroup':
+      return `<span class="bt-grid__control bt-grid__avatar-group">
+        <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
+        <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
+        <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
+        <span class="bt-avatar bt-avatar--xs"><span class="bt-avatar__initials">+5</span></span>
+      </span>`;
+    default:
+      return '';
+  }
+}
+
+// Trailing control (metinden sonra) — Badge/Button/Switch/Inline TextBox/
+// Inline DropDown. Badge → gerçek badgeHtml() fonksiyonu (Badge component'i
+// artık class değil fonksiyon tabanlı, bkz. Badge sayfası); TextBox/DropDown
+// → gerçek .bt-tbx yapısı, Label/Helper Text hücrede gösterilmez (Figma'da
+// da gizli — tablo hücresinde gereksiz).
+function gridTrailingHtml(kind) {
+  switch (kind) {
+    case 'badge':
+      return `<span class="bt-grid__control">${badgeHtml('default', { type: 'solid', color: 'blue' })}</span>`;
+    case 'button':
+      // Birincil aksiyon butonuna sık kullanılan bir özellik atanır, yanındaki
+      // flat-base ikon-only "More" butonu gerçek çalışır bir dropdown/overflow
+      // menu açar (kullanıcının genel tasarım pattern'i, bkz. HISTORY.md) —
+      // .bt-grid__control-group iki .bt-grid__control'ü sabit gap ile sarar,
+      // .bt-grid__menu ise More butonu + açılır listeyi saran positioned
+      // wrapper (btGridMenuToggle ile aç/kapa, bkz. aşağısı). Liste/item stili
+      // Dropdown'ın açılır listesiyle (.bt-dd-options/.bt-dd-option) AYNI
+      // görünüyor ama BİLİNÇLİ olarak sınıfları paylaşmıyor, kendi bağımsız
+      // .bt-grid__menu-list/.bt-grid__menu-item kuralları var — Dropdown'daki
+      // ileride yapılacak bir değişiklik Data Table'ı yanlışlıkla etkilemesin
+      // diye (kullanıcı isteğiyle, bkz. HISTORY.md).
+      return `<span class="bt-grid__control-group">
+        <span class="bt-grid__control"><button type="button" class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button></span>
+        <span class="bt-grid__control">
+          <div class="bt-grid__menu">
+            <button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-label="More" aria-haspopup="true" onclick="btGridMenuToggle(event, this)">${_gridIconMoreHorizontal}</button>
+            <ul class="bt-grid__menu-list" role="menu">
+              <li class="bt-grid__menu-item" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconEditItem}</span>Düzenle</li>
+              <li class="bt-grid__menu-item" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconCopyItem}</span>Kopyala</li>
+              <li class="bt-grid__menu-item bt-grid__menu-item--danger" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconTrashItem}</span>Sil</li>
+            </ul>
+          </div>
+        </span>
+      </span>`;
+    case 'switch':
+      return `<span class="bt-grid__control" onclick="this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"><span class="bt-switch__track"><span class="bt-switch__thumb"></span></span></span>`;
+    case 'textbox':
+      return `<span class="bt-grid__inline"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__input">${_tbxInputInner('default')}</div></div></span>`;
+    case 'dropdown':
+      return `<span class="bt-grid__inline"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__anchor"><div class="bt-tbx__input">${_ddInputInner('default')}</div></div></div></span>`;
+    default:
+      return '';
+  }
+}
+
+// Header'ın Checkbox Control'ü "select all" — gridLeadingHtml('checkbox')'tan
+// (body row'daki bağımsız checkbox) FARKLI bir onclick alıyor: kendi kutusunu
+// toggle'lamanın yanında btGridSelectAll() ile tablodaki TÜM body row'ların
+// checkbox'ını ve seçili/aktif satır rengini de kendi yeni durumuna göre
+// senkronize ediyor (kullanıcı isteğiyle eklendi, bkz. HISTORY.md). Tek yönlü:
+// body row'daki bir checkbox'ı tek tek değiştirmek header'ı GÜNCELLEMİYOR
+// (indeterminate state şimdilik kapsam dışı).
+function gridHeaderCheckboxHtml() {
+  return `<span class="bt-grid__control" onclick="btGridSelectAll(this)" style="cursor:pointer;"><span class="bt-checkbox__box">${_chkCheck}</span></span>`;
+}
+window.btGridSelectAll = function(el) {
+  const box = el.querySelector('.bt-checkbox__box');
+  box.classList.toggle('bt-checkbox__box--checked');
+  const checked = box.classList.contains('bt-checkbox__box--checked');
+  const table = el.closest('.bt-grid');
+  if (!table) return;
+  table.querySelectorAll('.bt-grid__cell .bt-checkbox__box').forEach(b => {
+    b.classList.toggle('bt-checkbox__box--checked', checked);
+  });
+  table.querySelectorAll('.bt-grid__row--clickable').forEach(row => {
+    row.classList.toggle('bt-grid__row--active', checked);
+  });
+};
+
+// Satıra (herhangi bir hücresine) tıklanınca sadece bt-grid__row--active
+// toggle'lanmıyor, satırın kendi Leading Checkbox'ı varsa (gridLeadingHtml
+// ('checkbox')) o da aynı yeni duruma senkronize ediliyor — kullanıcı
+// isteğiyle eklendi (satırı tıklayınca checkbox'ın "seçili" görünmemesi
+// tutarsızdı). Checkbox'ın kendi bağımsız onclick'i (gridLeadingHtml içinde)
+// hâlâ duruyor (standalone Building Blocks önizlemesinde satır sarmalayıcısı
+// olmadığı için gerekli) — satır bağlamında bu handler'ın SONRADAN çalışıp
+// checkbox'ı satırın yeni active durumuna göre kesin (force) set etmesi
+// sayesinde hangi hedefe tıklanırsa tıklansın ikisi senkron kalıyor.
+window.btGridRowToggle = function(row) {
+  row.classList.toggle('bt-grid__row--active');
+  const active = row.classList.contains('bt-grid__row--active');
+  const box = row.querySelector('.bt-checkbox__box');
+  if (box) box.classList.toggle('bt-checkbox__box--checked', active);
+};
+
+// Actions kolonundaki "More" butonunun açtığı gerçek çalışır overflow menu
+// (kullanıcı isteğiyle eklendi, bkz. HISTORY.md). event.stopPropagation()
+// ZORUNLU — buton/menu öğeleri .bt-grid__row'un içinde olduğu için, durdurma
+// olmazsa tıklama yukarı bubble'layıp btGridRowToggle'ı da tetikleyip satırı
+// yanlışlıkla seçili/checkbox'lı yapardı.
+//
+// Liste document.body'e PORTAL'lanıyor (position:fixed + inline top/right
+// yeterli olacağı varsayılmıştı — hiçbir ata transform/filter/contain
+// kullanmıyordu, bu yüzden fixed'in ayrı bir containing block'a hapsolmaması
+// gerekiyordu — ama kullanıcı hard refresh sonrası bile playground içinde
+// hâlâ bozuk göründüğünü bildirdi, isolation mode'da doğruydu. Kök nedeni
+// kesin olarak izole edemeden, DOM'un neresinde olursa olsun HER ata
+// zincirinden bağımsız garanti çalışan portal deseni kullanıldı — .bt-grid__
+// menu-list, açılınca gerçekten document.body'nin DOĞRUDAN çocuğu oluyor,
+// kapanınca kendi orijinal .bt-grid__menu'süne geri taşınıyor (orphan
+// bırakmamak için). Bu, Radix/Floating UI gibi kütüphanelerin AYNI "izolede
+// çalışıyor, gerçek sayfada kırılıyor" sınıfı sorunlar için kullandığı
+// standart çözüm.
+window.btGridMenuToggle = function(event, btn) {
+  event.stopPropagation();
+  const menu = btn.closest('.bt-grid__menu');
+  if (!menu) return;
+  const list = menu.querySelector('.bt-grid__menu-list') || document.querySelector('.bt-grid__menu-list[data-bt-grid-portal="1"]');
+  // Aynı anda sadece bir menu açık kalsın — başka bir More'a tıklanınca
+  // öncekini kapatır (win-dropdown'daki aynı "tek açık" deseni).
+  const wasOpen = list && list.style.display === 'block';
+  document.querySelectorAll('.bt-grid__menu-list[data-bt-grid-portal="1"]').forEach(btGridMenuHide);
+  if (!wasOpen && list) {
+    const r = btn.getBoundingClientRect();
+    list.style.top = (r.bottom + 2) + 'px';
+    list.style.right = (window.innerWidth - r.right) + 'px';
+    list.style.display = 'block';
+    list.setAttribute('data-bt-grid-portal', '1');
+    list._btGridHome = menu;
+    document.body.appendChild(list);
+  }
+};
+function btGridMenuHide(list) {
+  list.style.display = 'none';
+  list.removeAttribute('data-bt-grid-portal');
+  if (list._btGridHome) list._btGridHome.appendChild(list);
+}
+window.btGridMenuClose = function(event, item) {
+  event.stopPropagation();
+  const list = item.closest('.bt-grid__menu-list');
+  if (list) btGridMenuHide(list);
+};
+// Menünün dışına tıklanınca kapat (win-dropdown'daki dışarı tıklama deseniyle
+// aynı yaklaşım) — liste artık body'ye portal'landığı için .bt-grid__menu
+// (tetikleyici) VE .bt-grid__menu-list (portal'lanmış liste) ikisi de kontrol
+// edilir, sadece biri değil.
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.bt-grid__menu') && !e.target.closest('.bt-grid__menu-list')) {
+    document.querySelectorAll('.bt-grid__menu-list[data-bt-grid-portal="1"]').forEach(btGridMenuHide);
+  }
+});
+// Konum açılışta bir kere hesaplanıp sabitlendiği için, açıkken sayfa veya
+// playground'un iç scroll'u (.example-viewer-preview) kaydırılırsa menu
+// buton'dan kopar — bunu önlemek yerine basitçe kapatıyoruz (capture:true,
+// scroll bubble'lamadığı için iç içe scroll container'ları da yakalar).
+document.addEventListener('scroll', function() {
+  document.querySelectorAll('.bt-grid__menu-list[data-bt-grid-portal="1"]').forEach(btGridMenuHide);
+}, true);
+
+function gridHeaderCellHtml(opts) {
+  const o = opts || {};
+  const position = o.position || 'left';
+  const state = o.state || 'default';
+  const showLeft = o.showLeft === 'on';
+  const showCheckbox = o.showCheckbox === 'on';
+  const showContent = o.showContent !== 'off';
+  const contentText = o.contentText || 'Header Cell';
+  const showSort = o.showSort === 'on';
+  const sortDir = o.sortDir || 'both';
+  const showFilter = o.showFilter === 'on';
+  const showRight = o.showRight === 'on';
+  const width = o.width || 180;
+  // sticky/frozenEdge — sadece Frozen Column sayfası kullanır (bkz. HISTORY.md),
+  // diğer TÜM çağrılarda undefined/false kalır, mevcut davranış değişmez.
+  const sticky = o.sticky;
+  const frozenEdge = o.frozenEdge === true;
+
+  const cls = [
+    'bt-grid__header-cell',
+    `bt-grid__header-cell--${position}`,
+    state !== 'default' ? `bt-grid__header-cell--${state}` : '',
+    frozenEdge ? 'bt-grid__header-cell--frozen-edge' : '',
+  ].filter(Boolean).join(' ');
+  const stickyStyle = sticky != null ? `position:sticky;left:${sticky}px;z-index:5;` : '';
+
+  const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
+  const checkboxHtml = showCheckbox ? gridHeaderCheckboxHtml() : '';
+  const contentHtml  = showContent ? `<span class="bt-grid__content">${contentText}</span>` : '';
+  const sortHtml = showSort ? `<span class="bt-grid__sort">
+    ${sortDir !== 'down' ? `<span class="bt-grid__control">${gridControlIcon(_gridIconSortUp)}</span>` : ''}
+    ${sortDir !== 'up'   ? `<span class="bt-grid__control">${gridControlIcon(_gridIconSortDown)}</span>` : ''}
+  </span>` : '';
+  const filterHtml = showFilter ? `<span class="bt-grid__control">${gridControlIcon(_gridIconFunnel)}</span>` : '';
+  const rightHtml  = showRight  ? `<span class="bt-grid__control">${gridControlIcon(_gridIconEllipsis)}</span>` : '';
+
+  return `<div class="${cls}" style="width:${width}px;box-sizing:border-box;${stickyStyle}">${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}</div>`;
+}
+
+function gridCellHtml(opts) {
+  const o = opts || {};
+  const position = o.position || 'left';
+  const state = o.state || 'default';
+  const showLeft = o.showLeft === 'on';
+  const leading  = o.leading || 'none';
+  const showContent = o.showContent !== 'off';
+  const contentText = o.contentText || 'Grid Cell';
+  const trailing = o.trailing || 'none';
+  const showRight = o.showRight === 'on';
+  const width = o.width || 180;
+  // sticky/frozenEdge — sadece Frozen Column sayfası kullanır (bkz. HISTORY.md),
+  // diğer TÜM çağrılarda undefined/false kalır, mevcut davranış değişmez.
+  const sticky = o.sticky;
+  const frozenEdge = o.frozenEdge === true;
+
+  const cls = [
+    'bt-grid__cell',
+    `bt-grid__cell--${position}`,
+    state !== 'default' ? `bt-grid__cell--${state}` : '',
+    frozenEdge ? 'bt-grid__cell--frozen-edge' : '',
+  ].filter(Boolean).join(' ');
+  const stickyStyle = sticky != null ? `position:sticky;left:${sticky}px;z-index:5;` : '';
+
+  const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
+  const leadingHtml  = gridLeadingHtml(leading);
+  const contentHtml  = showContent ? `<span class="bt-grid__content">${contentText}</span>` : '';
+  const trailingHtml = gridTrailingHtml(trailing);
+  const rightHtml    = showRight ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
+
+  return `<div class="${cls}" style="width:${width}px;box-sizing:border-box;${stickyStyle}">${leftHtml}${leadingHtml}${contentHtml}${trailingHtml}${rightHtml}</div>`;
+}
+
+function gridNoRecordHtml(opts) {
+  const o = opts || {};
+  const showText = o.showText !== 'off';
+  const width = o.width || 620;
+  return `<div class="bt-grid__no-record" style="width:${width}px;box-sizing:border-box;">${showText ? `<span class="bt-grid__no-record-text">No records available</span>` : ''}</div>`;
+}
+
+function gridHeaderCellCss(_, props) {
+  const p = props || {};
+  const position = p.position || 'left';
+  const state = p.state || 'default';
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-grid__header-cell {',
+    ln('height', '36px'),
+    ln('display', 'flex'),
+    ln('align-items', 'center'),
+    ln('background', state === 'hover' ? 'var(--bt-base-subtle, #f5f5f5)' : state === 'active' ? 'var(--bt-surface-brand-subtle, #e2edfc)' : 'var(--bt-base-default, #ffffff)'),
+    ln('border-top', '1px solid var(--bt-border-primary-default, #d4d4d4)'),
+    ln('border-bottom', '1px solid var(--bt-border-primary-default, #d4d4d4)'),
+    `}`,
+    ...(position !== 'middle' ? [
+      ``,
+      `.bt-grid__header-cell--${position} {`,
+      ln(position === 'left' ? 'border-left' : 'border-right', '1px solid var(--bt-border-primary-default, #d4d4d4)'),
+      `}`,
+    ] : []),
+    ``,
+    `.bt-grid__header-cell .bt-grid__content {`,
+    ln('padding', 'var(--bt-space-sm, 6px)'),
+    ln('font', 'var(--bt-text-xs-medium, 500 12px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-default, #1a1a1a)'),
+    `}`,
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+function gridCellCss(_, props) {
+  const p = props || {};
+  const position = p.position || 'left';
+  const state = p.state || 'default';
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-grid__cell {',
+    ln('height', '32px'),
+    ln('display', 'flex'),
+    ln('align-items', 'center'),
+    ln('background', state === 'hover' ? 'var(--bt-base-subtle, #f5f5f5)' : state === 'active' ? 'var(--bt-surface-brand-subtle, #e2edfc)' : 'var(--bt-base-default, #ffffff)'),
+    ln('border-bottom', '1px solid var(--bt-border-primary-default, #d4d4d4)'),
+    `}`,
+    ...(position !== 'middle' ? [
+      ``,
+      `.bt-grid__cell--${position} {`,
+      ln(position === 'left' ? 'border-left' : 'border-right', '1px solid var(--bt-border-primary-default, #d4d4d4)'),
+      `}`,
+    ] : []),
+    ``,
+    `.bt-grid__cell .bt-grid__content {`,
+    ln('padding', 'var(--bt-space-md, 8px)'),
+    ln('font', 'var(--bt-text-xs-regular, 400 12px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-default, #1a1a1a)'),
+    `}`,
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// Configurable, tam bir tablo assembly'si — kullanıcı isteğiyle (2026-08-12,
+// devam) sayfanın BİRİNCİL deneyimi Header Cell/Grid Cell'i ayrı ayrı
+// göstermek yerine bu tek, gerçekçi Data Table playground'u oldu (Card'ın
+// Header/Body/Footer'ı tek playground'da gruplaması gibi) — Header Cell/Grid
+// Cell playground'ları "Building Blocks" bölümüne ikincil referans olarak
+// taşındı. field: hangi kolonun her satırda hangi rowsData anahtarını
+// göstereceğini belirler.
+// 0-10: playground'un önizleme kutusu 10 satırlık sabit yükseklikte (bkz.
+// preview callback'i) — varsayılan 3 satırla açılınca "Alanı Doldurma"
+// özelliği (kalan boşluğun çerçeveyle dolması, No Record metni OLMADAN)
+// hiçbir ekstra etkileşime gerek kalmadan direkt görünür oluyor; Rows'u
+// 10'a çıkarınca kutu tam dolup boşluk kayboluyor. **0** özel bir değer —
+// ayrı bir "No Record" toggle'ı yerine (kullanıcı bunun kafa karıştırıcı
+// olduğunu belirtti: gerçekte kayıt sayısı 0 DIŞINDA hiçbir zaman "No
+// Record" gösterilmemeli) artık gridTableHtml doğrudan rowCount===0 iken
+// No Records Available'ı gösteriyor, aksi halde (1-10) her zaman gerçek
+// satırları gösterip kalan boşluğu sessizce dolduruyor. Kullanıcı isteğiyle
+// ayrı bir statik demo yerine bu şekilde entegre edildi, bkz. HISTORY.md.
+const GRID_TABLE_ROW_OPTS = [0,1,2,3,4,5,6,7,8,9,10].map(n => ({ key: String(n), label: n === 0 ? '0 (No Record)' : String(n) }));
+const GRID_TABLE_NAME_LEADING_OPTS = [
+  { key: 'none',        label: 'None' },
+  { key: 'avatar',      label: 'Avatar' },
+  { key: 'avatarGroup', label: 'Avatar Group' },
+  { key: 'dot',         label: 'Dot' },
+];
+const GRID_TABLE_STATUS_OPTS = [
+  { key: 'none',   label: 'None' },
+  { key: 'badge',  label: 'Badge' },
+  { key: 'switch', label: 'Switch' },
+];
+const GRID_TABLE_ACTIONS_OPTS = [
+  { key: 'none',     label: 'None' },
+  { key: 'button',   label: 'Button' },
+  { key: 'textbox',  label: 'Inline TextBox' },
+  { key: 'dropdown', label: 'Inline Dropdown' },
+];
+// department/email/location/lastLogin — sadece Frozen Column sayfasındaki geniş
+// (çok kolonlu) tablo için eklendi, ana Data Table playground'u bu alanları
+// kullanmıyor (bkz. HISTORY.md).
+const _gridTableRowsData = [
+  { name: 'Emre Göçer',    role: 'Designer',           department: 'Design',       email: 'emre.gocer@bentas.com',    location: 'İstanbul', lastLogin: '2 saat önce' },
+  { name: 'Ayşe Yılmaz',   role: 'Product Manager',    department: 'Product',      email: 'ayse.yilmaz@bentas.com',   location: 'Ankara',   lastLogin: 'Dün' },
+  { name: 'Mert Demir',    role: 'Engineer',           department: 'Engineering',  email: 'mert.demir@bentas.com',    location: 'İzmir',    lastLogin: '3 gün önce' },
+  { name: 'Zeynep Kaya',   role: 'Marketing',          department: 'Marketing',    email: 'zeynep.kaya@bentas.com',   location: 'İstanbul', lastLogin: '5 saat önce' },
+  { name: 'Can Aydın',     role: 'QA Engineer',        department: 'Engineering',  email: 'can.aydin@bentas.com',     location: 'Uzaktan',  lastLogin: '1 hafta önce' },
+  { name: 'Elif Şahin',    role: 'Data Analyst',       department: 'Data',         email: 'elif.sahin@bentas.com',    location: 'İstanbul', lastLogin: 'Az önce' },
+  { name: 'Burak Yıldız',  role: 'Backend Engineer',   department: 'Engineering',  email: 'burak.yildiz@bentas.com',  location: 'Bursa',    lastLogin: '4 saat önce' },
+  { name: 'Selin Arslan',  role: 'HR Specialist',      department: 'HR',           email: 'selin.arslan@bentas.com',  location: 'Ankara',   lastLogin: '2 gün önce' },
+  { name: 'Onur Kurt',     role: 'DevOps Engineer',    department: 'Engineering',  email: 'onur.kurt@bentas.com',     location: 'Uzaktan',  lastLogin: 'Dün' },
+  { name: 'Deniz Aksoy',   role: 'Customer Success',   department: 'Customer Success', email: 'deniz.aksoy@bentas.com', location: 'İstanbul', lastLogin: '6 saat önce' },
+];
+
+function gridTableColumns(p) {
+  const showCheckboxCol = (p.showCheckboxCol || 'on') === 'on';
+  const nameLeading   = p.nameLeading   || 'avatar';
+  const showSort      = p.showSort === 'on';
+  const showFilter    = p.showFilter === 'on';
+  const statusContent = p.statusContent  || 'badge';
+  const actionsContent = p.actionsContent || 'button';
+  return [
+    showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
+    { width: 200, headerText: 'Name', cellLeading: nameLeading, field: 'name', sort: showSort },
+    { width: 160, headerText: 'Role', field: 'role', filter: showFilter },
+    statusContent  !== 'none' ? { width: 140, headerText: 'Status',  cellTrailing: statusContent } : null,
+    actionsContent !== 'none' ? { width: actionsContent === 'button' ? 130 : 160, headerText: 'Actions', cellTrailing: actionsContent } : null,
+  ].filter(Boolean);
+}
+
+function gridTableHtml(props) {
+  const p = props || {};
+  const rowCount = parseInt(p.rowCount != null ? p.rowCount : '3', 10);
+  const rowState = p.rowState || 'default';
+  // No Record Available SADECE gerçekten 0 kayıt varken gösterilir — ayrı bir
+  // bağımsız toggle değil, kayıt sayısına (rowCount) bağlı türetilmiş bir
+  // durum (kullanıcı isteğiyle, bkz. HISTORY.md). 1+ satır varken kalan boşluk
+  // her zaman No Record metni OLMADAN, sessizce .bt-grid-container'ın
+  // arka planı/border'ıyla doluyor.
+  const showNoRecord = rowCount === 0;
+  const cols = gridTableColumns(p);
+  const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+
+  const headerRow = cols.map((c, i) => gridHeaderCellHtml({
+    position: posFor(i),
+    width: c.width,
+    showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
+    showContent: c.headerText ? 'on' : 'off',
+    contentText: c.headerText || '',
+    showSort: c.sort ? 'on' : 'off',
+    showFilter: c.filter ? 'on' : 'off',
+  })).join('');
+
+  const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
+  // Satırlar gerçekten tıklanabilir/seçilebilir — rowState prop'u belirli bir
+  // durumu ZORLA önizlemek için (dokümantasyon/CSS tab amaçlı) hâlâ çalışıyor,
+  // ama bundan bağımsız olarak her satır kendi hover'ını (CSS :hover) ve
+  // click-to-select'ini (classList.toggle) gerçekten uyguluyor — kullanıcı
+  // isteğiyle eklendi, bkz. HISTORY.md.
+  const bodyHtml = showNoRecord
+    ? gridNoRecordHtml({ width: totalWidth })
+    : _gridTableRowsData.slice(0, rowCount).map(row => `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+        position: posFor(i),
+        state: rowState,
+        width: c.width,
+        leading: c.cellLeading || 'none',
+        trailing: c.cellTrailing || 'none',
+        showContent: c.field ? 'on' : 'off',
+        contentText: c.field ? row[c.field] : '',
+      })).join('')}</div>`).join('');
+
+  // .bt-grid__body — Header'dan ayrı, kendi başına scroll olabilen bir
+  // sarmalayıcı (bkz. styles.css .bt-grid-container notu). Tek başına
+  // (container'sız) kullanımda görsel fark yaratmaz.
+  return `<div class="bt-grid">
+    <div class="bt-grid__row">${headerRow}</div>
+    <div class="bt-grid__body">${bodyHtml}</div>
+  </div>`;
+}
+
+function gridTableCss(_, props) {
+  const p = props || {};
+  const cols = gridTableColumns(p);
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-grid {',
+    ln('display', 'inline-flex'),
+    ln('flex-direction', 'column'),
+    `}`,
+    '',
+    '.bt-grid__row {',
+    ln('display', 'flex'),
+    `}`,
+    '',
+    `/* ${cols.length} kolon, toplam ${cols.reduce((s,c)=>s+c.width,0)}px — her kolonun genişliği hem HeaderCell hem GridCell'e aynı verilir */`,
+    ...cols.map((c, i) => `.bt-grid__cell:nth-child(${i + 1}), .bt-grid__header-cell:nth-child(${i + 1}) { width: ${c.width}px; }`),
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// ── Data Table Frozen Column ─────────────────────────────────────
+// Figma'da "Frozen Column" diye bir component/frame YOK (Grid sayfası
+// kontrol edildi) — bu, gerçek Header/Grid Cell yapı taşları (gridHeaderCellHtml
+// /gridCellHtml, yukarıda) reuse edilerek CSS position:sticky ile kurulan
+// genel bir UX pattern'i (kullanıcı isteğiyle ayrı bir sayfa olarak eklendi,
+// bkz. HISTORY.md). Ana Data Table sayfasından FARKI: kasıtlı olarak daha
+// fazla kolon (Department/Email/Location/Last Login eklendi) — toplam genişlik
+// tipik bir playground kutusundan taşıp yatay scroll'u gerçekten gerektirsin
+// diye. İlk `frozenCount` kolon (soldan) .bt-grid-scroll-x scroll ederken
+// sabit kalır.
+const GRID_FROZEN_COUNT_OPTS = [
+  { key: '1', label: '1 (Checkbox)' },
+  { key: '2', label: '2 (Checkbox + Name)' },
+];
+
+function gridFrozenColumns(p) {
+  const frozenCount = parseInt(p.frozenCount || '2', 10);
+  const cols = [
+    { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
+    { width: 140, headerText: 'Role',        field: 'role' },
+    { width: 150, headerText: 'Department',  field: 'department' },
+    { width: 210, headerText: 'Email',       field: 'email' },
+    { width: 120, headerText: 'Location',    field: 'location' },
+    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
+    { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
+    { width: 130, headerText: 'Actions',     cellTrailing: 'button' },
+  ];
+  let left = 0;
+  return cols.map((c, i) => {
+    const frozen = i < frozenCount;
+    const sticky = frozen ? left : null;
+    if (frozen) left += c.width;
+    return Object.assign({}, c, { frozen, sticky, isLastFrozen: frozen && i === frozenCount - 1 });
+  });
+}
+
+function gridFrozenTableHtml(props) {
+  const p = props || {};
+  const rowCount = parseInt(p.rowCount != null ? p.rowCount : '6', 10);
+  const rowState = p.rowState || 'default';
+  const showNoRecord = rowCount === 0;
+  const cols = gridFrozenColumns(p);
+  const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+
+  const headerRow = cols.map((c, i) => gridHeaderCellHtml({
+    position: posFor(i),
+    width: c.width,
+    showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
+    showContent: c.headerText ? 'on' : 'off',
+    contentText: c.headerText || '',
+    sticky: c.sticky,
+    frozenEdge: c.isLastFrozen,
+  })).join('');
+
+  const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
+  const bodyHtml = showNoRecord
+    ? gridNoRecordHtml({ width: totalWidth })
+    : _gridTableRowsData.slice(0, rowCount).map(row => `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+        position: posFor(i),
+        state: rowState,
+        width: c.width,
+        leading: c.cellLeading || 'none',
+        trailing: c.cellTrailing || 'none',
+        showContent: c.field ? 'on' : 'off',
+        contentText: c.field ? row[c.field] : '',
+        sticky: c.sticky,
+        frozenEdge: c.isLastFrozen,
+      })).join('')}</div>`).join('');
+
+  // .bt-grid-scroll-x — donmuş kolonların sticky left ofsetini bu sarmalayıcının
+  // scroll pozisyonuna göre hesaplayan yatay scroll konteyneri.
+  return `<div class="bt-grid-scroll-x"><div class="bt-grid">
+    <div class="bt-grid__row">${headerRow}</div>
+    <div class="bt-grid__body">${bodyHtml}</div>
+  </div></div>`;
+}
+
+function gridFrozenTableCss(_, props) {
+  const p = props || {};
+  const cols = gridFrozenColumns(p);
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    '.bt-grid-scroll-x {',
+    ln('overflow-x', 'auto'),
+    ln('max-width', '100%'),
+    `}`,
+    '',
+    '.bt-grid {',
+    ln('display', 'inline-flex'),
+    ln('flex-direction', 'column'),
+    `}`,
+    '',
+    `/* ${cols.length} kolon, toplam ${cols.reduce((s,c)=>s+c.width,0)}px — her kolonun genişliği hem HeaderCell hem GridCell'e aynı verilir */`,
+    ...cols.map((c, i) => `.bt-grid__cell:nth-child(${i + 1}), .bt-grid__header-cell:nth-child(${i + 1}) { width: ${c.width}px; }`),
+    '',
+    `/* İlk ${cols.filter(c => c.frozen).length} kolon donmuş — scroll'da yerinde kalır */`,
+    ...cols.filter(c => c.frozen).map(c => {
+      const idx = cols.indexOf(c) + 1;
+      return `.bt-grid__cell:nth-child(${idx}), .bt-grid__header-cell:nth-child(${idx}) {\n${ln('position', 'sticky')}\n${ln('left', c.sticky + 'px')}\n${ln('z-index', '5')}\n}`;
+    }),
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/data-table-frozen-column'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Frozen Column'],
+  render(tab) {
+    const title = 'Data Table Frozen Column';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Frozen Column için kullanılan ek token'lar — geri kalan tüm hücre/kontrol token'ları için bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a> sayfasının CSS Properties tab'ı.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Scroll Wrapper</td><td>Class</td><td>—</td><td>${tk('.bt-grid-scroll-x')} (overflow-x: auto)</td></tr>
+          <tr><td>Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / 5</td></tr>
+          <tr><td>Donmuş Kenar</td><td>Shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — <code style="font-family:var(--mono);font-size:12px;">--bt-shadow-xs</code>'in rengi/blur'u aynen, yönü yatay çevrildi (<code style="font-family:var(--mono);font-size:12px;">.bt-grid__cell--frozen-edge</code>)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Frozen Column kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Sadece kimlik/seçim bilgisini taşıyan kolonları dondur — Checkbox, Avatar+isim gibi satırı her zaman tanımlaması gereken kolonlar</li>
+        <li>Donmuş alanın sağ kenarında her zaman bir ayrım göstergesi (gölge) bırak — kullanıcı hangi kolonların sabit kaldığını görebilmeli</li>
+        <li>Çok kolonlu, gerçekten yatay scroll gerektiren tablolarda kullan — az kolonlu tablolarda gereksiz karmaşıklık yaratır</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Tablonun yarısından fazlasını dondurma — donmuş alan arttıkça scroll edilebilir/asıl veri alanı daralır</li>
+        <li>Action/Status gibi bağlamsal kolonları dondurma — bunlar genelde ilgili satırın diğer verileriyle birlikte okunur</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Data Table'ın, kolon sayısı arttığında ilk 1-2 kolonu (genelde Checkbox + isim) yatay scroll sırasında sabit tutan varyasyonu — <code style="font-family:var(--mono);font-size:12px;">position: sticky</code> ile, hücreleri yeniden yazmadan uygulanır. Aynı <code style="font-family:var(--mono);font-size:12px;">gridHeaderCellHtml</code>/<code style="font-family:var(--mono);font-size:12px;">gridCellHtml</code> yapı taşları reuse edilir, sadece ilgili hücrelere <code style="font-family:var(--mono);font-size:12px;">sticky</code>/<code style="font-family:var(--mono);font-size:12px;">frozenEdge</code> parametreleri geçilir.</p>
+
+      <h2 id="Frozen Column">Frozen Column</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-frozen-overview',
+        variants: [{ key: 'default', label: 'Frozen Column' }],
+        props: [
+          { key: 'rowCount',     label: 'Rows',            group: 'Table', options: GRID_TABLE_ROW_OPTS,     default: '6' },
+          { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
+        ],
+        preview: (v, p) => `<div style="padding:24px;">${gridFrozenTableHtml(p)}</div>`,
+        code:    (v, p) => gridFrozenTableHtml(p),
+        css:     (v, p) => gridFrozenTableCss(v, p),
+      })}
+
+      <p class="page-desc">Tabloyu yatay kaydır — <strong>Frozen Columns</strong> ile seçilen ilk 1 ya da 2 kolon (Checkbox / Checkbox + Name) yerinde kalırken Role/Department/Email/Location/Status/Last Login/Actions kolonları altından kayar. Donmuş alanın sağ kenarındaki ince gölge, sabit kalan alanı görsel olarak ayırır.</p>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Scroll Wrapper</td><td>Overflow</td><td>—</td><td>${tk('.bt-grid-scroll-x')} → overflow-x: auto</td></tr>
+          <tr><td>Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
+          <tr><td>Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5 (kaydırılan hücrelerin üzerinde kalması için)</td></tr>
+          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — yönü yatay çevrilmiş</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+PAGES_WEB['components/data-table'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table', 'Alanı Doldurma', 'Building Blocks'],
+  render(tab) {
+    const title = 'Data Table';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Data Table (Header Cell + Grid Cell) için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Header Cell</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>Header Cell</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Header Cell · Hover</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Header Cell · Active</td><td>Background</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Header Cell</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header Cell · Content</td><td>Padding</td><td>${tk('--bt-space-sm')}</td><td>6px</td></tr>
+          <tr><td>Header Cell · Content</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
+          <tr><td>Grid Cell</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Grid Cell</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Grid Cell · Hover</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Grid Cell · Active</td><td>Background</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Grid Cell · Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Grid Cell · Content</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 28px (hug content) / 28px sabit</td></tr>
+          <tr><td>Control · Dot</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>8×8, #535353</td></tr>
+          <tr><td>Control · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>16×16, #535353</td></tr>
+          <tr><td>Position · Left</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>sol kenar (+üst, header'da)</td></tr>
+          <tr><td>Position · Right</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>sağ kenar (+üst, header'da)</td></tr>
+          <tr><td>No Record Available</td><td>Height</td><td>—</td><td>56px</td></tr>
+          <tr><td>No Record Available · Text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Trailing · Control Group</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Trailing · Control Group · More</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
+          <tr><td>Overflow Menu · List</td><td>Background / Shadow</td><td>${tk('--bt-surface-primary-default')} / ${tk('--bt-shadow-lg')}</td><td>Dropdown'ın açılır listesiyle aynı görünüm, bağımsız <code style="font-family:var(--mono);font-size:12px;">.bt-grid__menu-list</code> class'ı</td></tr>
+          <tr><td>Overflow Menu · Item</td><td>Padding / Font / Icon-text gap</td><td>${tk('--bt-space-sm')} ${tk('--bt-space-md')} / ${tk('--bt-text-xs-regular')} / ${tk('--bt-space-xs')}</td><td>6px 8px / 400 12px/16px / 4px</td></tr>
+          <tr><td>Overflow Menu · Item · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>16×16, #535353</td></tr>
+          <tr><td>Overflow Menu · Item · Danger</td><td>Color (text + icon)</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38 (<code style="font-family:var(--mono);font-size:12px;">.bt-grid__menu-item--danger</code>)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Data Table kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Her kolonun Position'ını doğru ayarla — tabloda ilk kolon Left, son kolon Right, arasındakiler Middle olmalı (aksi halde çift border oluşur)</li>
+        <li>Leading Control'ü (Checkbox/Dot/Avatar/Avatar Group) satırın kimliğini/durumunu gösteren bilgi için kullan; Trailing Control'ü (Badge/Button/Switch) aksiyon veya durum etiketleri için kullan</li>
+        <li>Actions kolonundaki birincil butona sık kullanılan tek bir aksiyonu ata; yanındaki flat-base "More" (ellipsis) butonunu daha az sık kullanılan aksiyonları listeleyen bir overflow menu'yü açmak için kullan — iki butonu da aynı önemde/görünürlükte tasarlama</li>
+        <li>Sort Control'ü sadece gerçekten sıralanabilir kolonlarda göster</li>
+        <li>Veri yoksa No Record Available'ı tablo genişliğinde, header'ın altında göster</li>
+        <li>Bir kolonun Header Cell'i ve altındaki tüm Grid Cell'leri her zaman aynı width'i paylaşmalı</li>
+        <li>Satır hover/seçim'i her zaman gerçek etkileşimle bırak (yukarıdaki Data Table playground'unda satırların üzerine gelip tıklayarak dene) — Row State prop'u sadece belirli bir durumu zorla önizlemek/dokümante etmek için var</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Aynı hücrede hem Leading hem Trailing control'ü aşırı kalabalık kombinasyonlarla doldurma (örn. Avatar Group + Inline Dropdown aynı anda)</li>
+        <li>Building Blocks'taki Header Cell/Grid Cell'i tek başına, bir tabloya dahil etmeden kullanma — bunlar hep birlikte bir Data Table oluşturur</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Data Table, Header Cell (başlık satırı) ve Grid Cell'in (veri satırları) birlikte oluşturduğu tam bir tablo component'i. Aşağıdaki playground gerçek bir tabloyu uçtan uca yapılandırır — kolon başına ayrı ayrı değil, <strong>Table</strong> yapı taşlarını tek yerden kontrol eder.</p>
+
+      <h2 id="Data Table">Data Table</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-overview',
+        variants: [{ key: 'default', label: 'Data Table' }],
+        props: [
+          { key: 'rowCount',      label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,        default: '3' },
+          { key: 'rowState',      label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,            default: 'default' },
+          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,            default: 'on' },
+          { key: 'nameLeading',   label: 'Name Leading',    group: 'Columns', options: GRID_TABLE_NAME_LEADING_OPTS, default: 'avatar' },
+          { key: 'showSort',      label: 'Sort (Name)',     group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
+          { key: 'showFilter',    label: 'Filter (Role)',   group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
+          { key: 'statusContent', label: 'Status Column',   group: 'Columns', options: GRID_TABLE_STATUS_OPTS,     default: 'badge' },
+          { key: 'actionsContent',label: 'Actions Column',  group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS,    default: 'button' },
+        ],
+        // Önizleme .bt-grid-container'a sarılı, sabit 356px yükseklikte (36px
+        // header + 10×32px satır — Rows'un maksimumu) — "Alanı Doldurma"
+        // özelliği ayrı bir statik demoya gerek kalmadan burada canlı görünür:
+        // varsayılan 3 satırla kutunun kalan kısmı çerçeveyle doluyor, Rows'u
+        // 10'a çıkarınca boşluk kayboluyor (kullanıcı isteğiyle, bkz. HISTORY.md).
+        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px;overflow-x:auto;">
+          <div style="display:inline-flex;flex-direction:column;height:356px;">
+            <div class="bt-grid-container">${gridTableHtml(p)}</div>
+          </div>
+        </div>`,
+        code:    (v, p) => gridTableHtml(p),
+        css:     (v, p) => gridTableCss(v, p),
+      })}
+
+      <p class="page-desc"><strong>Table</strong> grubu genel tablo durumunu (satır sayısı, satır state'i, boş durum), <strong>Columns</strong> grubu kolon içeriklerini kontrol eder. Checkbox Column kapatılınca ilk kolon kaybolur, Status/Actions Column "None" seçilince o kolon tamamen kaldırılır — Position (Left/Middle/Right) her kombinasyonda otomatik yeniden hesaplanır.</p>
+
+      <h2 id="Alanı Doldurma">Alanı Doldurma</h2>
+      <p class="page-desc">Data Table'ı bir sayfa alanına (örn. bir tab panel, sağdan kayan panel) koyduğunda, satır sayısı az olsa bile tablonun çerçevesi (arka plan + border) o alanın ALT KENARINA kadar uzamalı — sadece satırları saran dar bir kutuda durup kalmamalı. Bunun için <code style="font-family:var(--mono);font-size:12px;">.bt-grid</code>'in dışına opsiyonel bir <code style="font-family:var(--mono);font-size:12px;">.bt-grid-container</code> sarmalayıcısı eklenir — <strong>yukarıdaki ana Data Table playground'unun önizlemesi zaten bu tekniği kullanıyor</strong>: sabit 356px'lik (10 satırlık) bir alana sarılı, <strong>Rows</strong>'u azalttıkça (örn. 10'dan 3'e) kalan boşluğun çerçeveyle dolduğunu, artırdıkça boşluğun kaybolduğunu doğrudan görebilirsin.</p>
+      <pre class="code-block" style="margin:0;">${(() => {
+        const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return esc(`<div class="tab-panel" style="display:flex;flex-direction:column;height:400px;"> <!-- parent kendi height/flex'ini sağlar -->
+  <div class="bt-grid-container">
+    <div class="bt-grid">
+      <div class="bt-grid__row">...header cells...</div>
+      <div class="bt-grid__body">...row cells...</div>
+    </div>
+  </div>
+</div>`);
+      })()}</pre>
+      <p class="page-desc">Dış border artık hücrelerde değil <code style="font-family:var(--mono);font-size:12px;">.bt-grid-container</code>'ın kendisinde (sol/sağ/alt — üst border Header'ın kendi border-top'undan geliyor) — bu yüzden az satırla bile alt kenara kadar devam eder. Header sabit kalır, <code style="font-family:var(--mono);font-size:12px;">.bt-grid__body</code> gerektiğinde kendi başına scroll olur.</p>
+
+      <h2 id="Building Blocks">Building Blocks</h2>
+      <p class="page-desc">Data Table, Header Cell ve Grid Cell'in tekrarlanmasıyla oluşur. Yukarıdaki tablo playground'u kapsamadığı özel senaryolar için (örn. farklı bir kolon kombinasyonu, tek başına bir hücre önizlemesi) bu iki yapı taşı ayrı ayrı da özelleştirilebilir.</p>
+
+      <h3>Header Cell</h3>
+      ${registerPlayground({
+        id: 'pgd-datatable-header-overview',
+        variants: [{ key: 'default', label: 'Header Cell' }],
+        props: [
+          { key: 'position',     label: 'Position',      options: GRID_POSITION_OPTS, default: 'left' },
+          { key: 'state',        label: 'State',          options: GRID_STATE_OPTS,    default: 'default' },
+          { key: 'showLeft',     label: 'Left Control',   options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'showCheckbox', label: 'Checkbox',       options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'showContent',  label: 'Content',        options: TBX_BOOL_OPTS,      default: 'on'  },
+          { key: 'showSort',     label: 'Sort',           options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'sortDir',      label: 'Sort Direction', options: GRID_SORT_DIR_OPTS, default: 'both' },
+          { key: 'showFilter',   label: 'Filter',         options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'showRight',    label: 'Right Control',  options: TBX_BOOL_OPTS,      default: 'off' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${gridHeaderCellHtml(p)}</div>`,
+        code:    (v, p) => gridHeaderCellHtml(p),
+        css:     (v, p) => gridHeaderCellCss(v, p),
+      })}
+
+      <table class="token-table">
+        <thead><tr><th>Position</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Left</td><td>${gridHeaderCellHtml({ position: 'left', showContent: 'on', contentText: 'Name', showSort: 'on' })}</td></tr>
+          <tr><td>Middle</td><td>${gridHeaderCellHtml({ position: 'middle', showContent: 'on', contentText: 'Role' })}</td></tr>
+          <tr><td>Right</td><td>${gridHeaderCellHtml({ position: 'right', showContent: 'on', contentText: 'Actions', showRight: 'on' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>Content</td><td>Padding / Font</td><td>${tk('--bt-space-sm')} / ${tk('--bt-text-xs-medium')}</td><td>6px / 500 12px/16px</td></tr>
+          <tr><td>Sort · Icon</td><td>Size</td><td>—</td><td>24×24 slot, 16×16 ikon</td></tr>
+          <tr><td>Filter / Right · Icon</td><td>Size</td><td>—</td><td>28×28 slot, 16×16 ikon</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Grid Cell</h3>
+      ${registerPlayground({
+        id: 'pgd-datatable-cell-overview',
+        variants: [{ key: 'default', label: 'Grid Cell' }],
+        props: [
+          { key: 'position',    label: 'Position',       options: GRID_POSITION_OPTS,  default: 'left' },
+          { key: 'state',       label: 'State',           options: GRID_STATE_OPTS,     default: 'default' },
+          { key: 'showLeft',    label: 'Left Control',    options: TBX_BOOL_OPTS,       default: 'off' },
+          { key: 'leading',     label: 'Leading Control',  options: GRID_LEADING_OPTS,   default: 'none' },
+          { key: 'showContent', label: 'Content',         options: TBX_BOOL_OPTS,       default: 'on'  },
+          { key: 'trailing',    label: 'Trailing Control', options: GRID_TRAILING_OPTS,  default: 'none' },
+          { key: 'showRight',   label: 'Right Control',   options: TBX_BOOL_OPTS,       default: 'off' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${gridCellHtml(p)}</div>`,
+        code:    (v, p) => gridCellHtml(p),
+        css:     (v, p) => gridCellCss(v, p),
+      })}
+
+      <p class="page-desc"><strong>Leading Control</strong> (Checkbox/Dot/Avatar/Avatar Group) metinden önce, <strong>Trailing Control</strong> (Badge/Button/Switch/Inline TextBox/Inline Dropdown) metinden sonra gelir — Figma'daki gerçek DOM sırasıyla eşleşir.</p>
+
+      <table class="token-table">
+        <thead><tr><th>Kombinasyon</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sadece Text</td><td>${gridCellHtml({ contentText: 'Plain Text' })}</td></tr>
+          <tr><td>Checkbox + Text</td><td>${gridCellHtml({ leading: 'checkbox', contentText: 'Selectable Row' })}</td></tr>
+          <tr><td>Avatar + Text</td><td>${gridCellHtml({ leading: 'avatar', contentText: 'Emre Göçer' })}</td></tr>
+          <tr><td>Avatar Group + Text</td><td>${gridCellHtml({ leading: 'avatarGroup', contentText: 'Design Team' })}</td></tr>
+          <tr><td>Dot + Text</td><td>${gridCellHtml({ leading: 'dot', contentText: 'Active' })}</td></tr>
+          <tr><td>Text + Badge</td><td>${gridCellHtml({ showContent: 'off', trailing: 'badge' })}</td></tr>
+          <tr><td>Text + Button</td><td>${gridCellHtml({ showContent: 'off', trailing: 'button' })}</td></tr>
+          <tr><td>Text + Switch</td><td>${gridCellHtml({ showContent: 'off', trailing: 'switch' })}</td></tr>
+          <tr><td>Inline TextBox</td><td>${gridCellHtml({ showContent: 'off', trailing: 'textbox' })}</td></tr>
+          <tr><td>Inline Dropdown</td><td>${gridCellHtml({ showContent: 'off', trailing: 'dropdown' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Content</td><td>Padding / Font</td><td>${tk('--bt-space-md')} / ${tk('--bt-text-xs-regular')}</td><td>8px / 400 12px/16px</td></tr>
+          <tr><td>Leading · Dot</td><td>Size</td><td>—</td><td>8×8</td></tr>
+          <tr><td>Leading · Avatar</td><td>Class</td><td>—</td><td>${tk('bt-avatar bt-avatar--xs')} (28×28)</td></tr>
+          <tr><td>Trailing · Inline TextBox/Dropdown</td><td>Min-width</td><td>—</td><td>120px</td></tr>
+        </tbody>
+      </table>
+
+      <h3>No Record Available</h3>
+      <p class="page-desc">Tabloda veri olmadığında Header Cell'in altında, tablo genişliğinde gösterilir — yukarıdaki ana Data Table playground'unda <strong>Rows</strong> prop'unu <strong>0 (No Record)</strong>'a getirerek de tetiklenebilir; ayrı bir toggle yoktur, doğrudan kayıt sayısına bağlıdır.</p>
+      <div style="overflow-x:auto;padding:8px 0;">${gridNoRecordHtml({ width: 620 })}</div>
     `};
   },
 };
