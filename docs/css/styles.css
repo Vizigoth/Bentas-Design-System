@@ -5582,7 +5582,7 @@ code {
   content: '';
   display: block;
   width: 2px;
-  height: 18px;
+  height: 100%;
   background: var(--bt-primary-default, #0d4e97);
   border-radius: 1px;
 }
