@@ -10073,18 +10073,62 @@ PAGES_WEB['components/data-table-actions'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
   toc:  ['Data Table Actions'],
   render(tab) {
-    const tk = v => `<code class="token-name">${v}</code>`;
-    if (tab === 'Overview') return `
-      <p class="page-desc">Data Table'ın Actions kolonu, her satır için hızlı işlem kontrollerini sağlar: <strong>Button</strong> (birincil eylem + More overflow menüsü), <strong>Satır İçi TextBox</strong> ve <strong>Satır İçi Dropdown</strong>. Bu üç varyant aşağıda aynı tablo üzerinde değiştirilebilir şekilde gösterilir.</p>
+    const title = 'Data Table Actions';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>Button</h2>
+      <p class="page-desc">Birincil eylem (örn. Düzenle) ve üç nokta More menüsü (Düzenle / Kopyala / Sil) — satır tıklamasını tetiklemeden bağımsız çalışır.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'button' })}</div></div></div>
+
+      <h2>Satır İçi TextBox</h2>
+      <p class="page-desc">Hücre içinde doğrudan düzenlenebilir metin alanı — kayıt açmadan tabloda inline düzenleme için.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'textbox' })}</div></div></div>
+
+      <h2>Satır İçi Dropdown</h2>
+      <p class="page-desc">Hücre içinde seçim yapılabilen açılır liste — durum, kategori veya atama gibi sınırlı seçenek setleri için.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'dropdown' })}</div></div></div>
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('--bt-space-md')}</td><td>Cell padding</td><td>8px</td></tr>
+          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
+          <tr><td>${tk('--bt-border-primary-default')}</td><td>Cell border-bottom</td><td>#d4d4d4</td></tr>
+          <tr><td>${tk('--bt-base-subtle')}</td><td>Row hover background</td><td>#f5f5f5</td></tr>
+          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Row selected background</td><td>#e2edfc</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Actions kolonu her zaman tablonun son kolonu olmalı.</li>
+        <li>Satır İçi TextBox/Dropdown, doğrudan tabloda düzenleme gerektiren durumlarda kullan.</li>
+        <li>Button + More menüsünü beş veya daha fazla satır içeren tablolarda tercih et.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Actions kolonunu birden fazla ekleme; tüm eylemler tek bir kolon içinde gruplanmalı.</li>
+        <li>Button varyantında More menüsüne beşten fazla öğe ekleme.</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Data Table'ın Actions kolonu, her satır için hızlı işlem kontrollerini sağlar: <strong>Button</strong> (birincil eylem + More overflow menüsü), <strong>Satır İçi TextBox</strong> ve <strong>Satır İçi Dropdown</strong>.</p>
 
       <h2 id="Data Table Actions">Data Table Actions</h2>
       ${registerPlayground({
         id: 'pgd-datatable-actions-overview',
         variants: [{ key: 'default', label: 'Data Table Actions' }],
         props: [
-          { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,        default: '3' },
-          { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,            default: 'default' },
-          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS,    default: 'button' },
+          { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
+          { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS, default: 'button' },
         ],
         preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
           <div style="display:inline-flex;flex-direction:column;height:356px;">
@@ -10099,52 +10143,14 @@ PAGES_WEB['components/data-table-actions'] = {
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Actions Cell · Button</td><td>Primary Button</td><td>—</td><td>bt-btn--primary-solid</td></tr>
-          <tr><td>Actions Cell · More</td><td>Icon Button</td><td>—</td><td>bt-btn--base-flat bt-btn--icon</td></tr>
-          <tr><td>Actions Cell · TextBox</td><td>Inline Input</td><td>—</td><td>bt-tbx--sm bt-tbx--default</td></tr>
-          <tr><td>Actions Cell · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>bt-tbx--sm + dd anchor</td></tr>
+          <tr><td>Actions Cell · Button</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
+          <tr><td>Actions Cell · More</td><td>Icon Button</td><td>—</td><td>${tk('bt-btn--base-flat bt-btn--icon')}</td></tr>
+          <tr><td>Actions Cell · TextBox</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Actions Cell · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
           <tr><td>Cell Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
         </tbody>
       </table>
-    `;
-    if (tab === 'Examples') return `
-      <h2>Button</h2>
-      <p class="page-desc">Birincil eylem (örn. Düzenle) ve üç nokta More menüsü (Düzenle / Kopyala / Sil) — satır tıklamasını tetiklemeden bağımsız çalışır.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'button' })}</div></div></div>
-
-      <h2>Satır İçi TextBox</h2>
-      <p class="page-desc">Hücre içinde doğrudan düzenlenebilir metin alanı — kayıt açmadan tabloda inline düzenleme için.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'textbox' })}</div></div></div>
-
-      <h2>Satır İçi Dropdown</h2>
-      <p class="page-desc">Hücre içinde seçim yapılabilen açılır liste — durum, kategori veya atama gibi sınırlı seçenek setleri için.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'dropdown' })}</div></div></div>
-    `;
-    if (tab === 'CSS Properties') return `
-      <table class="token-table">
-        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>${tk('--bt-space-md')}</td><td>Cell padding</td><td>8px</td></tr>
-          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
-          <tr><td>${tk('--bt-border-primary-default')}</td><td>Cell border-bottom</td><td>#d4d4d4</td></tr>
-          <tr><td>${tk('--bt-base-subtle')}</td><td>Row hover background</td><td>#f5f5f5</td></tr>
-          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Row selected background</td><td>#e2edfc</td></tr>
-        </tbody>
-      </table>
-    `;
-    if (tab === 'Usage') return `
-      <h2>Do</h2>
-      <ul class="usage-list usage-list--do">
-        <li>Actions kolonu her zaman tablonun son kolonu olmalı.</li>
-        <li>Satır İçi TextBox/Dropdown, doğrudan tabloda düzenleme gerektiren durumlarda kullan.</li>
-        <li>Button + More menüsünü beş veya daha fazla satır içeren tablolarda tercih et.</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul class="usage-list usage-list--dont">
-        <li>Actions kolonunu birden fazla ekleme; tüm eylemler tek bir kolon içinde gruplanmalı.</li>
-        <li>Button varyantında More menüsüne beşten fazla öğe ekleme.</li>
-      </ul>
-    `;
+    `};
   },
 };
 
