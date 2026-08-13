@@ -35,6 +35,7 @@ const NAV_WEB = [
           { label: 'Frozen Column First',  id: 'components/data-table-frozen-column' },
           { label: 'Frozen Column Last',   id: 'components/data-table-frozen-column-last' },
           { label: 'Data Table Toolbar',   id: 'components/data-table-toolbar' },
+          { label: 'Data Table Actions',   id: 'components/data-table-actions' },
         ]
       },
       { label: 'Dialog',            id: 'components/dialog' },
@@ -9531,13 +9532,25 @@ function gridTableColumns(p) {
   const showSort      = p.showSort === 'on';
   const showFilter    = p.showFilter === 'on';
   const statusContent = p.statusContent  || 'badge';
-  const actionsContent = p.actionsContent || 'button';
   return [
     showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
     { width: 90, headerText: 'ID', field: 'id', contentLink: true },
     { width: 200, headerText: 'Name', cellLeading: nameLeading, field: 'name', sort: showSort },
     { width: 160, headerText: 'Role', field: 'role', filter: showFilter },
     statusContent  !== 'none' ? { width: 140, headerText: 'Status',  cellTrailing: statusContent } : null,
+  ].filter(Boolean);
+}
+
+// Actions kolonu ayrı bir sayfada (data-table-actions) demo ediliyor.
+// Bu fonksiyon sadece o sayfa için çağrılır.
+function gridActionsColumns(p) {
+  const actionsContent = p.actionsContent || 'button';
+  return [
+    { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 90,  headerText: 'ID',     field: 'id', contentLink: true },
+    { width: 200, headerText: 'Name',   cellLeading: 'avatar', field: 'name' },
+    { width: 160, headerText: 'Role',   field: 'role' },
+    { width: 140, headerText: 'Status', cellTrailing: 'badge' },
     actionsContent !== 'none' ? { width: actionsContent === 'button' ? 130 : 160, headerText: 'Actions', cellTrailing: actionsContent } : null,
   ].filter(Boolean);
 }
@@ -9639,9 +9652,8 @@ function gridFrozenColumns(p) {
     { width: 150, headerText: 'Department',  field: 'department' },
     { width: 210, headerText: 'Email',       field: 'email' },
     { width: 120, headerText: 'Location',    field: 'location' },
-    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
     { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    { width: 130, headerText: 'Actions',     cellTrailing: 'button' },
+    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
   ];
   let left = 0;
   return cols.map((c, i) => {
@@ -9805,9 +9817,8 @@ function gridFrozenLastColumns(p) {
     { width: 150, headerText: 'Department',  field: 'department' },
     { width: 210, headerText: 'Email',       field: 'email' },
     { width: 120, headerText: 'Location',    field: 'location' },
-    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
     { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    { width: 130, headerText: 'Actions',     cellTrailing: 'button', frozenRight: true },
+    { width: 140, headerText: 'Status',      cellTrailing: 'badge', frozenRight: true },
   ];
   let left = 0;
   return cols.map((c, i) => {
@@ -9974,6 +9985,166 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
         </tbody>
       </table>
     `};
+  },
+};
+
+// ── Data Table Actions ───────────────────────────────────────────
+// Actions kolonu — Button (primary-solid + More menu), Satır İçi TextBox,
+// Satır İçi Dropdown seçeneklerini ayrı bir sayfada demo eder.
+// gridActionsColumns/gridActionsTableHtml/gridActionsTableCss yalnızca bu
+// sayfa tarafından kullanılır; diğer tablo sayfalarında Actions kolonu yok.
+
+function gridActionsTableHtml(props) {
+  const p = props || {};
+  const rowCount  = parseInt(p.rowCount != null ? p.rowCount : '3', 10);
+  const rowState  = p.rowState || 'default';
+  const showNoRecord = rowCount === 0;
+  const cols = gridActionsColumns(p);
+  const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+
+  const headerRow = cols.map((c, i) => gridHeaderCellHtml({
+    position: posFor(i),
+    width: c.width,
+    showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
+    showContent:  c.headerText ? 'on' : 'off',
+    contentText:  c.headerText || '',
+  })).join('');
+
+  const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
+  const bodyHtml = showNoRecord
+    ? gridNoRecordHtml({ width: totalWidth })
+    : _gridTableRowsData.slice(0, rowCount).map(row =>
+        `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+          position: posFor(i),
+          state: rowState,
+          width: c.width,
+          leading:  c.cellLeading  || 'none',
+          trailing: c.cellTrailing || 'none',
+          showContent: c.field ? 'on' : 'off',
+          contentText: c.field ? row[c.field] : '',
+          contentLink: !!c.contentLink,
+        })).join('')}</div>`
+      ).join('');
+
+  return `<div class="bt-grid">
+    <div class="bt-grid__row">${headerRow}</div>
+    <div class="bt-grid__body">${bodyHtml}</div>
+  </div>`;
+}
+
+function gridActionsTableCss(_, props) {
+  const p = props || {};
+  const cols = gridActionsColumns(p);
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const actionsContent = p.actionsContent || 'button';
+  const lines = [
+    `.bt-grid__header-cell { height: 36px; }`,
+    `.bt-grid__cell        { height: 32px; }`,
+    ``,
+    `/* ${cols.length} kolon, toplam ${cols.reduce((s,c)=>s+c.width,0)}px */`,
+    ...cols.map((c, i) =>
+      `.bt-grid__cell:nth-child(${i+1}), .bt-grid__header-cell:nth-child(${i+1}) { width: ${c.width}px; }`
+    ),
+    ``,
+    `.bt-grid__cell .bt-grid__content {`,
+    ln('padding', 'var(--bt-space-md, 8px)'),
+    ln('font', 'var(--bt-text-xs-regular, 400 12px/16px var(--font))'),
+    ln('color', 'var(--bt-text-primary-default, #1a1a1a)'),
+    `}`,
+    ...(actionsContent === 'button' ? [
+      ``,
+      `/* Actions — Button + More menu */`,
+      `.bt-grid__control-group { display: flex; align-items: center; gap: 4px; }`,
+    ] : actionsContent === 'textbox' ? [
+      ``,
+      `/* Actions — Satır İçi TextBox */`,
+      `.bt-grid__inline { flex: 1; }`,
+    ] : actionsContent === 'dropdown' ? [
+      ``,
+      `/* Actions — Satır İçi Dropdown */`,
+      `.bt-grid__inline { flex: 1; }`,
+    ] : []),
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/data-table-actions'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table Actions'],
+  render(tab) {
+    const tk = v => `<code class="token-name">${v}</code>`;
+    if (tab === 'Overview') return `
+      <p class="page-desc">Data Table'ın Actions kolonu, her satır için hızlı işlem kontrollerini sağlar: <strong>Button</strong> (birincil eylem + More overflow menüsü), <strong>Satır İçi TextBox</strong> ve <strong>Satır İçi Dropdown</strong>. Bu üç varyant aşağıda aynı tablo üzerinde değiştirilebilir şekilde gösterilir.</p>
+
+      <h2 id="Data Table Actions">Data Table Actions</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-actions-overview',
+        variants: [{ key: 'default', label: 'Data Table Actions' }],
+        props: [
+          { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,        default: '3' },
+          { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,            default: 'default' },
+          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS,    default: 'button' },
+        ],
+        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
+          <div style="display:inline-flex;flex-direction:column;height:356px;">
+            <div class="bt-grid-container">${gridActionsTableHtml(p)}</div>
+          </div>
+        </div>`,
+        code: (v, p) => gridActionsTableHtml(p),
+        css:  (v, p) => gridActionsTableCss(v, p),
+      })}
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Actions Cell · Button</td><td>Primary Button</td><td>—</td><td>bt-btn--primary-solid</td></tr>
+          <tr><td>Actions Cell · More</td><td>Icon Button</td><td>—</td><td>bt-btn--base-flat bt-btn--icon</td></tr>
+          <tr><td>Actions Cell · TextBox</td><td>Inline Input</td><td>—</td><td>bt-tbx--sm bt-tbx--default</td></tr>
+          <tr><td>Actions Cell · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>bt-tbx--sm + dd anchor</td></tr>
+          <tr><td>Cell Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+        </tbody>
+      </table>
+    `;
+    if (tab === 'Examples') return `
+      <h2>Button</h2>
+      <p class="page-desc">Birincil eylem (örn. Düzenle) ve üç nokta More menüsü (Düzenle / Kopyala / Sil) — satır tıklamasını tetiklemeden bağımsız çalışır.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'button' })}</div></div></div>
+
+      <h2>Satır İçi TextBox</h2>
+      <p class="page-desc">Hücre içinde doğrudan düzenlenebilir metin alanı — kayıt açmadan tabloda inline düzenleme için.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'textbox' })}</div></div></div>
+
+      <h2>Satır İçi Dropdown</h2>
+      <p class="page-desc">Hücre içinde seçim yapılabilen açılır liste — durum, kategori veya atama gibi sınırlı seçenek setleri için.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'dropdown' })}</div></div></div>
+    `;
+    if (tab === 'CSS Properties') return `
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('--bt-space-md')}</td><td>Cell padding</td><td>8px</td></tr>
+          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
+          <tr><td>${tk('--bt-border-primary-default')}</td><td>Cell border-bottom</td><td>#d4d4d4</td></tr>
+          <tr><td>${tk('--bt-base-subtle')}</td><td>Row hover background</td><td>#f5f5f5</td></tr>
+          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Row selected background</td><td>#e2edfc</td></tr>
+        </tbody>
+      </table>
+    `;
+    if (tab === 'Usage') return `
+      <h2>Do</h2>
+      <ul class="usage-list usage-list--do">
+        <li>Actions kolonu her zaman tablonun son kolonu olmalı.</li>
+        <li>Satır İçi TextBox/Dropdown, doğrudan tabloda düzenleme gerektiren durumlarda kullan.</li>
+        <li>Button + More menüsünü beş veya daha fazla satır içeren tablolarda tercih et.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul class="usage-list usage-list--dont">
+        <li>Actions kolonunu birden fazla ekleme; tüm eylemler tek bir kolon içinde gruplanmalı.</li>
+        <li>Button varyantında More menüsüne beşten fazla öğe ekleme.</li>
+      </ul>
+    `;
   },
 };
 
@@ -10194,7 +10365,6 @@ PAGES_WEB['components/data-table'] = {
           { key: 'showSort',      label: 'Sort (Name)',     group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
           { key: 'showFilter',    label: 'Filter (Role)',   group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
           { key: 'statusContent', label: 'Status Column',   group: 'Columns', options: GRID_TABLE_STATUS_OPTS,     default: 'badge' },
-          { key: 'actionsContent',label: 'Actions Column',  group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS,    default: 'button' },
         ],
         // Önizleme .bt-grid-container'a sarılı, sabit 356px yükseklikte (36px
         // header + 10×32px satır — Rows'un maksimumu) — "Alanı Doldurma"
