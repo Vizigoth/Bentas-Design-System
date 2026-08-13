@@ -9146,9 +9146,9 @@ function gridTrailingHtml(kind) {
           <div class="bt-grid__menu">
             <button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-label="More" aria-haspopup="true" onclick="btGridMenuToggle(event, this)">${_gridIconMoreHorizontal}</button>
             <ul class="bt-grid__menu-list" role="menu">
-              <li class="bt-grid__menu-item" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconEditItem}</span>Düzenle</li>
-              <li class="bt-grid__menu-item" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconCopyItem}</span>Kopyala</li>
-              <li class="bt-grid__menu-item bt-grid__menu-item--danger" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconTrashItem}</span>Sil</li>
+              <li class="bt-grid__menu-item" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconEditItem}</span>Edit</li>
+              <li class="bt-grid__menu-item" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconCopyItem}</span>Copy</li>
+              <li class="bt-grid__menu-item bt-grid__menu-item--danger" role="menuitem" onclick="btGridMenuClose(event, this)"><span class="bt-grid__menu-item-icon">${_gridIconTrashItem}</span>Delete</li>
             </ul>
           </div>
         </span>
