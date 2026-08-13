@@ -5395,6 +5395,9 @@ code {
   flex: 1;
   min-height: 0;
 }
+.bt-grid-container .bt-grid__row {
+  width: 100%;
+}
 .bt-grid-container .bt-grid__body {
   flex: 1;
   min-height: 0;

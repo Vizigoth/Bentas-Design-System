@@ -9255,8 +9255,10 @@ window.btGridResizeStart = function(event, handle) {
 
   function onMove(e) {
     const newWidth = Math.max(minWidth, startWidth + (e.clientX - startX));
+    headerCell.style.flex = '0 0 auto';
     headerCell.style.width = newWidth + 'px';
     grid.querySelectorAll(`.bt-grid__body .bt-grid__cell:nth-child(${nth})`).forEach(cell => {
+      cell.style.flex = '0 0 auto';
       cell.style.width = newWidth + 'px';
     });
   }
@@ -9330,6 +9332,7 @@ function gridHeaderCellHtml(opts) {
   const showFilter = o.showFilter === 'on';
   const showRight = o.showRight === 'on';
   const width = o.width || 180;
+  const fillWidth = o.fillWidth === true;
   // sticky/frozenEdge — sadece Frozen Column sayfası kullanır (bkz. HISTORY.md),
   // diğer TÜM çağrılarda undefined/false kalır, mevcut davranış değişmez.
   const sticky = o.sticky;
@@ -9362,7 +9365,8 @@ function gridHeaderCellHtml(opts) {
   // Resize handle — sadece metin içerikli kolonlarda (checkbox-only kolonlarda yok)
   const resizeHandle = showContent ? `<span class="bt-grid__resize-handle" onmousedown="btGridResizeStart(event,this)"></span>` : '';
 
-  return `<div class="${cls}" style="width:${width}px;box-sizing:border-box;${stickyStyle}">${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}${resizeHandle}</div>`;
+  const widthStyleH = fillWidth ? `flex:1;min-width:${width}px;` : `width:${width}px;`;
+  return `<div class="${cls}" style="${widthStyleH}box-sizing:border-box;${stickyStyle}">${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}${resizeHandle}</div>`;
 }
 
 function gridCellHtml(opts) {
@@ -9377,6 +9381,7 @@ function gridCellHtml(opts) {
   const trailing = o.trailing || 'none';
   const showRight = o.showRight === 'on';
   const width = o.width || 180;
+  const fillWidth = o.fillWidth === true;
   // sticky/frozenEdge — sadece Frozen Column sayfası kullanır (bkz. HISTORY.md),
   // diğer TÜM çağrılarda undefined/false kalır, mevcut davranış değişmez.
   const sticky = o.sticky;
@@ -9403,7 +9408,8 @@ function gridCellHtml(opts) {
   const trailingHtml = gridTrailingHtml(trailing);
   const rightHtml    = showRight ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
 
-  return `<div class="${cls}" style="width:${width}px;box-sizing:border-box;${stickyStyle}">${leftHtml}${leadingHtml}${contentHtml}${trailingHtml}${rightHtml}</div>`;
+  const widthStyleC = fillWidth ? `flex:1;min-width:${width}px;` : `width:${width}px;`;
+  return `<div class="${cls}" style="${widthStyleC}box-sizing:border-box;${stickyStyle}">${leftHtml}${leadingHtml}${contentHtml}${trailingHtml}${rightHtml}</div>`;
 }
 
 function gridNoRecordHtml(opts) {
@@ -9538,6 +9544,7 @@ function gridTableColumns(p) {
     { width: 200, headerText: 'Name', cellLeading: nameLeading, field: 'name', sort: showSort },
     { width: 160, headerText: 'Role', field: 'role', filter: showFilter },
     statusContent  !== 'none' ? { width: 140, headerText: 'Status',  cellTrailing: statusContent } : null,
+    { width: 180, headerText: 'Email', field: 'email', fillWidth: true },
   ].filter(Boolean);
 }
 
@@ -9551,6 +9558,7 @@ function gridActionsColumns(p) {
     { width: 200, headerText: 'Name',   cellLeading: 'avatar', field: 'name' },
     { width: 160, headerText: 'Role',   field: 'role' },
     { width: 140, headerText: 'Status', cellTrailing: 'badge' },
+    { width: 180, headerText: 'Email',  field: 'email', fillWidth: true },
     actionsContent !== 'none' ? { width: actionsContent === 'button' ? 130 : 160, headerText: 'Actions', cellTrailing: actionsContent } : null,
   ].filter(Boolean);
 }
@@ -9576,6 +9584,7 @@ function gridTableHtml(props) {
     contentText: c.headerText || '',
     showSort: c.sort ? 'on' : 'off',
     showFilter: c.filter ? 'on' : 'off',
+    fillWidth: c.fillWidth,
   })).join('');
 
   const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
@@ -9595,6 +9604,7 @@ function gridTableHtml(props) {
         showContent: c.field ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
+        fillWidth: c.fillWidth,
       })).join('')}</div>`).join('');
 
   // .bt-grid__body — Header'dan ayrı, kendi başına scroll olabilen bir
@@ -9650,10 +9660,10 @@ function gridFrozenColumns(p) {
     { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
     { width: 140, headerText: 'Role',        field: 'role' },
     { width: 150, headerText: 'Department',  field: 'department' },
-    { width: 210, headerText: 'Email',       field: 'email' },
     { width: 120, headerText: 'Location',    field: 'location' },
     { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
     { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
+    { width: 210, headerText: 'Email',       field: 'email' },
   ];
   let left = 0;
   return cols.map((c, i) => {
@@ -9781,7 +9791,7 @@ PAGES_WEB['components/data-table-frozen-column'] = {
           { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
           { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
         ],
-        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
+        preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenTableHtml(p),
         css:     (v, p) => gridFrozenTableCss(v, p),
       })}
@@ -9815,10 +9825,10 @@ function gridFrozenLastColumns(p) {
     { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
     { width: 140, headerText: 'Role',        field: 'role' },
     { width: 150, headerText: 'Department',  field: 'department' },
-    { width: 210, headerText: 'Email',       field: 'email' },
     { width: 120, headerText: 'Location',    field: 'location' },
     { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    { width: 140, headerText: 'Status',      cellTrailing: 'badge', frozenRight: true },
+    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
+    { width: 210, headerText: 'Email',       field: 'email', frozenRight: true },
   ];
   let left = 0;
   return cols.map((c, i) => {
@@ -9965,7 +9975,7 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
           { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
           { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
         ],
-        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
+        preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenLastTableHtml(p),
         css:     (v, p) => gridFrozenLastTableCss(v, p),
       })}
@@ -10008,6 +10018,7 @@ function gridActionsTableHtml(props) {
     showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
     showContent:  c.headerText ? 'on' : 'off',
     contentText:  c.headerText || '',
+    fillWidth:    c.fillWidth,
   })).join('');
 
   const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
@@ -10023,6 +10034,7 @@ function gridActionsTableHtml(props) {
           showContent: c.field ? 'on' : 'off',
           contentText: c.field ? row[c.field] : '',
           contentLink: !!c.contentLink,
+          fillWidth:   c.fillWidth,
         })).join('')}</div>`
       ).join('');
 
@@ -10131,7 +10143,7 @@ PAGES_WEB['components/data-table-actions'] = {
           { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS, default: 'button' },
         ],
         preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:inline-flex;flex-direction:column;height:356px;">
+          <div style="display:flex;flex-direction:column;height:356px;">
             <div class="bt-grid-container">${gridActionsTableHtml(p)}</div>
           </div>
         </div>`,
@@ -10275,7 +10287,7 @@ PAGES_WEB['components/data-table-toolbar'] = {
           { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '6' },
           { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
         ],
-        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;width:800px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div style="flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column;">${gridTableHtml(p)}</div></div></div></div>`,
+        preview: (v, p) => `<div style="padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div style="flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column;">${gridTableHtml(p)}</div></div></div></div>`,
         code:    (v, p) => `<div class="bt-grid-panel">\n  ${gridToolbarHtml(p)}\n  ${gridTableHtml(p)}\n</div>`,
         css:     (v, p) => gridToolbarCss(v, p),
       })}
@@ -10378,7 +10390,7 @@ PAGES_WEB['components/data-table'] = {
         // varsayılan 3 satırla kutunun kalan kısmı çerçeveyle doluyor, Rows'u
         // 10'a çıkarınca boşluk kayboluyor (kullanıcı isteğiyle, bkz. HISTORY.md).
         preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:inline-flex;flex-direction:column;height:356px;">
+          <div style="display:flex;flex-direction:column;height:356px;">
             <div class="bt-grid-container">${gridTableHtml(p)}</div>
           </div>
         </div>`,
