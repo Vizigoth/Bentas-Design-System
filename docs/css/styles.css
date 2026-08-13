@@ -5684,9 +5684,12 @@ code {
 }
 /* — Hyperlink stili ID / kayıt numarası kolonları için — */
 .bt-grid__cell .bt-grid__content--link {
+  color: var(--bt-text-primary-default, #1a1a1a);
+  cursor: pointer;
+}
+.bt-grid__cell .bt-grid__content--link:hover {
   color: var(--bt-text-brand-default, #0d4e97);
   text-decoration: underline;
-  cursor: pointer;
 }
 
 /* — Sort Control — up/down ikon çifti, 24×24 her biri */

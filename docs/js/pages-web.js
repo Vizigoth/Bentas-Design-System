@@ -9139,7 +9139,7 @@ function gridTrailingHtml(kind) {
       // .bt-grid__menu-list/.bt-grid__menu-item kuralları var — Dropdown'daki
       // ileride yapılacak bir değişiklik Data Table'ı yanlışlıkla etkilemesin
       // diye (kullanıcı isteğiyle, bkz. HISTORY.md).
-      return `<span class="bt-grid__control-group">
+      return `<span class="bt-grid__control-group" onclick="event.stopPropagation()">
         <span class="bt-grid__control"><button type="button" class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button></span>
         <span class="bt-grid__control">
           <div class="bt-grid__menu">
@@ -9153,11 +9153,11 @@ function gridTrailingHtml(kind) {
         </span>
       </span>`;
     case 'switch':
-      return `<span class="bt-grid__control" onclick="this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"><span class="bt-switch__track"><span class="bt-switch__thumb"></span></span></span>`;
+      return `<span class="bt-grid__control" onclick="event.stopPropagation();this.querySelector('.bt-switch__track').classList.toggle('bt-switch__track--on')" style="cursor:pointer;"><span class="bt-switch__track"><span class="bt-switch__thumb"></span></span></span>`;
     case 'textbox':
-      return `<span class="bt-grid__inline"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__input">${_tbxInputInner('default')}</div></div></span>`;
+      return `<span class="bt-grid__inline" onclick="event.stopPropagation()"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__input">${_tbxInputInner('default')}</div></div></span>`;
     case 'dropdown':
-      return `<span class="bt-grid__inline"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__anchor"><div class="bt-tbx__input">${_ddInputInner('default')}</div></div></div></span>`;
+      return `<span class="bt-grid__inline" onclick="event.stopPropagation()"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__anchor"><div class="bt-tbx__input">${_ddInputInner('default')}</div></div></div></span>`;
     default:
       return '';
   }
@@ -9347,7 +9347,7 @@ function gridCellHtml(opts) {
 
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const leadingHtml  = gridLeadingHtml(leading);
-  const contentHtml  = showContent ? `<span class="bt-grid__content${contentLink ? ' bt-grid__content--link' : ''}" ${contentLink ? 'onclick="void(0)" role="link" tabindex="0"' : ''}>${contentText}</span>` : '';
+  const contentHtml  = showContent ? `<span class="bt-grid__content${contentLink ? ' bt-grid__content--link' : ''}">${contentText}</span>` : '';
   const trailingHtml = gridTrailingHtml(trailing);
   const rightHtml    = showRight ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
 
