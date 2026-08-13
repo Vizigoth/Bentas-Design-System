@@ -9475,16 +9475,16 @@ const GRID_TABLE_ACTIONS_OPTS = [
 // (çok kolonlu) tablo için eklendi, ana Data Table playground'u bu alanları
 // kullanmıyor (bkz. HISTORY.md).
 const _gridTableRowsData = [
-  { id: 1001, name: 'Emre Göçer',    role: 'Designer',           department: 'Design',       email: 'emre.gocer@bentas.com',    location: 'İstanbul', lastLogin: '2 saat önce' },
-  { id: 1002, name: 'Ayşe Yılmaz',   role: 'Product Manager',    department: 'Product',      email: 'ayse.yilmaz@bentas.com',   location: 'Ankara',   lastLogin: 'Dün' },
-  { id: 1003, name: 'Mert Demir',    role: 'Engineer',           department: 'Engineering',  email: 'mert.demir@bentas.com',    location: 'İzmir',    lastLogin: '3 gün önce' },
-  { id: 1004, name: 'Zeynep Kaya',   role: 'Marketing',          department: 'Marketing',    email: 'zeynep.kaya@bentas.com',   location: 'İstanbul', lastLogin: '5 saat önce' },
-  { id: 1005, name: 'Can Aydın',     role: 'QA Engineer',        department: 'Engineering',  email: 'can.aydin@bentas.com',     location: 'Uzaktan',  lastLogin: '1 hafta önce' },
-  { id: 1006, name: 'Elif Şahin',    role: 'Data Analyst',       department: 'Data',         email: 'elif.sahin@bentas.com',    location: 'İstanbul', lastLogin: 'Az önce' },
-  { id: 1007, name: 'Burak Yıldız',  role: 'Backend Engineer',   department: 'Engineering',  email: 'burak.yildiz@bentas.com',  location: 'Bursa',    lastLogin: '4 saat önce' },
-  { id: 1008, name: 'Selin Arslan',  role: 'HR Specialist',      department: 'HR',           email: 'selin.arslan@bentas.com',  location: 'Ankara',   lastLogin: '2 gün önce' },
-  { id: 1009, name: 'Onur Kurt',     role: 'DevOps Engineer',    department: 'Engineering',  email: 'onur.kurt@bentas.com',     location: 'Uzaktan',  lastLogin: 'Dün' },
-  { id: 1010, name: 'Deniz Aksoy',   role: 'Customer Success',   department: 'Customer Success', email: 'deniz.aksoy@bentas.com', location: 'İstanbul', lastLogin: '6 saat önce' },
+  { id: 10000001, name: 'Emre Göçer',    role: 'Designer',           department: 'Design',       email: 'emre.gocer@bentas.com',    location: 'İstanbul', lastLogin: '2 saat önce' },
+  { id: 10000002, name: 'Ayşe Yılmaz',   role: 'Product Manager',    department: 'Product',      email: 'ayse.yilmaz@bentas.com',   location: 'Ankara',   lastLogin: 'Dün' },
+  { id: 10000003, name: 'Mert Demir',    role: 'Engineer',           department: 'Engineering',  email: 'mert.demir@bentas.com',    location: 'İzmir',    lastLogin: '3 gün önce' },
+  { id: 10000004, name: 'Zeynep Kaya',   role: 'Marketing',          department: 'Marketing',    email: 'zeynep.kaya@bentas.com',   location: 'İstanbul', lastLogin: '5 saat önce' },
+  { id: 10000005, name: 'Can Aydın',     role: 'QA Engineer',        department: 'Engineering',  email: 'can.aydin@bentas.com',     location: 'Uzaktan',  lastLogin: '1 hafta önce' },
+  { id: 10000006, name: 'Elif Şahin',    role: 'Data Analyst',       department: 'Data',         email: 'elif.sahin@bentas.com',    location: 'İstanbul', lastLogin: 'Az önce' },
+  { id: 10000007, name: 'Burak Yıldız',  role: 'Backend Engineer',   department: 'Engineering',  email: 'burak.yildiz@bentas.com',  location: 'Bursa',    lastLogin: '4 saat önce' },
+  { id: 10000008, name: 'Selin Arslan',  role: 'HR Specialist',      department: 'HR',           email: 'selin.arslan@bentas.com',  location: 'Ankara',   lastLogin: '2 gün önce' },
+  { id: 10000009, name: 'Onur Kurt',     role: 'DevOps Engineer',    department: 'Engineering',  email: 'onur.kurt@bentas.com',     location: 'Uzaktan',  lastLogin: 'Dün' },
+  { id: 10000010, name: 'Deniz Aksoy',   role: 'Customer Success',   department: 'Customer Success', email: 'deniz.aksoy@bentas.com', location: 'İstanbul', lastLogin: '6 saat önce' },
 ];
 
 function gridTableColumns(p) {
@@ -9496,7 +9496,7 @@ function gridTableColumns(p) {
   const actionsContent = p.actionsContent || 'button';
   return [
     showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
-    { width: 60, headerText: 'ID', field: 'id', contentLink: true },
+    { width: 90, headerText: 'ID', field: 'id', contentLink: true },
     { width: 200, headerText: 'Name', cellLeading: nameLeading, field: 'name', sort: showSort },
     { width: 160, headerText: 'Role', field: 'role', filter: showFilter },
     statusContent  !== 'none' ? { width: 140, headerText: 'Status',  cellTrailing: statusContent } : null,
@@ -9589,14 +9589,13 @@ function gridTableCss(_, props) {
 const GRID_FROZEN_COUNT_OPTS = [
   { key: '1', label: '1 (Checkbox)' },
   { key: '2', label: '2 (Checkbox + ID)' },
-  { key: '3', label: '3 (Checkbox + ID + Name)' },
 ];
 
 function gridFrozenColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 60,  headerText: 'ID',          field: 'id', contentLink: true },
+    { width: 90,  headerText: 'ID',          field: 'id', contentLink: true },
     { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
     { width: 140, headerText: 'Role',        field: 'role' },
     { width: 150, headerText: 'Department',  field: 'department' },
@@ -9730,7 +9729,7 @@ PAGES_WEB['components/data-table-frozen-column'] = {
         props: [
           { key: 'rowCount',     label: 'Rows',            group: 'Table', options: GRID_TABLE_ROW_OPTS,     default: '6' },
           { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
-          { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '3' },
+          { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
         ],
         preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenTableHtml(p),
@@ -9762,7 +9761,7 @@ function gridFrozenLastColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 60,  headerText: 'ID',          field: 'id', contentLink: true },
+    { width: 90,  headerText: 'ID',          field: 'id', contentLink: true },
     { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
     { width: 140, headerText: 'Role',        field: 'role' },
     { width: 150, headerText: 'Department',  field: 'department' },
@@ -9915,7 +9914,7 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
         props: [
           { key: 'rowCount',    label: 'Rows',           group: 'Table', options: GRID_TABLE_ROW_OPTS,    default: '6' },
           { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
-          { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '3' },
+          { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
         ],
         preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenLastTableHtml(p),
