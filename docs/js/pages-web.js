@@ -9234,6 +9234,42 @@ window.btGridRowToggle = function(row) {
 // bırakmamak için). Bu, Radix/Floating UI gibi kütüphanelerin AYNI "izolede
 // çalışıyor, gerçek sayfada kırılıyor" sınıfı sorunlar için kullandığı
 // standart çözüm.
+
+// Column resize — handle'a mousedown'da başlar; mousemove ile header + aynı
+// nth-child'daki tüm body cell'lerin width'i güncellenir; mouseup ile biter.
+window.btGridResizeStart = function(event, handle) {
+  event.preventDefault();
+  event.stopPropagation();
+  const headerCell = handle.closest('.bt-grid__header-cell');
+  const headerRow  = headerCell.parentElement;
+  const grid       = headerCell.closest('.bt-grid');
+  const nth        = Array.from(headerRow.children).indexOf(headerCell) + 1; // 1-based
+  const startX     = event.clientX;
+  const startWidth = headerCell.getBoundingClientRect().width;
+  const minWidth   = 40;
+
+  handle.classList.add('bt-grid__resize-handle--resizing');
+  document.body.style.cursor     = 'col-resize';
+  document.body.style.userSelect = 'none';
+
+  function onMove(e) {
+    const newWidth = Math.max(minWidth, startWidth + (e.clientX - startX));
+    headerCell.style.width = newWidth + 'px';
+    grid.querySelectorAll(`.bt-grid__body .bt-grid__cell:nth-child(${nth})`).forEach(cell => {
+      cell.style.width = newWidth + 'px';
+    });
+  }
+  function onUp() {
+    handle.classList.remove('bt-grid__resize-handle--resizing');
+    document.body.style.cursor     = '';
+    document.body.style.userSelect = '';
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup',   onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup',   onUp);
+};
+
 window.btGridMenuToggle = function(event, btn) {
   event.stopPropagation();
   const menu = btn.closest('.bt-grid__menu');
@@ -9320,10 +9356,12 @@ function gridHeaderCellHtml(opts) {
     ${sortDir !== 'down' ? `<span class="bt-grid__control">${gridControlIcon(_gridIconSortUp)}</span>` : ''}
     ${sortDir !== 'up'   ? `<span class="bt-grid__control">${gridControlIcon(_gridIconSortDown)}</span>` : ''}
   </span>` : '';
-  const filterHtml = showFilter ? `<span class="bt-grid__control">${gridControlIcon(_gridIconFunnel)}</span>` : '';
-  const rightHtml  = showRight  ? `<span class="bt-grid__control">${gridControlIcon(_gridIconEllipsis)}</span>` : '';
+  const filterHtml   = showFilter ? `<span class="bt-grid__control">${gridControlIcon(_gridIconFunnel)}</span>` : '';
+  const rightHtml    = showRight  ? `<span class="bt-grid__control">${gridControlIcon(_gridIconEllipsis)}</span>` : '';
+  // Resize handle — sadece metin içerikli kolonlarda (checkbox-only kolonlarda yok)
+  const resizeHandle = showContent ? `<span class="bt-grid__resize-handle" onmousedown="btGridResizeStart(event,this)"></span>` : '';
 
-  return `<div class="${cls}" style="width:${width}px;box-sizing:border-box;${stickyStyle}">${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}</div>`;
+  return `<div class="${cls}" style="width:${width}px;box-sizing:border-box;${stickyStyle}">${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}${resizeHandle}</div>`;
 }
 
 function gridCellHtml(opts) {

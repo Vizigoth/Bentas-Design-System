@@ -5556,10 +5556,40 @@ code {
   justify-content: flex-start;
   height: 36px;
   flex-shrink: 0;
+  position: relative;
   background: var(--bt-base-default, #ffffff);
   border-top: 1px solid var(--bt-border-primary-default, #d4d4d4);
   border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
   box-sizing: border-box;
+}
+/* — Column resize handle — sağ kenarda 7px'lik tıklanabilir alan, ortalanmış
+   2px mavi çizgi; sadece header hover'ında veya aktif resize sırasında görünür */
+.bt-grid__resize-handle {
+  position: absolute;
+  right: -3px;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.bt-grid__resize-handle::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 18px;
+  background: var(--bt-primary-default, #0d4e97);
+  border-radius: 1px;
+}
+.bt-grid__header-cell:hover .bt-grid__resize-handle,
+.bt-grid__resize-handle:hover,
+.bt-grid__resize-handle--resizing {
+  opacity: 1;
 }
 .bt-grid__header-cell--left  { border-left:  1px solid var(--bt-border-primary-default, #d4d4d4); }
 .bt-grid__header-cell--right { border-right: 1px solid var(--bt-border-primary-default, #d4d4d4); }
