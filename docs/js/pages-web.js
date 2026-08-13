@@ -10098,7 +10098,7 @@ PAGES_WEB['components/data-table-toolbar'] = {
           { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '6' },
           { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
         ],
-        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;width:800px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}${gridTableHtml(p)}</div></div></div>`,
+        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;width:800px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div style="flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column;">${gridTableHtml(p)}</div></div></div></div>`,
         code:    (v, p) => `<div class="bt-grid-panel">\n  ${gridToolbarHtml(p)}\n  ${gridTableHtml(p)}\n</div>`,
         css:     (v, p) => gridToolbarCss(v, p),
       })}
@@ -10201,7 +10201,7 @@ PAGES_WEB['components/data-table'] = {
         // özelliği ayrı bir statik demoya gerek kalmadan burada canlı görünür:
         // varsayılan 3 satırla kutunun kalan kısmı çerçeveyle doluyor, Rows'u
         // 10'a çıkarınca boşluk kayboluyor (kullanıcı isteğiyle, bkz. HISTORY.md).
-        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px;overflow-x:auto;">
+        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
           <div style="display:inline-flex;flex-direction:column;height:356px;">
             <div class="bt-grid-container">${gridTableHtml(p)}</div>
           </div>
