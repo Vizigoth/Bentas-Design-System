@@ -5466,6 +5466,83 @@ code {
   border-right: none;
 }
 
+/* bt-grid-panel — Toolbar + DataTable'ı saran dış kapsayıcı.
+   Figma: border 1px, border-radius sm (4px), padding 2xl (16px), gap xl (12px).
+   Toolbar ve tablo kendi border'larını sağlamaz — panel sağlar. */
+.bt-grid-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-xl, 12px);
+  padding: var(--bt-space-2xl, 16px);
+  background: var(--bt-base-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  box-sizing: border-box;
+}
+/* Panel içindeki grid — toolbar kaldıktan sonra kalan tüm yüksekliği doldurur,
+   genişlikte panel padding'lerine yaslanır (inline-flex → flex override).
+   Her row width:100%; sağdaki (son) kolon flex:1 ile kalan yatay alanı doldurur. */
+.bt-grid-panel .bt-grid {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+.bt-grid-panel .bt-grid__row {
+  width: 100%;
+}
+/* Sağ (son) kolon hug — Actions/buton hücresinin içerik boyutunda kalması için.
+   Kalan yatay alanı ondan önceki hücre (nth-last-child(2)) doldurur. */
+.bt-grid-panel .bt-grid__header-cell--right,
+.bt-grid-panel .bt-grid__cell--right {
+  flex: 0 0 auto;
+}
+.bt-grid-panel .bt-grid__row > .bt-grid__header-cell:nth-last-child(2),
+.bt-grid-panel .bt-grid__row > .bt-grid__cell:nth-last-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.bt-grid-panel .bt-grid__body {
+  flex: 1;
+  min-height: 0;
+}
+.bt-grid-panel .bt-grid__no-record {
+  flex: 1;
+  height: auto;
+  border-left: none;
+  border-right: none;
+}
+
+/* bt-grid-toolbar — Panel içindeki aksiyon çubuğu; kendi border/bg/padding'i yok.
+   Sol: Add/Edit/Delete aksiyonları — Sağ: search input.
+   Figma: gap 10px (solda butonlar arası), search 320px genişlik. */
+.bt-grid-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bt-space-md, 8px);
+  flex-shrink: 0;
+}
+.bt-grid-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bt-grid-toolbar__right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+/* Search input sağ taraf — separator + icon */
+.bt-grid-toolbar__search { width: 320px; }
+.bt-grid-toolbar__sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--bt-border-primary-default, #d4d4d4);
+  flex-shrink: 0;
+}
+
 /* Opsiyonel yatay-scroll sarmalayıcı — Frozen Column sayfasında kolon sayısı
    fazla olup toplam genişlik konteynerden taştığında yatay scrollbar açar;
    donmuş (sticky) kolonların left ofseti bu sarmalayıcının scroll pozisyonuna
@@ -5604,6 +5681,12 @@ code {
   padding: var(--bt-space-md, 8px);
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-default, #1a1a1a);
+}
+/* — Hyperlink stili ID / kayıt numarası kolonları için — */
+.bt-grid__cell .bt-grid__content--link {
+  color: var(--bt-text-brand-default, #0d4e97);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* — Sort Control — up/down ikon çifti, 24×24 her biri */

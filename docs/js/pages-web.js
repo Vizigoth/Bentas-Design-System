@@ -34,6 +34,7 @@ const NAV_WEB = [
           { label: 'Data Table',                id: 'components/data-table' },
           { label: 'Frozen Column First',  id: 'components/data-table-frozen-column' },
           { label: 'Frozen Column Last',   id: 'components/data-table-frozen-column-last' },
+          { label: 'Data Table Toolbar',   id: 'components/data-table-toolbar' },
         ]
       },
       { label: 'Dialog',            id: 'components/dialog' },
@@ -9320,6 +9321,7 @@ function gridCellHtml(opts) {
   const leading  = o.leading || 'none';
   const showContent = o.showContent !== 'off';
   const contentText = o.contentText || 'Grid Cell';
+  const contentLink = o.contentLink === true;
   const trailing = o.trailing || 'none';
   const showRight = o.showRight === 'on';
   const width = o.width || 180;
@@ -9345,7 +9347,7 @@ function gridCellHtml(opts) {
 
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const leadingHtml  = gridLeadingHtml(leading);
-  const contentHtml  = showContent ? `<span class="bt-grid__content">${contentText}</span>` : '';
+  const contentHtml  = showContent ? `<span class="bt-grid__content${contentLink ? ' bt-grid__content--link' : ''}" ${contentLink ? 'onclick="void(0)" role="link" tabindex="0"' : ''}>${contentText}</span>` : '';
   const trailingHtml = gridTrailingHtml(trailing);
   const rightHtml    = showRight ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
 
@@ -9451,25 +9453,25 @@ const GRID_TABLE_STATUS_OPTS = [
   { key: 'switch', label: 'Switch' },
 ];
 const GRID_TABLE_ACTIONS_OPTS = [
-  { key: 'none',     label: 'None' },
-  { key: 'button',   label: 'Button' },
-  { key: 'textbox',  label: 'Inline TextBox' },
-  { key: 'dropdown', label: 'Inline Dropdown' },
+  { key: 'none',     label: 'Yok' },
+  { key: 'button',   label: 'Buton' },
+  { key: 'textbox',  label: 'Satır İçi TextBox' },
+  { key: 'dropdown', label: 'Satır İçi Dropdown' },
 ];
 // department/email/location/lastLogin — sadece Frozen Column sayfasındaki geniş
 // (çok kolonlu) tablo için eklendi, ana Data Table playground'u bu alanları
 // kullanmıyor (bkz. HISTORY.md).
 const _gridTableRowsData = [
-  { name: 'Emre Göçer',    role: 'Designer',           department: 'Design',       email: 'emre.gocer@bentas.com',    location: 'İstanbul', lastLogin: '2 saat önce' },
-  { name: 'Ayşe Yılmaz',   role: 'Product Manager',    department: 'Product',      email: 'ayse.yilmaz@bentas.com',   location: 'Ankara',   lastLogin: 'Dün' },
-  { name: 'Mert Demir',    role: 'Engineer',           department: 'Engineering',  email: 'mert.demir@bentas.com',    location: 'İzmir',    lastLogin: '3 gün önce' },
-  { name: 'Zeynep Kaya',   role: 'Marketing',          department: 'Marketing',    email: 'zeynep.kaya@bentas.com',   location: 'İstanbul', lastLogin: '5 saat önce' },
-  { name: 'Can Aydın',     role: 'QA Engineer',        department: 'Engineering',  email: 'can.aydin@bentas.com',     location: 'Uzaktan',  lastLogin: '1 hafta önce' },
-  { name: 'Elif Şahin',    role: 'Data Analyst',       department: 'Data',         email: 'elif.sahin@bentas.com',    location: 'İstanbul', lastLogin: 'Az önce' },
-  { name: 'Burak Yıldız',  role: 'Backend Engineer',   department: 'Engineering',  email: 'burak.yildiz@bentas.com',  location: 'Bursa',    lastLogin: '4 saat önce' },
-  { name: 'Selin Arslan',  role: 'HR Specialist',      department: 'HR',           email: 'selin.arslan@bentas.com',  location: 'Ankara',   lastLogin: '2 gün önce' },
-  { name: 'Onur Kurt',     role: 'DevOps Engineer',    department: 'Engineering',  email: 'onur.kurt@bentas.com',     location: 'Uzaktan',  lastLogin: 'Dün' },
-  { name: 'Deniz Aksoy',   role: 'Customer Success',   department: 'Customer Success', email: 'deniz.aksoy@bentas.com', location: 'İstanbul', lastLogin: '6 saat önce' },
+  { id: 1001, name: 'Emre Göçer',    role: 'Designer',           department: 'Design',       email: 'emre.gocer@bentas.com',    location: 'İstanbul', lastLogin: '2 saat önce' },
+  { id: 1002, name: 'Ayşe Yılmaz',   role: 'Product Manager',    department: 'Product',      email: 'ayse.yilmaz@bentas.com',   location: 'Ankara',   lastLogin: 'Dün' },
+  { id: 1003, name: 'Mert Demir',    role: 'Engineer',           department: 'Engineering',  email: 'mert.demir@bentas.com',    location: 'İzmir',    lastLogin: '3 gün önce' },
+  { id: 1004, name: 'Zeynep Kaya',   role: 'Marketing',          department: 'Marketing',    email: 'zeynep.kaya@bentas.com',   location: 'İstanbul', lastLogin: '5 saat önce' },
+  { id: 1005, name: 'Can Aydın',     role: 'QA Engineer',        department: 'Engineering',  email: 'can.aydin@bentas.com',     location: 'Uzaktan',  lastLogin: '1 hafta önce' },
+  { id: 1006, name: 'Elif Şahin',    role: 'Data Analyst',       department: 'Data',         email: 'elif.sahin@bentas.com',    location: 'İstanbul', lastLogin: 'Az önce' },
+  { id: 1007, name: 'Burak Yıldız',  role: 'Backend Engineer',   department: 'Engineering',  email: 'burak.yildiz@bentas.com',  location: 'Bursa',    lastLogin: '4 saat önce' },
+  { id: 1008, name: 'Selin Arslan',  role: 'HR Specialist',      department: 'HR',           email: 'selin.arslan@bentas.com',  location: 'Ankara',   lastLogin: '2 gün önce' },
+  { id: 1009, name: 'Onur Kurt',     role: 'DevOps Engineer',    department: 'Engineering',  email: 'onur.kurt@bentas.com',     location: 'Uzaktan',  lastLogin: 'Dün' },
+  { id: 1010, name: 'Deniz Aksoy',   role: 'Customer Success',   department: 'Customer Success', email: 'deniz.aksoy@bentas.com', location: 'İstanbul', lastLogin: '6 saat önce' },
 ];
 
 function gridTableColumns(p) {
@@ -9481,6 +9483,7 @@ function gridTableColumns(p) {
   const actionsContent = p.actionsContent || 'button';
   return [
     showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
+    { width: 60, headerText: 'ID', field: 'id', contentLink: true },
     { width: 200, headerText: 'Name', cellLeading: nameLeading, field: 'name', sort: showSort },
     { width: 160, headerText: 'Role', field: 'role', filter: showFilter },
     statusContent  !== 'none' ? { width: 140, headerText: 'Status',  cellTrailing: statusContent } : null,
@@ -9527,6 +9530,7 @@ function gridTableHtml(props) {
         trailing: c.cellTrailing || 'none',
         showContent: c.field ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
+        contentLink: !!c.contentLink,
       })).join('')}</div>`).join('');
 
   // .bt-grid__body — Header'dan ayrı, kendi başına scroll olabilen bir
@@ -9571,13 +9575,15 @@ function gridTableCss(_, props) {
 // sabit kalır.
 const GRID_FROZEN_COUNT_OPTS = [
   { key: '1', label: '1 (Checkbox)' },
-  { key: '2', label: '2 (Checkbox + Name)' },
+  { key: '2', label: '2 (Checkbox + ID)' },
+  { key: '3', label: '3 (Checkbox + ID + Name)' },
 ];
 
 function gridFrozenColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 60,  headerText: 'ID',          field: 'id', contentLink: true },
     { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
     { width: 140, headerText: 'Role',        field: 'role' },
     { width: 150, headerText: 'Department',  field: 'department' },
@@ -9625,6 +9631,7 @@ function gridFrozenTableHtml(props) {
         trailing: c.cellTrailing || 'none',
         showContent: c.field ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
+        contentLink: !!c.contentLink,
         sticky: c.sticky,
         frozenEdge: c.isLastFrozen,
       })).join('')}</div>`).join('');
@@ -9710,7 +9717,7 @@ PAGES_WEB['components/data-table-frozen-column'] = {
         props: [
           { key: 'rowCount',     label: 'Rows',            group: 'Table', options: GRID_TABLE_ROW_OPTS,     default: '6' },
           { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
-          { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
+          { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '3' },
         ],
         preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenTableHtml(p),
@@ -9742,6 +9749,7 @@ function gridFrozenLastColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 60,  headerText: 'ID',          field: 'id', contentLink: true },
     { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
     { width: 140, headerText: 'Role',        field: 'role' },
     { width: 150, headerText: 'Department',  field: 'department' },
@@ -9798,6 +9806,7 @@ function gridFrozenLastTableHtml(props) {
         trailing: c.cellTrailing || 'none',
         showContent: c.field ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
+        contentLink: !!c.contentLink,
         sticky: c.sticky,
         frozenEdge: c.isLastFrozen,
         stickyRight: c.stickyRight,
@@ -9893,7 +9902,7 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
         props: [
           { key: 'rowCount',    label: 'Rows',           group: 'Table', options: GRID_TABLE_ROW_OPTS,    default: '6' },
           { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
-          { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
+          { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '3' },
         ],
         preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenLastTableHtml(p),
@@ -9912,6 +9921,146 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
           <tr><td>Her İki Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5</td></tr>
           <tr><td>Sol Donmuş Kenar</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051)</td></tr>
           <tr><td>Sağ Donmuş Kenar</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>-2px 0 2px rgba(16,24,40,0.051)</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Data Table Toolbar ───────────────────────────────────────────
+// Figma: Container (border+radius+padding+gap) içinde Toolbar + DataTable.
+// Toolbar sol: Add (primary-solid) + Edit + Delete (secondary-flat), sağ: Search (320px, icon sağda).
+const _tbToolbarIconSearch = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+const _tbToolbarIconPlus   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+// Edit/Delete ikonları — actions menüsündeki (_gridIconEditItem/_gridIconTrashItem) ile aynı
+const _tbToolbarIconEdit   = _gridIconEditItem;
+const _tbToolbarIconDelete = _gridIconTrashItem;
+
+function gridToolbarHtml(p) {
+  const showAdd    = (p.showAdd    || 'on') !== 'off';
+  const showEdit   = (p.showEdit   || 'on') !== 'off';
+  const showDelete = (p.showDelete || 'on') !== 'off';
+  const showSearch = (p.showSearch || 'on') !== 'off';
+
+  const addHtml    = showAdd    ? `<button class="bt-btn bt-btn--sm bt-btn--primary-solid">${_tbToolbarIconPlus} Add</button>` : '';
+  const editHtml   = showEdit   ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat">${_tbToolbarIconEdit} Edit</button>` : '';
+  const deleteHtml = showDelete ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat">${_tbToolbarIconDelete} Delete</button>` : '';
+  const searchHtml = showSearch ? `
+    <div class="bt-tbx bt-tbx--sm bt-tbx--default bt-grid-toolbar__search">
+      <div class="bt-tbx__input">
+        <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Search" /></div>
+        <div class="bt-grid-toolbar__sep"></div>
+        <div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbToolbarIconSearch}</span></div>
+      </div>
+    </div>` : '';
+
+  return `<div class="bt-grid-toolbar">
+  <div class="bt-grid-toolbar__left">${addHtml}${editHtml}${deleteHtml}</div>
+  <div class="bt-grid-toolbar__right">${searchHtml}</div>
+</div>`;
+}
+
+function gridToolbarCss(_, p) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const lines = [
+    '.bt-grid-panel {',
+    ln('display', 'flex'),
+    ln('flex-direction', 'column'),
+    ln('gap', 'var(--bt-space-xl)  /* 12px */'),
+    ln('padding', 'var(--bt-space-2xl)  /* 16px */'),
+    ln('background', 'var(--bt-base-default)  /* #ffffff */'),
+    ln('border', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'),
+    ln('border-radius', 'var(--bt-radius-sm)  /* 4px */'),
+    '}',
+    '',
+    '.bt-grid-toolbar {',
+    ln('display', 'flex'),
+    ln('align-items', 'center'),
+    ln('justify-content', 'space-between'),
+    '}',
+    '',
+    '.bt-grid-toolbar__left { display: flex; align-items: center; gap: 10px; }',
+    '.bt-grid-toolbar__search { width: 320px; }',
+    '.bt-grid-toolbar__sep {',
+    ln('width', '1px'),
+    ln('align-self', 'stretch'),
+    ln('background', 'var(--bt-border-primary-default)  /* #d4d4d4 */'),
+    '}',
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/data-table-toolbar'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table Toolbar'],
+  render(tab) {
+    const title = 'Data Table Toolbar';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Panel ve Toolbar token'ları — tablo token'ları için bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a> sayfası.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Panel</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Panel</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>1px solid #d4d4d4</td></tr>
+          <tr><td>Panel</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Panel</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Panel</td><td>Gap (toolbar → tablo)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Toolbar</td><td>Sol butonlar gap</td><td>—</td><td>10px</td></tr>
+          <tr><td>Add</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--primary-solid')}</td></tr>
+          <tr><td>Edit / Delete</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--secondary-flat')}</td></tr>
+          <tr><td>Search</td><td>Width</td><td>—</td><td>320px · ${tk('bt-tbx--sm')} · icon sağda</td></tr>
+          <tr><td>Search separator</td><td>Width / Color</td><td>${tk('--bt-border-primary-default')}</td><td>1px / #d4d4d4</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Data Table Toolbar kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Toolbar + tablo'yu her zaman ${tk('.bt-grid-panel')} içine al — border, radius ve padding buradan gelir</li>
+        <li>Sol tarafa birincil aksiyonları (Add, Edit, Delete) koy — sağ tarafa search bırak</li>
+        <li>Satır seçilmediğinde Edit/Delete butonlarını devre dışı bırak</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Sol tarafa 4'ten fazla aksiyon ekleme — fazlası overflow menu (…) arkasına taşınmalı</li>
+        <li>Panel olmadan toolbar kullanma — border ve spacing tutarsız görünür</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Data Table'ı saran ${tk('.bt-grid-panel')} ve onun içindeki aksiyon çubuğu — sol: Add / Edit / Delete, sağ: Search (320px, icon sağda). Panel border, border-radius ve padding'i sağlar; toolbar ve tablo kendi border'larını taşımaz.</p>
+
+      <h2 id="Data Table Toolbar">Data Table Toolbar</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-toolbar-overview',
+        variants: [{ key: 'default', label: 'Data Table Toolbar' }],
+        props: [
+          { key: 'showAdd',    label: 'Add',    group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
+          { key: 'showEdit',   label: 'Edit',   group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
+          { key: 'showDelete', label: 'Delete', group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
+          { key: 'showSearch', label: 'Search', group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
+          { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '6' },
+          { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
+        ],
+        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;width:800px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}${gridTableHtml(p)}</div></div></div>`,
+        code:    (v, p) => `<div class="bt-grid-panel">\n  ${gridToolbarHtml(p)}\n  ${gridTableHtml(p)}\n</div>`,
+        css:     (v, p) => gridToolbarCss(v, p),
+      })}
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Panel</td><td>Border / Radius / Padding</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-radius-sm')} / ${tk('--bt-space-2xl')}</td><td>#d4d4d4 / 4px / 16px</td></tr>
+          <tr><td>Panel gap</td><td>Toolbar → Tablo arası</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Toolbar sol</td><td>Add / Edit / Delete gap</td><td>—</td><td>10px</td></tr>
+          <tr><td>Search</td><td>Width + icon konumu</td><td>—</td><td>320px · sağda separator + arama ikonu</td></tr>
         </tbody>
       </table>
     `};
