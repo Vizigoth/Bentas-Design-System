@@ -9185,6 +9185,7 @@ window.btGridSelectAll = function(el) {
   table.querySelectorAll('.bt-grid__row--clickable').forEach(row => {
     row.classList.toggle('bt-grid__row--active', checked);
   });
+  btGridUpdateToolbar(table);
 };
 
 // Satıra (herhangi bir hücresine) tıklanınca sadece bt-grid__row--active
@@ -9196,11 +9197,23 @@ window.btGridSelectAll = function(el) {
 // olmadığı için gerekli) — satır bağlamında bu handler'ın SONRADAN çalışıp
 // checkbox'ı satırın yeni active durumuna göre kesin (force) set etmesi
 // sayesinde hangi hedefe tıklanırsa tıklansın ikisi senkron kalıyor.
+// Toolbar'daki [data-grid-row-action] butonlarını seçili satır durumuna göre
+// enable/disable eder — .bt-grid-panel içindeki toolbar'ı otomatik bulur.
+window.btGridUpdateToolbar = function(grid) {
+  const panel = grid && grid.closest('.bt-grid-panel');
+  if (!panel) return;
+  const hasSelection = !!panel.querySelector('.bt-grid__row--active');
+  panel.querySelectorAll('[data-grid-row-action]').forEach(btn => {
+    btn.disabled = !hasSelection;
+  });
+};
+
 window.btGridRowToggle = function(row) {
   row.classList.toggle('bt-grid__row--active');
   const active = row.classList.contains('bt-grid__row--active');
   const box = row.querySelector('.bt-checkbox__box');
   if (box) box.classList.toggle('bt-checkbox__box--checked', active);
+  btGridUpdateToolbar(row.closest('.bt-grid'));
 };
 
 // Actions kolonundaki "More" butonunun açtığı gerçek çalışır overflow menu
@@ -9943,8 +9956,8 @@ function gridToolbarHtml(p) {
   const showSearch = (p.showSearch || 'on') !== 'off';
 
   const addHtml    = showAdd    ? `<button class="bt-btn bt-btn--sm bt-btn--primary-solid">${_tbToolbarIconPlus} Add</button>` : '';
-  const editHtml   = showEdit   ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat">${_tbToolbarIconEdit} Edit</button>` : '';
-  const deleteHtml = showDelete ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat">${_tbToolbarIconDelete} Delete</button>` : '';
+  const editHtml   = showEdit   ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat" disabled data-grid-row-action>${_tbToolbarIconEdit} Edit</button>` : '';
+  const deleteHtml = showDelete ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat" disabled data-grid-row-action>${_tbToolbarIconDelete} Delete</button>` : '';
   const searchHtml = showSearch ? `
     <div class="bt-tbx bt-tbx--sm bt-tbx--default bt-grid-toolbar__search">
       <div class="bt-tbx__input">
