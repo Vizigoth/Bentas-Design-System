@@ -5422,6 +5422,50 @@ code {
   border: none;
 }
 
+/* bt-grid-frozen-container — bt-grid-container'ın Frozen Column varyantı.
+   bt-grid-scroll-x'i sarmalar; fill/border davranışı aynı ANCAK
+   .bt-grid__body'ye overflow:auto VERİLMEZ — verilirse body bağımsız bir
+   scroll container'a dönüşür ve position:sticky çalışmaz (bkz. HISTORY.md). */
+.bt-grid-frozen-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--bt-base-default, #ffffff);
+  border-left: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-right: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  box-sizing: border-box;
+}
+.bt-grid-frozen-container .bt-grid-scroll-x {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.bt-grid-frozen-container .bt-grid {
+  height: 100%;
+  display: inline-flex;   /* inline-flex → genişlik içerik bazlı kalır, yatay taşma oluşur */
+  flex-direction: column;
+}
+.bt-grid-frozen-container .bt-grid__body {
+  flex: 1;
+  min-height: 0;
+  /* overflow kasıtlı bırakılmadı — görünür kalırsa sticky doğru çalışır */
+}
+.bt-grid-frozen-container .bt-grid__no-record {
+  flex: 1;
+  height: auto;
+  border: none;
+}
+.bt-grid-frozen-container .bt-grid__cell--left,
+.bt-grid-frozen-container .bt-grid__cell--right,
+.bt-grid-frozen-container .bt-grid__header-cell--left,
+.bt-grid-frozen-container .bt-grid__header-cell--right {
+  border-left: none;
+  border-right: none;
+}
+
 /* Opsiyonel yatay-scroll sarmalayıcı — Frozen Column sayfasında kolon sayısı
    fazla olup toplam genişlik konteynerden taştığında yatay scrollbar açar;
    donmuş (sticky) kolonların left ofseti bu sarmalayıcının scroll pozisyonuna
@@ -5450,7 +5494,9 @@ code {
    temsil ettiği için birebir var() ile referans verilemiyor (kullanıcı
    isteğiyle, bkz. HISTORY.md; önceden ilgisiz bir hardcoded rgba(...,0.08)
    kullanılıyordu). */
-.bt-grid__header-cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.051); }
+.bt-grid__header-cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.06), 3px 0 3px rgba(16,24,40,0.10); }
+/* Sağdan donmuş kolonun sol kenarı — aynı renk/blur, yön ters */
+.bt-grid__header-cell--frozen-right-edge { box-shadow: -2px 0 2px rgba(16,24,40,0.06), -3px 0 3px rgba(16,24,40,0.10); }
 .bt-grid__header-cell--hover  { background: var(--bt-base-subtle, #f5f5f5); }
 .bt-grid__header-cell--active { background: var(--bt-surface-brand-subtle, #e2edfc); }
 /* Building Blocks'taki tekil Header Cell playground'unda gerçek mouse
@@ -5476,7 +5522,9 @@ code {
    --bt-shadow-xs'in (0 1px 2px rgba(16,24,40,0.051)) rengi/blur'u AYNEN
    kullanılıyor, sadece yönü 90° döndürülüp yatay bir "edge shadow"a
    çevrildi (0 1px → 2px 0) — bkz. header cell'deki aynı kuralın notu. */
-.bt-grid__cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.051); }
+.bt-grid__cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.06), 3px 0 3px rgba(16,24,40,0.10); }
+/* Sağdan donmuş kolonun sol kenarı — aynı renk/blur, yön ters */
+.bt-grid__cell--frozen-right-edge { box-shadow: -2px 0 2px rgba(16,24,40,0.06), -3px 0 3px rgba(16,24,40,0.10); }
 .bt-grid__cell--hover  { background: var(--bt-base-subtle, #f5f5f5); }
 .bt-grid__cell--active { background: var(--bt-surface-brand-subtle, #e2edfc); }
 /* Building Blocks'taki tekil Grid Cell playground'unda gerçek mouse hover'ı

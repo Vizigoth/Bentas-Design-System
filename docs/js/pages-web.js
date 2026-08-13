@@ -32,7 +32,8 @@ const NAV_WEB = [
       {
         label: 'Data Table', children: [
           { label: 'Data Table',                id: 'components/data-table' },
-          { label: 'Data Table Frozen Column',  id: 'components/data-table-frozen-column' },
+          { label: 'Frozen Column First',  id: 'components/data-table-frozen-column' },
+          { label: 'Frozen Column Last',   id: 'components/data-table-frozen-column-last' },
         ]
       },
       { label: 'Dialog',            id: 'components/dialog' },
@@ -9282,14 +9283,21 @@ function gridHeaderCellHtml(opts) {
   // diğer TÜM çağrılarda undefined/false kalır, mevcut davranış değişmez.
   const sticky = o.sticky;
   const frozenEdge = o.frozenEdge === true;
+  const stickyRight = o.stickyRight;
+  const frozenRightEdge = o.frozenRightEdge === true;
 
   const cls = [
     'bt-grid__header-cell',
     `bt-grid__header-cell--${position}`,
     state !== 'default' ? `bt-grid__header-cell--${state}` : '',
     frozenEdge ? 'bt-grid__header-cell--frozen-edge' : '',
+    frozenRightEdge ? 'bt-grid__header-cell--frozen-right-edge' : '',
   ].filter(Boolean).join(' ');
-  const stickyStyle = sticky != null ? `position:sticky;left:${sticky}px;z-index:5;` : '';
+  const stickyStyle = sticky != null
+    ? `position:sticky;left:${sticky}px;z-index:5;`
+    : stickyRight != null
+      ? `position:sticky;right:${stickyRight}px;z-index:5;`
+      : '';
 
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const checkboxHtml = showCheckbox ? gridHeaderCheckboxHtml() : '';
@@ -9319,14 +9327,21 @@ function gridCellHtml(opts) {
   // diğer TÜM çağrılarda undefined/false kalır, mevcut davranış değişmez.
   const sticky = o.sticky;
   const frozenEdge = o.frozenEdge === true;
+  const stickyRight = o.stickyRight;
+  const frozenRightEdge = o.frozenRightEdge === true;
 
   const cls = [
     'bt-grid__cell',
     `bt-grid__cell--${position}`,
     state !== 'default' ? `bt-grid__cell--${state}` : '',
     frozenEdge ? 'bt-grid__cell--frozen-edge' : '',
+    frozenRightEdge ? 'bt-grid__cell--frozen-right-edge' : '',
   ].filter(Boolean).join(' ');
-  const stickyStyle = sticky != null ? `position:sticky;left:${sticky}px;z-index:5;` : '';
+  const stickyStyle = sticky != null
+    ? `position:sticky;left:${sticky}px;z-index:5;`
+    : stickyRight != null
+      ? `position:sticky;right:${stickyRight}px;z-index:5;`
+      : '';
 
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const leadingHtml  = gridLeadingHtml(leading);
@@ -9697,7 +9712,7 @@ PAGES_WEB['components/data-table-frozen-column'] = {
           { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
           { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
         ],
-        preview: (v, p) => `<div style="padding:24px;">${gridFrozenTableHtml(p)}</div>`,
+        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenTableHtml(p),
         css:     (v, p) => gridFrozenTableCss(v, p),
       })}
@@ -9712,6 +9727,191 @@ PAGES_WEB['components/data-table-frozen-column'] = {
           <tr><td>Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
           <tr><td>Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5 (kaydırılan hücrelerin üzerinde kalması için)</td></tr>
           <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — yönü yatay çevrilmiş</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Data Table Frozen Column Last ────────────────────────────────
+// Frozen Column First ile aynı tablo yapısı — ek olarak sağdaki Actions
+// kolonu da position:sticky;right:0 ile dondurulur. Sola dondurulmuş
+// kolonlar (Checkbox / Checkbox+Name) aynı şekilde kalır; Actions'ın
+// sol kenarına ters yönlü bir edge gölgesi eklenir.
+function gridFrozenLastColumns(p) {
+  const frozenCount = parseInt(p.frozenCount || '2', 10);
+  const cols = [
+    { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
+    { width: 140, headerText: 'Role',        field: 'role' },
+    { width: 150, headerText: 'Department',  field: 'department' },
+    { width: 210, headerText: 'Email',       field: 'email' },
+    { width: 120, headerText: 'Location',    field: 'location' },
+    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
+    { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
+    { width: 130, headerText: 'Actions',     cellTrailing: 'button', frozenRight: true },
+  ];
+  let left = 0;
+  return cols.map((c, i) => {
+    const frozen = i < frozenCount;
+    const sticky = frozen ? left : null;
+    if (frozen) left += c.width;
+    const frozenRight = !!c.frozenRight;
+    return Object.assign({}, c, {
+      frozen,
+      sticky,
+      isLastFrozen: frozen && i === frozenCount - 1,
+      frozenRight,
+      stickyRight: frozenRight ? 0 : undefined,
+    });
+  });
+}
+
+function gridFrozenLastTableHtml(props) {
+  const p = props || {};
+  const rowCount = parseInt(p.rowCount != null ? p.rowCount : '6', 10);
+  const rowState = p.rowState || 'default';
+  const showNoRecord = rowCount === 0;
+  const cols = gridFrozenLastColumns(p);
+  const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+
+  const headerRow = cols.map((c, i) => gridHeaderCellHtml({
+    position: posFor(i),
+    width: c.width,
+    showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
+    showContent: c.headerText ? 'on' : 'off',
+    contentText: c.headerText || '',
+    sticky: c.sticky,
+    frozenEdge: c.isLastFrozen,
+    stickyRight: c.stickyRight,
+    frozenRightEdge: c.frozenRight,
+  })).join('');
+
+  const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
+  const bodyHtml = showNoRecord
+    ? gridNoRecordHtml({ width: totalWidth })
+    : _gridTableRowsData.slice(0, rowCount).map(row => `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+        position: posFor(i),
+        state: rowState,
+        width: c.width,
+        leading: c.cellLeading || 'none',
+        trailing: c.cellTrailing || 'none',
+        showContent: c.field ? 'on' : 'off',
+        contentText: c.field ? row[c.field] : '',
+        sticky: c.sticky,
+        frozenEdge: c.isLastFrozen,
+        stickyRight: c.stickyRight,
+        frozenRightEdge: c.frozenRight,
+      })).join('')}</div>`).join('');
+
+  return `<div class="bt-grid-scroll-x"><div class="bt-grid">
+    <div class="bt-grid__row">${headerRow}</div>
+    <div class="bt-grid__body">${bodyHtml}</div>
+  </div></div>`;
+}
+
+function gridFrozenLastTableCss(_, props) {
+  const p = props || {};
+  const cols = gridFrozenLastColumns(p);
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const leftFrozen  = cols.filter(c => c.frozen);
+  const rightFrozen = cols.filter(c => c.frozenRight);
+  const lines = [
+    '.bt-grid-scroll-x {',
+    ln('overflow-x', 'auto'),
+    ln('max-width', '100%'),
+    `}`,
+    '',
+    '.bt-grid {',
+    ln('display', 'inline-flex'),
+    ln('flex-direction', 'column'),
+    `}`,
+    '',
+    `/* ${cols.length} kolon, toplam ${cols.reduce((s,c)=>s+c.width,0)}px */`,
+    ...cols.map((c, i) => `.bt-grid__cell:nth-child(${i + 1}), .bt-grid__header-cell:nth-child(${i + 1}) { width: ${c.width}px; }`),
+    '',
+    `/* İlk ${leftFrozen.length} kolon soldan donmuş */`,
+    ...leftFrozen.map(c => {
+      const idx = cols.indexOf(c) + 1;
+      return `.bt-grid__cell:nth-child(${idx}), .bt-grid__header-cell:nth-child(${idx}) {\n${ln('position', 'sticky')}\n${ln('left', c.sticky + 'px')}\n${ln('z-index', '5')}\n}`;
+    }),
+    '',
+    `/* Son ${rightFrozen.length} kolon sağdan donmuş */`,
+    ...rightFrozen.map(c => {
+      const idx = cols.indexOf(c) + 1;
+      return `.bt-grid__cell:nth-child(${idx}), .bt-grid__header-cell:nth-child(${idx}) {\n${ln('position', 'sticky')}\n${ln('right', '0px')}\n${ln('z-index', '5')}\n}`;
+    }),
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/data-table-frozen-column-last'] = {
+  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  toc:  ['Frozen Column Last'],
+  render(tab) {
+    const title = 'Frozen Column Last';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Frozen Column Last için kullanılan ek token'lar — sol taraf token'ları Frozen Column First ile aynıdır. Sağdan donmuş kenar için ters yönlü gölge eklenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Scroll Wrapper</td><td>Class</td><td>—</td><td>${tk('.bt-grid-scroll-x')} (overflow-x: auto)</td></tr>
+          <tr><td>Soldan Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / left / 5</td></tr>
+          <tr><td>Sağdan Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / right: 0 / 5</td></tr>
+          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — sağa doğru</td></tr>
+          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>${tk('--bt-shadow-xs')}</td><td>-2px 0 2px rgba(16,24,40,0.051) — sola doğru</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Frozen Column Last kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Actions kolonunu sağdan dondur — kullanıcı yatay scroll yaparken eylem butonlarına her zaman erişebilmeli</li>
+        <li>Sol ve sağ donmuş alanların her ikisinde de kenar gölgesi bırak — ayrım noktaları net görünmeli</li>
+        <li>Çok kolonlu, gerçekten yatay scroll gerektiren tablolarda kullan</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Birden fazla kolonu sağdan dondurma — bu, kaydırılabilir alanı ciddi ölçüde daraltır</li>
+        <li>Az kolonlu tablolarda kullanma — scroll olmayan bir tabloda sticky anlamsız kalır</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Frozen Column First ile aynı tablo yapısı — ek olarak sağdaki <strong>Actions</strong> kolonu da <code style="font-family:var(--mono);font-size:12px;">position: sticky; right: 0</code> ile sabit tutulur. Kaydırma sırasında hem sol kimlik kolonları hem sağ eylem kolonu görünür kalırken orta kolonlar kayar.</p>
+
+      <h2 id="Frozen Column Last">Frozen Column Last</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-frozen-last-overview',
+        variants: [{ key: 'default', label: 'Frozen Column Last' }],
+        props: [
+          { key: 'rowCount',    label: 'Rows',           group: 'Table', options: GRID_TABLE_ROW_OPTS,    default: '6' },
+          { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
+          { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
+        ],
+        preview: (v, p) => `<div style="display:flex;justify-content:center;padding:24px 24px 40px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:356px;width:900px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
+        code:    (v, p) => gridFrozenLastTableHtml(p),
+        css:     (v, p) => gridFrozenLastTableCss(v, p),
+      })}
+
+      <p class="page-desc">Tabloyu yatay kaydır — soldan seçilen kolonlar (Checkbox / Checkbox + Name) ve sağdaki <strong>Actions</strong> kolonu yerinde kalırken orta kolonlar (Role/Department/Email/Location/Status/Last Login) altından kayar. Her iki donmuş alanın kenarında ince gölge, sınırı görsel olarak ayırır.</p>
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Scroll Wrapper</td><td>Overflow</td><td>—</td><td>${tk('.bt-grid-scroll-x')} → overflow-x: auto</td></tr>
+          <tr><td>Sol Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
+          <tr><td>Sağ Donmuş Hücre</td><td>Position / Right</td><td>—</td><td>sticky / 0px</td></tr>
+          <tr><td>Her İki Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5</td></tr>
+          <tr><td>Sol Donmuş Kenar</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051)</td></tr>
+          <tr><td>Sağ Donmuş Kenar</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>-2px 0 2px rgba(16,24,40,0.051)</td></tr>
         </tbody>
       </table>
     `};
