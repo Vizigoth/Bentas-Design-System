@@ -8790,7 +8790,7 @@ const BADGE_COLOR_MAP = {
 
 const BADGE_COLORS = ['blue','green','yellow','red','sky','purple','cyan','emerald','orange'];
 
-const _bdgLoader = (clr) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
+const _bdgLoader = (clr) => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${clr}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
 const _bdgBase  = `display:inline-flex;align-items:center;gap:var(--bt-space-2xs, 2px);padding:var(--bt-space-2xs, 2px) var(--bt-space-md, 8px);border-radius:var(--bt-radius-full, 9999px);font-size:var(--bt-text-xs-size, 12px);font-weight:400;line-height:var(--bt-text-xs-lh, 16px);white-space:nowrap;font-family:var(--font);`;
 
 function badgeHtml(_, p) {
@@ -8800,6 +8800,10 @@ function badgeHtml(_, p) {
   const cStyle   = pr.colorStyle || 'basic';
   const showL    = pr.leftIcon   !== 'off';
   const showR    = pr.rightIcon  !== 'off';
+  // label — varsayılan Badge sayfasının kendi placeholder metni ("Badge");
+  // Grid'in Status Badge'i gibi özel kullanımlar kendi metnini (örn.
+  // "Active"/"Pending") geçebilir.
+  const label    = pr.label      || 'Badge';
 
   if (type === 'custom') {
     const cm     = BADGE_COLOR_MAP[color] || BADGE_COLOR_MAP.blue;
@@ -8808,12 +8812,12 @@ function badgeHtml(_, p) {
     const border = cStyle === 'colored' ? accent : 'var(--bt-border-default, #d4d4d4)';
     const text   = cStyle === 'colored' ? accent : 'var(--bt-text-default, #1a1a1a)';
     const iconClr= cStyle === 'colored' ? cm.accentHex : '#1a1a1a';
-    return `<span style="${_bdgBase}background:${bg};border:1px solid ${border};color:${text};">${showL ? _bdgLoader(iconClr) : ''}Badge${showR ? _bdgLoader(iconClr) : ''}</span>`;
+    return `<span style="${_bdgBase}background:${bg};border:1px solid ${border};color:${text};">${showL ? _bdgLoader(iconClr) : ''}${label}${showR ? _bdgLoader(iconClr) : ''}</span>`;
   }
 
   const cfg    = BADGE_TYPE_CFG[type] || BADGE_TYPE_CFG.solid;
   const border = cfg.border ? `border:${cfg.border};` : '';
-  return `<span style="${_bdgBase}background:${cfg.bg};${border}color:${cfg.text};">${showL ? _bdgLoader(cfg.icon) : ''}Badge${showR ? _bdgLoader(cfg.icon) : ''}</span>`;
+  return `<span style="${_bdgBase}background:${cfg.bg};${border}color:${cfg.text};">${showL ? _bdgLoader(cfg.icon) : ''}${label}${showR ? _bdgLoader(cfg.icon) : ''}</span>`;
 }
 
 function badgeCss(_, p) {
@@ -9091,9 +9095,13 @@ const _gridIconMoreHorizontal = `<svg width="16" height="16" viewBox="0 0 24 24"
 const _gridIconEditItem = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>`;
 const _gridIconCopyItem = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
 const _gridIconTrashItem = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+// lucide "siren" ikonu — Icon content kind'ı için (kullanıcı isteğiyle,
+// bkz. HISTORY.md), birebir path (WebFetch ile doğrulandı, elle çizilmedi).
+const _gridIconSiren = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/><path d="M12 12v6"/></svg>`;
 
-function gridControlIcon(icon) {
-  return `<span class="bt-grid__control-icon">${icon || _gridIconScan}</span>`;
+function gridControlIcon(icon, color) {
+  const style = color ? ` style="color:${color};"` : '';
+  return `<span class="bt-grid__control-icon"${style}>${icon || _gridIconScan}</span>`;
 }
 
 // Leading control (metinden önce) — Checkbox/Dot/Avatar/Avatar Group. Gerçek
@@ -9114,6 +9122,13 @@ function gridLeadingHtml(kind) {
         <span class="bt-avatar bt-avatar--xs bt-avatar--brand"><span class="bt-avatar__initials">EG</span></span>
         <span class="bt-avatar bt-avatar--xs"><span class="bt-avatar__initials">+5</span></span>
       </span>`;
+    case 'icon':
+      // Siren ikonu (_gridIconSiren, lucide'den birebir), varsayılan rengi
+      // --bt-icon-error-default — kullanıcı isteğiyle loader'dan değiştirildi
+      // (bkz. HISTORY.md). Diğer grid ikonlarının aksine (sort/filter/ellipsis,
+      // hepsi --bt-icon-primary-strong miras alır) bu ikon KENDİ rengini
+      // taşıyor — gridControlIcon()'ın yeni opsiyonel color param'ıyla.
+      return `<span class="bt-grid__control">${gridControlIcon(_gridIconSiren, 'var(--bt-icon-error-default, #b31d38)')}</span>`;
     default:
       return '';
   }
@@ -9124,10 +9139,18 @@ function gridLeadingHtml(kind) {
 // artık class değil fonksiyon tabanlı, bkz. Badge sayfası); TextBox/DropDown
 // → gerçek .bt-tbx yapısı, Label/Helper Text hücrede gösterilmez (Figma'da
 // da gizli — tablo hücresinde gereksiz).
-function gridTrailingHtml(kind) {
+function gridTrailingHtml(kind, opts) {
+  const o = opts || {};
   switch (kind) {
     case 'badge':
-      return `<span class="bt-grid__control">${badgeHtml('default', { type: 'solid', color: 'blue' })}</span>`;
+      // Basic Badge (type:custom, colorStyle:basic — açık renkli arka plan +
+      // nötr metin), sadece SOL tarafta loader ikonu — kullanıcı isteğiyle
+      // (bkz. HISTORY.md). badgeHtml'in kendi varsayılan ikonu zaten
+      // _bdgLoader olduğu için icon param'ı hiç geçilmiyor. Renk VE metin
+      // satır satır değişebilsin diye çağıran (gridCellHtml → tablo satırı)
+      // o.color/o.label ile besliyor, tek başına (Building Blocks
+      // önizlemesi gibi) çağrılırsa 'blue'/'Badge'e düşer.
+      return `<span class="bt-grid__control">${badgeHtml('default', { type: 'custom', color: o.color || 'blue', colorStyle: 'basic', leftIcon: 'on', rightIcon: 'off', label: o.label })}</span>`;
     case 'button':
       // Birincil aksiyon butonuna sık kullanılan bir özellik atanır, yanındaki
       // flat-base ikon-only "More" butonu gerçek çalışır bir dropdown/overflow
@@ -9379,6 +9402,8 @@ function gridCellHtml(opts) {
   const contentText = o.contentText || 'Grid Cell';
   const contentLink = o.contentLink === true;
   const trailing = o.trailing || 'none';
+  const trailingColor = o.trailingColor;
+  const trailingLabel = o.trailingLabel;
   const showRight = o.showRight === 'on';
   const width = o.width || 180;
   const fillWidth = o.fillWidth === true;
@@ -9405,7 +9430,7 @@ function gridCellHtml(opts) {
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const leadingHtml  = gridLeadingHtml(leading);
   const contentHtml  = showContent ? `<span class="bt-grid__content${contentLink ? ' bt-grid__content--link' : ''}">${contentText}</span>` : '';
-  const trailingHtml = gridTrailingHtml(trailing);
+  const trailingHtml = gridTrailingHtml(trailing, { color: trailingColor, label: trailingLabel });
   const rightHtml    = showRight ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
 
   const widthStyleC = fillWidth ? `flex:1;min-width:${width}px;` : `width:${width}px;`;
@@ -9499,26 +9524,67 @@ function gridCellCss(_, props) {
 // satırları gösterip kalan boşluğu sessizce dolduruyor. Kullanıcı isteğiyle
 // ayrı bir statik demo yerine bu şekilde entegre edildi, bkz. HISTORY.md.
 const GRID_TABLE_ROW_OPTS = [0,1,2,3,4,5,6,7,8,9,10].map(n => ({ key: String(n), label: n === 0 ? '0 (No Record)' : String(n) }));
-const GRID_TABLE_NAME_LEADING_OPTS = [
+// GRID_TABLE_CONTENT_OPTS — TÜM Grid Cell control tiplerini (Leading VE
+// Trailing ayrımı olmadan) tek bir listede toplayan, tamamen kolon-agnostik
+// "content kind" seçenek listesi. Önceden her kolonun kendi dar/hardcoded
+// seçenek listesi vardı (Name sadece Avatar/Avatar Group/Dot, Status sadece
+// Badge/Switch) — kullanıcı bunun yanlış olduğunu, ÖRNEK tablodaki HER
+// kolonun Properties panelinden bu TAM listeden HERHANGİ bir control tipine
+// (örn. Status → Avatar) değiştirilebilmesi gerektiğini belirtti (bkz.
+// HISTORY.md). Figma'daki GridCell component'inin (node 839:46982, bkz.
+// yukarıdaki not) Left/Checkbox/Dot/Avatar/Avatar Group/[content]/Badge/
+// Button/Switch/Inline Textbox/Inline DropDown/Right control envanteriyle
+// birebir eşleşiyor — kayıt sırası da o node'daki sırayla aynı.
+const GRID_TABLE_CONTENT_OPTS = [
   { key: 'none',        label: 'None' },
+  { key: 'checkbox',    label: 'Checkbox' },
+  { key: 'dot',         label: 'Dot' },
+  { key: 'icon',        label: 'Icon' },
   { key: 'avatar',      label: 'Avatar' },
   { key: 'avatarGroup', label: 'Avatar Group' },
-  { key: 'dot',         label: 'Dot' },
+  { key: 'badge',       label: 'Badge' },
+  { key: 'button',      label: 'Button' },
+  { key: 'switch',      label: 'Switch' },
+  { key: 'textbox',     label: 'Inline TextBox' },
+  { key: 'dropdown',    label: 'Inline Dropdown' },
 ];
-const GRID_TABLE_STATUS_OPTS = [
-  { key: 'none',   label: 'None' },
-  { key: 'badge',  label: 'Badge' },
-  { key: 'switch', label: 'Switch' },
-];
-const GRID_TABLE_ACTIONS_OPTS = [
-  { key: 'none',     label: 'Yok' },
-  { key: 'button',   label: 'Buton' },
-  { key: 'textbox',  label: 'Satır İçi TextBox' },
-  { key: 'dropdown', label: 'Satır İçi Dropdown' },
-];
+// Her "content kind" iki kategoriden birine ait: LEADING (metinden önce,
+// gridLeadingHtml) veya TRAILING (metinden sonra, gridTrailingHtml). Bir
+// kolon için seçilen kind'a göre cellLeading/cellTrailing'den SADECE biri
+// dolduruluyor — gridContentKindToSlots() bu eşlemeyi yapıyor.
+//
+// showText — LEADING kind'lar (Checkbox/Dot/Avatar/Avatar Group) metnin
+// ÖNÜNE gelen dekorasyonlardır, metinle birlikte var olurlar (Name'deki
+// avatar+isim gibi). TRAILING kind'lar (Badge/Button/Switch/Inline TextBox/
+// Inline Dropdown) ise kendi başına yeterli, HÜCRENİN TAMAMINI temsil eden
+// bağımsız control'lerdir — Figma'da da bu control'lerin yanında ayrıca
+// düz metin yok (Building Blocks'taki "Text + Badge" örneği bile aslında
+// showContent:'off' ile metni kapatıp SADECE badge'i gösteriyor). Bu yüzden
+// bir kolonun content kind'ı TRAILING ise metin (field) OTOMATİK gizlenir
+// (kullanıcı isteğiyle, bkz. HISTORY.md — önceden örn. Email'i Badge'e
+// çevirince hem email metni hem badge birlikte görünüyordu, bu YANLIŞTI).
+const GRID_LEADING_KINDS  = new Set(['checkbox', 'dot', 'icon', 'avatar', 'avatarGroup']);
+const GRID_TRAILING_KINDS = new Set(['badge', 'button', 'switch', 'textbox', 'dropdown']);
+function gridContentKindToSlots(kind) {
+  if (GRID_LEADING_KINDS.has(kind))  return { leading: kind,   trailing: 'none', showText: true };
+  if (GRID_TRAILING_KINDS.has(kind)) return { leading: 'none', trailing: kind,   showText: false };
+  return { leading: 'none', trailing: 'none', showText: true };
+}
 // department/email/location/lastLogin — sadece Frozen Column sayfasındaki geniş
 // (çok kolonlu) tablo için eklendi, ana Data Table playground'u bu alanları
 // kullanmıyor (bkz. HISTORY.md).
+// _gridStatusOptions — Status kolonundaki Badge'in rengi VE metni, satır
+// satır DÖNGÜSEL (kullanıcı isteğiyle: örnek tabloda tek renk/tek "Badge"
+// metni yerine Status kolonuna uygun, birden fazla renk+etiket demonstre
+// etmek için, bkz. HISTORY.md) — gerçek bir durum makinesi değil, sadece
+// görsel/içerik çeşitliliği için standart renk↔anlam eşlemesi (yeşil=olumlu,
+// sarı=bekleyen, kırmızı=olumsuz, mavi=devam eden).
+const _gridStatusOptions = [
+  { color: 'blue',   label: 'Active' },
+  { color: 'green',  label: 'Completed' },
+  { color: 'yellow', label: 'Pending' },
+  { color: 'red',    label: 'Inactive' },
+];
 const _gridTableRowsData = [
   { id: 10000001, name: 'Emre Göçer',    role: 'Designer',           department: 'Design',       email: 'emre.gocer@bentas.com',    location: 'İstanbul', lastLogin: '2 saat önce' },
   { id: 10000002, name: 'Ayşe Yılmaz',   role: 'Product Manager',    department: 'Product',      email: 'ayse.yilmaz@bentas.com',   location: 'Ankara',   lastLogin: 'Dün' },
@@ -9530,36 +9596,73 @@ const _gridTableRowsData = [
   { id: 10000008, name: 'Selin Arslan',  role: 'HR Specialist',      department: 'HR',           email: 'selin.arslan@bentas.com',  location: 'Ankara',   lastLogin: '2 gün önce' },
   { id: 10000009, name: 'Onur Kurt',     role: 'DevOps Engineer',    department: 'Engineering',  email: 'onur.kurt@bentas.com',     location: 'Uzaktan',  lastLogin: 'Dün' },
   { id: 10000010, name: 'Deniz Aksoy',   role: 'Customer Success',   department: 'Customer Success', email: 'deniz.aksoy@bentas.com', location: 'İstanbul', lastLogin: '6 saat önce' },
-];
+].map((row, i) => {
+  const s = _gridStatusOptions[i % _gridStatusOptions.length];
+  return Object.assign(row, { statusColor: s.color, statusLabel: s.label });
+});
 
 function gridTableColumns(p) {
   const showCheckboxCol = (p.showCheckboxCol || 'on') === 'on';
-  const nameLeading   = p.nameLeading   || 'avatar';
+  // Her kolonun content'i tek bir "kind" prop'undan (Properties panelindeki
+  // GRID_TABLE_CONTENT_OPTS dropdown'ı) türetiliyor — kind LEADING mi
+  // TRAILING mi bilmiyoruz/önemsemiyoruz, gridContentKindToSlots() ayırıyor.
+  // Status hâlâ tek istisna: kind 'none' ise kolon TAMAMEN kayboluyor
+  // (önceki davranış korundu — diğer 4 kolonda 'none' sadece control'ü
+  // kaldırıyor, metin/kolon kalıyor). `field` artık HER ZAMAN set —
+  // metnin gösterilip gösterilmeyeceğine (showContent) render aşamasında
+  // `cellTrailing==='none'` kontrolüyle karar veriliyor; TRAILING kind'lar
+  // (örn. Badge) bu sayede kolonun KENDİ verisini (row[field]) badge
+  // etiketi olarak kullanabiliyor — kullanıcı isteğiyle, bkz. HISTORY.md
+  // ("badge içeriğindeki text kolonun text'ine göre değişmeli").
+  const idContent     = gridContentKindToSlots(p.idContent     || 'none');
+  const nameContent   = gridContentKindToSlots(p.nameContent   || 'avatar');
+  const roleContent   = gridContentKindToSlots(p.roleContent   || 'dot');
+  const statusKind    = p.statusContent || 'badge';
+  const statusContent = gridContentKindToSlots(statusKind);
+  const emailContent  = gridContentKindToSlots(p.emailContent  || 'none');
   const showSort      = p.showSort === 'on';
   const showFilter    = p.showFilter === 'on';
-  const statusContent = p.statusContent  || 'badge';
   return [
     showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
-    { width: 90, headerText: 'ID', field: 'id', contentLink: true },
-    { width: 200, headerText: 'Name', cellLeading: nameLeading, field: 'name', sort: showSort },
-    { width: 160, headerText: 'Role', field: 'role', filter: showFilter },
-    statusContent  !== 'none' ? { width: 140, headerText: 'Status',  cellTrailing: statusContent } : null,
-    { width: 180, headerText: 'Email', field: 'email', fillWidth: true },
+    { width: 90,  headerText: 'ID',    field: 'id',   contentLink: true, cellLeading: idContent.leading,   cellTrailing: idContent.trailing },
+    { width: 200, headerText: 'Name',  field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort },
+    { width: 160, headerText: 'Role',  field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, filter: showFilter },
+    // statusLabel — _gridTableRowsData'da zaten var olan satır-bazlı
+    // Active/Completed/Pending/Inactive değeri; Status'un "field"ı bu
+    // (diğer kolonlarla AYNI field mekanizmasını kullanabilsin diye).
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
+    { width: 180, headerText: 'Email', field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
   ].filter(Boolean);
 }
 
 // Actions kolonu ayrı bir sayfada (data-table-actions) demo ediliyor.
 // Bu fonksiyon sadece o sayfa için çağrılır.
 function gridActionsColumns(p) {
-  const actionsContent = p.actionsContent || 'button';
+  // ID/Name/Role/Status/Email — ana Data Table sayfasıyla (gridTableColumns)
+  // AYNI generic content-kind mekanizması (kullanıcı isteğiyle, bkz.
+  // HISTORY.md: "columns properties'i tüm data table sayfalarındaki
+  // örneklere getir").
+  const idContent     = gridContentKindToSlots(p.idContent      || 'none');
+  const nameContent   = gridContentKindToSlots(p.nameContent    || 'avatar');
+  const roleContent   = gridContentKindToSlots(p.roleContent    || 'dot');
+  const statusKind    = p.statusContent || 'badge';
+  const statusContent = gridContentKindToSlots(statusKind);
+  const emailContent  = gridContentKindToSlots(p.emailContent   || 'none');
+  // Actions — diğer kolonlardan ayrı bir seçenek listesi (GRID_TABLE_ACTIONS_OPTS)
+  // KULLANILMIYOR artık: Button hâlâ varsayılan (tasarımın çalışma şekli
+  // gereği — Actions kolonunun "olağan" hâli budur), ama seçenek listesi
+  // diğer TÜM kolonlarla AYNI GRID_TABLE_CONTENT_OPTS (kullanıcı isteğiyle,
+  // bkz. HISTORY.md).
+  const actionsKind    = p.actionsContent || 'button';
+  const actionsContent = gridContentKindToSlots(actionsKind);
   return [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',     field: 'id', contentLink: true },
-    { width: 200, headerText: 'Name',   cellLeading: 'avatar', field: 'name' },
-    { width: 160, headerText: 'Role',   field: 'role' },
-    { width: 140, headerText: 'Status', cellTrailing: 'badge' },
-    { width: 180, headerText: 'Email',  field: 'email', fillWidth: true },
-    actionsContent !== 'none' ? { width: actionsContent === 'button' ? 130 : 160, headerText: 'Actions', cellTrailing: actionsContent } : null,
+    { width: 90,  headerText: 'ID',     field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing },
+    { width: 200, headerText: 'Name',   field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing },
+    { width: 160, headerText: 'Role',   field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing },
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
+    { width: 180, headerText: 'Email',  field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
+    actionsKind !== 'none' ? { width: (actionsKind === 'textbox' || actionsKind === 'dropdown') ? 160 : 130, headerText: 'Actions', cellLeading: actionsContent.leading, cellTrailing: actionsContent.trailing } : null,
   ].filter(Boolean);
 }
 
@@ -9601,7 +9704,15 @@ function gridTableHtml(props) {
         width: c.width,
         leading: c.cellLeading || 'none',
         trailing: c.cellTrailing || 'none',
-        showContent: c.field ? 'on' : 'off',
+        // trailingColor — sadece Status'a özel renk döngüsü (field==='statusLabel'
+        // ile tanınıyor); trailingLabel ise HANGİ kolon olursa olsun kendi
+        // field verisini badge etiketi olarak kullanıyor (kullanıcı isteğiyle,
+        // bkz. HISTORY.md). showContent artık ayrıca cellTrailing==='none'
+        // şartını da arıyor — bir TRAILING control (Badge/Button/Switch/...)
+        // varsa metin gösterilmiyor, o control kendi başına yeterli oluyor.
+        trailingColor: (c.cellTrailing === 'badge' && c.field === 'statusLabel') ? row.statusColor : undefined,
+        trailingLabel: c.cellTrailing === 'badge' ? (c.field ? row[c.field] : undefined) : undefined,
+        showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
         fillWidth: c.fillWidth,
@@ -9610,10 +9721,17 @@ function gridTableHtml(props) {
   // .bt-grid__body — Header'dan ayrı, kendi başına scroll olabilen bir
   // sarmalayıcı (bkz. styles.css .bt-grid-container notu). Tek başına
   // (container'sız) kullanımda görsel fark yaratmaz.
-  return `<div class="bt-grid">
+  // .bt-grid-scroll-x — header+body'yi TEK senkron yatay scroll biriminde
+  // sarar (gridActionsTableHtml/gridFrozenTableHtml ile AYNI, kanıtlanmış
+  // desen) — .bt-grid-container'ın kendi border-taşıyan kutusu playground
+  // genişliğine sabit kalırken, taşan içerik SADECE bu iç katmanda scroll
+  // olur. Kullanıcı Properties paneli açıkken (preview daralınca) header'ın
+  // body'den bağımsız/senkronsuz kaldığını, container'ın kendi border'ının
+  // taşan içeriği sarmadığını bildirdi — bkz. HISTORY.md.
+  return `<div class="bt-grid-scroll-x"><div class="bt-grid">
     <div class="bt-grid__row">${headerRow}</div>
     <div class="bt-grid__body">${bodyHtml}</div>
-  </div>`;
+  </div></div>`;
 }
 
 function gridTableCss(_, props) {
@@ -9654,17 +9772,28 @@ const GRID_FROZEN_COUNT_OPTS = [
 
 function gridFrozenColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
+  // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
+  // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
+  // Department/Location/Last Login bilinçli olarak DEĞİŞMEDİ — bunlar
+  // Figma'da karşılığı olmayan, sadece frozen-column davranışını
+  // göstermek için genişliği artırmaya yarayan ek kolonlar (bkz. §17.4).
+  const idContent     = gridContentKindToSlots(p.idContent     || 'none');
+  const nameContent   = gridContentKindToSlots(p.nameContent   || 'avatar');
+  const roleContent   = gridContentKindToSlots(p.roleContent   || 'dot');
+  const statusKind    = p.statusContent || 'badge';
+  const statusContent = gridContentKindToSlots(statusKind);
+  const emailContent  = gridContentKindToSlots(p.emailContent  || 'none');
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',          field: 'id', contentLink: true },
-    { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
-    { width: 140, headerText: 'Role',        field: 'role' },
+    { width: 90,  headerText: 'ID',          field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing },
+    { width: 200, headerText: 'Name',        field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing },
+    { width: 140, headerText: 'Role',        field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing },
     { width: 150, headerText: 'Department',  field: 'department' },
     { width: 120, headerText: 'Location',    field: 'location' },
     { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
-    { width: 210, headerText: 'Email',       field: 'email' },
-  ];
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
+    { width: 210, headerText: 'Email',       field: 'email', cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
+  ].filter(Boolean);
   let left = 0;
   return cols.map((c, i) => {
     const frozen = i < frozenCount;
@@ -9701,7 +9830,15 @@ function gridFrozenTableHtml(props) {
         width: c.width,
         leading: c.cellLeading || 'none',
         trailing: c.cellTrailing || 'none',
-        showContent: c.field ? 'on' : 'off',
+        // trailingColor — sadece Status'a özel renk döngüsü (field==='statusLabel'
+        // ile tanınıyor); trailingLabel ise HANGİ kolon olursa olsun kendi
+        // field verisini badge etiketi olarak kullanıyor (kullanıcı isteğiyle,
+        // bkz. HISTORY.md). showContent artık ayrıca cellTrailing==='none'
+        // şartını da arıyor — bir TRAILING control (Badge/Button/Switch/...)
+        // varsa metin gösterilmiyor, o control kendi başına yeterli oluyor.
+        trailingColor: (c.cellTrailing === 'badge' && c.field === 'statusLabel') ? row.statusColor : undefined,
+        trailingLabel: c.cellTrailing === 'badge' ? (c.field ? row[c.field] : undefined) : undefined,
+        showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
         sticky: c.sticky,
@@ -9758,7 +9895,7 @@ PAGES_WEB['components/data-table-frozen-column'] = {
         <tbody>
           <tr><td>Scroll Wrapper</td><td>Class</td><td>—</td><td>${tk('.bt-grid-scroll-x')} (overflow-x: auto)</td></tr>
           <tr><td>Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / 5</td></tr>
-          <tr><td>Donmuş Kenar</td><td>Shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — <code style="font-family:var(--mono);font-size:12px;">--bt-shadow-xs</code>'in rengi/blur'u aynen, yönü yatay çevrildi (<code style="font-family:var(--mono);font-size:12px;">.bt-grid__cell--frozen-edge</code>)</td></tr>
+          <tr><td>Donmuş Kenar</td><td>Shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035) — token'a bağlı olmayan, bu edge-fade efektine özel yumuşak/geniş-blur'lu bespoke gölge (<code style="font-family:var(--mono);font-size:12px;">.bt-grid__cell--frozen-edge</code>)</td></tr>
         </tbody>
       </table>
     `};
@@ -9790,6 +9927,13 @@ PAGES_WEB['components/data-table-frozen-column'] = {
           { key: 'rowCount',     label: 'Rows',            group: 'Table', options: GRID_TABLE_ROW_OPTS,     default: '6' },
           { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
           { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
+          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
+          // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
+          { key: 'idContent',    label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',  label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',  label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent', label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
         preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenTableHtml(p),
@@ -9805,7 +9949,7 @@ PAGES_WEB['components/data-table-frozen-column'] = {
           <tr><td>Scroll Wrapper</td><td>Overflow</td><td>—</td><td>${tk('.bt-grid-scroll-x')} → overflow-x: auto</td></tr>
           <tr><td>Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
           <tr><td>Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5 (kaydırılan hücrelerin üzerinde kalması için)</td></tr>
-          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — yönü yatay çevrilmiş</td></tr>
+          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035) — bespoke, yumuşak edge-fade</td></tr>
         </tbody>
       </table>
     `};
@@ -9819,17 +9963,33 @@ PAGES_WEB['components/data-table-frozen-column'] = {
 // sol kenarına ters yönlü bir edge gölgesi eklenir.
 function gridFrozenLastColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
+  // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
+  // content-kind mekanizması; Actions da Data Table Actions sayfasıyla AYNI
+  // actionsContent mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
+  // Department/Location/Last Login bilinçli olarak DEĞİŞMEDİ — bkz.
+  // gridFrozenColumns'daki aynı not.
+  const idContent     = gridContentKindToSlots(p.idContent      || 'none');
+  const nameContent   = gridContentKindToSlots(p.nameContent    || 'avatar');
+  const roleContent   = gridContentKindToSlots(p.roleContent    || 'dot');
+  const statusKind    = p.statusContent || 'badge';
+  const statusContent = gridContentKindToSlots(statusKind);
+  const emailContent  = gridContentKindToSlots(p.emailContent   || 'none');
+  // Actions — diğer kolonlarla AYNI GRID_TABLE_CONTENT_OPTS'u kullanıyor
+  // (kullanıcı isteğiyle, bkz. HISTORY.md) — Button sadece varsayılan değer.
+  const actionsKind    = p.actionsContent || 'button';
+  const actionsContent = gridContentKindToSlots(actionsKind);
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',          field: 'id', contentLink: true },
-    { width: 200, headerText: 'Name',        cellLeading: 'avatar', field: 'name' },
-    { width: 140, headerText: 'Role',        field: 'role' },
+    { width: 90,  headerText: 'ID',          field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing },
+    { width: 200, headerText: 'Name',        field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing },
+    { width: 140, headerText: 'Role',        field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing },
     { width: 150, headerText: 'Department',  field: 'department' },
     { width: 120, headerText: 'Location',    field: 'location' },
     { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    { width: 140, headerText: 'Status',      cellTrailing: 'badge' },
-    { width: 210, headerText: 'Email',       field: 'email', frozenRight: true },
-  ];
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
+    { width: 180, headerText: 'Email',       field: 'email', cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
+    actionsKind !== 'none' ? { width: (actionsKind === 'textbox' || actionsKind === 'dropdown') ? 160 : 130, headerText: 'Actions', cellLeading: actionsContent.leading, cellTrailing: actionsContent.trailing, frozenRight: true } : null,
+  ].filter(Boolean);
   let left = 0;
   return cols.map((c, i) => {
     const frozen = i < frozenCount;
@@ -9875,7 +10035,15 @@ function gridFrozenLastTableHtml(props) {
         width: c.width,
         leading: c.cellLeading || 'none',
         trailing: c.cellTrailing || 'none',
-        showContent: c.field ? 'on' : 'off',
+        // trailingColor — sadece Status'a özel renk döngüsü (field==='statusLabel'
+        // ile tanınıyor); trailingLabel ise HANGİ kolon olursa olsun kendi
+        // field verisini badge etiketi olarak kullanıyor (kullanıcı isteğiyle,
+        // bkz. HISTORY.md). showContent artık ayrıca cellTrailing==='none'
+        // şartını da arıyor — bir TRAILING control (Badge/Button/Switch/...)
+        // varsa metin gösterilmiyor, o control kendi başına yeterli oluyor.
+        trailingColor: (c.cellTrailing === 'badge' && c.field === 'statusLabel') ? row.statusColor : undefined,
+        trailingLabel: c.cellTrailing === 'badge' ? (c.field ? row[c.field] : undefined) : undefined,
+        showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
         sticky: c.sticky,
@@ -9941,8 +10109,8 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
           <tr><td>Scroll Wrapper</td><td>Class</td><td>—</td><td>${tk('.bt-grid-scroll-x')} (overflow-x: auto)</td></tr>
           <tr><td>Soldan Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / left / 5</td></tr>
           <tr><td>Sağdan Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / right: 0 / 5</td></tr>
-          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051) — sağa doğru</td></tr>
-          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>${tk('--bt-shadow-xs')}</td><td>-2px 0 2px rgba(16,24,40,0.051) — sola doğru</td></tr>
+          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035) — sağa doğru, bespoke yumuşak gölge</td></tr>
+          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035) — sola doğru, bespoke yumuşak gölge</td></tr>
         </tbody>
       </table>
     `};
@@ -9974,13 +10142,22 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
           { key: 'rowCount',    label: 'Rows',           group: 'Table', options: GRID_TABLE_ROW_OPTS,    default: '6' },
           { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
           { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
+          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
+          // content-kind mekanizması; Actions da Data Table Actions'la AYNI
+          // actionsContent mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
+          { key: 'idContent',      label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',    label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',    label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',  label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',   label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'actionsContent', label: 'Actions Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
         ],
         preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenLastTableHtml(p),
         css:     (v, p) => gridFrozenLastTableCss(v, p),
       })}
 
-      <p class="page-desc">Tabloyu yatay kaydır — soldan seçilen kolonlar (Checkbox / Checkbox + Name) ve sağdaki <strong>Actions</strong> kolonu yerinde kalırken orta kolonlar (Role/Department/Email/Location/Status/Last Login) altından kayar. Her iki donmuş alanın kenarında ince gölge, sınırı görsel olarak ayırır.</p>
+      <p class="page-desc">Tabloyu yatay kaydır — soldan seçilen kolonlar (Checkbox / Checkbox + Name) ve sağdaki <strong>Actions</strong> kolonu yerinde kalırken orta kolonlar (Role/Department/Location/Last Login/Status/Email) altından kayar. Her iki donmuş alanın kenarında ince gölge, sınırı görsel olarak ayırır.</p>
 
       <h2>Anatomy</h2>
       <table class="token-table" style="margin-top:12px">
@@ -9990,8 +10167,8 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
           <tr><td>Sol Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
           <tr><td>Sağ Donmuş Hücre</td><td>Position / Right</td><td>—</td><td>sticky / 0px</td></tr>
           <tr><td>Her İki Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5</td></tr>
-          <tr><td>Sol Donmuş Kenar</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>2px 0 2px rgba(16,24,40,0.051)</td></tr>
-          <tr><td>Sağ Donmuş Kenar</td><td>Box-shadow</td><td>${tk('--bt-shadow-xs')}</td><td>-2px 0 2px rgba(16,24,40,0.051)</td></tr>
+          <tr><td>Sol Donmuş Kenar</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)</td></tr>
+          <tr><td>Sağ Donmuş Kenar</td><td>Box-shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035)</td></tr>
         </tbody>
       </table>
     `};
@@ -10031,17 +10208,24 @@ function gridActionsTableHtml(props) {
           width: c.width,
           leading:  c.cellLeading  || 'none',
           trailing: c.cellTrailing || 'none',
-          showContent: c.field ? 'on' : 'off',
+          trailingColor: (c.cellTrailing === 'badge' && c.field === 'statusLabel') ? row.statusColor : undefined,
+          trailingLabel: c.cellTrailing === 'badge' ? (c.field ? row[c.field] : undefined) : undefined,
+          showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
           contentText: c.field ? row[c.field] : '',
           contentLink: !!c.contentLink,
           fillWidth:   c.fillWidth,
         })).join('')}</div>`
       ).join('');
 
-  return `<div class="bt-grid">
+  // .bt-grid-scroll-x — header ve body'yi TEK yatay scroll biriminde
+  // sarmalar (Frozen Column sayfasındaki gridFrozenTableHtml ile aynı
+  // desen). Actions kolonu playground genişliğini aştığında header ve
+  // body birlikte kayar; body ayrıca .bt-grid-actions-container CSS'i
+  // ile bağımsız dikey scroll alır (bkz. styles.css).
+  return `<div class="bt-grid-scroll-x"><div class="bt-grid">
     <div class="bt-grid__row">${headerRow}</div>
     <div class="bt-grid__body">${bodyHtml}</div>
-  </div>`;
+  </div></div>`;
 }
 
 function gridActionsTableCss(_, props) {
@@ -10091,15 +10275,15 @@ PAGES_WEB['components/data-table-actions'] = {
     if (tab === 'Examples') return { title, html: `
       <h2>Button</h2>
       <p class="page-desc">Birincil eylem (örn. Düzenle) ve üç nokta More menüsü (Düzenle / Kopyala / Sil) — satır tıklamasını tetiklemeden bağımsız çalışır.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'button' })}</div></div></div>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-actions-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'button' })}</div></div></div>
 
       <h2>Satır İçi TextBox</h2>
       <p class="page-desc">Hücre içinde doğrudan düzenlenebilir metin alanı — kayıt açmadan tabloda inline düzenleme için.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'textbox' })}</div></div></div>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-actions-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'textbox' })}</div></div></div>
 
       <h2>Satır İçi Dropdown</h2>
       <p class="page-desc">Hücre içinde seçim yapılabilen açılır liste — durum, kategori veya atama gibi sınırlı seçenek setleri için.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'dropdown' })}</div></div></div>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-actions-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'dropdown' })}</div></div></div>
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
@@ -10140,11 +10324,18 @@ PAGES_WEB['components/data-table-actions'] = {
         props: [
           { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
           { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
-          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_ACTIONS_OPTS, default: 'button' },
+          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
+          // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
+          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
         ],
         preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
           <div style="display:flex;flex-direction:column;height:356px;">
-            <div class="bt-grid-container">${gridActionsTableHtml(p)}</div>
+            <div class="bt-grid-actions-container">${gridActionsTableHtml(p)}</div>
           </div>
         </div>`,
         code: (v, p) => gridActionsTableHtml(p),
@@ -10286,8 +10477,18 @@ PAGES_WEB['components/data-table-toolbar'] = {
           { key: 'showSearch', label: 'Search', group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
           { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '6' },
           { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
+          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
+          // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
+          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,         default: 'on' },
+          { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'showSort',        label: 'Sort (Name)',     group: 'Columns', options: TBX_BOOL_OPTS,         default: 'off' },
+          { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'showFilter',      label: 'Filter (Role)',   group: 'Columns', options: TBX_BOOL_OPTS,         default: 'off' },
+          { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
-        preview: (v, p) => `<div style="padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div style="flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column;">${gridTableHtml(p)}</div></div></div></div>`,
+        preview: (v, p) => `<div style="padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div class="bt-grid-container">${gridTableHtml(p)}</div></div></div></div>`,
         code:    (v, p) => `<div class="bt-grid-panel">\n  ${gridToolbarHtml(p)}\n  ${gridTableHtml(p)}\n</div>`,
         css:     (v, p) => gridToolbarCss(v, p),
       })}
@@ -10332,7 +10533,7 @@ PAGES_WEB['components/data-table'] = {
           <tr><td>Grid Cell · Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           <tr><td>Grid Cell · Content</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
           <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 28px (hug content) / 28px sabit</td></tr>
-          <tr><td>Control · Dot</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>8×8, #535353</td></tr>
+          <tr><td>Control · Dot</td><td>Size / Color</td><td>${tk('--bt-icon-brand-default')}</td><td>8×8, #0d4e97</td></tr>
           <tr><td>Control · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>16×16, #535353</td></tr>
           <tr><td>Position · Left</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>sol kenar (+üst, header'da)</td></tr>
           <tr><td>Position · Right</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>sağ kenar (+üst, header'da)</td></tr>
@@ -10379,10 +10580,18 @@ PAGES_WEB['components/data-table'] = {
           { key: 'rowCount',      label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,        default: '3' },
           { key: 'rowState',      label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,            default: 'default' },
           { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,            default: 'on' },
-          { key: 'nameLeading',   label: 'Name Leading',    group: 'Columns', options: GRID_TABLE_NAME_LEADING_OPTS, default: 'avatar' },
+          // Aşağıdaki 5 prop — ID/Name/Role/Status/Email — ÖRNEK tablodaki
+          // HER kolonu kapsıyor, hepsi AYNI tam listeyi (GRID_TABLE_CONTENT_OPTS)
+          // reuse ediyor: hiçbir kolon başka bir kolonun alamayacağı bir
+          // seçeneğe sahip değil (kullanıcı isteğiyle, bkz. HISTORY.md) — örn.
+          // Status'u Badge'den Avatar'a, ID'yi None'dan Switch'e çevirebilirsin.
+          { key: 'idContent',     label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'avatar' },
           { key: 'showSort',      label: 'Sort (Name)',     group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
+          { key: 'roleContent',   label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'dot' },
           { key: 'showFilter',    label: 'Filter (Role)',   group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
-          { key: 'statusContent', label: 'Status Column',   group: 'Columns', options: GRID_TABLE_STATUS_OPTS,     default: 'badge' },
+          { key: 'statusContent', label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'none' },
         ],
         // Önizleme .bt-grid-container'a sarılı, sabit 356px yükseklikte (36px
         // header + 10×32px satır — Rows'un maksimumu) — "Alanı Doldurma"

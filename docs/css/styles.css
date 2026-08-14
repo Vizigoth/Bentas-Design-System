@@ -5389,9 +5389,30 @@ code {
   border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
   box-sizing: border-box;
 }
+/* .bt-grid-scroll-x — header+body'yi TEK senkron yatay scroll biriminde
+   sarar, .bt-grid-actions-container/.bt-grid-frozen-container'daki AYNI
+   kanıtlanmış desen. İLK denemede bu katman atlanıp `.bt-grid`'e sadece
+   min-width:max-content verilmiş, taşmanın CSS'in "otomatik min-boyut"
+   kuralıyla birkaç ata seviyesi yukarıya (playground'un dış overflow:auto
+   wrapper'ına kadar) propagate olacağı varsayılmıştı — ama bu YANLIŞTI:
+   `.bt-grid-container`'ın KENDİSİ büyümüyor (388px'te sabit kalıyordu),
+   sadece `.bt-grid` büyüyordu — yani container'ın border'ı taşan içeriği
+   hiç SARMIYORDU, içerik border'sız şekilde dışarı taşıp uzaktaki bir
+   ata'da scroll oluyordu (kullanıcı ekran görüntüsüyle raporladı, bkz.
+   HISTORY.md). Doğru çözüm: taşmayı `.bt-grid`'in DOĞRUDAN ebeveyninde
+   (bu scroll-x katmanında) yakalamak — böylece `.bt-grid-container`'ın
+   kendi border-taşıyan kutusu HİÇ büyümek zorunda kalmadan (zaten
+   büyümüyordu) sabit kalıyor, taşma sadece bu iç katmanda scroll oluyor. */
+.bt-grid-container .bt-grid-scroll-x {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  max-width: 100%;
+}
 .bt-grid-container .bt-grid {
   display: flex;
   width: 100%;
+  min-width: max-content;
   flex: 1;
   min-height: 0;
 }
@@ -5465,6 +5486,71 @@ code {
 .bt-grid-frozen-container .bt-grid__cell--right,
 .bt-grid-frozen-container .bt-grid__header-cell--left,
 .bt-grid-frozen-container .bt-grid__header-cell--right {
+  border-left: none;
+  border-right: none;
+}
+
+/* bt-grid-actions-container — .bt-grid-container'ın (width:100% + Email'in
+   fillWidth flex:1'i boş alanı yutması) AYNI temel mekanizmasını kullanır —
+   İLK versiyon bunun yerine bt-grid-frozen-container'ın content-hugging
+   (inline-flex) desenini kopyalamıştı, bu da TERS bir bug'a yol açtı: kolon
+   resize ile toplam genişlik container'ın altına düşünce (örn. birkaç kolon
+   daraltılınca) .bt-grid içerik genişliğine küçülüp sağda border'sız boş bir
+   şerit bırakıyordu, container'ın kendi sağ border'ı çok daha sağda kalıyordu
+   (kullanıcı ekran görüntüsüyle raporladı). width:100% + flex-shrink:0 (bkz.
+   .bt-grid__header-cell/.bt-grid__cell taban kuralı) + Email'in flex:1
+   min-width:180px'i ile: içerik sığdığında Email boşluğu yutup satır TAM
+   container genişliğinde kalıyor (boşluk YOK), sığmadığında (sabit kolonlar
+   flex-shrink:0 olduğu için küçülemiyor) .bt-grid-scroll-x'in overflow-x:auto'su
+   devreye girip header+body'yi TEK senkron scrollbar'da kaydırıyor — Actions
+   kolonu playground genişliğini aştığında Header'ın dışarı taşıp (biri body'nin
+   overflow:auto'sundan, biri dış wrapper'dan) iki ayrı scrollbar oluşan İLK
+   bug da bu şekilde çözülüyor. Frozen Column'dan FARKI: sticky/frozen kolon
+   olmadığı için .bt-grid__body'ye overflow-y:auto eklenebiliyor (Frozen'da bu
+   sticky'nin containing block'ını bozduğu için kasıtlı eklenmemişti). */
+.bt-grid-actions-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--bt-base-default, #ffffff);
+  border-left: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-right: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  box-sizing: border-box;
+}
+.bt-grid-actions-container .bt-grid-scroll-x {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.bt-grid-actions-container .bt-grid {
+  display: flex;
+  width: 100%;
+  min-width: max-content;
+  flex: 1;
+  min-height: 0;
+}
+.bt-grid-actions-container .bt-grid__row {
+  width: 100%;
+}
+.bt-grid-actions-container .bt-grid__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.bt-grid-actions-container .bt-grid__no-record {
+  flex: 1;
+  height: auto;
+  border: none;
+}
+.bt-grid-actions-container .bt-grid__cell--left,
+.bt-grid-actions-container .bt-grid__cell--right,
+.bt-grid-actions-container .bt-grid__header-cell--left,
+.bt-grid-actions-container .bt-grid__header-cell--right {
   border-left: none;
   border-right: none;
 }
@@ -5598,15 +5684,16 @@ code {
 .bt-grid__header-cell--right { border-right: 1px solid var(--bt-border-primary-default, #d4d4d4); }
 /* Frozen Column sayfasında (position:sticky) donmuş alanın sağ kenarını
    kaydırılabilir kolonlardan ayırmak için — sadece son donmuş kolonda.
-   --bt-shadow-xs'in (0 1px 2px rgba(16,24,40,0.051)) rengi/blur'u AYNEN
-   kullanılıyor, sadece yönü 90° döndürülüp yatay bir "edge shadow"a
-   çevrildi (0 1px → 2px 0) — token'ın kendisi vertical elevation shadow'u
-   temsil ettiği için birebir var() ile referans verilemiyor (kullanıcı
-   isteğiyle, bkz. HISTORY.md; önceden ilgisiz bir hardcoded rgba(...,0.08)
-   kullanılıyordu). */
-.bt-grid__header-cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.06), 3px 0 3px rgba(16,24,40,0.10); }
+   Mevcut --bt-shadow-* elevation token'larından hiçbiri buraya uymadı:
+   xs (1px 0 2px, tek katman) donmuş alanı ayırt etmek için çok belli belirsiz
+   kaldı, sm/md gibi dar blur'lu (2-4px) çok katmanlılar ise keskin/sert bir
+   çizgi hissi verdi. Bu yüzden bu edge-fade efektine ÖZEL, token'a bağlı
+   olmayan bespoke bir değer kullanılıyor (kullanıcı isteğiyle, bkz.
+   HISTORY.md): geniş blur'lu (10-20px) iki katman, düşük opaklık — keskin
+   bir çizgi yerine yumuşak/kademeli bir gölge geçişi. */
+.bt-grid__header-cell--frozen-edge { box-shadow: 4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035); }
 /* Sağdan donmuş kolonun sol kenarı — aynı renk/blur, yön ters */
-.bt-grid__header-cell--frozen-right-edge { box-shadow: -2px 0 2px rgba(16,24,40,0.06), -3px 0 3px rgba(16,24,40,0.10); }
+.bt-grid__header-cell--frozen-right-edge { box-shadow: -4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035); }
 .bt-grid__header-cell--hover  { background: var(--bt-base-subtle, #f5f5f5); }
 .bt-grid__header-cell--active { background: var(--bt-surface-brand-subtle, #e2edfc); }
 /* Building Blocks'taki tekil Header Cell playground'unda gerçek mouse
@@ -5629,12 +5716,11 @@ code {
 .bt-grid__cell--right { border-right: 1px solid var(--bt-border-primary-default, #d4d4d4); }
 /* Frozen Column sayfasında (position:sticky) donmuş alanın sağ kenarını
    kaydırılabilir kolonlardan ayırmak için — sadece son donmuş kolonda.
-   --bt-shadow-xs'in (0 1px 2px rgba(16,24,40,0.051)) rengi/blur'u AYNEN
-   kullanılıyor, sadece yönü 90° döndürülüp yatay bir "edge shadow"a
-   çevrildi (0 1px → 2px 0) — bkz. header cell'deki aynı kuralın notu. */
-.bt-grid__cell--frozen-edge { box-shadow: 2px 0 2px rgba(16,24,40,0.06), 3px 0 3px rgba(16,24,40,0.10); }
+   Token'a bağlı olmayan bespoke, yumuşak/geniş-blur'lu edge-fade — bkz.
+   header cell'deki aynı kuralın notu. */
+.bt-grid__cell--frozen-edge { box-shadow: 4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035); }
 /* Sağdan donmuş kolonun sol kenarı — aynı renk/blur, yön ters */
-.bt-grid__cell--frozen-right-edge { box-shadow: -2px 0 2px rgba(16,24,40,0.06), -3px 0 3px rgba(16,24,40,0.10); }
+.bt-grid__cell--frozen-right-edge { box-shadow: -4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035); }
 .bt-grid__cell--hover  { background: var(--bt-base-subtle, #f5f5f5); }
 .bt-grid__cell--active { background: var(--bt-surface-brand-subtle, #e2edfc); }
 /* Building Blocks'taki tekil Grid Cell playground'unda gerçek mouse hover'ı
@@ -5674,6 +5760,27 @@ code {
   align-items: center;
   justify-content: center;
 }
+/* Grid Cell'in kenar padding'i her zaman --bt-space-md (8px) olmalı — Content
+   span bunu kendi `.bt-grid__cell .bt-grid__content` kuralıyla zaten
+   sağlıyor, ama Leading/Trailing/Left/Right Control (Checkbox/Dot/Avatar/
+   Avatar Group/Badge/Button/Switch) hücrenin İLK veya SON çocuğu olduğunda
+   kendi iç `--bt-space-2xs` (2px) hug-padding'i (yukarıda, ikonu 28px kutuda
+   ortalamak için) hücre kenarıyla arasında YANLIŞLIKLA sadece 2px
+   bırakıyordu — kullanıcı fark etti, bkz. HISTORY.md. Aynı sorun Inline
+   TextBox/Dropdown (`.bt-grid__inline`, aşağıda) ve Actions'taki Button+More
+   `.bt-grid__control-group` (kendi hiç padding'i olmayan, iki .bt-grid__control'ü
+   saran wrapper) için de geçerli. Sadece kenardaki yön override ediliyor,
+   control'ün kendi 2px'lik dikey/iç padding'i (ikonu ortalamak için) korunuyor. */
+.bt-grid__cell > .bt-grid__control:first-child,
+.bt-grid__cell > .bt-grid__inline:first-child,
+.bt-grid__cell > .bt-grid__control-group:first-child {
+  padding-left: var(--bt-space-md, 8px);
+}
+.bt-grid__cell > .bt-grid__control:last-child,
+.bt-grid__cell > .bt-grid__control-group:last-child,
+.bt-grid__cell > .bt-grid__inline:last-child {
+  padding-right: var(--bt-space-md, 8px);
+}
 .bt-grid__control-icon {
   width: 16px;
   height: 16px;
@@ -5683,13 +5790,15 @@ code {
   justify-content: center;
   color: var(--bt-icon-primary-strong, #535353);
 }
-/* Durum noktası (Dot Control) — Figma'da sabit 8×8, tek nötr renk; renk
-   varyantı Figma'da tanımlı değil, ihtiyaç çıkarsa eklenebilir. */
+/* Durum noktası (Dot Control) — Figma'da sabit 8×8; renk kullanıcı isteğiyle
+   nötr griden --bt-icon-brand-default'a (marka mavisi) çevrildi, bkz.
+   HISTORY.md. Renk varyantı Figma'da tanımlı değil, ihtiyaç çıkarsa
+   eklenebilir. */
 .bt-grid__dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--bt-icon-primary-strong, #535353);
+  background: var(--bt-icon-brand-default, #0d4e97);
   flex-shrink: 0;
 }
 /* Avatar Group — Card'daki aynı -12px bindirme deseni */
