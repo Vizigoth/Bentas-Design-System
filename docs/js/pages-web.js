@@ -36,6 +36,10 @@ const NAV_WEB = [
           { label: 'Frozen Column Last',   id: 'components/data-table-frozen-column-last' },
           { label: 'Data Table Toolbar',   id: 'components/data-table-toolbar' },
           { label: 'Data Table Actions',   id: 'components/data-table-actions' },
+          { label: 'Inline Editing',       id: 'components/data-table-inline-editing' },
+          { label: 'InCell Editing',       id: 'components/data-table-incell-editing' },
+          { label: 'Filtering',            id: 'components/data-table-filtering' },
+          { label: 'Sorting',              id: 'components/data-table-sorting' },
         ]
       },
       { label: 'Dialog',            id: 'components/dialog' },
@@ -8812,12 +8816,12 @@ function badgeHtml(_, p) {
     const border = cStyle === 'colored' ? accent : 'var(--bt-border-default, #d4d4d4)';
     const text   = cStyle === 'colored' ? accent : 'var(--bt-text-default, #1a1a1a)';
     const iconClr= cStyle === 'colored' ? cm.accentHex : '#1a1a1a';
-    return `<span style="${_bdgBase}background:${bg};border:1px solid ${border};color:${text};">${showL ? _bdgLoader(iconClr) : ''}${label}${showR ? _bdgLoader(iconClr) : ''}</span>`;
+    return `<span style="${_bdgBase}background:${bg};border:1px solid ${border};color:${text};">${showL ? _bdgLoader(iconClr) : ''}<span class="bt-badge__label">${label}</span>${showR ? _bdgLoader(iconClr) : ''}</span>`;
   }
 
   const cfg    = BADGE_TYPE_CFG[type] || BADGE_TYPE_CFG.solid;
   const border = cfg.border ? `border:${cfg.border};` : '';
-  return `<span style="${_bdgBase}background:${cfg.bg};${border}color:${cfg.text};">${showL ? _bdgLoader(cfg.icon) : ''}${label}${showR ? _bdgLoader(cfg.icon) : ''}</span>`;
+  return `<span style="${_bdgBase}background:${cfg.bg};${border}color:${cfg.text};">${showL ? _bdgLoader(cfg.icon) : ''}<span class="bt-badge__label">${label}</span>${showR ? _bdgLoader(cfg.icon) : ''}</span>`;
 }
 
 function badgeCss(_, p) {
@@ -9187,6 +9191,136 @@ function gridTrailingHtml(kind, opts) {
   }
 }
 
+// Editable-cell input'ları — Inline Editing (satır bazlı) ve InCell Editing
+// (hücre bazlı) sayfalarının ikisi de aynı bu iki fonksiyonu kullanır, gerçek
+// .bt-tbx / .bt-dd-* yapısını reuse eder (bkz. design.md §17.5). Görünüm
+// (view: .bt-grid__content veya Status badge'i) DOM'dan hiç kaldırılmıyor —
+// yanına bu edit markup'ı ekleniyor, hangisinin görüneceğini SADECE CSS
+// (.bt-grid__row--editing / .bt-grid__cell--editing) belirliyor, JS sadece
+// bir class toggle'lıyor.
+function _gridEditTextboxHtml(value) {
+  const v = (value == null ? '' : String(value)).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  return `<div class="bt-tbx bt-tbx--sm" style="gap:0;width:100%;"><div class="bt-tbx__input"><div class="bt-tbx__field"><input class="bt-tbx__text" type="text" value="${v}" onkeydown="btGridCellEditKeydown(event,this)" onblur="btGridCellEditBlur(event,this)" /></div></div></div>`;
+}
+function _gridEditDropdownHtml(value) {
+  const v = value == null ? '' : String(value);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  return `<div class="bt-tbx bt-tbx--sm" style="gap:0;width:100%;">
+    <div class="bt-tbx__anchor">
+      <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">
+        <div class="bt-tbx__field"><span class="bt-tbx__text" style="color:var(--bt-text-primary-default, #1a1a1a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(v)}</span></div>
+        <div class="bt-tbx__control bt-tbx__control--right"><span class="bt-tbx__icon">${_ddIconChevron}</span></div>
+      </div>
+      <div class="bt-dd-options" style="display:none;">
+        ${_gridStatusOptions.map(s => `<div class="bt-dd-option${s.label === v ? ' bt-dd-option--selected' : ''}" onclick="btGridStatusOptionSelect(event,this)"><span class="bt-dd-option__text">${esc(s.label)}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+// Bir editable hücrenin TextBox input değerini view'a (.bt-grid__content)
+// senkronize eder — hem Save (row) hem Enter/blur/dışarı tıklama (cell)
+// tarafından çağrılır. Dropdown (Status) hücrelerinde input yok, no-op.
+function _btGridSyncEditView(cell) {
+  const input = cell.querySelector('.bt-grid__cell-edit input.bt-tbx__text');
+  const view  = cell.querySelector('.bt-grid__content');
+  if (input && view) { view.textContent = input.value; input.defaultValue = input.value; }
+}
+window.btGridCellEditStart = function(event, el) {
+  event.stopPropagation();
+  const cell = el.closest('.bt-grid__cell');
+  if (!cell || !cell.classList.contains('bt-grid__cell--editable')) return;
+  cell.classList.add('bt-grid__cell--editing');
+  const input = cell.querySelector('.bt-grid__cell-edit input.bt-tbx__text');
+  if (input) { input.focus(); input.select(); return; }
+  const ddInput = cell.querySelector('.bt-grid__cell-edit .bt-tbx__anchor .bt-tbx__input');
+  if (ddInput) btDdToggle(ddInput);
+};
+window.btGridCellEditKeydown = function(event, input) {
+  const cell = input.closest('.bt-grid__cell');
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    _btGridSyncEditView(cell);
+    cell.classList.remove('bt-grid__cell--editing');
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    input.value = input.defaultValue;
+    cell.classList.remove('bt-grid__cell--editing');
+  }
+};
+window.btGridCellEditBlur = function(event, input) {
+  const cell = input.closest('.bt-grid__cell');
+  if (cell && cell.classList.contains('bt-grid__cell--editing')) {
+    _btGridSyncEditView(cell);
+    cell.classList.remove('bt-grid__cell--editing');
+  }
+};
+// Status dropdown'ında bir seçenek seçilince: hem edit input'un kendi
+// metnini hem (varsa) hücrenin görünür Badge etiketini (.bt-badge__label,
+// bkz. badgeHtml) günceller — hücre sonra editing modundan çıkar. Row modunda
+// (Inline Editing) hücre zaten hiç "bt-grid__cell--editing" almadığı için
+// (görünürlük .bt-grid__row--editing'den geliyor) buradaki remove no-op'tur,
+// hata vermez.
+window.btGridStatusOptionSelect = function(event, optEl) {
+  event.stopPropagation();
+  const cell = optEl.closest('.bt-grid__cell');
+  const label = optEl.querySelector('.bt-dd-option__text').textContent;
+  const textSpan = optEl.closest('.bt-tbx__anchor').querySelector('.bt-tbx__field .bt-tbx__text');
+  if (textSpan) textSpan.textContent = label;
+  optEl.parentElement.querySelectorAll('.bt-dd-option').forEach(o => o.classList.remove('bt-dd-option--selected'));
+  optEl.classList.add('bt-dd-option--selected');
+  const badgeLabel = cell.querySelector('.bt-badge__label');
+  if (badgeLabel) badgeLabel.textContent = label;
+  cell.classList.remove('bt-grid__cell--editing');
+};
+// InCell Editing'de bir hücrenin DIŞINA tıklanınca o hücreyi otomatik commit
+// edip kapatır (blur textbox'ta zaten çalışıyor ama Dropdown'daki div'ler
+// odaklanabilir değil, native blur olayı hiç ateşlenmiyor — bu yüzden bu
+// global listener Status hücresi için TEK kapanma yolu).
+document.addEventListener('click', function(e) {
+  document.querySelectorAll('.bt-grid__cell--editing').forEach(cell => {
+    if (!cell.contains(e.target)) {
+      _btGridSyncEditView(cell);
+      cell.classList.remove('bt-grid__cell--editing');
+    }
+  });
+});
+// Inline Editing (satır bazlı) — Actions kolonundaki Edit butonuna (metinli,
+// primary) tıklanınca satırın TÜM editable hücreleri view'dan edit'e geçer
+// (.bt-grid__row--editing), Actions'taki Edit/Delete view'ı Save/Cancel
+// edit'ine döner (bkz. gridRowEditActionsCellHtml, aşağıda).
+window.btGridRowEditStart = function(event, btn) {
+  event.stopPropagation();
+  btn.closest('.bt-grid__row').classList.add('bt-grid__row--editing');
+};
+window.btGridRowEditCancel = function(event, btn) {
+  event.stopPropagation();
+  const row = btn.closest('.bt-grid__row');
+  row.querySelectorAll('.bt-grid__cell-edit input.bt-tbx__text').forEach(inp => { inp.value = inp.defaultValue; });
+  row.classList.remove('bt-grid__row--editing');
+};
+window.btGridRowEditSave = function(event, btn) {
+  event.stopPropagation();
+  const row = btn.closest('.bt-grid__row');
+  row.querySelectorAll('.bt-grid__cell--editable').forEach(_btGridSyncEditView);
+  row.classList.remove('bt-grid__row--editing');
+};
+// Actions kolonu — view (Edit primary + Delete flat, ikisi de metinli) /
+// edit (Save + Cancel) çifti, generic .bt-grid__cell-edit sisteminden
+// bağımsız kendi küçük view/edit wrapper'larını kullanır (bu ikisi bir
+// "content kind" değil, bu sayfaya özel eylem çiftleri).
+function gridRowEditActionsCellHtml(position, width) {
+  return `<div class="bt-grid__cell bt-grid__cell--${position}" style="width:${width}px;box-sizing:border-box;">
+    <span class="bt-grid__control-group bt-grid__row-edit-view">
+      <button type="button" class="bt-btn bt-btn--sm bt-btn--primary-solid" onclick="btGridRowEditStart(event,this)">${_gridIconEditItem} Edit</button>
+      <button type="button" class="bt-btn bt-btn--sm bt-btn--secondary-flat" onclick="event.stopPropagation()">${_gridIconTrashItem} Delete</button>
+    </span>
+    <span class="bt-grid__control-group bt-grid__row-edit-edit">
+      <button type="button" class="bt-btn bt-btn--sm bt-btn--primary-solid" onclick="btGridRowEditSave(event,this)">Save</button>
+      <button type="button" class="bt-btn bt-btn--sm bt-btn--secondary-flat" onclick="btGridRowEditCancel(event,this)">Cancel</button>
+    </span>
+  </div>`;
+}
+
 // Header'ın Checkbox Control'ü "select all" — gridLeadingHtml('checkbox')'tan
 // (body row'daki bağımsız checkbox) FARKLI bir onclick alıyor: kendi kutusunu
 // toggle'lamanın yanında btGridSelectAll() ile tablodaki TÜM body row'ların
@@ -9275,8 +9409,10 @@ window.btGridResizeStart = function(event, handle) {
   handle.classList.add('bt-grid__resize-handle--resizing');
   document.body.style.cursor     = 'col-resize';
   document.body.style.userSelect = 'none';
+  let moved = false;
 
   function onMove(e) {
+    if (Math.abs(e.clientX - startX) > 2) moved = true;
     const newWidth = Math.max(minWidth, startWidth + (e.clientX - startX));
     headerCell.style.flex = '0 0 auto';
     headerCell.style.width = newWidth + 'px';
@@ -9291,10 +9427,263 @@ window.btGridResizeStart = function(event, handle) {
     document.body.style.userSelect = '';
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup',   onUp);
+    // Sürükleyerek resize yapıldıysa, mouseup'ı takip eden senkron "click"
+    // event'inin (header sortable ise) yanlışlıkla sıralama tetiklemesini
+    // engelle — btGridSortBy bu bayrağı görünce hiçbir şey yapmadan çıkar.
+    if (moved) {
+      headerCell.dataset.justResized = '1';
+      setTimeout(() => { delete headerCell.dataset.justResized; }, 0);
+    }
   }
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseup',   onUp);
 };
+
+// Gerçek çalışan sıralama — sortable bir header'a tıklanınca (bkz.
+// gridHeaderCellHtml'in sortClickAttrs'ı) o kolonun `data-sort-value`'una
+// (gridCellHtml'in editValue/contentText'ten BAĞIMSIZ, her zaman row[field]'a
+// eşit ayrı bir attribute — TRAILING content kind'lar metni gizlese bile
+// sıralama değeri kayıp gitmesin diye, bkz. HISTORY.md) göre body row'ları
+// (gerçek DOM node'ları, appendChild ile taşınır — Checkbox seçili/Inline
+// Editing'in editing state'i gibi satıra bağlı hiçbir şey kaybolmaz) yeniden
+// sıralar. Aynı kolona tekrar tıklamak yönü (asc/desc) tersine çevirir,
+// başka bir kolona tıklamak önceki aktif kolonun sıralama göstergesini
+// temizler (aynı anda sadece TEK bir aktif sıralama kolonu olabilir).
+// 3 tıklık döngü: yok → asc (1. tık) → desc (2. tık) → yok/reset (3. tık,
+// orijinal satır sırasına döner) — kullanıcı isteğiyle eklendi (bkz.
+// HISTORY.md), önceden sadece asc↔desc arasında toggle'lıyordu, hiç reset
+// yoktu. Orijinal sıra her satırın render zamanında aldığı `data-row-index`
+// attribute'undan (bkz. gridXTableHtml'lerin hepsi) geri getiriliyor.
+window.btGridSortBy = function(event, headerEl) {
+  if (headerEl.dataset.justResized) return;
+  const headerRow = headerEl.parentElement;
+  const grid = headerEl.closest('.bt-grid');
+  const body = grid && grid.querySelector('.bt-grid__body');
+  if (!body) return;
+  const nth = Array.from(headerRow.children).indexOf(headerEl) + 1;
+  const currentDir = headerEl.getAttribute('data-sort-dir'); // null | 'asc' | 'desc'
+  const nextDir = currentDir === 'asc' ? 'desc' : currentDir === 'desc' ? null : 'asc';
+
+  headerRow.querySelectorAll('.bt-grid__header-cell--sorted').forEach(h => {
+    if (h !== headerEl) { h.classList.remove('bt-grid__header-cell--sorted'); h.removeAttribute('data-sort-dir'); }
+  });
+
+  const rows = Array.from(body.children).filter(r => r.classList.contains('bt-grid__row'));
+
+  if (nextDir === null) {
+    headerEl.classList.remove('bt-grid__header-cell--sorted');
+    headerEl.removeAttribute('data-sort-dir');
+    rows.sort((ra, rb) => parseInt(ra.dataset.rowIndex, 10) - parseInt(rb.dataset.rowIndex, 10));
+    rows.forEach(r => body.appendChild(r));
+    return;
+  }
+
+  headerEl.classList.add('bt-grid__header-cell--sorted');
+  headerEl.setAttribute('data-sort-dir', nextDir);
+  rows.sort((ra, rb) => {
+    const va = (ra.children[nth - 1] && ra.children[nth - 1].getAttribute('data-sort-value')) || '';
+    const vb = (rb.children[nth - 1] && rb.children[nth - 1].getAttribute('data-sort-value')) || '';
+    const na = parseFloat(va), nb = parseFloat(vb);
+    const bothNumeric = va.trim() !== '' && vb.trim() !== '' && String(na) === va.trim() && String(nb) === vb.trim();
+    const cmp = bothNumeric ? (na - nb) : va.localeCompare(vb, 'tr');
+    return nextDir === 'asc' ? cmp : -cmp;
+  });
+  rows.forEach(r => body.appendChild(r));
+};
+
+// ── Filter overlay — gerçek çalışan sütun filtresi ─────────────────
+// Kullanıcının verdiği referans görsele göre: Ara input'u + Tümünü Seç +
+// kolonun KENDİ verisinden türetilen (hardcoded değil) checkbox listesi +
+// Temizle/Uygula footer'ı. Panel, Actions overflow menu'süyle (btGridMenuToggle)
+// AYNI kanıtlanmış "document.body'ye portal + position:fixed" desenini
+// kullanır (bkz. HISTORY.md, "izole çalışıyor ama gerçek sayfada kırılıyor"
+// sınıfı overflow-clipping sorunlarını önlemek için) — panel ephemeral,
+// her açılışta yeniden oluşturulup kapanışta DOM'dan tamamen kaldırılır (geri
+// taşınacak bir "home" konumu yok, overflow menu'den farklı).
+const _gridFilterEsc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+function btGridFilterCloseAll() {
+  document.querySelectorAll('.bt-grid__filter-panel[data-bt-grid-portal="1"]').forEach(panel => {
+    if (panel._btGridFilterHeader) {
+      const btn = panel._btGridFilterHeader.querySelector('.bt-grid__filter-btn');
+      if (btn) btn.classList.remove('bt-grid__filter-btn--open');
+    }
+    panel.remove();
+  });
+}
+
+// Bir grid'deki TÜM aktif kolon filtrelerini (AND mantığıyla) birlikte
+// uygulayıp satır görünürlüğünü günceller — bir kolonun Apply/Clear'ı diğer
+// aktif filtreleri hiç bozmadan çalışır, hepsi burada yeniden değerlendirilir.
+window.btGridApplyFilters = function(grid) {
+  if (!grid) return;
+  const body = grid.querySelector('.bt-grid__body');
+  if (!body) return;
+  const activeHeaders = Array.from(grid.querySelectorAll('.bt-grid__header-cell[data-filter-active="true"]'));
+  const rows = Array.from(body.children).filter(r => r.classList.contains('bt-grid__row'));
+  if (!activeHeaders.length) {
+    rows.forEach(r => { r.style.display = ''; });
+    return;
+  }
+  const filters = activeHeaders.map(h => ({
+    nth: Array.from(h.parentElement.children).indexOf(h) + 1,
+    values: new Set(JSON.parse(h.dataset.filterValues || '[]')),
+  }));
+  rows.forEach(row => {
+    const visible = filters.every(f => {
+      const cell = row.children[f.nth - 1];
+      const val = cell ? cell.getAttribute('data-sort-value') : null;
+      return val != null && f.values.has(val);
+    });
+    row.style.display = visible ? '' : 'none';
+  });
+};
+
+function btGridFilterUpdateTriggerStyle(headerEl) {
+  const btn = headerEl.querySelector('.bt-grid__filter-btn');
+  if (!btn) return;
+  btn.classList.toggle('bt-btn--state-selected', headerEl.getAttribute('data-filter-active') === 'true');
+}
+
+window.btGridFilterToggle = function(event, btn) {
+  event.stopPropagation();
+  const headerEl = btn.closest('.bt-grid__header-cell');
+  const grid = headerEl.closest('.bt-grid');
+  const existing = document.querySelector('.bt-grid__filter-panel[data-bt-grid-portal="1"]');
+  const wasOpenForThis = !!(existing && existing._btGridFilterHeader === headerEl);
+  btGridFilterCloseAll();
+  if (wasOpenForThis) return;
+
+  const headerRow = headerEl.parentElement;
+  const nth = Array.from(headerRow.children).indexOf(headerEl) + 1;
+  const body = grid.querySelector('.bt-grid__body');
+  const bodyRows = body ? Array.from(body.children).filter(r => r.classList.contains('bt-grid__row')) : [];
+  const values = Array.from(new Set(bodyRows.map(r => {
+    const cell = r.children[nth - 1];
+    return cell ? cell.getAttribute('data-sort-value') : null;
+  }).filter(v => v != null && v !== ''))).sort((a, b) => a.localeCompare(b, 'tr'));
+
+  const isActive = headerEl.getAttribute('data-filter-active') === 'true';
+  const activeValues = isActive ? new Set(JSON.parse(headerEl.dataset.filterValues || '[]')) : new Set(values);
+
+  const panel = document.createElement('div');
+  panel.className = 'bt-grid__filter-panel';
+  panel.innerHTML = `
+    <div class="bt-grid__filter-search">
+      <div class="bt-searchbox bt-searchbox--md" onclick="event.stopPropagation()">
+        <div class="bt-searchbox__control"><span class="bt-searchbox__icon">${sbxIconSearch}</span></div>
+        <div class="bt-searchbox__field"><input class="bt-searchbox__text" type="text" placeholder="Ara..." oninput="btGridFilterSearch(event,this)"></div>
+      </div>
+    </div>
+    <div class="bt-grid__filter-list">
+      <label class="bt-grid__filter-option bt-grid__filter-option--all" onclick="btGridFilterSelectAllToggle(event,this)">
+        <span class="bt-checkbox__box${activeValues.size === values.length && values.length > 0 ? ' bt-checkbox__box--checked' : ''}">${_chkCheck}</span>
+        <span class="bt-grid__filter-option-text">Tümünü Seç</span>
+      </label>
+      ${values.map(v => `<label class="bt-grid__filter-option" data-filter-value="${_gridFilterEsc(v)}" onclick="btGridFilterOptionToggle(event,this)">
+        <span class="bt-checkbox__box${activeValues.has(v) ? ' bt-checkbox__box--checked' : ''}">${_chkCheck}</span>
+        <span class="bt-grid__filter-option-text">${_gridFilterEsc(v)}</span>
+      </label>`).join('')}
+    </div>
+    <div class="bt-grid__filter-footer">
+      <button type="button" class="bt-btn bt-btn--sm bt-btn--secondary-flat" onclick="btGridFilterClear(event,this)">Temizle</button>
+      <button type="button" class="bt-btn bt-btn--sm bt-btn--primary-solid" onclick="btGridFilterApplyClick(event,this)">Uygula</button>
+    </div>
+  `;
+  panel._btGridFilterHeader = headerEl;
+  panel.setAttribute('data-bt-grid-portal', '1');
+  panel.addEventListener('click', e => e.stopPropagation());
+  document.body.appendChild(panel);
+  const r = btn.getBoundingClientRect();
+  const panelWidth = 220;
+  panel.style.position = 'fixed';
+  panel.style.top = (r.bottom + 4) + 'px';
+  panel.style.left = Math.max(8, Math.min(window.innerWidth - panelWidth - 8, r.right - panelWidth)) + 'px';
+  btn.classList.add('bt-grid__filter-btn--open');
+};
+
+window.btGridFilterSearch = function(event, input) {
+  // Gerçek SearchBox component'inin (bkz. sbxInput) AYNI filled-state
+  // davranışı — dolu/boş görsel farkı için.
+  const box = input.closest('.bt-searchbox');
+  if (box) box.classList.toggle('bt-searchbox--filled', input.value.length > 0);
+  const q = input.value.trim().toLocaleLowerCase('tr');
+  const panel = input.closest('.bt-grid__filter-panel');
+  panel.querySelectorAll('.bt-grid__filter-option:not(.bt-grid__filter-option--all)').forEach(opt => {
+    const text = opt.querySelector('.bt-grid__filter-option-text').textContent.toLocaleLowerCase('tr');
+    opt.style.display = text.includes(q) ? '' : 'none';
+  });
+};
+
+window.btGridFilterOptionToggle = function(event, label) {
+  event.stopPropagation();
+  const box = label.querySelector('.bt-checkbox__box');
+  box.classList.toggle('bt-checkbox__box--checked');
+  const panel = label.closest('.bt-grid__filter-panel');
+  const allOpts = Array.from(panel.querySelectorAll('.bt-grid__filter-option:not(.bt-grid__filter-option--all)'));
+  const allChecked = allOpts.length > 0 && allOpts.every(o => o.querySelector('.bt-checkbox__box').classList.contains('bt-checkbox__box--checked'));
+  panel.querySelector('.bt-grid__filter-option--all .bt-checkbox__box').classList.toggle('bt-checkbox__box--checked', allChecked);
+};
+
+window.btGridFilterSelectAllToggle = function(event, label) {
+  event.stopPropagation();
+  const box = label.querySelector('.bt-checkbox__box');
+  const nextChecked = !box.classList.contains('bt-checkbox__box--checked');
+  box.classList.toggle('bt-checkbox__box--checked', nextChecked);
+  const panel = label.closest('.bt-grid__filter-panel');
+  // Sadece o an aramaya göre GÖRÜNÜR olan seçenekleri toggle'lar — arama
+  // yaparken "Tümünü Seç"in sadece filtrelenmiş listeyi etkilemesi beklenen
+  // davranış (yaygın multi-select filter deseni).
+  panel.querySelectorAll('.bt-grid__filter-option:not(.bt-grid__filter-option--all)').forEach(opt => {
+    if (opt.style.display === 'none') return;
+    opt.querySelector('.bt-checkbox__box').classList.toggle('bt-checkbox__box--checked', nextChecked);
+  });
+};
+
+window.btGridFilterClear = function(event, btn) {
+  event.stopPropagation();
+  const panel = btn.closest('.bt-grid__filter-panel');
+  const headerEl = panel._btGridFilterHeader;
+  headerEl.removeAttribute('data-filter-active');
+  headerEl.removeAttribute('data-filter-values');
+  btGridFilterUpdateTriggerStyle(headerEl);
+  window.btGridApplyFilters(headerEl.closest('.bt-grid'));
+  btGridFilterCloseAll();
+};
+
+window.btGridFilterApplyClick = function(event, btn) {
+  event.stopPropagation();
+  const panel = btn.closest('.bt-grid__filter-panel');
+  const headerEl = panel._btGridFilterHeader;
+  const allOptions = Array.from(panel.querySelectorAll('.bt-grid__filter-option:not(.bt-grid__filter-option--all)'));
+  const checked = allOptions.filter(o => o.querySelector('.bt-checkbox__box').classList.contains('bt-checkbox__box--checked')).map(o => o.dataset.filterValue);
+
+  if (checked.length === allOptions.length) {
+    headerEl.removeAttribute('data-filter-active');
+    headerEl.removeAttribute('data-filter-values');
+  } else {
+    headerEl.setAttribute('data-filter-active', 'true');
+    headerEl.setAttribute('data-filter-values', JSON.stringify(checked));
+  }
+  btGridFilterUpdateTriggerStyle(headerEl);
+  window.btGridApplyFilters(headerEl.closest('.bt-grid'));
+  btGridFilterCloseAll();
+};
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.bt-grid__filter-panel') && !e.target.closest('.bt-grid__filter-btn')) {
+    btGridFilterCloseAll();
+  }
+});
+document.addEventListener('scroll', function(e) {
+  // Panel'in KENDİ içindeki scroll'u (.bt-grid__filter-list, uzun seçenek
+  // listelerinde overflow-y:auto) hariç tut — aksi halde listede scroll
+  // etmeye çalışmak paneli kapatıyordu (kullanıcı bildirdi, bkz. HISTORY.md).
+  // Sayfanın/tablonun kendi scroll'u (panel'in anchor'ı görünümden çıkabilir)
+  // hâlâ paneli kapatıyor.
+  if (e.target && e.target.closest && e.target.closest('.bt-grid__filter-panel')) return;
+  btGridFilterCloseAll();
+}, true);
 
 window.btGridMenuToggle = function(event, btn) {
   event.stopPropagation();
@@ -9362,6 +9751,13 @@ function gridHeaderCellHtml(opts) {
   const frozenEdge = o.frozenEdge === true;
   const stickyRight = o.stickyRight;
   const frozenRightEdge = o.frozenRightEdge === true;
+  // forceSorted — SADECE statik Examples illüstrasyonları kullanır (bkz.
+  // gridTableHtml'in forceSortField/forceSortDir opt'ları): header'ı, gerçek
+  // bir tıklama olmadan doğrudan render zamanında "aktif sıralanan kolon"
+  // görünümüne (.bt-grid__header-cell--sorted + data-sort-dir) sokar —
+  // window.btGridSortBy'ın çalışma zamanında eklediği AYNI class/attribute,
+  // aynı CSS kuralları geçerli olur. Diğer TÜM çağrılarda false kalır.
+  const forceSorted = o.forceSorted === true;
 
   const cls = [
     'bt-grid__header-cell',
@@ -9369,27 +9765,44 @@ function gridHeaderCellHtml(opts) {
     state !== 'default' ? `bt-grid__header-cell--${state}` : '',
     frozenEdge ? 'bt-grid__header-cell--frozen-edge' : '',
     frozenRightEdge ? 'bt-grid__header-cell--frozen-right-edge' : '',
+    showSort ? 'bt-grid__header-cell--sortable' : '',
+    forceSorted ? 'bt-grid__header-cell--sorted' : '',
   ].filter(Boolean).join(' ');
+  const sortDirAttr = forceSorted ? ` data-sort-dir="${sortDir}"` : '';
   const stickyStyle = sticky != null
     ? `position:sticky;left:${sticky}px;z-index:5;`
     : stickyRight != null
       ? `position:sticky;right:${stickyRight}px;z-index:5;`
       : '';
+  // Sort tıklaması TÜM header hücresine bağlı (yaygın data grid deseni) —
+  // Filter ikonu ve resize handle kendi click/mousedown'larını durdurarak
+  // (stopPropagation / btGridResizeStart'ın "justResized" bayrağı) bu
+  // tıklamayla ÇAKIŞMAZ, bkz. window.btGridSortBy notu.
+  const sortClickAttrs = showSort ? ` onclick="btGridSortBy(event,this)"` : '';
 
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const checkboxHtml = showCheckbox ? gridHeaderCheckboxHtml() : '';
   const contentHtml  = showContent ? `<span class="bt-grid__content">${contentText}</span>` : '';
+  // Up/down ikonları ayrı class'lara sahip (bt-grid__control--sort-up/-down) —
+  // aktif sıralanan kolon sadece kendi yönünü gösterip diğerini gizler (bkz.
+  // .bt-grid__header-cell--sorted[data-sort-dir] CSS kuralı, styles.css).
   const sortHtml = showSort ? `<span class="bt-grid__sort">
-    ${sortDir !== 'down' ? `<span class="bt-grid__control">${gridControlIcon(_gridIconSortUp)}</span>` : ''}
-    ${sortDir !== 'up'   ? `<span class="bt-grid__control">${gridControlIcon(_gridIconSortDown)}</span>` : ''}
+    ${sortDir !== 'down' ? `<span class="bt-grid__control bt-grid__control--sort-up">${gridControlIcon(_gridIconSortUp)}</span>` : ''}
+    ${sortDir !== 'up'   ? `<span class="bt-grid__control bt-grid__control--sort-down">${gridControlIcon(_gridIconSortDown)}</span>` : ''}
   </span>` : '';
-  const filterHtml   = showFilter ? `<span class="bt-grid__control">${gridControlIcon(_gridIconFunnel)}</span>` : '';
+  // Filter — gerçek flat icon-button (kullanıcı isteğiyle statik ikondan
+  // çevrildi, bkz. HISTORY.md/design.md §17.7): tıklanınca bir filtre
+  // overlay'i açar (window.btGridFilterToggle), aktif bir filtre varken
+  // .bt-btn--state-selected (Button component'inin ZATEN var olan "selected"
+  // modifier'ı, reuse edildi) ile basılı/mavi görünür. stopPropagation
+  // sort'un tüm header'ı kapsayan click'ini tetiklemesin diye.
+  const filterHtml   = showFilter ? `<span class="bt-grid__control"><button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon bt-grid__filter-btn" aria-label="Filter" onclick="event.stopPropagation();btGridFilterToggle(event,this)">${gridControlIcon(_gridIconFunnel)}</button></span>` : '';
   const rightHtml    = showRight  ? `<span class="bt-grid__control">${gridControlIcon(_gridIconEllipsis)}</span>` : '';
   // Resize handle — sadece metin içerikli kolonlarda (checkbox-only kolonlarda yok)
   const resizeHandle = showContent ? `<span class="bt-grid__resize-handle" onmousedown="btGridResizeStart(event,this)"></span>` : '';
 
   const widthStyleH = fillWidth ? `flex:1;min-width:${width}px;` : `width:${width}px;`;
-  return `<div class="${cls}" style="${widthStyleH}box-sizing:border-box;${stickyStyle}">${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}${resizeHandle}</div>`;
+  return `<div class="${cls}" style="${widthStyleH}box-sizing:border-box;${stickyStyle}"${sortClickAttrs}${sortDirAttr}>${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}${resizeHandle}</div>`;
 }
 
 function gridCellHtml(opts) {
@@ -9413,6 +9826,22 @@ function gridCellHtml(opts) {
   const frozenEdge = o.frozenEdge === true;
   const stickyRight = o.stickyRight;
   const frozenRightEdge = o.frozenRightEdge === true;
+  // editable/editKind/editValue/editDblClick — SADECE Inline Editing/InCell
+  // Editing sayfaları kullanır (bkz. design.md §17.5), diğer TÜM çağrılarda
+  // undefined/false kalır, mevcut davranış hiç değişmez. editable:true olan
+  // hücre hem view (content/trailing, hiç kaldırılmıyor) hem edit
+  // (.bt-grid__cell-edit, bkz. styles.css) markup'ını AYNI ANDA barındırır —
+  // hangisi görünür olacağını CSS (.bt-grid__row--editing veya
+  // .bt-grid__cell--editing) belirler, JS sadece bir class toggle'lıyor.
+  const editable = o.editable === true;
+  const editKind = o.editKind || 'textbox'; // 'textbox' | 'dropdown'
+  const editValue = o.editValue != null ? o.editValue : contentText;
+  const editDblClick = o.editDblClick === true;
+  // sortValue — SADECE sortable kolonlarda geçilir (bkz. window.btGridSortBy).
+  // contentText'ten BAĞIMSIZ tutuluyor çünkü TRAILING content kind'lar
+  // (Badge/Button/...) hücrenin metnini gizleyebiliyor (showContent:'off') —
+  // sıralama değeri buna rağmen her zaman satırın gerçek verisinden gelmeli.
+  const sortValue = o.sortValue;
 
   const cls = [
     'bt-grid__cell',
@@ -9420,21 +9849,31 @@ function gridCellHtml(opts) {
     state !== 'default' ? `bt-grid__cell--${state}` : '',
     frozenEdge ? 'bt-grid__cell--frozen-edge' : '',
     frozenRightEdge ? 'bt-grid__cell--frozen-right-edge' : '',
+    editable ? 'bt-grid__cell--editable' : '',
   ].filter(Boolean).join(' ');
   const stickyStyle = sticky != null
     ? `position:sticky;left:${sticky}px;z-index:5;`
     : stickyRight != null
       ? `position:sticky;right:${stickyRight}px;z-index:5;`
       : '';
+  // InCell Editing'de hücrenin kendisine çift tıklanınca edit moduna girer;
+  // tek tıklama satırın onclick'ine (btGridRowToggle) bubble'lamasın diye
+  // durduruluyor (aksi halde çift tıklamanın iki click'i satırı seçip geri
+  // kaldırırdı, görsel flaş yapardı).
+  const editTriggerAttrs = (editable && editDblClick) ? ` onclick="event.stopPropagation()" ondblclick="btGridCellEditStart(event,this)"` : '';
+  const sortValueAttr = sortValue != null ? ` data-sort-value="${String(sortValue).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"` : '';
 
   const leftHtml     = showLeft ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
   const leadingHtml  = gridLeadingHtml(leading);
   const contentHtml  = showContent ? `<span class="bt-grid__content${contentLink ? ' bt-grid__content--link' : ''}">${contentText}</span>` : '';
   const trailingHtml = gridTrailingHtml(trailing, { color: trailingColor, label: trailingLabel });
+  const editHtml = editable
+    ? `<span class="bt-grid__cell-edit" onclick="event.stopPropagation()">${editKind === 'dropdown' ? _gridEditDropdownHtml(editValue) : _gridEditTextboxHtml(editValue)}</span>`
+    : '';
   const rightHtml    = showRight ? `<span class="bt-grid__control">${gridControlIcon()}</span>` : '';
 
   const widthStyleC = fillWidth ? `flex:1;min-width:${width}px;` : `width:${width}px;`;
-  return `<div class="${cls}" style="${widthStyleC}box-sizing:border-box;${stickyStyle}">${leftHtml}${leadingHtml}${contentHtml}${trailingHtml}${rightHtml}</div>`;
+  return `<div class="${cls}" style="${widthStyleC}box-sizing:border-box;${stickyStyle}"${editTriggerAttrs}${sortValueAttr}>${leftHtml}${leadingHtml}${contentHtml}${trailingHtml}${editHtml}${rightHtml}</div>`;
 }
 
 function gridNoRecordHtml(opts) {
@@ -9570,6 +10009,16 @@ function gridContentKindToSlots(kind) {
   if (GRID_TRAILING_KINDS.has(kind)) return { leading: 'none', trailing: kind,   showText: false };
   return { leading: 'none', trailing: 'none', showText: true };
 }
+// window.btGridSortBy'daki (gerçek tıklama/DOM sıralaması) karşılaştırma
+// mantığıyla AYNI — sadece render-zamanında (SSR, statik Examples
+// illüstrasyonları için, bkz. gridTableHtml'in forceSortField/forceSortDir
+// opt'ları) satır DİZİSİ üzerinde çalışır, DOM üzerinde değil.
+function _gridCompareFieldValues(a, b) {
+  const sa = a == null ? '' : String(a), sb = b == null ? '' : String(b);
+  const na = parseFloat(sa), nb = parseFloat(sb);
+  const bothNumeric = sa.trim() !== '' && sb.trim() !== '' && String(na) === sa.trim() && String(nb) === sb.trim();
+  return bothNumeric ? (na - nb) : sa.localeCompare(sb, 'tr');
+}
 // department/email/location/lastLogin — sadece Frozen Column sayfasındaki geniş
 // (çok kolonlu) tablo için eklendi, ana Data Table playground'u bu alanları
 // kullanmıyor (bkz. HISTORY.md).
@@ -9620,18 +10069,21 @@ function gridTableColumns(p) {
   const statusKind    = p.statusContent || 'badge';
   const statusContent = gridContentKindToSlots(statusKind);
   const emailContent  = gridContentKindToSlots(p.emailContent  || 'none');
+  // Sort/Filter artık TEK bir kolona değil (eski "Sort (Name)"/"Filter
+  // (Role)"), `field`'ı olan HER kolona (Checkbox hariç) uygulanıyor —
+  // kullanıcı isteğiyle, bkz. HISTORY.md.
   const showSort      = p.showSort === 'on';
   const showFilter    = p.showFilter === 'on';
   return [
     showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
-    { width: 90,  headerText: 'ID',    field: 'id',   contentLink: true, cellLeading: idContent.leading,   cellTrailing: idContent.trailing },
-    { width: 200, headerText: 'Name',  field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort },
-    { width: 160, headerText: 'Role',  field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, filter: showFilter },
+    { width: 90,  headerText: 'ID',    field: 'id',   contentLink: true, cellLeading: idContent.leading,   cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 200, headerText: 'Name',  field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
+    { width: 160, headerText: 'Role',  field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
     // statusLabel — _gridTableRowsData'da zaten var olan satır-bazlı
     // Active/Completed/Pending/Inactive değeri; Status'un "field"ı bu
     // (diğer kolonlarla AYNI field mekanizmasını kullanabilsin diye).
-    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
-    { width: 180, headerText: 'Email', field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
+    { width: 180, headerText: 'Email', field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
   ].filter(Boolean);
 }
 
@@ -9655,14 +10107,24 @@ function gridActionsColumns(p) {
   // bkz. HISTORY.md).
   const actionsKind    = p.actionsContent || 'button';
   const actionsContent = gridContentKindToSlots(actionsKind);
+  // Sort/Filter artık TEK bir kolona değil, `field`'ı olan HER kolona
+  // (Checkbox/Actions hariç) uygulanıyor — kullanıcı isteğiyle, bkz. HISTORY.md.
+  const showSort   = p.showSort   === 'on';
+  const showFilter = p.showFilter === 'on';
+  // Kolon genişlikleri, docs sitesinin .content alanı maksimum genişlikteyken
+  // (1100px) bile playground'un dış overflow-x scroll'unu TETİKLEMEYECEK
+  // şekilde ayarlandı (kullanıcı isteğiyle — bu sayfa yatay scroll'suz,
+  // container'a sığacak şekilde gelmeli; gerçek bir sayfa layout'una
+  // eklendiğinde Email'in fillWidth'i sayesinde zaten daha geniş bir
+  // container'ı dolduruyor, bu davranış DOKUNULMADI, bkz. HISTORY.md).
   return [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',     field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing },
-    { width: 200, headerText: 'Name',   field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing },
-    { width: 160, headerText: 'Role',   field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing },
-    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
-    { width: 180, headerText: 'Email',  field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
-    actionsKind !== 'none' ? { width: (actionsKind === 'textbox' || actionsKind === 'dropdown') ? 160 : 130, headerText: 'Actions', cellLeading: actionsContent.leading, cellTrailing: actionsContent.trailing } : null,
+    { width: 80,  headerText: 'ID',     field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 170, headerText: 'Name',   field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
+    { width: 140, headerText: 'Role',   field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 130, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
+    { width: 180, headerText: 'Email',  field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
+    actionsKind !== 'none' ? { width: (actionsKind === 'textbox' || actionsKind === 'dropdown') ? 140 : 130, headerText: 'Actions', cellLeading: actionsContent.leading, cellTrailing: actionsContent.trailing } : null,
   ].filter(Boolean);
 }
 
@@ -9678,6 +10140,15 @@ function gridTableHtml(props) {
   const showNoRecord = rowCount === 0;
   const cols = gridTableColumns(p);
   const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+  // forceSortField/forceSortDir — SADECE Data Table Sorting sayfasının
+  // Examples tab'ındaki statik illüstrasyonları kullanır (kullanıcı gerçekten
+  // tıklamadan bir sıralanmış durumu göstermek için) — Overview'daki gerçek
+  // interaktif playground bunu hiç geçmez (undefined kalır). `sortValue`
+  // ile AYNI kaynaktan (row[field]) türetilen değerle, `_gridCompareFieldValues`
+  // (window.btGridSortBy ile AYNI karşılaştırma mantığı) kullanılarak dizi
+  // SEVİYESİNDE sıralanır.
+  const forceSortField = p.forceSortField;
+  const forceSortDir   = p.forceSortDir === 'desc' ? 'desc' : 'asc';
 
   const headerRow = cols.map((c, i) => gridHeaderCellHtml({
     position: posFor(i),
@@ -9687,6 +10158,8 @@ function gridTableHtml(props) {
     contentText: c.headerText || '',
     showSort: c.sort ? 'on' : 'off',
     showFilter: c.filter ? 'on' : 'off',
+    forceSorted: !!(forceSortField && c.field === forceSortField),
+    sortDir: forceSortField && c.field === forceSortField ? forceSortDir : undefined,
     fillWidth: c.fillWidth,
   })).join('');
 
@@ -9696,9 +10169,16 @@ function gridTableHtml(props) {
   // ama bundan bağımsız olarak her satır kendi hover'ını (CSS :hover) ve
   // click-to-select'ini (classList.toggle) gerçekten uyguluyor — kullanıcı
   // isteğiyle eklendi, bkz. HISTORY.md.
+  let bodyRows = _gridTableRowsData.slice(0, rowCount);
+  if (forceSortField) {
+    bodyRows = bodyRows.slice().sort((a, b) => {
+      const cmp = _gridCompareFieldValues(a[forceSortField], b[forceSortField]);
+      return forceSortDir === 'asc' ? cmp : -cmp;
+    });
+  }
   const bodyHtml = showNoRecord
     ? gridNoRecordHtml({ width: totalWidth })
-    : _gridTableRowsData.slice(0, rowCount).map(row => `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+    : bodyRows.map((row, idx) => `<div class="bt-grid__row bt-grid__row--clickable" data-row-index="${idx}" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
         position: posFor(i),
         state: rowState,
         width: c.width,
@@ -9715,6 +10195,7 @@ function gridTableHtml(props) {
         showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
+        sortValue: c.field ? row[c.field] : undefined,
         fillWidth: c.fillWidth,
       })).join('')}</div>`).join('');
 
@@ -9772,27 +10253,38 @@ const GRID_FROZEN_COUNT_OPTS = [
 
 function gridFrozenColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
-  // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
-  // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
-  // Department/Location/Last Login bilinçli olarak DEĞİŞMEDİ — bunlar
-  // Figma'da karşılığı olmayan, sadece frozen-column davranışını
-  // göstermek için genişliği artırmaya yarayan ek kolonlar (bkz. §17.4).
-  const idContent     = gridContentKindToSlots(p.idContent     || 'none');
-  const nameContent   = gridContentKindToSlots(p.nameContent   || 'avatar');
-  const roleContent   = gridContentKindToSlots(p.roleContent   || 'dot');
+  // ID/Name/Role/Department/Location/Last Login/Status/Email — TÜMÜ AYNI
+  // generic content-kind mekanizması (kullanıcı isteğiyle: "tüm örneklerde
+  // tüm kolonların properties'i olmalı", bkz. HISTORY.md). Department/
+  // Location/Last Login'in Figma'da karşılığı yok (sadece frozen-column
+  // davranışını göstermek için genişlik eklemeye yarayan yardımcı kolonlar,
+  // bkz. §17.4 "Neden ayrı bir kolon seti gerekti" notu) ama bu, Properties
+  // panelinden yapılandırılamamaları için bir gerekçe değil — varsayılan
+  // 'none' ile davranışları hiç değişmiyor.
+  const idContent         = gridContentKindToSlots(p.idContent         || 'none');
+  const nameContent       = gridContentKindToSlots(p.nameContent       || 'avatar');
+  const roleContent       = gridContentKindToSlots(p.roleContent       || 'dot');
+  const departmentContent = gridContentKindToSlots(p.departmentContent || 'none');
+  const locationContent   = gridContentKindToSlots(p.locationContent   || 'none');
+  const lastLoginContent  = gridContentKindToSlots(p.lastLoginContent  || 'none');
   const statusKind    = p.statusContent || 'badge';
   const statusContent = gridContentKindToSlots(statusKind);
   const emailContent  = gridContentKindToSlots(p.emailContent  || 'none');
+  // Sort/Filter artık TEK bir kolona değil (eski "Sort (Name)"/"Filter
+  // (Role)"), `field`'ı olan HER kolona (Checkbox hariç) uygulanıyor —
+  // kullanıcı isteğiyle, bkz. HISTORY.md.
+  const showSort   = p.showSort   === 'on';
+  const showFilter = p.showFilter === 'on';
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',          field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing },
-    { width: 200, headerText: 'Name',        field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing },
-    { width: 140, headerText: 'Role',        field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing },
-    { width: 150, headerText: 'Department',  field: 'department' },
-    { width: 120, headerText: 'Location',    field: 'location' },
-    { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
-    { width: 210, headerText: 'Email',       field: 'email', cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
+    { width: 90,  headerText: 'ID',          field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 200, headerText: 'Name',        field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
+    { width: 140, headerText: 'Role',        field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
+    { width: 150, headerText: 'Department',  field: 'department', cellLeading: departmentContent.leading, cellTrailing: departmentContent.trailing, sort: showSort, filter: showFilter },
+    { width: 120, headerText: 'Location',    field: 'location', cellLeading: locationContent.leading, cellTrailing: locationContent.trailing, sort: showSort, filter: showFilter },
+    { width: 150, headerText: 'Last Login',  field: 'lastLogin', cellLeading: lastLoginContent.leading, cellTrailing: lastLoginContent.trailing, sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
+    { width: 210, headerText: 'Email',       field: 'email', cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
   ].filter(Boolean);
   let left = 0;
   return cols.map((c, i) => {
@@ -9817,6 +10309,8 @@ function gridFrozenTableHtml(props) {
     showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
     showContent: c.headerText ? 'on' : 'off',
     contentText: c.headerText || '',
+    showSort: c.sort ? 'on' : 'off',
+    showFilter: c.filter ? 'on' : 'off',
     sticky: c.sticky,
     frozenEdge: c.isLastFrozen,
   })).join('');
@@ -9824,7 +10318,7 @@ function gridFrozenTableHtml(props) {
   const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
   const bodyHtml = showNoRecord
     ? gridNoRecordHtml({ width: totalWidth })
-    : _gridTableRowsData.slice(0, rowCount).map(row => `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+    : _gridTableRowsData.slice(0, rowCount).map((row, idx) => `<div class="bt-grid__row bt-grid__row--clickable" data-row-index="${idx}" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
         position: posFor(i),
         state: rowState,
         width: c.width,
@@ -9841,6 +10335,7 @@ function gridFrozenTableHtml(props) {
         showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
+        sortValue: c.field ? row[c.field] : undefined,
         sticky: c.sticky,
         frozenEdge: c.isLastFrozen,
       })).join('')}</div>`).join('');
@@ -9927,13 +10422,19 @@ PAGES_WEB['components/data-table-frozen-column'] = {
           { key: 'rowCount',     label: 'Rows',            group: 'Table', options: GRID_TABLE_ROW_OPTS,     default: '6' },
           { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
           { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
-          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
-          // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
-          { key: 'idContent',    label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',  label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'roleContent',  label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'statusContent',label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent', label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'showSort',     label: 'Sort',            group: 'Table', options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',   label: 'Filter',          group: 'Table', options: TBX_BOOL_OPTS,           default: 'off' },
+          // ID/Name/Role/Department/Location/Last Login/Status/Email — TÜMÜ
+          // AYNI generic content-kind mekanizması (kullanıcı isteğiyle: "tüm
+          // örneklerde tüm kolonların properties'i olmalı", bkz. HISTORY.md).
+          { key: 'idContent',         label: 'ID Content',          group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',       label: 'Name Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',       label: 'Role Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'departmentContent', label: 'Department Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'locationContent',   label: 'Location Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'lastLoginContent',  label: 'Last Login Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent',     label: 'Status Column',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',      label: 'Email Content',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
         preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
         code:    (v, p) => gridFrozenTableHtml(p),
@@ -9963,14 +10464,16 @@ PAGES_WEB['components/data-table-frozen-column'] = {
 // sol kenarına ters yönlü bir edge gölgesi eklenir.
 function gridFrozenLastColumns(p) {
   const frozenCount = parseInt(p.frozenCount || '2', 10);
-  // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
-  // content-kind mekanizması; Actions da Data Table Actions sayfasıyla AYNI
-  // actionsContent mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
-  // Department/Location/Last Login bilinçli olarak DEĞİŞMEDİ — bkz.
-  // gridFrozenColumns'daki aynı not.
-  const idContent     = gridContentKindToSlots(p.idContent      || 'none');
-  const nameContent   = gridContentKindToSlots(p.nameContent    || 'avatar');
-  const roleContent   = gridContentKindToSlots(p.roleContent    || 'dot');
+  // ID/Name/Role/Department/Location/Last Login/Status/Email — TÜMÜ AYNI
+  // generic content-kind mekanizması; Actions da Data Table Actions
+  // sayfasıyla AYNI actionsContent mekanizması (kullanıcı isteğiyle: "tüm
+  // örneklerde tüm kolonların properties'i olmalı", bkz. HISTORY.md).
+  const idContent         = gridContentKindToSlots(p.idContent         || 'none');
+  const nameContent       = gridContentKindToSlots(p.nameContent       || 'avatar');
+  const roleContent       = gridContentKindToSlots(p.roleContent       || 'dot');
+  const departmentContent = gridContentKindToSlots(p.departmentContent || 'none');
+  const locationContent   = gridContentKindToSlots(p.locationContent   || 'none');
+  const lastLoginContent  = gridContentKindToSlots(p.lastLoginContent  || 'none');
   const statusKind    = p.statusContent || 'badge';
   const statusContent = gridContentKindToSlots(statusKind);
   const emailContent  = gridContentKindToSlots(p.emailContent   || 'none');
@@ -9978,16 +10481,20 @@ function gridFrozenLastColumns(p) {
   // (kullanıcı isteğiyle, bkz. HISTORY.md) — Button sadece varsayılan değer.
   const actionsKind    = p.actionsContent || 'button';
   const actionsContent = gridContentKindToSlots(actionsKind);
+  // Sort/Filter artık TEK bir kolona değil, `field`'ı olan HER kolona
+  // (Checkbox/Actions hariç) uygulanıyor — kullanıcı isteğiyle, bkz. HISTORY.md.
+  const showSort   = p.showSort   === 'on';
+  const showFilter = p.showFilter === 'on';
   const cols = [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',          field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing },
-    { width: 200, headerText: 'Name',        field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing },
-    { width: 140, headerText: 'Role',        field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing },
-    { width: 150, headerText: 'Department',  field: 'department' },
-    { width: 120, headerText: 'Location',    field: 'location' },
-    { width: 150, headerText: 'Last Login',  field: 'lastLogin' },
-    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing } : null,
-    { width: 180, headerText: 'Email',       field: 'email', cellLeading: emailContent.leading, cellTrailing: emailContent.trailing },
+    { width: 90,  headerText: 'ID',          field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 200, headerText: 'Name',        field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
+    { width: 140, headerText: 'Role',        field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
+    { width: 150, headerText: 'Department',  field: 'department', cellLeading: departmentContent.leading, cellTrailing: departmentContent.trailing, sort: showSort, filter: showFilter },
+    { width: 120, headerText: 'Location',    field: 'location', cellLeading: locationContent.leading, cellTrailing: locationContent.trailing, sort: showSort, filter: showFilter },
+    { width: 150, headerText: 'Last Login',  field: 'lastLogin', cellLeading: lastLoginContent.leading, cellTrailing: lastLoginContent.trailing, sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
+    { width: 180, headerText: 'Email',       field: 'email', cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
     actionsKind !== 'none' ? { width: (actionsKind === 'textbox' || actionsKind === 'dropdown') ? 160 : 130, headerText: 'Actions', cellLeading: actionsContent.leading, cellTrailing: actionsContent.trailing, frozenRight: true } : null,
   ].filter(Boolean);
   let left = 0;
@@ -10020,6 +10527,8 @@ function gridFrozenLastTableHtml(props) {
     showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
     showContent: c.headerText ? 'on' : 'off',
     contentText: c.headerText || '',
+    showSort: c.sort ? 'on' : 'off',
+    showFilter: c.filter ? 'on' : 'off',
     sticky: c.sticky,
     frozenEdge: c.isLastFrozen,
     stickyRight: c.stickyRight,
@@ -10029,7 +10538,7 @@ function gridFrozenLastTableHtml(props) {
   const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
   const bodyHtml = showNoRecord
     ? gridNoRecordHtml({ width: totalWidth })
-    : _gridTableRowsData.slice(0, rowCount).map(row => `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+    : _gridTableRowsData.slice(0, rowCount).map((row, idx) => `<div class="bt-grid__row bt-grid__row--clickable" data-row-index="${idx}" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
         position: posFor(i),
         state: rowState,
         width: c.width,
@@ -10046,6 +10555,7 @@ function gridFrozenLastTableHtml(props) {
         showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
         contentText: c.field ? row[c.field] : '',
         contentLink: !!c.contentLink,
+        sortValue: c.field ? row[c.field] : undefined,
         sticky: c.sticky,
         frozenEdge: c.isLastFrozen,
         stickyRight: c.stickyRight,
@@ -10142,14 +10652,20 @@ PAGES_WEB['components/data-table-frozen-column-last'] = {
           { key: 'rowCount',    label: 'Rows',           group: 'Table', options: GRID_TABLE_ROW_OPTS,    default: '6' },
           { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
           { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
-          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
-          // content-kind mekanizması; Actions da Data Table Actions'la AYNI
-          // actionsContent mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
-          { key: 'idContent',      label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',    label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'roleContent',    label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'statusContent',  label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',   label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'showSort',    label: 'Sort',           group: 'Table', options: TBX_BOOL_OPTS,          default: 'off' },
+          { key: 'showFilter',  label: 'Filter',         group: 'Table', options: TBX_BOOL_OPTS,          default: 'off' },
+          // ID/Name/Role/Department/Location/Last Login/Status/Email — TÜMÜ
+          // AYNI generic content-kind mekanizması; Actions da Data Table
+          // Actions'la AYNI actionsContent mekanizması (kullanıcı isteğiyle:
+          // "tüm örneklerde tüm kolonların properties'i olmalı", bkz. HISTORY.md).
+          { key: 'idContent',         label: 'ID Content',          group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',       label: 'Name Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',       label: 'Role Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'departmentContent', label: 'Department Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'locationContent',   label: 'Location Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'lastLoginContent',  label: 'Last Login Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent',     label: 'Status Column',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',      label: 'Email Content',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
           { key: 'actionsContent', label: 'Actions Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
         ],
         preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
@@ -10195,14 +10711,16 @@ function gridActionsTableHtml(props) {
     showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
     showContent:  c.headerText ? 'on' : 'off',
     contentText:  c.headerText || '',
+    showSort:     c.sort ? 'on' : 'off',
+    showFilter:   c.filter ? 'on' : 'off',
     fillWidth:    c.fillWidth,
   })).join('');
 
   const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
   const bodyHtml = showNoRecord
     ? gridNoRecordHtml({ width: totalWidth })
-    : _gridTableRowsData.slice(0, rowCount).map(row =>
-        `<div class="bt-grid__row bt-grid__row--clickable" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
+    : _gridTableRowsData.slice(0, rowCount).map((row, idx) =>
+        `<div class="bt-grid__row bt-grid__row--clickable" data-row-index="${idx}" onclick="btGridRowToggle(this)">${cols.map((c, i) => gridCellHtml({
           position: posFor(i),
           state: rowState,
           width: c.width,
@@ -10213,6 +10731,7 @@ function gridActionsTableHtml(props) {
           showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off',
           contentText: c.field ? row[c.field] : '',
           contentLink: !!c.contentLink,
+          sortValue: c.field ? row[c.field] : undefined,
           fillWidth:   c.fillWidth,
         })).join('')}</div>`
       ).join('');
@@ -10324,6 +10843,8 @@ PAGES_WEB['components/data-table-actions'] = {
         props: [
           { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
           { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',      label: 'Sort',           group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',    label: 'Filter',         group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
           // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
           // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
           { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
@@ -10351,6 +10872,417 @@ PAGES_WEB['components/data-table-actions'] = {
           <tr><td>Actions Cell · TextBox</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
           <tr><td>Actions Cell · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
           <tr><td>Cell Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Data Table Inline Editing ────────────────────────────────────
+// Satır bazlı düzenleme — Figma'da ayrı bir component YOK, kullanıcı
+// isteğiyle sıfırdan tasarlandı (bkz. HISTORY.md): Actions kolonundaki Edit
+// butonuna tıklanınca satırın Name/Role/Status/Email hücreleri AYNI ANDA
+// view'dan edit'e geçer (gerçek .bt-tbx/.bt-dd-* input'ları), Actions'taki
+// buton Save/Cancel çiftine döner. ID ve Checkbox salt-okunur kalır.
+// VIEW içeriği (Avatar/Badge/Dot/vb.) diğer TÜM Data Table sayfalarıyla AYNI
+// generic content-kind mekanizmasını (GRID_TABLE_CONTENT_OPTS) kullanır —
+// kullanıcı isteğiyle: "tüm örneklerde tüm kolonların properties'i olmalı"
+// (bkz. HISTORY.md, 2026-08-24 devam 5). editable/editKind bundan TAMAMEN
+// BAĞIMSIZ: hangi content-kind seçilirse seçilsin Name/Role/Email hep
+// textbox'a, Status hep dropdown'a döner — düzenlenen ŞEY (satırın gerçek
+// değeri), o değerin view'da NASIL göründüğünden ayrı bir kavram.
+// Kolon genişlikleri, docs sitesinin .content alanı maksimum genişlikteyken
+// (1100px) bile playground'un dış overflow-x scroll'unu TETİKLEMEYECEK
+// şekilde ayarlandı (kullanıcı isteğiyle — bu sayfa yatay scroll'suz,
+// container'a sığacak şekilde gelmeli; gerçek bir sayfa layout'una
+// eklendiğinde Email'in fillWidth'i sayesinde zaten daha geniş bir
+// container'ı dolduruyor, bu davranış DOKUNULMADI, bkz. HISTORY.md).
+// Sort/Filter — diğer TÜM Data Table sayfalarıyla tutarlılık için Table
+// grubuna eklendi (kullanıcı isteğiyle, bkz. HISTORY.md); field'ı olan HER
+// kolona (Checkbox/Actions hariç) uygulanıyor. Editable hücrelerde de
+// sorunsuz çalışır — sıralama satırın (`.bt-grid__row`) TAMAMINI DOM'da
+// yeniden konumlandırır (bkz. window.btGridSortBy), satırın kendi
+// editing/checked state'i (varsa) satırla birlikte taşınır.
+function gridInlineEditColumns(p) {
+  const pp = p || {};
+  const showSort   = pp.showSort   === 'on';
+  const showFilter = pp.showFilter === 'on';
+  const idContent     = gridContentKindToSlots(pp.idContent     || 'none');
+  const nameContent   = gridContentKindToSlots(pp.nameContent   || 'none');
+  const roleContent   = gridContentKindToSlots(pp.roleContent   || 'none');
+  const statusKind    = pp.statusContent || 'badge';
+  const statusContent = gridContentKindToSlots(statusKind);
+  const emailContent  = gridContentKindToSlots(pp.emailContent  || 'none');
+  return [
+    { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 80,  headerText: 'ID',      field: 'id',          contentLink: true, cellLeading: idContent.leading, trailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 170, headerText: 'Name',    field: 'name',        cellLeading: nameContent.leading, trailing: nameContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 130, headerText: 'Role',    field: 'role',        cellLeading: roleContent.leading, trailing: roleContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 120, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, trailing: statusContent.trailing, editable: true, editKind: 'dropdown', sort: showSort, filter: showFilter } : null,
+    { width: 170, headerText: 'Email',   field: 'email',       fillWidth: true, cellLeading: emailContent.leading, trailing: emailContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 170, headerText: 'Actions', actionsCell: true },
+  ].filter(Boolean);
+}
+
+function gridInlineEditTableHtml(props) {
+  const p = props || {};
+  const rowCount = parseInt(p.rowCount != null ? p.rowCount : '3', 10);
+  const rowState = p.rowState || 'default';
+  const showNoRecord = rowCount === 0;
+  const cols = gridInlineEditColumns(p);
+  const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+
+  const headerRow = cols.map((c, i) => gridHeaderCellHtml({
+    position: posFor(i),
+    width: c.width,
+    showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
+    showContent:  c.headerText ? 'on' : 'off',
+    contentText:  c.headerText || '',
+    showSort:     c.sort ? 'on' : 'off',
+    showFilter:   c.filter ? 'on' : 'off',
+    fillWidth:    c.fillWidth,
+  })).join('');
+
+  const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
+  // forceEditRowIndex — SADECE Examples tab'ındaki statik "Edit Mode"
+  // demosu kullanır, satırlardan birini önceden düzenleme modunda göstermek
+  // için (kullanıcı gerçekten tıklamadan). Overview'daki gerçek interaktif
+  // playground bunu hiç geçmez (undefined kalır).
+  const bodyHtml = showNoRecord
+    ? gridNoRecordHtml({ width: totalWidth })
+    : _gridTableRowsData.slice(0, rowCount).map((row, idx) => {
+        const editingCls = p.forceEditRowIndex === idx ? ' bt-grid__row--editing' : '';
+        return `<div class="bt-grid__row bt-grid__row--clickable${editingCls}" data-row-index="${idx}" onclick="btGridRowToggle(this)">${cols.map((c, i) => {
+          if (c.actionsCell) return gridRowEditActionsCellHtml(posFor(i), c.width);
+          return gridCellHtml({
+            position: posFor(i),
+            state: rowState,
+            width: c.width,
+            leading: c.cellLeading || 'none',
+            trailing: c.trailing || 'none',
+            trailingColor: (c.trailing === 'badge' && c.field === 'statusLabel') ? row.statusColor : undefined,
+            trailingLabel: c.trailing === 'badge' ? (c.field ? row[c.field] : undefined) : undefined,
+            showContent: (c.field && (c.trailing || 'none') === 'none') ? 'on' : 'off',
+            contentText: c.field ? row[c.field] : '',
+            contentLink: !!c.contentLink,
+            sortValue: c.field ? row[c.field] : undefined,
+            fillWidth: c.fillWidth,
+            editable: !!c.editable,
+            editKind: c.editKind,
+            editValue: c.field ? row[c.field] : '',
+          });
+        }).join('')}</div>`;
+      }).join('');
+
+  return `<div class="bt-grid-scroll-x"><div class="bt-grid">
+    <div class="bt-grid__row">${headerRow}</div>
+    <div class="bt-grid__body">${bodyHtml}</div>
+  </div></div>`;
+}
+
+function gridInlineEditTableCss(_, props) {
+  const cols = gridInlineEditColumns(props);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    `/* ${cols.length} kolon, toplam ${cols.reduce((s,c)=>s+c.width,0)}px */`,
+    ...cols.map((c, i) => `.bt-grid__cell:nth-child(${i+1}), .bt-grid__header-cell:nth-child(${i+1}) { width: ${c.width}px; }`),
+    ``,
+    `/* Kalem ikonuna tıklayınca satır .bt-grid__row--editing alır — editable`,
+    `   hücrelerin view içeriği gizlenir, edit input'u görünür olur */`,
+    `.bt-grid__row--editing .bt-grid__cell--editable > .bt-grid__content,`,
+    `.bt-grid__row--editing .bt-grid__cell--editable > .bt-grid__control { display: none; }`,
+    `.bt-grid__row--editing .bt-grid__cell--editable > .bt-grid__cell-edit { display: flex; }`,
+    `.bt-grid__row--editing .bt-grid__row-edit-view { display: none; }`,
+    `.bt-grid__row--editing .bt-grid__row-edit-edit { display: flex; }`,
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/data-table-inline-editing'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table Inline Editing'],
+  render(tab) {
+    const title = 'Data Table Inline Editing';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>View Mode</h2>
+      <p class="page-desc">Normal durumda satır sadece metin/badge gösterir, Actions kolonunda Edit (primary) ve Delete (flat) butonları bekler.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml({ rowCount: '2' })}</div></div></div>
+
+      <h2>Edit Mode</h2>
+      <p class="page-desc">Edit butonuna tıklandıktan sonra: Name/Role/Status/Email AYNI ANDA gerçek input/dropdown'a döner, Actions Save/Cancel gösterir.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml({ rowCount: '2', forceEditRowIndex: 0 })}</div></div></div>
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('--bt-space-md')}</td><td>Cell / edit input padding</td><td>8px</td></tr>
+          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
+          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Selected row background</td><td>#e2edfc</td></tr>
+          <tr><td>${tk('bt-btn--primary-solid')}</td><td>Save button</td><td>—</td></tr>
+          <tr><td>${tk('bt-btn--secondary-flat')}</td><td>Cancel button</td><td>—</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Bir seferde sadece BİR satırın düzenleme modunda olmasına izin ver — kullanıcı başka bir satırın kalemine tıklarsa önce mevcut satırı kaydet/iptal ettir.</li>
+        <li>Kaydetmeden vazgeçilebilecek her alan için Cancel'ın orijinal değere geri döndüğünden emin ol.</li>
+        <li>Çok sayıda alanı aynı anda düzenlemek gerektiğinde (3+) Inline Editing'i tercih et — InCell Editing tek alan değişikliklerinde daha hızlıdır.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>ID gibi değişmeyen/anahtar kolonları editable yapma.</li>
+        <li>Save/Cancel olmadan satırı sessizce edit modunda bırakma — kullanıcı her zaman açık bir çıkış yolu görmeli.</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc"><strong>Inline Editing</strong>, satır bazlı düzenlemedir: Actions kolonundaki Edit butonuna tıklandığında satırın TÜM düzenlenebilir hücreleri (Name/Role/Status/Email) aynı anda gerçek input/dropdown'a döner, Actions Save/Cancel çiftine dönüşür. Hücre bazlı anlık düzenleme için bkz. <a href="#" onclick="navigate('components/data-table-incell-editing');return false;">InCell Editing</a>.</p>
+
+      <h2 id="Data Table Inline Editing">Data Table Inline Editing</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-inline-editing-overview',
+        variants: [{ key: 'default', label: 'Data Table Inline Editing' }],
+        props: [
+          { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '3' },
+          { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
+          { key: 'showSort',   label: 'Sort',      group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
+          { key: 'showFilter', label: 'Filter',    group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
+          // View içeriği (editable/editKind'tan BAĞIMSIZ) — diğer TÜM Data
+          // Table sayfalarıyla AYNI generic content-kind mekanizması
+          // (kullanıcı isteğiyle, bkz. HISTORY.md).
+          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
+          <div style="display:flex;flex-direction:column;height:280px;">
+            <div class="bt-grid-actions-container">${gridInlineEditTableHtml(p)}</div>
+          </div>
+        </div>`,
+        code: (v, p) => gridInlineEditTableHtml(p),
+        css:  (v, p) => gridInlineEditTableCss(v, p),
+      })}
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')} (Edit)</td></tr>
+          <tr><td>Delete</td><td>Secondary Button</td><td>—</td><td>${tk('bt-btn--secondary-flat')}</td></tr>
+          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Save</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
+          <tr><td>Cancel</td><td>Secondary Button</td><td>—</td><td>${tk('bt-btn--secondary-flat')}</td></tr>
+          <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__row--editing')} (satır seviyesi)</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Data Table InCell Editing ────────────────────────────────────
+// Hücre bazlı düzenleme — Figma'da ayrı bir component YOK, kullanıcı
+// isteğiyle sıfırdan tasarlandı (Excel/Google Sheets deseni, bkz.
+// HISTORY.md): bir hücreye ÇİFT tıklanınca SADECE o hücre view'dan edit'e
+// geçer, Enter/dışarı tıklama (blur) ile otomatik kaydedilir, Escape ile
+// eski değerine döner — satır seçimini tetiklemez. Inline Editing'den (satır
+// bazlı, Save/Cancel'lı) FARKI: hiçbir explicit onay adımı yok, her hücre
+// bağımsız/anlık kaydedilir. Aynı gridCellHtml editable/editKind altyapısı
+// reuse edilir, sadece editDblClick:true ile tetikleyici hücre seviyesine
+// iner (.bt-grid__cell--editing, satır seviyesi .bt-grid__row--editing
+// DEĞİL).
+// Sort/Filter — diğer TÜM Data Table sayfalarıyla tutarlılık için Table
+// grubuna eklendi (kullanıcı isteğiyle, bkz. HISTORY.md), gridInlineEditColumns
+// ile aynı gerekçe. VIEW içeriği de (gridInlineEditColumns'daki AYNI
+// gerekçeyle) generic content-kind mekanizmasını kullanır — editable/
+// editKind'tan bağımsız (bkz. yukarısı).
+function gridIncellEditColumns(p) {
+  const pp = p || {};
+  const showSort   = pp.showSort   === 'on';
+  const showFilter = pp.showFilter === 'on';
+  const idContent     = gridContentKindToSlots(pp.idContent     || 'none');
+  const nameContent   = gridContentKindToSlots(pp.nameContent   || 'none');
+  const roleContent   = gridContentKindToSlots(pp.roleContent   || 'none');
+  const statusKind    = pp.statusContent || 'badge';
+  const statusContent = gridContentKindToSlots(statusKind);
+  const emailContent  = gridContentKindToSlots(pp.emailContent  || 'none');
+  return [
+    { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
+    { width: 90,  headerText: 'ID',     field: 'id',          contentLink: true, cellLeading: idContent.leading, trailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 200, headerText: 'Name',   field: 'name',        cellLeading: nameContent.leading, trailing: nameContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 160, headerText: 'Role',   field: 'role',        cellLeading: roleContent.leading, trailing: roleContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, trailing: statusContent.trailing, editable: true, editKind: 'dropdown', sort: showSort, filter: showFilter } : null,
+    { width: 220, headerText: 'Email',  field: 'email',       fillWidth: true, cellLeading: emailContent.leading, trailing: emailContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+  ].filter(Boolean);
+}
+
+function gridIncellEditTableHtml(props) {
+  const p = props || {};
+  const rowCount = parseInt(p.rowCount != null ? p.rowCount : '3', 10);
+  const rowState = p.rowState || 'default';
+  const showNoRecord = rowCount === 0;
+  const cols = gridIncellEditColumns(p);
+  const posFor = i => i === 0 ? 'left' : i === cols.length - 1 ? 'right' : 'middle';
+
+  const headerRow = cols.map((c, i) => gridHeaderCellHtml({
+    position: posFor(i),
+    width: c.width,
+    showCheckbox: c.headerLeading === 'checkbox' ? 'on' : 'off',
+    showContent:  c.headerText ? 'on' : 'off',
+    contentText:  c.headerText || '',
+    showSort:     c.sort ? 'on' : 'off',
+    showFilter:   c.filter ? 'on' : 'off',
+    fillWidth:    c.fillWidth,
+  })).join('');
+
+  const totalWidth = cols.reduce((sum, c) => sum + c.width, 0);
+  // forceEditCell — SADECE Examples tab'ındaki statik "Edit Mode" demosu
+  // kullanır ({ rowIndex, field }), tek bir hücreyi önceden düzenleme
+  // modunda göstermek için. Overview'daki gerçek interaktif playground
+  // bunu hiç geçmez (undefined kalır).
+  const fe = p.forceEditCell;
+  const bodyHtml = showNoRecord
+    ? gridNoRecordHtml({ width: totalWidth })
+    : _gridTableRowsData.slice(0, rowCount).map((row, idx) =>
+        `<div class="bt-grid__row bt-grid__row--clickable" data-row-index="${idx}" onclick="btGridRowToggle(this)">${cols.map((c, i) => {
+          const forceEditing = !!(fe && fe.rowIndex === idx && fe.field === c.field);
+          const html = gridCellHtml({
+            position: posFor(i),
+            state: rowState,
+            width: c.width,
+            leading: c.cellLeading || 'none',
+            trailing: c.trailing || 'none',
+            trailingColor: (c.trailing === 'badge' && c.field === 'statusLabel') ? row.statusColor : undefined,
+            trailingLabel: c.trailing === 'badge' ? (c.field ? row[c.field] : undefined) : undefined,
+            showContent: (c.field && (c.trailing || 'none') === 'none') ? 'on' : 'off',
+            contentText: c.field ? row[c.field] : '',
+            contentLink: !!c.contentLink,
+            sortValue: c.field ? row[c.field] : undefined,
+            fillWidth: c.fillWidth,
+            editable: !!c.editable,
+            editKind: c.editKind,
+            editValue: c.field ? row[c.field] : '',
+            editDblClick: !!c.editable,
+          });
+          return forceEditing ? html.replace('bt-grid__cell--editable', 'bt-grid__cell--editable bt-grid__cell--editing') : html;
+        }).join('')}</div>`
+      ).join('');
+
+  return `<div class="bt-grid-scroll-x"><div class="bt-grid">
+    <div class="bt-grid__row">${headerRow}</div>
+    <div class="bt-grid__body">${bodyHtml}</div>
+  </div></div>`;
+}
+
+function gridIncellEditTableCss(_, props) {
+  const cols = gridIncellEditColumns(props);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = [
+    `/* ${cols.length} kolon, toplam ${cols.reduce((s,c)=>s+c.width,0)}px */`,
+    ...cols.map((c, i) => `.bt-grid__cell:nth-child(${i+1}), .bt-grid__header-cell:nth-child(${i+1}) { width: ${c.width}px; }`),
+    ``,
+    `/* Bir hücreye çift tıklama SADECE o hücreye .bt-grid__cell--editing`,
+    `   ekler — view içeriği gizlenir, edit input'u görünür olur */`,
+    `.bt-grid__cell--editable.bt-grid__cell--editing > .bt-grid__content,`,
+    `.bt-grid__cell--editable.bt-grid__cell--editing > .bt-grid__control { display: none; }`,
+    `.bt-grid__cell--editable.bt-grid__cell--editing > .bt-grid__cell-edit { display: flex; }`,
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/data-table-incell-editing'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table InCell Editing'],
+  render(tab) {
+    const title = 'Data Table InCell Editing';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>View Mode</h2>
+      <p class="page-desc">Normal durumda her hücre sadece metin/badge gösterir — düzenlemek için doğrudan hücreye çift tıklanır.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml({ rowCount: '2' })}</div></div></div>
+
+      <h2>Edit Mode</h2>
+      <p class="page-desc">Name hücresine çift tıklandıktan sonra: SADECE o hücre gerçek input'a döner, diğer hücreler/satır etkilenmez. Enter veya dışarı tıklama kaydeder, Escape iptal eder.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml({ rowCount: '2', forceEditCell: { rowIndex: 0, field: 'name' } })}</div></div></div>
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('--bt-space-md')}</td><td>Cell / edit input padding</td><td>8px</td></tr>
+          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
+          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Düzenlenen hücre vurgusu</td><td>#e2edfc</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Tek bir alanı hızlıca düzeltmek gerektiğinde InCell Editing'i tercih et — onay adımı gerektirmez.</li>
+        <li>Escape ile her zaman orijinal değere dönebilmeyi garanti et.</li>
+        <li>Aynı anda sadece BİR hücrenin düzenleme modunda olmasına izin ver.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Birden fazla alanın birlikte tutarlı olması gereken (örn. başlangıç/bitiş tarihi) durumlarda InCell Editing kullanma — Inline Editing'in açık Save adımını tercih et.</li>
+        <li>Düzenlenebilir olmayan bir hücrede (ID gibi) çift tıklama beklentisi yaratma.</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc"><strong>InCell Editing</strong>, hücre bazlı düzenlemedir (Excel/Sheets deseni): herhangi bir düzenlenebilir hücreye ÇİFT tıklandığında SADECE o hücre gerçek input/dropdown'a döner, Enter veya dışarı tıklama (blur) ile otomatik kaydedilir, Escape ile eski değerine döner. Satır bazlı, Save/Cancel'lı düzenleme için bkz. <a href="#" onclick="navigate('components/data-table-inline-editing');return false;">Inline Editing</a>.</p>
+
+      <h2 id="Data Table InCell Editing">Data Table InCell Editing</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-incell-editing-overview',
+        variants: [{ key: 'default', label: 'Data Table InCell Editing' }],
+        props: [
+          { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '3' },
+          { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
+          { key: 'showSort',   label: 'Sort',      group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
+          { key: 'showFilter', label: 'Filter',    group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
+          // View içeriği (editable/editKind'tan BAĞIMSIZ) — diğer TÜM Data
+          // Table sayfalarıyla AYNI generic content-kind mekanizması
+          // (kullanıcı isteğiyle, bkz. HISTORY.md).
+          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
+          <div style="display:flex;flex-direction:column;height:280px;">
+            <div class="bt-grid-actions-container">${gridIncellEditTableHtml(p)}</div>
+          </div>
+        </div>`,
+        code: (v, p) => gridIncellEditTableHtml(p),
+        css:  (v, p) => gridIncellEditTableCss(v, p),
+      })}
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger</td><td>Double click</td><td>—</td><td>${tk('ondblclick')} on editable cell</td></tr>
+          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Commit</td><td>Enter / blur / dışarı tıklama</td><td>—</td><td>otomatik kaydeder</td></tr>
+          <tr><td>İptal</td><td>Escape</td><td>—</td><td>orijinal değere döner</td></tr>
+          <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__cell--editing')} (hücre seviyesi)</td></tr>
         </tbody>
       </table>
     `};
@@ -10477,14 +11409,14 @@ PAGES_WEB['components/data-table-toolbar'] = {
           { key: 'showSearch', label: 'Search', group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
           { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '6' },
           { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
+          { key: 'showSort',   label: 'Sort',      group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
+          { key: 'showFilter', label: 'Filter',    group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
           // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
           // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
           { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,         default: 'on' },
           { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
           { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'showSort',        label: 'Sort (Name)',     group: 'Columns', options: TBX_BOOL_OPTS,         default: 'off' },
           { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'showFilter',      label: 'Filter (Role)',   group: 'Columns', options: TBX_BOOL_OPTS,         default: 'off' },
           { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
           { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
@@ -10579,6 +11511,8 @@ PAGES_WEB['components/data-table'] = {
         props: [
           { key: 'rowCount',      label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,        default: '3' },
           { key: 'rowState',      label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,            default: 'default' },
+          { key: 'showSort',      label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,              default: 'off' },
+          { key: 'showFilter',    label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,              default: 'off' },
           { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,            default: 'on' },
           // Aşağıdaki 5 prop — ID/Name/Role/Status/Email — ÖRNEK tablodaki
           // HER kolonu kapsıyor, hepsi AYNI tam listeyi (GRID_TABLE_CONTENT_OPTS)
@@ -10587,9 +11521,7 @@ PAGES_WEB['components/data-table'] = {
           // Status'u Badge'den Avatar'a, ID'yi None'dan Switch'e çevirebilirsin.
           { key: 'idContent',     label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'none' },
           { key: 'nameContent',   label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'avatar' },
-          { key: 'showSort',      label: 'Sort (Name)',     group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
           { key: 'roleContent',   label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'dot' },
-          { key: 'showFilter',    label: 'Filter (Role)',   group: 'Columns', options: TBX_BOOL_OPTS,              default: 'off' },
           { key: 'statusContent', label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'badge' },
           { key: 'emailContent',  label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'none' },
         ],
@@ -10663,7 +11595,8 @@ PAGES_WEB['components/data-table'] = {
           <tr><td>Container</td><td>Height</td><td>—</td><td>36px</td></tr>
           <tr><td>Content</td><td>Padding / Font</td><td>${tk('--bt-space-sm')} / ${tk('--bt-text-xs-medium')}</td><td>6px / 500 12px/16px</td></tr>
           <tr><td>Sort · Icon</td><td>Size</td><td>—</td><td>24×24 slot, 16×16 ikon</td></tr>
-          <tr><td>Filter / Right · Icon</td><td>Size</td><td>—</td><td>28×28 slot, 16×16 ikon</td></tr>
+          <tr><td>Filter · Icon</td><td>Size</td><td>—</td><td>28×28 buton, 14×14 ikon</td></tr>
+          <tr><td>Right · Icon</td><td>Size</td><td>—</td><td>28×28 slot, 16×16 ikon</td></tr>
         </tbody>
       </table>
 
@@ -10718,6 +11651,217 @@ PAGES_WEB['components/data-table'] = {
       <h3>No Record Available</h3>
       <p class="page-desc">Tabloda veri olmadığında Header Cell'in altında, tablo genişliğinde gösterilir — yukarıdaki ana Data Table playground'unda <strong>Rows</strong> prop'unu <strong>0 (No Record)</strong>'a getirerek de tetiklenebilir; ayrı bir toggle yoktur, doğrudan kayıt sayısına bağlıdır.</p>
       <div style="overflow-x:auto;padding:8px 0;">${gridNoRecordHtml({ width: 620 })}</div>
+    `};
+  },
+};
+
+// ── Data Table Filtering ──────────────────────────────────────────
+// Ana Data Table sayfasıyla (gridTableColumns/gridTableHtml) BİREBİR aynı
+// tabloyu reuse eder — Filter zaten TÜM standart Data Table sayfalarında var
+// olan genel bir Table-group prop'u (bkz. §17.6); bu sayfanın TEK farkı
+// showFilter varsayılanının 'on' olması (kullanıcı isteğiyle: "Filtering
+// örneğini ekle, filter active state gelecek") — ayrı bir kolon/render
+// fonksiyonu YOK, kod tekrarı yok. NOT: filter ikonu şu an SADECE görsel/
+// statik bir sinyal — hangi kolonların filtrelenebilir olduğunu gösteriyor
+// ama tıklanınca gerçek bir filtre paneli/overlay'i AÇMIYOR henüz; kullanıcı
+// gerçek filtreleme mekanizmasının nasıl çalışması gerektiğini ayrı bir
+// mesajda tarif edecek (bkz. HISTORY.md) — bu sayfa o davranış eklenene
+// kadar sadece "aktif/statik ikon" durumunu belgeliyor.
+PAGES_WEB['components/data-table-filtering'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table Filtering'],
+  render(tab) {
+    const title = 'Data Table Filtering';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>Filter Kapalı</h2>
+      <p class="page-desc">Filter kapalıyken hiçbir kolon header'ında filter ikonu görünmez.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showFilter: 'off' })}</div></div></div>
+
+      <h2>Filter Açık — Panel Kapalı</h2>
+      <p class="page-desc"><code style="font-family:var(--mono);font-size:12px;">field</code>'ı olan HER kolon header'ında bir filter ikonu belirir — Sort'un aksine hover'a bağlı değil, her zaman görünür. Tıklanmadığı sürece ikon nötr (flat) görünür.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showFilter: 'on' })}</div></div></div>
+
+      <h2>Filter Aktif (uygulanmış)</h2>
+      <p class="page-desc">Bir kolonda değer seçilip <strong>Uygula</strong>'ya basıldığında filter ikonu basılı/aktif (<code style="font-family:var(--mono);font-size:12px;">.bt-btn--state-selected</code>) görünüme döner — kullanıcı hangi kolonda aktif bir filtre olduğunu ikonun rengine bakarak anlayabilir. Yukarıdaki Overview playground'unda bir Status değerini kaldırıp Uygula'ya basarak canlı deneyebilirsin; satırlar gerçekten filtrelenip görünmez olur.</p>
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('--bt-icon-primary-strong')}</td><td>Filter ikonu rengi (pasif)</td><td>#535353</td></tr>
+          <tr><td>${tk('--bt-primary-subtle')}</td><td>Filter butonu arka planı (aktif)</td><td>${tk('.bt-btn--state-selected')} — Button component'inin mevcut modifier'ı, reuse edildi</td></tr>
+          <tr><td>${tk('--bt-primary-default')}</td><td>Filter butonu iç border (aktif)</td><td>${tk('inset 0 0 0 1px')}</td></tr>
+          <tr><td>${tk('--bt-surface-primary-default')}</td><td>Panel arka planı</td><td>#ffffff</td></tr>
+          <tr><td>${tk('--bt-border-primary-default')}</td><td>Panel border</td><td>#d4d4d4</td></tr>
+          <tr><td>${tk('--bt-shadow-xl')}</td><td>Panel gölgesi</td><td>Overflow Menu'den daha belirgin</td></tr>
+          <tr><td>${tk('--bt-border-primary-default')}</td><td>Tümünü Seç ayırıcı / Footer üst ayırıcı</td><td>#d4d4d4</td></tr>
+          <tr><td>—</td><td>Search input</td><td>Bespoke değil — gerçek ${tk('.bt-searchbox--md')} component'i reuse edilir</td></tr>
+          <tr><td>—</td><td>Seçenek satırı yüksekliği</td><td>32px (Tümünü Seç dahil)</td></tr>
+          <tr><td>—</td><td>Filter ikonu görünürlüğü</td><td>Her zaman görünür (Sort'un aksine hover'a bağlı DEĞİL)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Kullanıcının gerçekten daraltmak isteyeceği, sınırlı/tekrarlı değer setine sahip kolonlarda (Status, Role, Department gibi) Filter'ı aç.</li>
+        <li>Filter ikonunu Sort ile aynı header'da birlikte kullanabilirsin — ikisi bağımsız çalışır, birbirini etkilemez.</li>
+        <li>Aynı anda birden fazla kolonda filtre aktifken hepsi AND mantığıyla birlikte uygulanır (bir satır TÜM aktif filtrelere uymalı) — bunu kullanıcıya doğru yansıt.</li>
+        <li>Seçenek listesini her zaman kolonun GERÇEK verisinden türet (hardcoded liste değil) — panel her açıldığında o an tablodaki satırlardan benzersiz değerleri okur.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Serbest metin (email, isim gibi sınırsız değer aralığı olan) kolonlarda filter yerine arama/searchbox'ı tercih et.</li>
+        <li>Aynı anda birden fazla filtre panelini açık bırakma — yeni bir panel açılınca öncekini kapat.</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc"><strong>Filtering</strong>, Data Table'ın <strong>Table</strong> grubundaki <strong>Filter</strong> prop'udur — açıldığında <code style="font-family:var(--mono);font-size:12px;">field</code>'ı olan HER kolon header'ında bir filter ikonu (funnel) belirir, Sort'un aksine hover'a bağlı değildir, her zaman görünür kalır. İkona tıklanınca <strong>Ara</strong> input'u + <strong>Tümünü Seç</strong> + kolonun KENDİ verisinden türetilen bir checkbox listesi + <strong>Temizle/Uygula</strong> footer'ından oluşan bir overlay açılır; Uygula'ya basınca satırlar GERÇEKTEN filtrelenir (seçilmeyen değerlere sahip satırlar gizlenir) ve filter ikonu o kolonda aktif bir filtre olduğunu gösteren basılı/mavi bir görünüme (<code style="font-family:var(--mono);font-size:12px;">.bt-btn--state-selected</code>) döner. Aynı ana Data Table tablosu (<code style="font-family:var(--mono);font-size:12px;">gridTableColumns</code>/<code style="font-family:var(--mono);font-size:12px;">gridTableHtml</code>) reuse edilir — bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a> ve <a href="#" onclick="navigate('components/data-table-sorting');return false;">Sorting</a>.</p>
+
+      <h2 id="Data Table Filtering">Data Table Filtering</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-filtering-overview',
+        variants: [{ key: 'default', label: 'Data Table Filtering' }],
+        props: [
+          { key: 'rowCount',        label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '6' },
+          { key: 'rowState',        label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showFilter',      label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'showSort',        label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
+          <div style="display:flex;flex-direction:column;height:356px;">
+            <div class="bt-grid-container">${gridTableHtml(p)}</div>
+          </div>
+        </div>`,
+        code: (v, p) => gridTableHtml(p),
+        css:  (v, p) => gridTableCss(v, p),
+      })}
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Filter Trigger</td><td>Icon Button</td><td>—</td><td>${tk('bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28, funnel 14×14)</td></tr>
+          <tr><td>Filter Trigger · Aktif</td><td>Class</td><td>—</td><td>${tk('.bt-btn--state-selected')}</td></tr>
+          <tr><td>Panel</td><td>Konumlandırma</td><td>—</td><td>${tk('position: fixed')} + ${tk('document.body')} portal (Overflow Menu ile aynı desen)</td></tr>
+          <tr><td>Panel · Search</td><td>Input</td><td>—</td><td>Gerçek ${tk('.bt-searchbox--md')} component'i, listeyi canlı filtreler</td></tr>
+          <tr><td>Panel · Seçenek</td><td>Yükseklik</td><td>—</td><td>32px (Tümünü Seç dahil TÜM satırlar)</td></tr>
+          <tr><td>Panel · Seçenek</td><td>Checkbox</td><td>—</td><td>Gerçek ${tk('.bt-checkbox__box')}, kolonun kendi verisinden türetilir</td></tr>
+          <tr><td>Panel · Footer</td><td>Butonlar</td><td>—</td><td>${tk('bt-btn--secondary-flat')} (Temizle) / ${tk('bt-btn--primary-solid')} (Uygula)</td></tr>
+          <tr><td>Satır filtreleme</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridApplyFilters')} — birden fazla aktif kolon AND mantığıyla birlikte uygulanır</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ── Data Table Sorting ────────────────────────────────────────────
+// Ana Data Table sayfasıyla (gridTableColumns/gridTableHtml) BİREBİR aynı
+// tabloyu reuse eder — sıralama zaten TÜM standart Data Table sayfalarında
+// var olan genel bir özellik (bkz. §17.6, window.btGridSortBy); bu sayfanın
+// TEK farkı showSort varsayılanının 'on' olması (kullanıcı isteğiyle:
+// "Sorting olarak yeni bir örnek ekle, sorting default olarak aktif
+// gelecek") — ayrı bir kolon/render fonksiyonu YOK, kod tekrarı yok.
+PAGES_WEB['components/data-table-sorting'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Data Table Sorting'],
+  render(tab) {
+    const title = 'Data Table Sorting';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'Examples') return { title, html: `
+      <h2>Unsorted (varsayılan sıra)</h2>
+      <p class="page-desc">Hiçbir kolona tıklanmadığında satırlar render sırasında geldiği gibi kalır.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showSort: 'on' })}</div></div></div>
+
+      <h2>Ascending (1. tık)</h2>
+      <p class="page-desc">ID kolonuna ilk tıklama — küçükten büyüğe sıralar, ok yukarı yönlü ve marka mavisiyle kalıcı görünür.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showSort: 'on', forceSortField: 'id', forceSortDir: 'asc' })}</div></div></div>
+
+      <h2>Descending (2. tık)</h2>
+      <p class="page-desc">Aynı kolona ikinci tıklama — büyükten küçüğe sıralar, ok aşağı yönlüye döner. Üçüncü tıklama ise sıralamayı tamamen kaldırıp orijinal sıraya (Unsorted) geri döner.</p>
+      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showSort: 'on', forceSortField: 'id', forceSortDir: 'desc' })}</div></div></div>
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <table class="token-table">
+        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>—</td><td>Sort ikonu rest state</td><td>${tk('opacity: 0')} (sadece hover'da görünür)</td></tr>
+          <tr><td>—</td><td>Sort ikonu geçişi</td><td>${tk('transition: opacity .12s ease')}</td></tr>
+          <tr><td>${tk('--bt-icon-brand-default')}</td><td>Aktif sıralanan kolon ikon rengi</td><td>#0d4e97</td></tr>
+          <tr><td>—</td><td>Sortable header cursor</td><td>${tk('cursor: pointer')}</td></tr>
+          <tr><td>—</td><td>Görünürlük anahtarı</td><td>${tk('.bt-grid__header-cell--sorted')} + ${tk('[data-sort-dir]')}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Kullanıcının en sık aradığı/karşılaştırdığı kolonlarda (ID, tarih, isim, tutar) sıralamayı aç.</li>
+        <li>Aktif sıralanan kolonun her zaman (hover olmasa da) görünür kalmasını sağla — kullanıcı hangi kolona göre sıralandığını kaybetmemeli.</li>
+        <li>Üçüncü tıklamanın orijinal sıraya döndüğünü (reset) net bir davranış olarak koru — sonsuz asc/desc döngüsü değil.</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Aynı anda birden fazla kolonu "aktif sıralanan" gösterme — tek kolon kuralını boz</li>
+        <li>Actions gibi veri taşımayan kolonları sıralanabilir yapma</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc"><strong>Sorting</strong>, Data Table'ın header'a tıklayarak satırları gerçekten sıralayan davranışıdır — <strong>Table</strong> grubundaki <strong>Sort</strong> prop'u açıkken <code style="font-family:var(--mono);font-size:12px;">field</code>'ı olan HER kolon header'ı tıklanabilir hale gelir. Sort ikonları varsayılan olarak gizlidir, sadece header hover'dayken belirir; aktif sıralanan kolon hover olmadan da görünür kalıp SADECE kendi yönünü (asc→yukarı ok, desc→aşağı ok) marka mavisiyle gösterir. Bir kolona <strong>3 kez</strong> tıklamak asc → desc → <strong>reset</strong> (orijinal sıra) döngüsünü tamamlar. Aynı ana Data Table tablosu (<code style="font-family:var(--mono);font-size:12px;">gridTableColumns</code>/<code style="font-family:var(--mono);font-size:12px;">gridTableHtml</code>) reuse edilir — bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a>.</p>
+
+      <h2 id="Data Table Sorting">Data Table Sorting</h2>
+      ${registerPlayground({
+        id: 'pgd-datatable-sorting-overview',
+        variants: [{ key: 'default', label: 'Data Table Sorting' }],
+        props: [
+          { key: 'rowCount',        label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '6' },
+          { key: 'rowState',        label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',        label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'showFilter',      label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
+          <div style="display:flex;flex-direction:column;height:356px;">
+            <div class="bt-grid-container">${gridTableHtml(p)}</div>
+          </div>
+        </div>`,
+        code: (v, p) => gridTableHtml(p),
+        css:  (v, p) => gridTableCss(v, p),
+      })}
+
+      <h2>Anatomy</h2>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger</td><td>Header Cell click</td><td>—</td><td>${tk('.bt-grid__header-cell--sortable')} (tüm header tıklanabilir)</td></tr>
+          <tr><td>Sort ikonu (rest)</td><td>Opacity</td><td>—</td><td>0 (hover'da 1)</td></tr>
+          <tr><td>Sort ikonu (aktif)</td><td>Renk</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97, sadece kendi yönü</td></tr>
+          <tr><td>Döngü</td><td>3 tık</td><td>—</td><td>asc → desc → reset</td></tr>
+          <tr><td>Karşılaştırma</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridSortBy')} — sayısal veya ${tk("localeCompare(v,'tr')")}</td></tr>
+        </tbody>
+      </table>
     `};
   },
 };

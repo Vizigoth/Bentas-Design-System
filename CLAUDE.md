@@ -152,6 +152,17 @@ Bir component'in **State/Anatomy** gibi tab-özel içerikleri varsa (örn. Click
 
 **Bu, geriye dönük bir standart** — 2026-08-12'de siteye uygulandı (bkz. HISTORY.md), yeni eklenen HER component bu 4-tab yapısıyla gelmeli, `['Overview', 'CSS Properties', 'Usage']` (Examples'sız 3-tab) veya sadece `['Overview']` gibi eksik yapılar kabul edilmez.
 
+## Data Table Örneklerinde Properties Tutarlılığı — ZORUNLU
+
+Data Table'ın TÜM örnek sayfaları (`components/data-table*` — Data Table, Toolbar, Actions, Frozen Column First/Last, Inline Editing, InCell Editing, ve gelecekte eklenecek her yeni Data Table örneği, örn. Sorting/Filter Menu) **aynı temel Properties setine** sahip olmalı (kullanıcı isteğiyle, 2026-08-24, bkz. HISTORY.md). Bu otomatik/koddan gelen bir davranış DEĞİL — yeni bir Data Table sayfası eklerken/mevcut birini değiştirirken elle uygulanması gereken bir kontrol listesi:
+
+1. **Her veri kolonu kendi Content prop'una sahip olmalı** — `field`'ı olan HER kolon (Checkbox ve Actions HARİÇ), `GRID_TABLE_CONTENT_OPTS` (None/Checkbox/Dot/Icon/Avatar/Avatar Group/Badge/Button/Switch/Inline TextBox/Inline Dropdown) kullanan bir `xContent` prop'u almalı, `group: 'Columns'` altında. Sayfaya özel yardımcı kolonlar bile (örn. Frozen'daki Department/Location/Last Login) bu kuraldan MUAF DEĞİL — Figma'da karşılığı olmasalar bile Content prop'u almalılar (varsayılan `'none'` ile mevcut görünüm korunur).
+2. **`Table` grubu her zaman `Rows`/`Row State`/`Sort`/`Filter` içermeli** — `rowCount`(`GRID_TABLE_ROW_OPTS`), `rowState`(`GRID_STATE_OPTS`), `showSort`/`showFilter`(`TBX_BOOL_OPTS`). Sort/Filter TEK bir kolona bağlanmaz (`gridXColumns(p)` içinde `const showSort=p.showSort==='on'` okunup HER veri kolonuna `sort`/`filter` geçilir) — `gridHeaderCellHtml`'e `showSort`/`showFilter`, `gridCellHtml`'e `sortValue: c.field ? row[c.field] : undefined` iletilmeli (sıralama gerçekten çalışsın diye, bkz. `window.btGridSortBy`).
+3. **Actions kolonu varsa** (Data Table Actions/Frozen Last deseni) `actionsContent` prop'u da `GRID_TABLE_CONTENT_OPTS` kullanmalı (Columns grubunun sonunda). Inline Editing'in Edit/Save/Cancel çifti gibi sayfaya özel eylem kolonları bu kuraldan muaf (bunlar bir "content kind" değil).
+4. **Editable/dual-view sayfalarında** (Inline/InCell Editing deseni) Content prop'ları `editable`/`editKind`'tan TAMAMEN BAĞIMSIZ kalmalı — `gridCellHtml`'in `leading`/`trailing` (view) ve `editable`/`editKind` (edit) param'ları zaten ayrık çalışıyor, hangi content-kind seçilirse seçilsin editKind (textbox/dropdown) sabit kalır.
+
+Yeni bir Data Table örneği eklerken bu dört maddeyi kontrol et — kullanıcı ayrıca hatırlatmadan.
+
 ## "On this page" (TOC) — Overview Linki Otomatik
 
 `docs/js/app.js`'teki `renderToc()`, `page.toc` dizisi olan HER sayfanın "On this page" panelinin en üstüne otomatik olarak sayfanın başına (`#page-title`) atlayan bir **"Overview"** linki ekler. Bu **merkezi/otomatik** bir davranış — yeni bir component sayfası eklerken `toc` dizisine manuel `'Overview'` eklemeye gerek YOK, `renderToc()` bunu kendisi prepend ediyor. `page.toc` boşsa (`toc: []`) TOC paneli hiç gösterilmiyor, bu davranış değişmedi.
@@ -171,5 +182,5 @@ Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ay
 
 ## Son Tamamlanan Component
 
-**Data Table (Grid)** — 2026-08-12 (HeaderCell + GridCell + No Record Available + Frozen Column varyasyonu, bkz. design.md §17).
+**Data Table (Grid)** — 2026-08-12 (HeaderCell + GridCell + No Record Available + Frozen Column varyasyonu, bkz. design.md §17), en son 2026-08-24'te Inline Editing + InCell Editing sayfalarıyla (design.md §17.5), 7 sayfanın tamamında tutarlı Table-level Sort/Filter (gerçek sıralama, hover-only sort ikonları, 3 tıklık asc→desc→reset döngüsü), **Sorting** ve **Filtering** sayfalarıyla (design.md §17.6) ve GERÇEK çalışan Filter overlay'iyle (Ara/Tümünü Seç/kolon-verisinden-türeyen checkbox listesi/Temizle-Uygula, satırları fiilen filtreler, aktif buton state'i — TÜM Data Table sayfalarında paylaşılan tek kod yolu) genişletildi (design.md §17.7).
 Detaylı oturum geçmişi: `HISTORY.md`

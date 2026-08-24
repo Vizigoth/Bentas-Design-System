@@ -5790,6 +5790,23 @@ code {
   justify-content: center;
   color: var(--bt-icon-primary-strong, #535353);
 }
+/* Filter butonu — dış boyut normal bt-btn--sm+icon (28×28) hug-content
+   davranışıyla değil, SABİT 28×28 (kullanıcı isteğiyle: "buton sm olarak
+   kalabilirdi", bkz. HISTORY.md) — içindeki ikon küçülünce buton'un da
+   otomatik küçülmesini (24×24) önler. İkon SADECE bu buton içinde 14×14 —
+   diğer .bt-grid__control-icon kullanımları (Sort/Ellipsis/Left-Right
+   Control) 16×16 kalır. CSS width/height, SVG'nin kendi width/height
+   attribute'unu (16) ezer — svg elementini ayrıca hedeflemek gerekiyor. */
+.bt-grid__filter-btn {
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+}
+.bt-grid__filter-btn .bt-grid__control-icon,
+.bt-grid__filter-btn .bt-grid__control-icon svg {
+  width: 14px;
+  height: 14px;
+}
 /* Durum noktası (Dot Control) — Figma'da sabit 8×8; renk kullanıcı isteğiyle
    nötr griden --bt-icon-brand-default'a (marka mavisi) çevrildi, bkz.
    HISTORY.md. Renk varyantı Figma'da tanımlı değil, ihtiyaç çıkarsa
@@ -5834,7 +5851,31 @@ code {
   text-decoration: underline;
 }
 
-/* — Sort Control — up/down ikon çifti, 24×24 her biri */
+/* — Sort Control — up/down ikon çifti, 24×24 her biri. Sortable bir header'da
+   (Table prop grubundaki "Sort" toggle'ı ile TÜM kolon header'larına birden
+   uygulanır, bkz. pages-web.js gridXColumns fonksiyonları) ikon çifti
+   VARSAYILAN gizli, sadece header hover'dayken görünür (kullanıcı isteğiyle
+   — "hover state'inde sort iconu görünüyor olmalı"); o an aktif sıralanan
+   kolon (.bt-grid__header-cell--sorted, window.btGridSortBy ile eklenir)
+   hover olmasa da görünür kalır ve SADECE kendi yönünü (asc→up, desc→down)
+   gösterip diğerini gizler, marka rengiyle vurgulanır. Filter ikonu
+   (aşağıda, .bt-grid__control ile aynı statik yapı) bilinçli olarak bu
+   hover mekanizmasına dahil DEĞİL — şimdilik dekoratif/sabit kalıyor,
+   gerçek filter overlay'i ayrı bir oturumda eklenecek. */
+.bt-grid__header-cell--sortable { cursor: pointer; }
+.bt-grid__header-cell--sortable .bt-grid__sort {
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+.bt-grid__header-cell--sortable:hover .bt-grid__sort,
+.bt-grid__header-cell--sorted .bt-grid__sort {
+  opacity: 1;
+}
+.bt-grid__header-cell--sorted .bt-grid__control-icon {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+.bt-grid__header-cell--sorted[data-sort-dir="asc"]  .bt-grid__control--sort-down { display: none; }
+.bt-grid__header-cell--sorted[data-sort-dir="desc"] .bt-grid__control--sort-up   { display: none; }
 .bt-grid__sort {
   display: flex;
   align-items: center;
@@ -5918,6 +5959,67 @@ code {
 .bt-grid__menu-item--danger:hover { background: var(--bt-surface-error-subtle, #fde6e6); }
 .bt-grid__menu-item--danger .bt-grid__menu-item-icon { color: var(--bt-text-error-default, #b31d38); }
 
+/* — Filter Overlay — kullanıcının verdiği referans görsele göre: Ara input'u
+   + Tümünü Seç + kolon verisinden türetilen checkbox listesi + Temizle/
+   Uygula footer'ı. Overflow Menu'süyle (.bt-grid__menu-list, yukarısı) AYNI
+   position:fixed + document.body portal deseni — panel'in kendisi ephemeral
+   (her açılışta pages-web.js'te yeniden oluşturulur, kapanışta DOM'dan
+   tamamen kaldırılır). Checkbox'lar gerçek .bt-checkbox__box'ı, Temizle/
+   Uygula gerçek .bt-btn'i reuse eder — özel bir checkbox/buton stili YOK. */
+.bt-grid__filter-panel {
+  position: fixed;
+  z-index: 200;
+  width: 220px;
+  box-sizing: border-box;
+  background: var(--bt-surface-primary-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  box-shadow: var(--bt-shadow-xl, 0 8px 8px rgba(16,24,40,0.031), 0 20px 24px rgba(16,24,40,0.078));
+  display: flex;
+  flex-direction: column;
+  /* Panel'in KENDİSİ padding almıyor (kullanıcı isteğiyle) — Tümünü Seç
+     ayırıcısı ve footer'ın üst ayırıcısı bu sayede panel kenarına TAM
+     yaslanıyor (flush); insetler bunun yerine her bölümün (search/list
+     satırları/footer) KENDİ padding'inden geliyor. */
+}
+/* Search — bespoke bir input DEĞİL, gerçek SearchBox component'i
+   (.bt-searchbox--sm) reuse edilir (bkz. pages-web.js btGridFilterToggle). */
+.bt-grid__filter-search { padding: var(--bt-space-sm, 6px) var(--bt-space-sm, 6px) var(--bt-space-lg, 10px); }
+.bt-grid__filter-list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-lg, 10px);
+}
+.bt-grid__filter-option {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--bt-space-xs, 4px);
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 var(--bt-space-xs, 4px);
+  cursor: pointer;
+  border-radius: var(--bt-radius-sm, 4px);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-grid__filter-option:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.bt-grid__filter-option--all {
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  margin-bottom: var(--bt-space-lg, 10px);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-grid__filter-footer {
+  display: flex;
+  gap: var(--bt-space-xs, 4px);
+  border-top: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  padding: var(--bt-space-sm, 6px);
+}
+.bt-grid__filter-footer .bt-btn { flex: 1; justify-content: center; }
+
 /* — Inline TextBox/Dropdown Control — hücre içinde sadece Input alanı
    (Label/Helper Text Figma'da gizli — tablo hücresinde gereksiz), gerçek
    .bt-tbx yapısı reuse edilir, sadece bt-tbx__meta/helper hiç render edilmez. */
@@ -5928,6 +6030,44 @@ code {
   box-sizing: border-box;
 }
 .bt-grid__inline .bt-tbx { gap: 0; }
+
+/* — Inline Editing / InCell Editing — editable bir hücre AYNI ANDA hem view
+   (.bt-grid__content veya Status Badge'i, hiç kaldırılmıyor) hem edit
+   (.bt-grid__cell-edit) markup'ını barındırır; hangisi görünür olacağını
+   SADECE bu CSS belirler, JS sadece bir class toggle'lıyor (bkz. pages-web.js
+   gridCellHtml editable/editKind param'ları + design.md §17.5). İki bağımsız
+   tetikleyici: satır seviyesi (.bt-grid__row--editing, Inline Editing —
+   Actions'taki kalem ikonu tüm satırı açıyor) ve hücre seviyesi
+   (.bt-grid__cell--editing, InCell Editing — bir hücreye çift tıklama SADECE
+   o hücreyi açıyor). İkisi de aynı .bt-grid__cell--editable/.bt-grid__cell-edit
+   çiftini kullanır, sadece hangi ata class'ının kontrol ettiği değişir. */
+.bt-grid__cell-edit {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  padding: var(--bt-space-md, 8px);
+  box-sizing: border-box;
+}
+.bt-grid__row--editing .bt-grid__cell--editable > .bt-grid__content,
+.bt-grid__row--editing .bt-grid__cell--editable > .bt-grid__control,
+.bt-grid__cell--editable.bt-grid__cell--editing > .bt-grid__content,
+.bt-grid__cell--editable.bt-grid__cell--editing > .bt-grid__control {
+  display: none;
+}
+.bt-grid__row--editing .bt-grid__cell--editable > .bt-grid__cell-edit,
+.bt-grid__cell--editable.bt-grid__cell--editing > .bt-grid__cell-edit {
+  display: flex;
+}
+/* InCell Editing'de aktif düzenlenen tek hücreyi hafifçe vurgula */
+.bt-grid__cell--editable.bt-grid__cell--editing {
+  background: var(--bt-surface-brand-subtle, #e2edfc);
+}
+/* Actions kolonu — Edit (view) / Save+Cancel (edit) çifti, satır seviyesinde
+   .bt-grid__row--editing ile kontrol edilir (bkz. gridRowEditActionsCellHtml). */
+.bt-grid__row-edit-edit { display: none; }
+.bt-grid__row--editing .bt-grid__row-edit-view { display: none; }
+.bt-grid__row--editing .bt-grid__row-edit-edit { display: flex; }
 
 /* — No Record Available — tüm tablo genişliğini kaplayan ortalı satır */
 .bt-grid__no-record {
