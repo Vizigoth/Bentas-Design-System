@@ -16,8 +16,14 @@ const NAV_WEB = [
       { label: 'Alert Toaster',     id: 'components/alert' },
       { label: 'Avatar',            id: 'components/avatar' },
       { label: 'Badge',             id: 'components/badge' },
-      { label: 'Button',            id: 'components/button' },
-      { label: 'Button Group',      id: 'components/button-group' },
+      {
+        label: 'Buttons', children: [
+          { label: 'Button',       id: 'components/button' },
+          { label: 'Button Group', id: 'components/button-group' },
+          { label: 'Icon Button',  id: 'components/icon-button' },
+          { label: 'Split Button', id: 'components/split-button' },
+        ]
+      },
       {
         label: 'Card', children: [
           { label: 'Card',             id: 'components/card' },
@@ -43,7 +49,6 @@ const NAV_WEB = [
         ]
       },
       { label: 'Dialog',            id: 'components/dialog' },
-      { label: 'Icon Button',       id: 'components/icon-button' },
       {
         label: 'Inputs', children: [
           { label: 'Date Picker',   id: 'components/date-picker' },
@@ -59,11 +64,18 @@ const NAV_WEB = [
         ]
       },
       { label: 'List Item',         id: 'components/list-item' },
-      { label: 'Navigation Drawer', id: 'components/nav-drawer' },
       { label: 'Progress',          id: 'components/progress' },
       { label: 'Sidebar',           id: 'components/sidebar' },
       { label: 'Skeleton',          id: 'components/skeleton' },
-      { label: 'Split Button',      id: 'components/split-button' },
+      {
+        label: 'Overlays', children: [
+          { label: 'Drawer', children: [
+            { label: 'Overview',        id: 'components/nav-drawer' },
+            { label: 'With Form',       id: 'components/drawer-form' },
+            { label: 'With Data Table', id: 'components/drawer-datatable' },
+          ]},
+        ]
+      },
     ]
   },
   {
@@ -77,7 +89,8 @@ const NAV_WEB = [
   {
     label: 'Layout', children: [
       { label: 'Grid',    id: 'layout/grid' },
-      { label: 'Stack',   id: 'layout/stack' },
+      { label: 'Stack',        id: 'layout/stack' },
+      { label: 'Page Layout',  id: 'layout/page-layout' },
     ]
   },
   {
@@ -98,6 +111,20 @@ window.dexOpenPanel = function(panelId, overlayId) {
   panel.getBoundingClientRect(); // reflow — animasyonun başlaması için şart
   panel.classList.add('is-open');
   overlay.classList.add('is-open');
+};
+window.dexToggleMaximize = function(panelId) {
+  const panel = document.getElementById(panelId);
+  const btn   = document.getElementById(panelId + '-maxbtn');
+  const isMax = panel.classList.toggle('is-maximized');
+  btn.querySelector('.bt-maxbtn-max').style.display = isMax ? 'none' : '';
+  btn.querySelector('.bt-maxbtn-min').style.display = isMax ? '' : 'none';
+};
+window.dexToggleMinimize = function(panelId) {
+  const panel  = document.getElementById(panelId);
+  const btn    = document.getElementById(panelId + '-maxbtn');
+  const isMin  = panel.classList.toggle('is-minimized');
+  btn.querySelector('.bt-maxbtn-max').style.display = isMin ? '' : 'none';
+  btn.querySelector('.bt-maxbtn-min').style.display = isMin ? 'none' : '';
 };
 window.dexClosePanel = function(panelId, overlayId) {
   const panel   = document.getElementById(panelId);
@@ -179,14 +206,16 @@ PAGES_WEB['foundations/design-examples'] = {
              role="dialog" aria-modal="true" aria-labelledby="dex-panel-form-title"
              hidden>
 
-        <!-- Header: [×] + başlık solda · Kaydet sağda -->
+        <!-- Header: [×][↗] + başlık solda · Kaydet sağda -->
         <div class="bt-window-sm__header">
           <div class="bt-window-sm__header-left">
-            <button class="bt-window-sm__close"
-                    onclick="dexClosePanel('dex-panel-form','dex-overlay-form')"
-                    aria-label="Kapat">
-              ${_dexCloseIcon}
-            </button>
+            <div style="display:flex;gap:4px;flex-shrink:0;">
+              <button class="bt-window-sm__close" onclick="dexClosePanel('dex-panel-form','dex-overlay-form')" aria-label="Kapat">${_dexCloseIcon}</button>
+              <button class="bt-window-sm__close" id="dex-panel-form-maxbtn" onclick="dexToggleMaximize('dex-panel-form')" aria-label="Tam ekran">
+                <span class="bt-maxbtn-max"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></span>
+                <span class="bt-maxbtn-min" style="display:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg></span>
+              </button>
+            </div>
             <span class="bt-window-sm__title" id="dex-panel-form-title">Yeni Görev Ekle</span>
           </div>
           <button class="bt-btn bt-btn--primary-solid bt-btn--sm">Kaydet</button>
@@ -194,7 +223,7 @@ PAGES_WEB['foundations/design-examples'] = {
 
         <!-- Body -->
         <div class="bt-window-sm__body">
-          <div class="bt-window-sm__card">
+          <div class="bt-window-sm__content">
 
             <!-- İşin Adı -->
             <div class="bt-win-field">
@@ -11860,6 +11889,901 @@ PAGES_WEB['components/data-table-sorting'] = {
           <tr><td>Sort ikonu (aktif)</td><td>Renk</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97, sadece kendi yönü</td></tr>
           <tr><td>Döngü</td><td>3 tık</td><td>—</td><td>asc → desc → reset</td></tr>
           <tr><td>Karşılaştırma</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridSortBy')} — sayısal veya ${tk("localeCompare(v,'tr')")}</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ─── Drawer ───────────────────────────────────────────────────────────────────
+PAGES_WEB['components/nav-drawer'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Sizes', 'Anatomy', 'Header', 'Body', 'Content Container'],
+  render(tab) {
+    const title = 'Drawer';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const CLOSE_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+    const MAX_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+    const MIN_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
+
+    const drawerHtml = (panelId, overlayId) => `
+<div class="bt-win-overlay" id="${overlayId}" onclick="dexClosePanel('${panelId}','${overlayId}')"></div>
+<aside class="bt-window-sm" id="${panelId}" hidden>
+  <div class="bt-window-sm__header">
+    <div class="bt-window-sm__header-left">
+      <div style="display:flex;gap:4px;flex-shrink:0;">
+        <button class="bt-window-sm__close" onclick="dexClosePanel('${panelId}','${overlayId}')" aria-label="Kapat">${CLOSE_ICON}</button>
+        <button class="bt-window-sm__close" id="${panelId}-maxbtn" onclick="dexToggleMaximize('${panelId}')" aria-label="Tam ekran">
+          <span class="bt-maxbtn-max">${MAX_ICON}</span>
+          <span class="bt-maxbtn-min" style="display:none;">${MIN_ICON}</span>
+        </button>
+      </div>
+      <span class="bt-window-sm__title">Window Title Here</span>
+    </div>
+    <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button>
+  </div>
+  <div class="bt-window-sm__body">
+    <div class="bt-window-sm__content"></div>
+  </div>
+</aside>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Drawer bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Panel</td><td>Width</td><td>—</td><td>33vw (ekranın ⅓'ü)</td></tr>
+          <tr><td>Panel</td><td>Position</td><td>—</td><td>fixed · right:0 · top:0 · bottom:0</td></tr>
+          <tr><td>Panel</td><td>Background</td><td>${tk('--bt-surface-primary-light')}</td><td>#fafafa</td></tr>
+          <tr><td>Panel</td><td>Open transition</td><td>—</td><td>transform 0.3s cubic-bezier(0.4,0,0.2,1) · translateX(100%) → 0</td></tr>
+          <tr><td>Header</td><td>Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Header</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Header</td><td>Border-bottom</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Header</td><td>Box-shadow</td><td>—</td><td>0 2px 3px rgba(0,0,0,0.08)</td></tr>
+          <tr><td>Header</td><td>Padding</td><td>${tk('--bt-space-xl')}</td><td>12px horizontal</td></tr>
+          <tr><td>Title</td><td>Font-size</td><td>${tk('--bt-text-md-size')}</td><td>16px</td></tr>
+          <tr><td>Title</td><td>Font-family</td><td>${tk('--title')}</td><td>Geist</td></tr>
+          <tr><td>Controls</td><td>Button size</td><td>—</td><td>28×28px · ${tk('bt-window-sm__close')}</td></tr>
+          <tr><td>Controls</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Background</td><td>${tk('--bt-surface-primary-light')}</td><td>#fafafa</td></tr>
+          <tr><td>Inner Container</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Inner Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Inner Container</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Overlay</td><td>Background</td><td>—</td><td>rgba(0,0,0,0.24)</td></tr>
+          <tr><td>Overlay</td><td>Backdrop-filter</td><td>—</td><td>blur(4px)</td></tr>
+          <tr><td>Action Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--primary-solid')}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Drawer içeriğinin farklı varyasyonları — form, data table, veya boş container.</p>
+      <h2>With Form</h2>
+      <p>Body'deki ${tk('bt-window-sm__content')} alanına form elemanları (${tk('bt-win-field')}, ${tk('bt-win-input')}, ${tk('bt-win-dropdown')} vb.) yerleştirilir. Bkz. Design Examples sayfasındaki Form Panel örneği.</p>
+      <h2>With Data Table</h2>
+      <p>İç container'da bir Data Table barındırılabilir. Bu durumda ${tk('bt-window-sm__content')} padding'i kaldırılmalı, tablo doğrudan container'a oturtulmalıdır.</p>
+      <h2>Expanded (Full-width)</h2>
+      <p>Maximize butonu ile drawer genişletilebilir — tam ekran veya daha büyük bir genişliğe geçiş için class toggle kullanılır. Bu varyasyonun boyutları ayrıca tanımlanacaktır.</p>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Drawer kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Yeni kayıt ekleme, detay görüntüleme, satır düzenleme gibi aksiyonlar için Drawer kullan</li>
+        <li>Drawer tetikleyicisini her zaman Toolbar'daki bir action button'a bağla</li>
+        <li>Header'da sağ tarafta mutlaka bir primary action button bulundur (Kaydet, Uygula vb.)</li>
+        <li>Kapat (×) butonu ile overlay tıklaması aynı kapanma davranışını sergilemeli</li>
+        <li>Drawer içeriği kaydırılabilir olmalı — ${tk('bt-window-sm__body')} zaten ${tk('overflow-y: auto')}</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Aynı anda birden fazla Drawer açma</li>
+        <li>Drawer içine başka bir Drawer veya Modal açma</li>
+        <li>Drawer'ı navigasyon veya sayfa geçişi için kullanma</li>
+        <li>Header title'ı boş bırakma</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc"><strong>Drawer</strong>, bir aksiyon butonuna basıldığında ekranın sağından kayan, ekranın ⅓'ü (33vw) genişliğinde bir panel bileşenidir. İçeriği form, data table veya herhangi bir content olabilir. Açılırken arka plan blur'lı bir overlay ile örtülür.</p>
+
+      ${registerPlayground({
+        id: 'pgd-drawer-overview',
+        variants: [{ key: 'default', label: 'Drawer' }],
+        props: [],
+        preview: () => `
+          <div style="display:flex;align-items:center;justify-content:center;padding:48px;">
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-drawer-panel','pgd-drawer-overlay')">Open Drawer</button>
+          </div>
+          ${drawerHtml('pgd-drawer-panel', 'pgd-drawer-overlay')}
+        `,
+        code: () => drawerHtml('drawer-panel', 'drawer-overlay'),
+        css: (v, p) => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '/* Overlay */',
+            '.bt-win-overlay {',
+            '  position: fixed; inset: 0; z-index: 999;',
+            '  background: rgba(0,0,0,0.24);',
+            '  backdrop-filter: blur(4px);',
+            '}',
+            '',
+            '/* Panel */',
+            '.bt-window-sm {',
+            '  position: fixed; top: 0; right: 0; bottom: 0;',
+            '  width: 33vw;  /* ekranın ⅓\'ü */',
+            '  background: var(--bt-surface-primary-light);  /* #fafafa */',
+            '  transform: translateX(100%);',
+            '  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);',
+            '  z-index: 1000;',
+            '}',
+            '.bt-window-sm.is-open { transform: translateX(0); }',
+            '',
+            '/* Header */',
+            '.bt-window-sm__header {',
+            '  height: 40px;',
+            '  background: var(--bt-surface-primary-default);  /* #ffffff */',
+            '  border-bottom: 1px solid var(--bt-border-primary-default);  /* #d4d4d4 */',
+            '  box-shadow: 0 2px 3px rgba(0,0,0,0.08);',
+            '  padding: 0 var(--bt-space-xl);  /* 12px */',
+            '}',
+            '',
+            '/* Title */',
+            '.bt-window-sm__title {',
+            '  font-size: 16px;',
+            '  font-family: var(--title);',
+            '  color: var(--bt-text-primary-default);  /* #1a1a1a */',
+            '}',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+
+      <!-- ── Sizes ── -->
+      <h2 id="Sizes">Sizes</h2>
+      ${registerPlayground({
+        id: 'pgd-drawer-sizes',
+        variants: [{ key: 'default', label: 'Sizes' }],
+        props: [],
+        preview: () => `
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:48px;flex-wrap:wrap;">
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-sz-sm','pgd-sz-sm-ov')">Open Drawer Sm</button>
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-sz-md','pgd-sz-md-ov')">Open Drawer Md</button>
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-sz-lg','pgd-sz-lg-ov')">Open Drawer Lg</button>
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-sz-xl','pgd-sz-xl-ov')">Open Drawer Xl</button>
+          </div>
+
+          <div class="bt-win-overlay" id="pgd-sz-sm-ov" onclick="dexClosePanel('pgd-sz-sm','pgd-sz-sm-ov')"></div>
+          <aside class="bt-window-sm" id="pgd-sz-sm" hidden>
+            <div class="bt-window-sm__header">
+              <div class="bt-window-sm__header-left">
+                <div style="display:flex;gap:4px;">
+                  <button class="bt-window-sm__close" onclick="dexClosePanel('pgd-sz-sm','pgd-sz-sm-ov')">${CLOSE_ICON}</button>
+                  <button class="bt-window-sm__close" id="pgd-sz-sm-maxbtn" onclick="dexToggleMaximize('pgd-sz-sm')"><span class="bt-maxbtn-max">${MAX_ICON}</span><span class="bt-maxbtn-min" style="display:none;">${MIN_ICON}</span></button>
+                </div>
+                <span class="bt-window-sm__title">Drawer — Sm (33vw)</span>
+              </div>
+              <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button>
+            </div>
+            <div class="bt-window-sm__body"><div class="bt-window-sm__content"></div></div>
+          </aside>
+
+          <div class="bt-win-overlay" id="pgd-sz-md-ov" onclick="dexClosePanel('pgd-sz-md','pgd-sz-md-ov')"></div>
+          <aside class="bt-window-sm bt-window-sm--md" id="pgd-sz-md" hidden>
+            <div class="bt-window-sm__header">
+              <div class="bt-window-sm__header-left">
+                <div style="display:flex;gap:4px;">
+                  <button class="bt-window-sm__close" onclick="dexClosePanel('pgd-sz-md','pgd-sz-md-ov')">${CLOSE_ICON}</button>
+                  <button class="bt-window-sm__close" id="pgd-sz-md-maxbtn" onclick="dexToggleMaximize('pgd-sz-md')"><span class="bt-maxbtn-max">${MAX_ICON}</span><span class="bt-maxbtn-min" style="display:none;">${MIN_ICON}</span></button>
+                </div>
+                <span class="bt-window-sm__title">Drawer — Md (50vw)</span>
+              </div>
+              <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button>
+            </div>
+            <div class="bt-window-sm__body"><div class="bt-window-sm__content"></div></div>
+          </aside>
+
+          <div class="bt-win-overlay" id="pgd-sz-lg-ov" onclick="dexClosePanel('pgd-sz-lg','pgd-sz-lg-ov')"></div>
+          <aside class="bt-window-sm bt-window-sm--lg" id="pgd-sz-lg" hidden>
+            <div class="bt-window-sm__header">
+              <div class="bt-window-sm__header-left">
+                <div style="display:flex;gap:4px;">
+                  <button class="bt-window-sm__close" onclick="dexClosePanel('pgd-sz-lg','pgd-sz-lg-ov')">${CLOSE_ICON}</button>
+                  <button class="bt-window-sm__close" id="pgd-sz-lg-maxbtn" onclick="dexToggleMaximize('pgd-sz-lg')"><span class="bt-maxbtn-max">${MAX_ICON}</span><span class="bt-maxbtn-min" style="display:none;">${MIN_ICON}</span></button>
+                </div>
+                <span class="bt-window-sm__title">Drawer — Lg (66vw)</span>
+              </div>
+              <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button>
+            </div>
+            <div class="bt-window-sm__body"><div class="bt-window-sm__content"></div></div>
+          </aside>
+
+          <div class="bt-win-overlay" id="pgd-sz-xl-ov" onclick="dexClosePanel('pgd-sz-xl','pgd-sz-xl-ov')"></div>
+          <aside class="bt-window-sm bt-window-sm--xl" id="pgd-sz-xl" hidden>
+            <div class="bt-window-sm__header">
+              <div class="bt-window-sm__header-left">
+                <div style="display:flex;gap:4px;">
+                  <button class="bt-window-sm__close" onclick="dexClosePanel('pgd-sz-xl','pgd-sz-xl-ov')">${CLOSE_ICON}</button>
+                  <button class="bt-window-sm__close" id="pgd-sz-xl-maxbtn" onclick="dexToggleMinimize('pgd-sz-xl')"><span class="bt-maxbtn-max" style="display:none;">${MAX_ICON}</span><span class="bt-maxbtn-min">${MIN_ICON}</span></button>
+                </div>
+                <span class="bt-window-sm__title">Drawer — Xl (100%)</span>
+              </div>
+              <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button>
+            </div>
+            <div class="bt-window-sm__body"><div class="bt-window-sm__content"></div></div>
+          </aside>
+        `,
+        code: () => `<!-- Sm (33vw — default) -->
+<aside class="bt-window-sm" id="panel" hidden>...</aside>
+
+<!-- Md (33vw) -->
+<aside class="bt-window-sm bt-window-sm--md" id="panel" hidden>...</aside>
+
+<!-- Lg (50vw) -->
+<aside class="bt-window-sm bt-window-sm--lg" id="panel" hidden>...</aside>
+
+<!-- Xl (75vw) -->
+<aside class="bt-window-sm bt-window-sm--xl" id="panel" hidden>...</aside>`,
+        css: () => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '.bt-window-sm         { width: 33vw;  }  /* Sm — ekranın ⅓\'ü   */',
+            '.bt-window-sm--md     { width: 50vw;  }  /* Md — ekranın ½\'si  */',
+            '.bt-window-sm--lg     { width: 66vw;  }  /* Lg — ekranın ⅔\'si  */',
+            '.bt-window-sm--xl     { width: 100vw; }  /* Xl — tam ekran      */',
+            '.bt-window-sm.is-maximized { width: 100%; }',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+
+      <!-- ── Anatomy ── -->
+      <h2 id="Anatomy">Anatomy</h2>
+      <table class="token-table" style="margin-top:12px;">
+        <thead><tr><th>Element</th><th>Class</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>Overlay</td><td>${tk('bt-win-overlay')}</td><td>Panel açıldığında arka planı kaplayan blur'lı katman. Tıklanınca drawer kapanır.</td></tr>
+          <tr><td>Panel</td><td>${tk('bt-window-sm')}</td><td>Sağdan kayan, ekranın ⅓'ü (33vw) genişliğindeki ana container. ${tk('.is-open')} ile görünür olur.</td></tr>
+          <tr><td>Header</td><td>${tk('bt-window-sm__header')}</td><td>40px yüksekliğindeki üst bar. Kapat / maximize butonları, başlık ve aksyon butonu barındırır.</td></tr>
+          <tr><td>Body</td><td>${tk('bt-window-sm__body')}</td><td>Header altında kalan, kaydırılabilir alan. 16px padding · #fafafa arka plan.</td></tr>
+          <tr><td>Content Container</td><td>${tk('bt-window-sm__content')}</td><td>Body içindeki beyaz kart. Form, Data Table veya herhangi bir içerik burada yer alır.</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── Header ── -->
+      <h2 id="Header">Header</h2>
+      ${registerPlayground({
+        id: 'pgd-drawer-header',
+        variants: [{ key: 'default', label: 'Header' }],
+        props: [],
+        preview: () => `
+          <div style="padding:32px 24px;">
+            <div style="border:1px solid var(--bt-border-primary-muted,#e6e6e6);border-radius:var(--bt-radius-md,6px);overflow:hidden;">
+              <div class="bt-window-sm__header">
+                <div class="bt-window-sm__header-left">
+                  <div style="display:flex;gap:4px;">
+                    <button class="bt-window-sm__close" tabindex="-1" style="cursor:default;">${CLOSE_ICON}</button>
+                    <button class="bt-window-sm__close" tabindex="-1" style="cursor:default;">${MAX_ICON}</button>
+                  </div>
+                  <span class="bt-window-sm__title">Window Title Here</span>
+                </div>
+                <button class="bt-btn bt-btn--sm bt-btn--primary-solid" tabindex="-1" style="cursor:default;">Button</button>
+              </div>
+            </div>
+          </div>
+        `,
+        code: () => `<div class="bt-window-sm__header">
+  <div class="bt-window-sm__header-left">
+    <div style="display:flex;gap:4px;">
+      <button class="bt-window-sm__close" onclick="dexClosePanel(panelId, overlayId)">${CLOSE_ICON}</button>
+      <button class="bt-window-sm__close" onclick="dexToggleMaximize(panelId)">${MAX_ICON}</button>
+    </div>
+    <span class="bt-window-sm__title">Window Title Here</span>
+  </div>
+  <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Button</button>
+</div>`,
+        css: () => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '.bt-window-sm__header {',
+            '  height: 40px;',
+            '  display: flex;',
+            '  align-items: center;',
+            '  justify-content: space-between;',
+            '  padding: 0 var(--bt-space-xl);  /* 12px */',
+            '  background: var(--bt-surface-primary-default);  /* #ffffff */',
+            '  border-bottom: 1px solid var(--bt-border-primary-default);  /* #d4d4d4 */',
+            '  box-shadow: 0 2px 3px rgba(0,0,0,0.08);',
+            '  flex-shrink: 0;',
+            '}',
+            '',
+            '.bt-window-sm__title {',
+            '  font-size: var(--bt-text-md-size);  /* 16px */',
+            '  font-family: var(--title);  /* Geist */',
+            '  color: var(--bt-text-primary-default);  /* #1a1a1a */',
+            '}',
+            '',
+            '.bt-window-sm__close {',
+            '  width: 28px; height: 28px;',
+            '  padding: var(--bt-space-xs);  /* 6px */',
+            '  border-radius: var(--bt-radius-sm);  /* 4px */',
+            '}',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+      <table class="token-table" style="margin-top:16px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('bt-window-sm__header')}</td><td>Height</td><td>—</td><td>40px</td></tr>
+          <tr><td>${tk('bt-window-sm__header')}</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>${tk('bt-window-sm__header')}</td><td>Border-bottom</td><td>${tk('--bt-border-primary-default')}</td><td>1px solid #d4d4d4</td></tr>
+          <tr><td>${tk('bt-window-sm__header')}</td><td>Box-shadow</td><td>—</td><td>0 2px 3px rgba(0,0,0,0.08)</td></tr>
+          <tr><td>${tk('bt-window-sm__header')}</td><td>Padding</td><td>${tk('--bt-space-xl')}</td><td>12px yatay</td></tr>
+          <tr><td>Close Button · ${tk('bt-window-sm__close')}</td><td>Size</td><td>—</td><td>28×28px · padding: 6px</td></tr>
+          <tr><td>Close Button · ${tk('bt-window-sm__close')}</td><td>Davranış</td><td>—</td><td>${tk('dexClosePanel(panelId, overlayId)')} çağırır</td></tr>
+          <tr><td>Maximize Button · ${tk('bt-window-sm__close')}</td><td>Icon</td><td>—</td><td>maximize-2 → minimize-2 (toggle)</td></tr>
+          <tr><td>Maximize Button · ${tk('bt-window-sm__close')}</td><td>Davranış</td><td>—</td><td>${tk('dexToggleMaximize(panelId)')} — genişlik 33vw ↔ 100%</td></tr>
+          <tr><td>Controls gap</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Title · ${tk('bt-window-sm__title')}</td><td>Font-size</td><td>${tk('--bt-text-md-size')}</td><td>16px</td></tr>
+          <tr><td>Title · ${tk('bt-window-sm__title')}</td><td>Font-family</td><td>${tk('--title')}</td><td>Geist · weight: 400</td></tr>
+          <tr><td>Title · ${tk('bt-window-sm__title')}</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Action Button</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--primary-solid')}</td></tr>
+          <tr><td>Action Button</td><td>Position</td><td>—</td><td>Header sağı · justify-content: space-between</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── Body ── -->
+      <h2 id="Body">Body</h2>
+      ${registerPlayground({
+        id: 'pgd-drawer-body',
+        variants: [{ key: 'default', label: 'Body' }],
+        props: [],
+        preview: () => `
+          <div style="padding:32px 24px;">
+            <div style="border:1px solid var(--bt-border-primary-muted,#e6e6e6);border-radius:var(--bt-radius-md,6px);overflow:hidden;height:240px;display:flex;flex-direction:column;">
+              <div class="bt-window-sm__body" style="flex:1;min-height:0;">
+                <div style="height:32px;background:var(--bt-surface-primary-muted,#f0f0f0);border-radius:var(--bt-radius-sm,4px);margin-bottom:8px;"></div>
+                <div style="height:32px;background:var(--bt-surface-primary-muted,#f0f0f0);border-radius:var(--bt-radius-sm,4px);margin-bottom:8px;width:70%;"></div>
+                <div style="height:32px;background:var(--bt-surface-primary-muted,#f0f0f0);border-radius:var(--bt-radius-sm,4px);width:85%;"></div>
+              </div>
+            </div>
+          </div>
+        `,
+        code: () => `<div class="bt-window-sm__body">
+  <!-- İçerik buraya gelir -->
+</div>`,
+        css: () => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '.bt-window-sm__body {',
+            '  flex: 1;',
+            '  min-height: 0;',
+            '  overflow-y: auto;',
+            '  padding: var(--bt-space-2xl);  /* 16px */',
+            '  background: var(--bt-surface-primary-light);  /* #fafafa */',
+            '  display: flex;',
+            '  flex-direction: column;',
+            '}',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+      <table class="token-table" style="margin-top:16px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('bt-window-sm__body')}</td><td>Background</td><td>${tk('--bt-surface-primary-light')}</td><td>#fafafa</td></tr>
+          <tr><td>${tk('bt-window-sm__body')}</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px (tüm yönler)</td></tr>
+          <tr><td>${tk('bt-window-sm__body')}</td><td>Overflow</td><td>—</td><td>overflow-y: auto</td></tr>
+          <tr><td>${tk('bt-window-sm__body')}</td><td>Layout</td><td>—</td><td>flex · flex-direction: column · flex: 1</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── Content Container ── -->
+      <h2 id="Content Container">Content Container</h2>
+      ${registerPlayground({
+        id: 'pgd-drawer-content',
+        variants: [{ key: 'default', label: 'Content Container' }],
+        props: [],
+        preview: () => `
+          <div style="padding:32px 24px;">
+            <div class="bt-window-sm__content" style="min-height:200px;padding:var(--bt-space-3xl,20px);">
+              <div style="height:32px;background:var(--bt-surface-primary-muted,#f0f0f0);border-radius:var(--bt-radius-sm,4px);margin-bottom:8px;"></div>
+              <div style="height:32px;background:var(--bt-surface-primary-muted,#f0f0f0);border-radius:var(--bt-radius-sm,4px);margin-bottom:8px;width:75%;"></div>
+              <div style="height:32px;background:var(--bt-surface-primary-muted,#f0f0f0);border-radius:var(--bt-radius-sm,4px);width:60%;"></div>
+            </div>
+          </div>
+        `,
+        code: () => `<div class="bt-window-sm__content">
+  <!-- Form, Data Table veya herhangi bir içerik -->
+</div>`,
+        css: () => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '.bt-window-sm__content {',
+            '  flex: 1;',
+            '  min-height: 0;',
+            '  background: var(--bt-surface-primary-default);  /* #ffffff */',
+            '  border: 1px solid var(--bt-border-primary-default);  /* #d4d4d4 */',
+            '  border-radius: var(--bt-radius-sm);  /* 4px */',
+            '}',
+            '',
+            '/* Form içeriği */',
+            '.bt-window-sm__content { padding: var(--bt-space-3xl); }  /* 20px */',
+            '',
+            '/* Data Table içeriği — padding kaldırılır */',
+            '.bt-window-sm__content { padding: 0; }',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+      <table class="token-table" style="margin-top:16px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>1px solid #d4d4d4</td></tr>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>Layout</td><td>—</td><td>flex: 1 · min-height: 0</td></tr>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>Padding — form</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>Padding — data table</td><td>—</td><td>0 (tablo kenardan kenara oturur)</td></tr>
+          <tr><td>${tk('bt-window-sm__content')}</td><td>İçerik</td><td>—</td><td>Form, Data Table veya herhangi bir bileşen kombinasyonu</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ─── Drawer — With Form ───────────────────────────────────────────────────────
+PAGES_WEB['components/drawer-form'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  [],
+  render(tab) {
+    const title = 'Drawer — With Form';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const CLOSE_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+    const MAX_ICON   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+    const MIN_ICON   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
+
+    const formDrawerHtml = (panelId, overlayId) => `
+<div class="bt-win-overlay" id="${overlayId}" onclick="dexClosePanel('${panelId}','${overlayId}')"></div>
+<aside class="bt-window-sm" id="${panelId}" hidden>
+  <div class="bt-window-sm__header">
+    <div class="bt-window-sm__header-left">
+      <div style="display:flex;gap:4px;flex-shrink:0;">
+        <button class="bt-window-sm__close" onclick="dexClosePanel('${panelId}','${overlayId}')">${CLOSE_ICON}</button>
+        <button class="bt-window-sm__close" id="${panelId}-maxbtn" onclick="dexToggleMaximize('${panelId}')">
+          <span class="bt-maxbtn-max">${MAX_ICON}</span>
+          <span class="bt-maxbtn-min" style="display:none;">${MIN_ICON}</span>
+        </button>
+      </div>
+      <span class="bt-window-sm__title">Yeni Kayıt Ekle</span>
+    </div>
+    <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Kaydet</button>
+  </div>
+  <div class="bt-window-sm__body">
+    <div class="bt-window-sm__content" style="padding:var(--bt-space-3xl,20px);display:flex;flex-direction:column;gap:var(--bt-space-2xl,16px);">
+      <div class="bt-win-field">
+        <label class="bt-win-label">Ad Soyad <span style="color:var(--bt-text-danger-default,#dc2626);">*</span></label>
+        <input class="bt-win-input" type="text" placeholder="Adınızı girin">
+      </div>
+      <div class="bt-win-field">
+        <label class="bt-win-label">E-posta</label>
+        <input class="bt-win-input" type="email" placeholder="ornek@bentas.com.tr">
+      </div>
+      <div class="bt-win-field">
+        <label class="bt-win-label">Departman</label>
+        <input class="bt-win-input" type="text" placeholder="Departman adı">
+      </div>
+      <div class="bt-win-field">
+        <label class="bt-win-label">Açıklama</label>
+        <textarea class="bt-win-textarea" rows="4" placeholder="Notlarınızı buraya girin..."></textarea>
+      </div>
+    </div>
+  </div>
+</aside>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Form Drawer bileşenine özgü ek CSS değerleri. Temel panel stilleri için bkz. <a href="#" onclick="navigate('components/nav-drawer');return false;">Drawer Overview</a>.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Content Container</td><td>Padding</td><td>${tk('--bt-space-3xl')}</td><td>20px</td></tr>
+          <tr><td>Content Container</td><td>Gap</td><td>${tk('--bt-space-2xl')}</td><td>16px (alanlar arası)</td></tr>
+          <tr><td>${tk('bt-win-field')}</td><td>Display</td><td>—</td><td>flex · flex-direction: column · gap: 4px</td></tr>
+          <tr><td>${tk('bt-win-label')}</td><td>Font-size</td><td>${tk('--bt-text-sm-size')}</td><td>14px</td></tr>
+          <tr><td>${tk('bt-win-label')}</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>${tk('bt-win-input')}</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>${tk('bt-win-input')}</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>1px solid #d4d4d4</td></tr>
+          <tr><td>${tk('bt-win-input')}</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>${tk('bt-win-textarea')}</td><td>Resize</td><td>—</td><td>vertical</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Form Drawer farklı alan kombinasyonlarıyla kullanılabilir.</p>
+      <h2>Required Fields</h2>
+      <p>Zorunlu alanlar label'ının yanına kırmızı yıldız (<code>*</code>) işareti ile belirtilir: ${tk('--bt-text-danger-default')} renginde.</p>
+      <h2>Field Types</h2>
+      <p>${tk('bt-win-input')} (text, email, date...), ${tk('bt-win-textarea')} (çok satırlı metin), ${tk('bt-win-dropdown')} (seçim listesi), ${tk('bt-win-datepicker')} (tarih seçici).</p>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Form Drawer kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Header'daki action button'u birincil form aksiyonu için kullan (Kaydet, Oluştur, Uygula)</li>
+        <li>Zorunlu alanları <code>*</code> ile işaretle</li>
+        <li>Alanlar arasında tutarlı gap kullan: ${tk('--bt-space-2xl')} (16px)</li>
+        <li>Uzun formlar için body'nin kendi scroll'una güven — sayfa scroll'unu etkilemez</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Form içine submit butonu ekleme — aksiyonlar header'da olmalı</li>
+        <li>Content container'a padding vermeden tablo veya liste yerleştirme</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Form içeren Drawer deseni — yeni kayıt ekleme, satır düzenleme gibi veri girişi senaryolarında kullanılır. İçerik, ${tk('bt-window-sm__content')} içine yerleştirilen ${tk('bt-win-field')} + ${tk('bt-win-input')} / ${tk('bt-win-textarea')} elemanlarından oluşur.</p>
+
+      ${registerPlayground({
+        id: 'pgd-drawer-form',
+        variants: [{ key: 'default', label: 'With Form' }],
+        props: [],
+        preview: () => `
+          <div style="display:flex;align-items:center;justify-content:center;padding:48px;">
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-df-panel','pgd-df-ov')">Open Drawer</button>
+          </div>
+          ${formDrawerHtml('pgd-df-panel', 'pgd-df-ov')}
+        `,
+        code: () => formDrawerHtml('drawer-panel', 'drawer-overlay'),
+        css: () => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '.bt-window-sm__content {',
+            '  padding: var(--bt-space-3xl);  /* 20px */',
+            '  display: flex;',
+            '  flex-direction: column;',
+            '  gap: var(--bt-space-2xl);  /* 16px */',
+            '}',
+            '',
+            '.bt-win-field {',
+            '  display: flex;',
+            '  flex-direction: column;',
+            '  gap: var(--bt-space-2xs);  /* 4px */',
+            '}',
+            '',
+            '.bt-win-label {',
+            '  font-size: var(--bt-text-sm-size);  /* 14px */',
+            '  color: var(--bt-text-primary-default);  /* #1a1a1a */',
+            '}',
+            '',
+            '.bt-win-input, .bt-win-textarea {',
+            '  width: 100%;',
+            '  border: 1px solid var(--bt-border-primary-default);  /* #d4d4d4 */',
+            '  border-radius: var(--bt-radius-sm);  /* 4px */',
+            '  padding: var(--bt-space-sm) var(--bt-space-md);  /* 6px 8px */',
+            '  font-size: var(--bt-text-sm-size);  /* 14px */',
+            '}',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+    `};
+  },
+};
+
+// ─── Drawer — With Data Table ─────────────────────────────────────────────────
+PAGES_WEB['components/drawer-datatable'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  [],
+  render(tab) {
+    const title = 'Drawer — With Data Table';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const CLOSE_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+    const MAX_ICON   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+    const MIN_ICON   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
+
+    const rows = [
+      { ad: 'Ahmet Yılmaz',   departman: 'Mühendislik',  tarih: '12.08.2026', durum: 'Aktif' },
+      { ad: 'Selin Kaya',     departman: 'Pazarlama',    tarih: '05.07.2026', durum: 'Aktif' },
+      { ad: 'Mert Demir',     departman: 'Finans',       tarih: '22.06.2026', durum: 'Pasif' },
+      { ad: 'Ayşe Çelik',     departman: 'İnsan K.',     tarih: '01.09.2026', durum: 'Aktif' },
+      { ad: 'Burak Şahin',    departman: 'Mühendislik',  tarih: '17.07.2026', durum: 'Aktif' },
+    ];
+
+    const tableHtml = `
+<table style="width:100%;border-collapse:collapse;font-size:var(--bt-text-sm-size,13px);font-family:var(--sans);">
+  <thead>
+    <tr style="background:var(--bt-surface-primary-subtle,#f5f5f5);border-bottom:1px solid var(--bt-border-primary-default,#d4d4d4);">
+      <th style="text-align:left;padding:8px 12px;font-weight:500;color:var(--bt-text-secondary-default,#737373);white-space:nowrap;">Ad Soyad</th>
+      <th style="text-align:left;padding:8px 12px;font-weight:500;color:var(--bt-text-secondary-default,#737373);white-space:nowrap;">Departman</th>
+      <th style="text-align:left;padding:8px 12px;font-weight:500;color:var(--bt-text-secondary-default,#737373);white-space:nowrap;">Tarih</th>
+      <th style="text-align:left;padding:8px 12px;font-weight:500;color:var(--bt-text-secondary-default,#737373);white-space:nowrap;">Durum</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${rows.map((r, i) => `
+    <tr style="border-bottom:1px solid var(--bt-border-primary-muted,#e6e6e6);background:${i % 2 === 0 ? 'var(--bt-surface-primary-default,#fff)' : 'var(--bt-surface-primary-light,#fafafa)'};">
+      <td style="padding:8px 12px;color:var(--bt-text-primary-default,#1a1a1a);">${r.ad}</td>
+      <td style="padding:8px 12px;color:var(--bt-text-secondary-default,#737373);">${r.departman}</td>
+      <td style="padding:8px 12px;color:var(--bt-text-secondary-default,#737373);">${r.tarih}</td>
+      <td style="padding:8px 12px;">
+        <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:${r.durum === 'Aktif' ? 'var(--bt-text-success-default,#16a058)' : 'var(--bt-text-secondary-default,#737373)'};">
+          <span style="width:6px;height:6px;border-radius:50%;background:${r.durum === 'Aktif' ? 'var(--bt-text-success-default,#16a058)' : 'var(--bt-border-primary-default,#d4d4d4)'};flex-shrink:0;"></span>
+          ${r.durum}
+        </span>
+      </td>
+    </tr>`).join('')}
+  </tbody>
+</table>`;
+
+    const dtDrawerHtml = (panelId, overlayId) => `
+<div class="bt-win-overlay" id="${overlayId}" onclick="dexClosePanel('${panelId}','${overlayId}')"></div>
+<aside class="bt-window-sm bt-window-sm--md" id="${panelId}" hidden>
+  <div class="bt-window-sm__header">
+    <div class="bt-window-sm__header-left">
+      <div style="display:flex;gap:4px;flex-shrink:0;">
+        <button class="bt-window-sm__close" onclick="dexClosePanel('${panelId}','${overlayId}')">${CLOSE_ICON}</button>
+        <button class="bt-window-sm__close" id="${panelId}-maxbtn" onclick="dexToggleMaximize('${panelId}')">
+          <span class="bt-maxbtn-max">${MAX_ICON}</span>
+          <span class="bt-maxbtn-min" style="display:none;">${MIN_ICON}</span>
+        </button>
+      </div>
+      <span class="bt-window-sm__title">Kayıtlar</span>
+    </div>
+    <button class="bt-btn bt-btn--sm bt-btn--primary-solid">Yeni Ekle</button>
+  </div>
+  <div class="bt-window-sm__body" style="padding:0;">
+    <div class="bt-window-sm__content" style="overflow:auto;">
+      ${tableHtml}
+    </div>
+  </div>
+</aside>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Data Table Drawer bileşenine özgü CSS değerleri. Temel panel stilleri için bkz. <a href="#" onclick="navigate('components/nav-drawer');return false;">Drawer Overview</a>.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Body</td><td>Padding</td><td>—</td><td>0 (tablo kenara oturur)</td></tr>
+          <tr><td>Content Container</td><td>Padding</td><td>—</td><td>0</td></tr>
+          <tr><td>Content Container</td><td>Overflow</td><td>—</td><td>auto (yatay scroll desteği)</td></tr>
+          <tr><td>Table thead</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Table th</td><td>Color</td><td>${tk('--bt-text-secondary-default')}</td><td>#737373</td></tr>
+          <tr><td>Table tr (even)</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Table tr (odd)</td><td>Background</td><td>${tk('--bt-surface-primary-light')}</td><td>#fafafa</td></tr>
+          <tr><td>Table border</td><td>Border-bottom</td><td>${tk('--bt-border-primary-muted')}</td><td>1px solid #e6e6e6</td></tr>
+          <tr><td>Recommended size</td><td>Width</td><td>—</td><td>${tk('bt-window-sm--md')} (50vw) veya daha geniş</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Data Table Drawer farklı içerik yapılarıyla kullanılabilir.</p>
+      <h2>Yatay Scroll</h2>
+      <p>Tablo kolonu sayısı panel genişliğini aştığında ${tk('bt-window-sm__content')} üzerinde ${tk('overflow: auto')} ile yatay kaydırma aktif olur. Body ve Content Container padding'i <code>0</code> verilmelidir.</p>
+      <h2>Önerilen Boyut</h2>
+      <p>Tablo içeren drawer'lar için ${tk('bt-window-sm--md')} (50vw) minimum önerilen genişliktir. Çok kolonlu tablolarda ${tk('bt-window-sm--lg')} (66vw) veya maximize kullanılabilir.</p>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Data Table Drawer kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Body ve Content Container'a padding verme — tablo kenara oturmalı</li>
+        <li>Content Container'a ${tk('overflow: auto')} ekle (yatay scroll için)</li>
+        <li>Tablo içerikli drawer için ${tk('bt-window-sm--md')} veya daha geniş bir boyut seç</li>
+        <li>Header'da "Yeni Ekle" gibi tablo aksiyonlarını yöneten bir buton bulundur</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>İç tabloya sabit yükseklik verme — body scroll'u yönetir</li>
+        <li>Sm size'da çok kolonlu tablo kullanma — yatay scroll kullanıcı deneyimini bozar</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc">Data Table içeren Drawer deseni — liste görüntüleme, satır seçimi veya detay inceleme senaryolarında kullanılır. Tablo, ${tk('bt-window-sm__content')} içine sıfır padding ile oturtulur; yatay scroll için ${tk('overflow: auto')} uygulanır.</p>
+
+      ${registerPlayground({
+        id: 'pgd-drawer-dt',
+        variants: [{ key: 'default', label: 'With Data Table' }],
+        props: [],
+        preview: () => `
+          <div style="display:flex;align-items:center;justify-content:center;padding:48px;">
+            <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="dexOpenPanel('pgd-ddt-panel','pgd-ddt-ov')">Open Drawer</button>
+          </div>
+          ${dtDrawerHtml('pgd-ddt-panel', 'pgd-ddt-ov')}
+        `,
+        code: () => dtDrawerHtml('drawer-panel', 'drawer-overlay'),
+        css: () => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const lines = [
+            '/* Body — padding kaldırılır */',
+            '.bt-window-sm__body { padding: 0; }',
+            '',
+            '/* Content Container — kenardan kenara, yatay scroll */',
+            '.bt-window-sm__content {',
+            '  padding: 0;',
+            '  overflow: auto;',
+            '}',
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+    `};
+  },
+};
+
+// ─── Page Layout ──────────────────────────────────────────────────────────────
+PAGES_WEB['layout/page-layout'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'Regions'],
+  render(tab) {
+    const title = 'Page Layout';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const REGION_COLORS = {
+      1: '#0d4e97', 2: '#16a058', 3: '#64748b',
+      4: '#d97706', 5: '#7c3aed', 6: '#0891b2',
+    };
+    const badge = n => `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:${REGION_COLORS[n]};color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">${n}</span>`;
+
+    // Scaled wireframe diagram (1920×1080 → ~640×360, scale ≈ 0.33)
+    // Sidebar:40px Header:36px Content-padding:12px Toolbar:50px
+    const mockRows = Array(7).fill(0).map((_, i) =>
+      `<div style="height:20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;padding:0 6px;background:${i % 2 === 0 ? '#fff' : '#fafafa'};"><div style="flex:1;height:5px;background:#ebebeb;border-radius:2px;margin:0 4px;"></div><div style="flex:1;height:5px;background:#ebebeb;border-radius:2px;margin:0 4px;"></div><div style="flex:1;height:5px;background:#ebebeb;border-radius:2px;margin:0 4px;"></div><div style="flex:1;height:5px;background:#ebebeb;border-radius:2px;margin:0 4px;"></div></div>`
+    ).join('');
+
+    const diagram = `
+      <div style="position:relative;width:100%;max-width:640px;height:400px;border:1.5px solid var(--bt-border-primary-muted,#e6e6e6);border-radius:var(--bt-radius-md,6px);overflow:hidden;background:var(--bt-base-default,#fff);font-family:var(--sans);user-select:none;font-size:10px;">
+
+        <!-- ① Sidebar -->
+        <div style="position:absolute;left:0;top:0;width:40px;height:400px;background:#e8f0fb;border-right:1.5px solid #c5d9f5;z-index:2;">
+          <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:#0d4e97;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">1</div>
+        </div>
+
+        <!-- ② Page Header -->
+        <div style="position:absolute;left:40px;top:0;right:0;height:36px;background:#e8f5ee;border-bottom:1.5px solid #a8d5b8;z-index:2;display:flex;align-items:center;padding:0 8px;gap:6px;">
+          <div style="width:18px;height:18px;border-radius:50%;background:#16a058;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+          <span style="color:#16a058;font-weight:600;">Page Header</span>
+          <span style="color:#aaa;margin-left:2px;">h: 36px</span>
+          <span style="flex:1;"></span>
+          <span style="color:#888;font-style:italic;">Page Title Here</span>
+        </div>
+
+        <!-- ③ Container -->
+        <div style="position:absolute;left:40px;top:36px;right:0;bottom:0;background:#fafafa;">
+          <div style="position:absolute;top:5px;left:6px;width:18px;height:18px;border-radius:50%;background:#64748b;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:3;">3</div>
+          <span style="position:absolute;top:8px;left:30px;color:#64748b;font-weight:600;">Container</span>
+
+          <!-- ④ Content -->
+          <div style="position:absolute;inset:12px;background:#fffbeb;border:1.5px dashed #f59e0b;border-radius:4px;">
+            <div style="position:absolute;top:4px;left:4px;width:18px;height:18px;border-radius:50%;background:#d97706;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:4;">4</div>
+            <span style="position:absolute;top:7px;left:27px;color:#d97706;font-weight:600;">Content</span>
+            <span style="position:absolute;top:7px;left:80px;color:#aaa;">padding: 16px</span>
+
+            <!-- ⑤ Toolbar -->
+            <div style="position:absolute;left:0;right:0;top:0;height:50px;background:#f3e8ff;border-bottom:1.5px solid #c084fc;border-radius:4px 4px 0 0;overflow:hidden;">
+              <div style="position:absolute;top:4px;right:6px;width:18px;height:18px;border-radius:50%;background:#7c3aed;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">5</div>
+              <div style="position:absolute;bottom:9px;left:10px;display:flex;gap:5px;">
+                <div style="width:38px;height:16px;border:1px solid #7c3aed;border-radius:3px;background:rgba(124,58,237,0.15);"></div>
+                <div style="width:38px;height:16px;border:1px solid #ccc;border-radius:3px;background:#fff;"></div>
+                <div style="width:38px;height:16px;border:1px solid #ccc;border-radius:3px;background:#fff;"></div>
+                <div style="width:38px;height:16px;border:1px solid #ccc;border-radius:3px;background:#fff;"></div>
+              </div>
+              <div style="position:absolute;bottom:9px;right:28px;width:90px;height:16px;border:1px solid #ccc;border-radius:3px;background:#fff;"></div>
+            </div>
+
+            <!-- ⑥ Data Table -->
+            <div style="position:absolute;left:0;right:0;top:50px;bottom:0;border-radius:0 0 4px 4px;overflow:hidden;background:#fff;">
+              <div style="position:absolute;top:4px;left:4px;width:18px;height:18px;border-radius:50%;background:#0891b2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:5;">6</div>
+              <div style="height:24px;border-bottom:1px solid #e0e0e0;background:#f5f5f5;display:flex;align-items:center;padding:0 6px;">
+                <div style="flex:1;height:6px;background:#d0d0d0;border-radius:2px;margin:0 4px;"></div>
+                <div style="flex:1;height:6px;background:#d0d0d0;border-radius:2px;margin:0 4px;"></div>
+                <div style="flex:1;height:6px;background:#d0d0d0;border-radius:2px;margin:0 4px;"></div>
+                <div style="flex:1;height:6px;background:#d0d0d0;border-radius:2px;margin:0 4px;"></div>
+              </div>
+              ${mockRows}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend cards -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;max-width:640px;">
+        ${[
+          [1, 'Sidebar',     'Hub Sidebar bileşeni · 48px (collapsed) / 240px (expanded)'],
+          [2, 'Page Header', 'Sayfa başlığı · h: 36px · padding-left: 16px'],
+          [3, 'Container',   'Sidebar sonrası ana alan, header altından başlar'],
+          [4, 'Content',     'İç container · padding: 16px (tüm yönler)'],
+          [5, 'Toolbar',     'Aksiyon butonları (sol) + SearchBox (sağ) · h: 52px'],
+          [6, 'Data Table',  'Veri tablosu · Toolbar altından başlar, kalan alanı doldurur'],
+        ].map(([n, label, desc]) => `
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:10px;border:1px solid var(--bt-border-primary-muted,#e6e6e6);border-radius:var(--bt-radius-sm,4px);">
+            ${badge(n)}
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--bt-text-primary-default,#1a1a1a);">${label}</div>
+              <div style="font-size:11px;color:var(--bt-text-primary-emphasis,#727272);margin-top:2px;">${desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Page Layout yapısını oluşturan bölgelerin boyut ve spacing değerleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Bölge</th><th>Özellik</th><th>Token</th><th>Değer</th></tr></thead>
+        <tbody>
+          <tr><td>${badge(1)} Sidebar (collapsed)</td><td>Width</td><td>—</td><td>48px</td></tr>
+          <tr><td>${badge(1)} Sidebar (expanded)</td><td>Width</td><td>—</td><td>240px</td></tr>
+          <tr><td>${badge(2)} Page Header</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>${badge(2)} Page Header · Title</td><td>Padding-left</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>${badge(4)} Content</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px (tüm yönler)</td></tr>
+          <tr><td>${badge(5)} Toolbar</td><td>Height</td><td>—</td><td>52px (1px alt border dahil)</td></tr>
+          <tr><td>${badge(5)} Toolbar · Buton gap</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>${badge(5)} Toolbar · Buton</td><td>Size class</td><td>—</td><td>${tk('bt-btn--sm')} (28px height)</td></tr>
+          <tr><td>${badge(5)} Toolbar · SearchBox</td><td>Width</td><td>—</td><td>320px</td></tr>
+          <tr><td>${badge(6)} Data Table</td><td>Position</td><td>—</td><td>Toolbar altından başlar, kalan alanı doldurur (flex: 1 veya height: 100%)</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Page Layout'un farklı durum varyasyonları.</p>
+      <h2>Sidebar Expanded</h2>
+      <p>Kullanıcı sidebar'ı genişlettiğinde Content bölgesi daralır; diğer tüm bölgeler aynı kalır. Sidebar genişliği 48px (collapsed) → 240px (expanded). Geçiş ${tk('transition: width 200ms ease')} ile yumuşatılır.</p>
+      <h2>With Window Panel (Drawer)</h2>
+      <p>Toolbar'daki bir aksiyon butonu tetiklendiğinde, ${tk('bt-window-sm')} bileşeni viewport'un sağ kenarından <strong>33vw</strong> (ekranın ⅓'ü) genişliğinde açılır. Panel Data Table'ın üzerine katman olarak gelir — layout kaymasına neden olmaz. ${tk('bt-win-overlay')} (${tk('position:fixed;inset:0;z-index:999')}) arka planı kapatır, panele tıklamak dışında herhangi bir yere tıklamak paneli kapatır.</p>
+      <p>Bkz. <a href="#" onclick="navigate('components/nav-drawer');return false;">Navigation Drawer</a> bileşeni ve ${tk('dexOpenPanel(panelId, overlayId)')} / ${tk('dexClosePanel(panelId, overlayId)')} fonksiyonları.</p>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Page Layout kullanım kılavuzu.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Her sayfada aynı bölge hiyerarşisini koru: Sidebar → Header → Container → Content → Toolbar + Data Table</li>
+        <li>Toolbar'da primary aksiyonu en solda, SearchBox'ı en sağda konumlandır</li>
+        <li>Detay/form ekranlarını açmak için sayfa değiştirmek yerine ${tk('bt-window-sm')} drawer kullan</li>
+        <li>Content bölgesine her yönden 16px padding uygula</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Toolbar'a 5'ten fazla aksiyon butonu koyma — taşan butonları bir overflow menüsüne al</li>
+        <li>Sidebar dışına global navigasyon öğesi yerleştirme</li>
+        <li>Header yüksekliğini değiştirme — sabit 36px'dir</li>
+        <li>Content padding'ini kaldırma veya farklı bir değere çekme</li>
+      </ul>
+    `};
+
+    // Overview
+    return { title, html: `
+      <p class="page-desc"><strong>Page Layout</strong>, Bentaş uygulamalarının tüm sayfalarında kullanılan standart bölge hiyerarşisini tanımlar. Solda <strong>Sidebar</strong>, üstte <strong>Page Header</strong>, geri kalan alanda sırasıyla <strong>Container → Content → Toolbar + Data Table</strong> yapısı her sayfada sabittir.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      ${diagram}
+
+      <h2 id="Regions" style="margin-top:32px;">Regions</h2>
+      <table class="token-table" style="margin-top:12px;">
+        <thead><tr><th>#</th><th>Bölge</th><th>Component</th><th>Boyut</th></tr></thead>
+        <tbody>
+          <tr><td>${badge(1)}</td><td>Sidebar</td><td>${tk('Hub Sidebar')}</td><td>48px (collapsed) · 240px (expanded)</td></tr>
+          <tr><td>${badge(2)}</td><td>Page Header</td><td>—</td><td>h: 36px · padding-left: 16px</td></tr>
+          <tr><td>${badge(3)}</td><td>Container</td><td>—</td><td>Sidebar sonrası kalan genişlik × header altından kalan yükseklik</td></tr>
+          <tr><td>${badge(4)}</td><td>Content</td><td>—</td><td>Padding: 16px (tüm yönler)</td></tr>
+          <tr><td>${badge(5)}</td><td>Toolbar</td><td>${tk('Data Table Toolbar')}</td><td>h: 52px · butonlar sol · SearchBox sağ (320px)</td></tr>
+          <tr><td>${badge(6)}</td><td>Data Table</td><td>${tk('Data Table')}</td><td>Toolbar altından başlar, kalan alanı doldurur</td></tr>
         </tbody>
       </table>
     `};

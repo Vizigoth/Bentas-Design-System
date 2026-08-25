@@ -78,18 +78,18 @@ function renderSidebar() {
   const el = document.getElementById('sidebar-nav');
 
   function renderItem(item, depth) {
+    const depthCls = depth === 0 ? 'nav-item' : depth === 1 ? 'nav-child' : depth === 2 ? 'nav-grandchild' : 'nav-great-grandchild';
+
     if (!item.children) {
       // Leaf
-      const cls = depth === 0 ? 'nav-item' : depth === 1 ? 'nav-child' : 'nav-grandchild';
-      return `<div class="${cls} ${item.id === currentId ? 'active' : ''}"
+      return `<div class="${depthCls} ${item.id === currentId ? 'active' : ''}"
                    onclick="navigate('${item.id}')">${item.label}</div>`;
     }
 
     // Clickable parent with always-visible children (id + children, no chevron)
     if (item.id) {
-      const cls = depth === 0 ? 'nav-item' : depth === 1 ? 'nav-child' : 'nav-grandchild';
       return `
-        <div class="${cls} ${item.id === currentId ? 'active' : ''}" onclick="navigate('${item.id}')">${item.label}</div>
+        <div class="${depthCls} ${item.id === currentId ? 'active' : ''}" onclick="navigate('${item.id}')">${item.label}</div>
         ${item.children.map(c => renderItem(c, depth + 1)).join('')}
       `;
     }
@@ -103,7 +103,7 @@ function renderSidebar() {
     }
 
     const isOpen   = openGroups.has(item.label);
-    const childCls = depth === 0 ? 'nav-item' : 'nav-child';
+    const childCls = depthCls;
     const kidCls   = depth === 0 ? 'nav-children' : 'nav-grandchildren';
 
     return `
