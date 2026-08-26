@@ -1129,35 +1129,63 @@ a { color: inherit; text-decoration: none; }
 .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
 .sidebar-nav::-webkit-scrollbar-thumb { background: var(--bt-border-muted); border-radius: 2px; }
 
-/* ── Nav item — 36px, rounded active/hover (screenshot 2 style) ── */
-.nav-item {
+/* ── Sidebar nav — Figma 985:115153'ten birebir. İki ayrı rol, tek class'la
+   birbirinden net ayrılıyor:
+   1) .nav-item-group — grup trigger'ı (Foundations/Components/Buttons —
+      derinlik farketmez, hepsi aynı class/stil). Düz, pill yok, sadece
+      chevron döner.
+   2) Leaf link (Welcome, Checkbox, Dialog gibi gerçek sayfa linkleri,
+      depth class'ları nav-item/nav-child/nav-grandchild/nav-great-grandchild) —
+      TOC Link ile AYNI pill deseni (hover: subtle bg, active: brand-subtle
+      bg + brand text), grup içindeyse .nav-group-line/.nav-group-indicator
+      ile hizalı hareketli bir accent segment de eklenir. */
+.nav-item-group {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--bt-space-md, 8px) var(--bt-space-lg, 10px);
-  border-radius: var(--bt-radius-lg, 8px);
-  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
-  color: var(--bt-text-default);
+  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
+  font: var(--bt-text-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-primary-default);
   cursor: pointer;
   user-select: none;
-  transition: background 100ms;
-  margin-bottom: 1px;
 }
 
-.nav-item:hover { background: var(--bt-surface-subtle); }
-
-.nav-item.active {
-  background: var(--bt-surface-brand-light);
+.nav-item, .nav-child, .nav-grandchild, .nav-great-grandchild {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--bt-space-md, 8px);
+  border-radius: var(--bt-radius-md, 6px);
+  font: var(--bt-text-sm-regular, 400 14px/16px var(--font));
+  color: var(--bt-text-primary-default);
+  cursor: pointer;
+  user-select: none;
+  transition: background 100ms, color 100ms;
+}
+.nav-item:hover, .nav-child:hover, .nav-grandchild:hover, .nav-great-grandchild:hover {
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
+}
+/* Nested leaf link'ler (.nav-item hariç) — grup trigger'ından (.nav-item-group)
+   ayrışsın diye ekstra sol padding, girinti hissini güçlendiriyor. */
+.nav-child, .nav-grandchild, .nav-great-grandchild {
+  padding-left: var(--bt-space-xl, 12px);
+}
+.nav-item.active, .nav-child.active, .nav-grandchild.active, .nav-great-grandchild.active {
+  background: var(--bt-surface-brand-subtle, #e2edfc);
   color: var(--bt-text-brand);
-  font-weight: 600;
+  font-weight: 500;
 }
 
-/* Chevron */
+/* Chevron — Figma "Button" (Base Button 2px padding + 16px icon = 20×20) */
+.nav-chevron-slot {
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--bt-space-2xs, 2px);
+  border-radius: var(--bt-radius-sm, 4px);
+  flex-shrink: 0;
+}
 .nav-chevron {
-  width: 14px; height: 14px;
   color: var(--bt-icon-primary-heavy);
   transition: transform 180ms ease;
-  flex-shrink: 0;
 }
 .nav-chevron.open { transform: rotate(90deg); }
 
@@ -1174,78 +1202,57 @@ a { color: inherit; text-decoration: none; }
 
 .nav-group-inner { min-height: 0; overflow: hidden; }
 
-/* Level-1 child — 36px, rounded */
-.nav-child {
+/* Grup içeriği — sabit ince çizgi + aktif öğeye hizalanan hareketli accent
+   segment (bkz. Figma "Indıcator Line" / "Line 305", TOC'taki .toc-line ile
+   birebir aynı desen). Her grubun kendi çizgisi var, iç içe gruplarda
+   (Buttons/Card gibi) girinti kendiliğinden bileşir. */
+.nav-group-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--bt-space-md, 8px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-3xl, 20px);
-  border-radius: var(--bt-radius-lg, 8px);
-  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
-  color: var(--bt-text-primary-default);
-  cursor: pointer;
-  transition: background 100ms, color 100ms;
-  margin-bottom: 1px;
+  gap: var(--bt-space-2xl, 16px);
 }
-
-.nav-child:hover { background: var(--bt-surface-subtle); color: var(--bt-text-default); }
-
-.nav-child.active {
-  background: var(--bt-surface-brand-light);
-  color: var(--bt-text-brand);
-  font-weight: 600;
+.nav-group-line {
+  position: relative;
+  width: 3px;
+  flex-shrink: 0;
+  align-self: stretch;
 }
-
-/* Level-2 grandchild — 36px, rounded */
-.nav-grandchild {
+.nav-group-line::before {
+  content: '';
+  position: absolute;
+  left: 1px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--bt-border-primary-default, #d4d4d4);
+}
+.nav-group-indicator {
+  position: absolute;
+  left: 0; top: 0;
+  width: 3px; height: 32px;
+  background: var(--bt-text-brand-default, #0d4e97);
+  border-radius: var(--bt-radius-xs, 2px);
+  opacity: 0;
+  transition: top 150ms ease, height 150ms ease, opacity 150ms ease;
+}
+.nav-group-list {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--bt-space-md, 8px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-6xl, 32px);
-  border-radius: var(--bt-radius-lg, 8px);
-  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
-  color: var(--bt-text-primary-default);
-  cursor: pointer;
-  transition: background 100ms, color 100ms;
-  margin-bottom: 1px;
+  flex-direction: column;
+  gap: var(--bt-space-xs, 4px);
+}
+/* Çizgisiz grup (bkz. renderItem "Components") — .nav-group-row/.nav-group-line
+   hiç yok, ama kardeş gruplarla (Foundations vb.) aynı girintide kalması için
+   line(3px)+gap(16px)'in bıraktığı 19px'lik boşluk padding-left ile korunuyor. */
+.nav-group-list--flush {
+  padding-left: 19px;
 }
 
-.nav-grandchild:hover { background: var(--bt-surface-subtle); color: var(--bt-text-default); }
-
-.nav-grandchild.active {
-  background: var(--bt-surface-brand-light);
-  color: var(--bt-text-brand);
-  font-weight: 600;
-}
-
-/* Level-3 great-grandchild — deeper indent */
-.nav-great-grandchild {
-  display: flex;
-  align-items: center;
-  padding: var(--bt-space-md, 8px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-8xl, 40px);
-  border-radius: var(--bt-radius-lg, 8px);
-  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
-  color: var(--bt-text-primary-default);
-  cursor: pointer;
-  transition: background 100ms, color 100ms;
-  margin-bottom: 1px;
-}
-.nav-great-grandchild:hover { background: var(--bt-surface-subtle); color: var(--bt-text-default); }
-.nav-great-grandchild.active {
-  background: var(--bt-surface-brand-light);
-  color: var(--bt-text-brand);
-  font-weight: 600;
-}
-
-/* Static (non-collapsible) nav section label — same look as nav-child, no chevron/cursor */
+/* Static (non-collapsible) nav section label — .nav-item-group ile aynı düz görünüm */
 .nav-section-label {
   display: flex;
   align-items: center;
-  padding: var(--bt-space-md, 8px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-3xl, 20px);
-  border-radius: var(--bt-radius-lg, 8px);
-  font: var(--bt-text-xs-semibold, 600 12px/16px var(--font));
+  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
+  font: var(--bt-text-sm-medium, 500 14px/16px var(--font));
   color: var(--bt-text-primary-default);
-  margin-bottom: 1px;
   user-select: none;
 }
 
@@ -1365,6 +1372,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 .page-title {
+  /* TOC'taki "Overview" linkine tıklayınca sticky .main-header (68px) başlığı
+     örtmesin diye — scrollIntoView({block:'start'}) hedefi viewport'un tam
+     tepesine (y:0) koyar, header de orayı kapatır. */
+  scroll-margin-top: calc(var(--header-h) + 16px);
   font-size: 26px;
   font-weight: 700;
   color: var(--bt-text-default);
@@ -1380,6 +1391,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 .content h2 {
+  /* Aynı sticky-header telafisi — TOC linkleri bu h2'lerin id'lerini hedefliyor */
+  scroll-margin-top: calc(var(--header-h) + 16px);
   font-size: 19px;
   font-weight: 700;
   color: var(--bt-text-default);
@@ -1390,6 +1403,7 @@ a { color: inherit; text-decoration: none; }
 .content h2:first-child { margin-top: 0; }
 
 .content h3 {
+  scroll-margin-top: calc(var(--header-h) + 16px);
   font-size: 14px;
   font-weight: 600;
   color: var(--bt-text-default);
@@ -1547,8 +1561,8 @@ code {
   background: var(--bt-surface-light);
   color: var(--bt-text-default);
   font-family: var(--mono);
-  font-size: 12.5px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.75;
   overflow-x: auto;
   white-space: pre;
 }
@@ -1560,6 +1574,59 @@ code {
   height: 32px;
   background: var(--bt-surface-default);
   border: 1px solid var(--bt-border-muted);
+}
+
+/* ── Syntax highlighting (Prism.js tokenizer, kendi renk temamız) ──
+   Prism sadece token'ları <span class="token ..."> ile işaretliyor, renkleri
+   kendi --bt-* token'larımızdan veriyoruz — Prism'in varsayılan tema CSS'i
+   yüklenmiyor. */
+/* Genel prose `code{}` pill stili (satır ~1405) burada sarmalanan <code>'ya
+   binmesin diye sıfırlanıyor — bu, Prism'in tokenize ettiği blok kod, inline
+   prose kodu değil. */
+.example-viewer-code pre code,
+pre.code-block code {
+  background: none; border: none; padding: 0; border-radius: 0;
+  font-size: inherit; color: inherit; font-family: inherit;
+}
+.token.tag, .token.selector           { color: var(--bt-text-brand-solid); font-weight: 400; }
+.token.attr-name, .token.property     { color: var(--bt-text-warning-solid); }
+.token.attr-value, .token.string,
+.token.attr-value .token.punctuation  { color: var(--bt-text-success-solid); }
+.token.punctuation                    { color: var(--bt-text-strong); }
+.token.comment                        { color: var(--bt-text-muted); font-style: italic; }
+.token.atrule, .token.important,
+.token.function                       { color: var(--bt-text-error-solid); }
+.token.doctype, .token.entity, .token.url { color: var(--bt-text-default); }
+
+/* Satır numaraları (Prism line-numbers plugin) — gutter rengi/genişliği
+   kendi token'larımızdan, plugin'in varsayılan CSS'i yüklenmedi. */
+.example-viewer-code pre.line-numbers,
+pre.code-block.line-numbers {
+  position: relative;
+  padding-left: 3.6em;
+}
+.line-numbers .line-numbers-rows {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3.6em;
+  padding: 18px 0;
+  border-right: 1px solid var(--bt-border-muted);
+  pointer-events: none;
+  user-select: none;
+}
+.line-numbers-rows > span {
+  display: block;
+  counter-increment: linenumber;
+}
+.line-numbers-rows > span::before {
+  content: counter(linenumber);
+  display: block;
+  padding-right: 0.9em;
+  text-align: right;
+  color: var(--bt-text-muted);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
 }
 
 /* ── Playground toolbar (variant select · measure · viewport · isolate) ── */
@@ -2269,57 +2336,91 @@ code {
 
 /* ── TOC Column (right panel, aligned to tab bar top) ───────── */
 .toc-col {
+  display: flex;
+  gap: var(--bt-space-2xl, 16px);
   width: 220px;
   flex-shrink: 0;
-  border-left: 1px solid var(--bt-border-muted);
   position: sticky;
   top: var(--header-h);
   height: calc(100vh - var(--header-h));
   overflow-y: auto;
   align-self: flex-start;
+  padding: 20px 16px 20px 0;
+}
+
+/* Tam-yükseklik ince (1px) bir taban çizgisi (Figma 981:115000, renk
+   --bt-border-primary-default) + üzerine aktif TOC öğesinin hizasında
+   beliren, hareketli, daha kalın (3px) bir accent segment (.toc-indicator). */
+.toc-line {
+  position: relative;
+  width: 3px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+.toc-line::before {
+  content: '';
+  position: absolute;
+  left: 1px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--bt-border-primary-default, #d4d4d4);
+}
+.toc-indicator {
+  position: absolute;
+  left: 0; top: 0;
+  width: 3px; height: 32px;
+  background: var(--bt-text-brand-default, #0d4e97);
+  border-radius: var(--bt-radius-xs, 2px);
+  opacity: 0;
+  transition: top 150ms ease, height 150ms ease, opacity 150ms ease;
 }
 
 #toc {
-  padding: 20px 16px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-xs, 4px);
 }
 
 .toc-label {
-  display: block;
-  font: var(--bt-label-xs-medium, 500 12px/16px var(--font));
-  color: var(--bt-text-primary-default);
-  padding: 0 var(--bt-space-lg, 10px) var(--bt-space-lg, 10px);
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-xs, 4px);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+  color: var(--bt-text-primary-emphasis, #727272);
+  padding: var(--bt-space-md, 8px);
+  text-transform: uppercase;
   letter-spacing: 0.02em;
 }
+.toc-label svg { flex-shrink: 0; }
 
 .toc-group-label {
   display: block;
   font: var(--bt-label-xs-medium, 500 12px/16px var(--font));
   color: var(--bt-text-primary-default);
-  padding: var(--bt-space-lg, 10px) var(--bt-space-lg, 10px) var(--bt-space-xs, 4px);
+  padding: var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-xs, 4px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .toc-link {
   display: block;
-  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
-  color: var(--bt-text-primary-emphasis, #727272);
-  padding: var(--bt-space-md, 8px) var(--bt-space-lg, 10px);
+  font: var(--bt-text-sm-regular, 400 14px/16px var(--font));
+  color: var(--bt-text-primary-default);
+  padding: var(--bt-space-md, 8px);
   border-radius: var(--bt-radius-md, 6px);
   cursor: pointer;
   transition: color 100ms, background 100ms;
-  margin-bottom: 1px;
 }
 
 .toc-link:hover {
-  color: var(--bt-text-default);
-  background: var(--bt-surface-subtle);
+  background: var(--bt-surface-primary-subtle, #f5f5f5);
 }
 
 .toc-link.active {
-  color: var(--bt-text-brand);
-  font-weight: 600;
-  background: var(--bt-surface-brand-light);
+  font: var(--bt-text-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-brand-default, #0d4e97);
+  background: var(--bt-surface-brand-subtle, #e2edfc);
 }
 
 .toc-link--sub {
@@ -4295,7 +4396,7 @@ code {
 }
 .dex-overlay.is-open { opacity: 1; pointer-events: all; cursor: pointer; }
 
-/* ── bt-win-overlay — tam sayfa overlay (bt-window-sm ile kullanılır) ── */
+/* ── bt-win-overlay — tam sayfa overlay (bt-window ile kullanılır) ── */
 .bt-win-overlay {
   position: fixed; inset: 0; z-index: 999;
   background: rgba(0,0,0,0.20);
@@ -4306,61 +4407,114 @@ code {
 }
 .bt-win-overlay.is-open { opacity: 1; pointer-events: all; cursor: pointer; }
 
-/* ── bt-window-sm — ekranın 1/3'ü genişliğinde sağdan kayan panel ── */
-.bt-window-sm {
+/* ── bt-window — sağdan kayan panel, genişlik bt-window--{sm|md|lg|xl} modifier'ından gelir ── */
+.bt-window {
   position: fixed; top: 0; right: 0; bottom: 0;
-  width: 33vw;
   background: var(--bt-surface-primary-light);
   display: flex; flex-direction: column;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), width 0.5s cubic-bezier(0.4,0,0.2,1);
   z-index: 1000;
 }
-.bt-window-sm.is-open { transform: translateX(0); }
-.bt-window-sm.is-maximized { width: 100%; }
-.bt-window-sm--md  { width: 50vw; }
-.bt-window-sm--lg  { width: 66vw; }
-.bt-window-sm--xl  { width: 100%; }
-.bt-window-sm--xl.is-minimized { width: 50vw; }
+.bt-window.is-open { transform: translateX(0); }
+.bt-window.is-maximized { width: 100%; }
+.bt-window--sm  { width: 33vw; }
+.bt-window--md  { width: 50vw; }
+.bt-window--lg  { width: 66vw; }
+.bt-window--xl  { width: 100%; }
+.bt-window--xl.is-minimized { width: 50vw; }
 
-/* Header — 40px, [×+başlık sol] [Kaydet sağ], footer yok */
-.bt-window-sm__header {
-  height: 40px; flex-shrink: 0;
+/* Header — [×+başlık sol] [Kaydet sağ], footer yok. Yükseklik (36px) sabit
+   değil — var(--bt-space-xs) dikey padding + 28px'lik içerik (Window Controls
+   butonları) toplamından kendiliğinden çıkıyor (bkz. Figma 979:114927). */
+.bt-window__header {
+  flex-shrink: 0;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--bt-space-xl, 16px);
+  padding: var(--bt-space-xs, 4px) var(--bt-space-xl, 12px);
   background: var(--bt-surface-primary-default);
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  box-shadow: 0 2px 3px rgba(0,0,0,0.08);
+  /* border-bottom DEĞİL — border, height:auto'da kutunun toplam yüksekliğine
+     eklenir (36px yerine 37px çıkar). box-shadow layout'u etkilemeden aynı
+     çizgiyi çizer, Figma'daki stroke'un auto-layout boyutunu etkilememesiyle
+     birebir eşleşir. */
+  box-shadow: inset 0 -1px 0 0 var(--bt-border-primary-default);
 }
-.bt-window-sm__header-left { display: flex; align-items: center; gap: 8px; }
-.bt-window-sm__title { font-size: 16px; font-weight: 400; font-family: var(--title); color: var(--bt-text-primary-default); }
-.bt-window-sm__close {
+.bt-window__header-left { display: flex; align-items: center; gap: var(--bt-space-md, 8px); }
+/* Window Controls — sol taraf, pencerenin kendisiyle ilgili meta-seviye butonlar (close/resize) */
+.bt-window__controls { display: flex; align-items: center; gap: var(--bt-space-xs, 4px); }
+/* Header Actions — sağ taraf, drawer içeriğiyle ilgili task-seviye butonlar (Kaydet/Uygula vb.) */
+.bt-window__header-actions { display: flex; align-items: center; gap: var(--bt-space-xs, 4px); }
+.bt-window__title { font: var(--bt-title-md-regular, 400 16px/24px var(--font)); color: var(--bt-text-primary-default); }
+/* Header'daki kapat/maximize/more butonları — bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon
+   reuse ediliyor, ama kare boyut (28×28) burada explicit garanti altına alınıyor —
+   --btn-py padding formülüne bırakılmıyor (iç SVG/span sarmalayıcıların satır-yüksekliği
+   kaynaklı kare bozan sapmalara karşı). */
+.bt-window__controls .bt-btn--icon,
+.bt-window__header-actions .bt-btn--icon {
+  width: 28px; height: 28px;
+  box-sizing: border-box;
+}
+/* Icon slot — Figma'daki "Icon/placeholder2" carrier'ın karşılığı: butonun
+   içeriği her zaman 16×16'lık bu sabit alanda ortalanır, ikonun kendi boyutu
+   (X=16, maximize/minimize=14, more=16) bu alanın içinde flex ile merkezlenir. */
+.bt-window__icon-slot,
+.bt-maxbtn-max, .bt-maxbtn-min {
   display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; padding: 6px;
-  border: none; background: none; border-radius: var(--bt-radius-sm);
-  cursor: pointer; color: var(--bt-icon-primary-strong, #727272);
-  transition: background 0.15s;
+  width: 16px; height: 16px;
 }
-.bt-window-sm__close:hover { background: var(--bt-surface-primary-subtle); }
-.bt-window-sm__close svg { width: 16px; height: 16px; display: block; }
+.bt-window__controls .bt-btn--icon svg,
+.bt-window__header-actions .bt-btn--icon svg {
+  display: block;
+}
+
+/* — bt-window__actions-menu — Header Actions'daki "more" butonunun açtığı dropdown.
+   Görünüm BİLİNÇLİ olarak Data Table'ın .bt-grid__menu-list/.bt-grid__menu-item ile
+   aynı token/ölçülere sahip ama sınıfları PAYLAŞMIYOR — kendi bağımsız kuralları var
+   (aynı gerekçe için bkz. .bt-grid__menu yorumu: birinde yapılacak değişiklik
+   diğerini yanlışlıkla etkilemesin). Portal + position:fixed deseni de aynı sebeple
+   birebir tekrarlanıyor. */
+.bt-window__actions-menu { position: relative; display: inline-flex; }
+.bt-window__actions-menu-list {
+  display: none;
+  position: fixed;
+  top: 0; right: 0;
+  z-index: 1200;
+  min-width: 160px;
+  padding: 0; margin: 0;
+  list-style: none;
+  background: var(--bt-surface-primary-default, #ffffff);
+  border-radius: var(--bt-radius-sm, 4px);
+  overflow: hidden;
+  box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
+  box-sizing: border-box;
+}
+.bt-window__actions-menu-item {
+  display: flex; align-items: center;
+  gap: var(--bt-space-xs, 4px);
+  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
+  cursor: pointer;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+}
+.bt-window__actions-menu-item:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
 
 /* Body — açık arka plan dolgusu */
-.bt-window-sm__body {
+.bt-window__body {
   flex: 1; min-height: 0;
-  padding: 16px;
+  padding: var(--bt-space-2xl, 16px);
   background: var(--bt-surface-primary-light);
   display: flex; flex-direction: column;
   overflow-y: auto;
 }
 
 /* Inner card — formun yaşadığı beyaz alan */
-.bt-window-sm__content {
+.bt-window__panel {
   flex: 1;
   background: var(--bt-surface-primary-default);
   border: 1px solid var(--bt-border-primary-default);
   border-radius: var(--bt-radius-sm);
-  padding: 20px;
-  display: flex; flex-direction: column; gap: 16px;
+  padding: var(--bt-space-2xl, 16px);
+  display: flex; flex-direction: column; gap: var(--bt-space-2xl, 16px);
   overflow-y: auto;
 }
 

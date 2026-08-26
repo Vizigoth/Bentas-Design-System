@@ -102,28 +102,67 @@ function renderSidebar() {
       `;
     }
 
-    const isOpen   = openGroups.has(item.label);
-    const childCls = depthCls;
-    const kidCls   = depth === 0 ? 'nav-children' : 'nav-grandchildren';
+    const isOpen = openGroups.has(item.label);
+    const kidCls = depth === 0 ? 'nav-children' : 'nav-grandchildren';
+    // Components'ın altı neredeyse tamamen alt-gruplardan oluşuyor (Buttons/
+    // Card/Data Table/Inputs — her biri zaten kendi çizgisini taşıyor), üstüne
+    // bir de Components'ın kendi çizgisi eklenince görünüm karışıyordu —
+    // kullanıcı isteğiyle sadece bu grup için çizgi/indicator kaldırıldı.
+    const showLine = item.label !== 'Components';
+    const listItems = item.children.map(c => `<div class="nav-group-item">${renderItem(c, depth+1)}</div>`).join('');
 
+    // Grup içi çocuklar: sabit ince çizgi + aktif öğenin hizasına kayan accent
+    // segment (bkz. Figma 985:115153 "Indıcator Line"/"Line 305" — TOC'taki
+    // .toc-line/.toc-indicator ile aynı desen, her grup kendi çizgisine sahip).
+    // nav-item-group — derinlikten bağımsız TEK class, her seviyedeki grup
+    // trigger'ı (Foundations/Components/Buttons hepsi) birebir aynı stili
+    // paylaşır (bkz. HISTORY.md — "Buttons'ı Components gibi stille").
     return `
-      <div class="${childCls} group-trigger" onclick="toggleGroup('${item.label}')">
+      <div class="nav-item-group" onclick="toggleGroup('${item.label}')">
         <span>${item.label}</span>
-        <svg class="nav-chevron ${isOpen ? 'open' : ''}" data-group-chevron="${item.label}" width="12" height="12"
-             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-        </svg>
+        <span class="nav-chevron-slot">
+          <svg class="nav-chevron ${isOpen ? 'open' : ''}" data-group-chevron="${item.label}" width="16" height="16"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 5 7 7-7 7"/>
+          </svg>
+        </span>
       </div>
       <div class="${kidCls} ${isOpen ? 'open' : ''}" data-group-panel="${item.label}">
         <div class="nav-group-inner">
-          ${item.children.map(c => renderItem(c, depth+1)).join('')}
+          ${showLine ? `
+          <div class="nav-group-row">
+            <div class="nav-group-line"><div class="nav-group-indicator" data-group-indicator="${item.label}"></div></div>
+            <div class="nav-group-list">${listItems}</div>
+          </div>` : `
+          <div class="nav-group-list nav-group-list--flush">${listItems}</div>`}
         </div>
       </div>
     `;
   }
 
   el.innerHTML = getCurrentNav().map(item => renderItem(item, 0)).join('');
+  requestAnimationFrame(updateNavIndicators);
 }
+
+// Her grup kendi .nav-group-indicator'ına sahip — sadece aktif öğeyi
+// barındıran grubunki görünür/hizalı olur, diğerleri opacity:0 kalır.
+function updateNavIndicators() {
+  document.querySelectorAll('[data-group-indicator]').forEach(indicator => {
+    const line = indicator.parentElement;
+    const list = line ? line.nextElementSibling : null;
+    // .nav-group-item wrapper'ı sayesinde bu SADECE bu grubun doğrudan
+    // çocuklarını yakalar — iç içe bir alt-grubun (Buttons/Card gibi) kendi
+    // aktif öğesini yanlışlıkla üst grubun indicator'ına bağlamaz.
+    const activeChild = list ? list.querySelector(':scope > .nav-group-item > .active') : null;
+    if (!activeChild) { indicator.style.opacity = '0'; return; }
+    const lineRect  = line.getBoundingClientRect();
+    const childRect = activeChild.getBoundingClientRect();
+    indicator.style.top     = (childRect.top - lineRect.top) + 'px';
+    indicator.style.height  = childRect.height + 'px';
+    indicator.style.opacity = '1';
+  });
+}
+window.updateNavIndicators = updateNavIndicators;
 
 window.toggleGroup = function(label) {
   const wasOpen = openGroups.has(label);
@@ -133,6 +172,9 @@ window.toggleGroup = function(label) {
   const chevron = document.querySelector(`[data-group-chevron="${label}"]`);
   if (panel)   panel.classList.toggle('open', !wasOpen);
   if (chevron) chevron.classList.toggle('open', !wasOpen);
+  // Grid-rows expand/collapse animasyonu (220ms) bitip gerçek geometri
+  // oturduktan sonra indicator'ları tazele.
+  setTimeout(updateNavIndicators, 230);
 };
 
 // ── Tabs ────────────────────────────────────────────────────
@@ -185,6 +227,32 @@ function applyColorSwatches(root) {
   });
 }
 
+// ── Syntax highlighting (Code/CSS tab'ları) ────────────────────
+// Prism.js sadece tokenize eder, renkler styles.css'teki --bt-* token
+// eşlemesinden gelir. Playground'un Code tab'ı (id="...-code") markup,
+// projedeki tüm CSS tab örnekleri (class="code-block" konvansiyonu) css
+// olarak highlight edilir — her yeni component ayrı bir kayıt gerektirmez.
+function applyCodeHighlighting(root) {
+  if (!window.Prism) return;
+  function highlight(el, lang) {
+    // Prism'in line-numbers plugin'i <pre><code>...</code></pre> yapısı
+    // bekliyor — bizim <pre> düz metin içeriyor, önce <code>'ya sarmalıyoruz.
+    let code = el.querySelector(':scope > code');
+    if (!code) {
+      code = document.createElement('code');
+      code.textContent = el.textContent;
+      el.textContent = '';
+      el.appendChild(code);
+    }
+    el.classList.add('line-numbers');
+    code.classList.add('language-' + lang, 'line-numbers');
+    Prism.highlightElement(code);
+  }
+  root.querySelectorAll('.example-viewer-code pre[id$="-code"]').forEach(el => highlight(el, 'markup'));
+  root.querySelectorAll('pre.code-block').forEach(el => highlight(el, 'css'));
+}
+window.applyCodeHighlighting = applyCodeHighlighting;
+
 // ── Content ─────────────────────────────────────────────────
 function renderContent(page) {
   const tab     = page.tabs ? page.tabs[currentTab] : null;
@@ -196,10 +264,12 @@ function renderContent(page) {
   titleEl.style.display = result.title ? 'block' : 'none';
   bodyEl.innerHTML = result.html;
   applyColorSwatches(bodyEl);
+  applyCodeHighlighting(bodyEl);
 }
 
 // ── TOC ─────────────────────────────────────────────────────
 let _tocObserver = null;
+const _tocLabelIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M15 12H3"/><path d="M17 19H3"/></svg>`;
 
 function renderToc(page) {
   const col = document.getElementById('toc-col');
@@ -209,7 +279,7 @@ function renderToc(page) {
     col.style.display = 'none';
     return;
   }
-  col.style.display = 'block';
+  col.style.display = 'flex'; // .toc-col artık flex (satır + indicator çizgisi), 'block' layout'u bozar
 
   const isGrouped = page.toc.length > 0 && typeof page.toc[0] === 'object';
 
@@ -223,7 +293,7 @@ function renderToc(page) {
 
   if (isGrouped) {
     el.innerHTML = `
-      <div class="toc-label">On this page</div>
+      <div class="toc-label">${_tocLabelIcon}<span>On this page</span></div>
       ${overviewLink}
       ${page.toc.map(({ group, items }) => `
         <div class="toc-group-label">${group}</div>
@@ -241,7 +311,7 @@ function renderToc(page) {
     `;
   } else {
     el.innerHTML = `
-      <div class="toc-label">On this page</div>
+      <div class="toc-label">${_tocLabelIcon}<span>On this page</span></div>
       ${overviewLink}
       ${page.toc.map(t => `
         <div class="toc-link" data-target="${t}" onclick="scrollToSection('${t}')">${t}</div>
@@ -250,12 +320,32 @@ function renderToc(page) {
   }
 
   setupTocScrollSpy();
+  // Overview linki innerHTML'de "active" olarak hardcode edildi (yukarı bak) —
+  // indicator'ı da aynı pozisyona getirmek için setActiveTocLink çağrılır
+  // (layout'un oturması için bir sonraki frame'e bırakılır, aksi halde
+  // getBoundingClientRect henüz eski/boş DOM'u ölçer).
+  requestAnimationFrame(() => setActiveTocLink('page-title'));
 }
 
 function setActiveTocLink(id) {
+  let activeLink = null;
   document.querySelectorAll('#toc .toc-link').forEach(link => {
-    link.classList.toggle('active', link.dataset.target === id);
+    const isActive = link.dataset.target === id;
+    link.classList.toggle('active', isActive);
+    if (isActive) activeLink = link;
   });
+  // Sol çizgideki accent segment aktif linkin hizasına taşınır (bkz. Figma
+  // "Line 305" — sabit bir tam-yükseklik çizgi değil, sadece aktif öğenin
+  // yanında beliren hareketli bir işaretçi).
+  const indicator = document.getElementById('toc-indicator');
+  const line       = document.querySelector('.toc-line');
+  if (!indicator || !line) return;
+  if (!activeLink) { indicator.style.opacity = '0'; return; }
+  const lineRect = line.getBoundingClientRect();
+  const linkRect = activeLink.getBoundingClientRect();
+  indicator.style.top    = (linkRect.top - lineRect.top) + 'px';
+  indicator.style.height = linkRect.height + 'px';
+  indicator.style.opacity = '1';
 }
 
 function setupTocScrollSpy() {

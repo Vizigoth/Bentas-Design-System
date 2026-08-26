@@ -296,6 +296,7 @@ function _pgdRerender(id) {
 
   const newContainer = document.getElementById(id);
   if (!newContainer) return;
+  if (window.applyCodeHighlighting) window.applyCodeHighlighting(newContainer);
   if (drawerScroll != null) {
     const newDrawer = newContainer.querySelector('.pgd-drawer');
     if (newDrawer) newDrawer.scrollTop = drawerScroll;
