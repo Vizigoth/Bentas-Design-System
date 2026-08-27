@@ -1,5 +1,9 @@
 # Bentas Design System — Proje Kuralları
 
+## İçerik Kaldırma Yasağı — ZORUNLU
+
+Mevcut bir sayfada herhangi bir içerik (tablo, bölüm, tab içeriği, playground vb.) kaldırılacaksa ya da başka bir yere taşınacaksa **kullanıcıya önceden bildir ve onay al.** Kullanıcı açıkça "kaldır", "sil" veya "taşı" demediği sürece hiçbir mevcut içerik silinmez veya yerinden oynatılmaz. Kural uygulamak (description eklemek, 4-tab standardı, anatomy başlıkları vb.) bu yasağı geçersiz kılmaz — içerik eklenir, mevcut içerik korunur.
+
 ## CSS Değişkenleri (Design Tokens) — ZORUNLU
 
 `docs/css/styles.css` kapsamlı bir `--bt-*` design token seti tanımlıyor: spacing, radius, renk/surface, tipografi (font-size + line-height dahil). Yeni bir component eklerken veya mevcut bir component'i değiştirirken **her görsel değer** ilgili token'dan gelmeli — hardcoded px/hex yazılmamalı.
@@ -114,26 +118,80 @@ const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&
 return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 ```
 
-## Anatomy Bölümü — ZORUNLU
+## Her Bölümün Dokümantasyon Yapısı — ZORUNLU
 
-Her component sayfasının Overview tab'ında, her ana bölüm tablosunun (Types, Variants, States vb.) altına bir `<h2>Anatomy</h2>` başlığı ve token tablosu eklenmeli. Başlık düz `<h2>` olmalı — inline style yok, `.content h2` CSS'i otomatik uygulanır.
+Bir component sayfasındaki **her `<h2>` ve `<h3>` bölümü** — Header/Body/Footer/States/Anatomy/Building Blocks gibi her türlü bölüm — aynı üç adımlı yapıyı izler:
 
-Tablo formatı (diğer section tablolarıyla aynı `token-table` class'ı):
+**1. Başlık** (`<h2>` veya `<h3>`)
+- TOC'ta yer alan `<h2>` bölümlerinin `id` değeri `toc` dizisiyle birebir eşleşmeli
+- Anatomy dahil her başlık açıkça yazılır — `<h3>Anatomy</h3>` başlıksız bare `<table>` kabul edilmez
+
+**2. Description** (`<p class="page-desc">`) — ZORUNLU, istisnasız
+- **3–5 cümle**, şu üç katmanı tek okuma akışında barındırır:
+  1. **Tasarım kararı** — Bu bölüm neden bu şekilde tasarlandı? Hangi UX problemini çözüyor?
+  2. **Görsel / davranışsal mekanik** — Hangi state'ler var, nasıl çalışıyor, hangi kısıtlamalar var?
+  3. **Implementasyon referansı** — CSS class, token adı, Blazor/Telerik API (tek cümle yeterli)
+- Anatomy bölümleri dahil — 2–3 cümle, yapısal katmanları + token/class adlarını + Blazor karşılığını kısaca belirtmeli
+- **Kabul edilmez:** "Aşağıda örnekler:", "Playground'da dene.", tek cümlelik geçiş metinleri
+
+**3. İçerik** — description'dan hemen sonra gelir, bare HTML kabul edilmez
+- `registerPlayground(...)` — interaktif demo
+- `<table class="token-table" style="margin-top:12px">` — token/anatomy/states tablosu; `tk(v)` helper'ı ile token adları `<code>` formatında, token karşılığı olmayanlar için Token sütununa `—`
+- `.example-viewer` — statik görsel örnek
+
+## Statik Demo Gösterimi — "Example Viewer" Pattern
+
+Bir sayfada **playground olmadan** (interaktif prop/variant yok) bir şeyi sadece görsel olarak göstermek gerektiğinde, kullanıcı **"example viewer kullan"** veya **"example viewer'a koy"** diyebilir. Bu, `registerPlayground` yerine şu statik HTML yapısını kullanmak demektir:
+
 ```html
-<h2>Anatomy</h2>
-<table class="token-table" style="margin-top:12px">
-  <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-  <tbody>
-    <tr><td>Element adı</td><td>CSS property</td><td>${tk('--bt-token-adi')}</td><td>#hex veya px değeri</td></tr>
-    <!-- Token karşılığı olmayan sabit değerler için Token sütununa — yazılır -->
-  </tbody>
-</table>
+<!-- Önizleme alanı (playground preview ile aynı görünüm) -->
+<div class="example-viewer">
+  <div class="example-viewer-preview">
+    <div class="pgd-preview-inner">
+      <div class="pgd-viewport-frame" style="width:100%">
+        <!-- Gösterilecek içerik buraya -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Kod gösterimi (playground Code tab ile aynı görünüm) -->
+<div class="example-viewer">
+  <div class="example-viewer-code">
+    <pre><!-- HTML/CSS kodu buraya --></pre>
+  </div>
+</div>
 ```
 
-- `tk(v)` helper'ı ile token adları `<code>` formatında gösterilir
-- Renk/spacing/typography tokenları her zaman yazılır
-- Sabit değerler (px, %) için Token sütunu `—` olur
-- Component'in farklı varyantları/tipleri ayrı satır olarak listelenir (örn. `Confirm · Information`, `Confirm · Error`)
+**Kurallar:**
+- `.example-viewer` → kenarlı, rounded wrapper (`border: 1px solid var(--bt-border-muted); border-radius: 10px`)
+- `.example-viewer-preview` → açık arka planlı önizleme alanı (`min-height/max-height: 460px`)
+- `.example-viewer-code` → kod alanı (`border-top` ile preview'dan ayrılır); yalnız kullanılabilir
+- İkisi **aynı** `.example-viewer` içinde art arda veya **ayrı** `.example-viewer` blokları olarak kullanılabilir
+- Preview içindeki içerik genellikle `padding:32px` ve `overflow-x:auto` alır
+- **`registerPlayground` kullanılmaz** — bu pattern tamamen statik/interaktif değil
+
+**Kod renklendirme (syntax highlighting + satır numaraları) — ZORUNLU:**
+
+`applyCodeHighlighting` iki selector'ı otomatik işler — doğru class/id kullanılırsa ek kurulum gerekmez:
+
+```html
+<!-- HTML kodu (language-markup + line-numbers) -->
+<!-- pre id'si mutlaka "-code" ile bitmeli, .example-viewer-code içinde olmalı -->
+<div class="example-viewer-code">
+  <pre id="ev-{sayfa-adı}-code">...escaped HTML...</pre>
+</div>
+
+<!-- CSS kodu (language-css + line-numbers) -->
+<!-- .example-viewer-code içinde veya dışında, sadece class="code-block" yeterli -->
+<div class="example-viewer-code">
+  <pre class="code-block">...escaped CSS...</pre>
+</div>
+```
+
+- HTML gösteriminde `id` **benzersiz** olmalı, `-code` ile bitmeli
+- İçerik her zaman HTML-escape edilmeli: `&` → `&amp;`, `<` → `&lt;`, `>` → `&gt;`
+- Playground'daki `_pgdEsc()` yerine sayfa içinde inline IIFE: `${(() => { const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); return esc(\`...\`); })()}`
 
 ## Sayfa Tab Yapısı — ZORUNLU (4 Tab Standardı)
 
@@ -151,6 +209,35 @@ tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
 Bir component'in **State/Anatomy** gibi tab-özel içerikleri varsa (örn. Clickable Card'ın Default/Hover/Active State tablosu) bunlar **Examples** tab'ına gider, Overview'da sadece genel playground + kısa açıklama kalır.
 
 **Bu, geriye dönük bir standart** — 2026-08-12'de siteye uygulandı (bkz. HISTORY.md), yeni eklenen HER component bu 4-tab yapısıyla gelmeli, `['Overview', 'CSS Properties', 'Usage']` (Examples'sız 3-tab) veya sadece `['Overview']` gibi eksik yapılar kabul edilmez.
+
+## Varyant Dokümantasyonu — Tek Sayfa Standardı — ZORUNLU
+
+Bir component'in birden fazla davranışsal varyantı varsa (örn. Card → Default/Clickable/Selectable/Collapsible/Scrollable), **bu varyantlar ayrı sidebar sayfaları olarak değil, ana component sayfasında TOC bölümleri olarak** dokümante edilir. Bu kural 2026-08-27'de Card component'i üzerinde uygulanmış ve tüm component'ler için genel standard olarak kabul edilmiştir.
+
+**Sidebar nav:** Component için tek bir leaf item — grup + children yapısı kullanılmaz.
+```javascript
+{ label: 'ComponentName', id: 'components/component-name' }   // ✓
+// Children listesi ile grup yapısı  ✗
+```
+
+**TOC:** Ana component bölümleri + her varyant adı düz bir dizi olarak listelenir:
+```javascript
+toc: ['Section1', 'Section2', 'Variant A', 'Variant B', 'Variant C'],
+```
+
+**Her varyant bölümünün zorunlu içeriği** (bu sırayla):
+
+1. `<h2 id="Variant Name">Variant Name</h2>` — id değeri toc dizisindeki string ile birebir eşleşmeli
+2. `<p class="page-desc">` — description kuralına göre 3–5 cümle (tasarım kararı + görsel mekanik + implementasyon referansı)
+3. `${registerPlayground({...})}` — o varyanta özel tam playground; ID formatı `pgd-{component}-{variant}-sec` (sub-sayfalardaki `pgd-{component}-{variant}-overview` ID'siyle çakışmama için)
+4. `<h3>Alt Bölüm</h3>` + description + içerik — varyanta özel alt bölümler (örnekler):
+   - **States** tablosu (Default/Hover/Active/Selected gibi etkileşim durumları varsa)
+   - **Body Content** tablosu (içerik kombinasyonlarını gösteren tablo varsa)
+   - **Anatomy** tablosu (her varyant için token listesi — ZORUNLU)
+
+**Playground ID çakışması:** Ana component sayfasındaki varyant playground'larının ID'leri, eski sub-sayfaların (eğer hâlâ PAGES_WEB'de tanımlıysa) playground ID'leriyle çakışmamalı. `-sec` son eki bu ayrımı sağlar.
+
+**Sub-sayfalar:** Eski sub-sayfa `PAGES_WEB[...]` tanımları silinmek zorunda değil — sidebar'dan kaldırılmaları yeterli. Ancak yeni component eklenirken sub-sayfa hiç oluşturulmaz.
 
 ## Data Table Örneklerinde Properties Tutarlılığı — ZORUNLU
 

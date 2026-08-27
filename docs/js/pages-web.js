@@ -11,8 +11,6 @@ const NAV_WEB = [
   },
   {
     label: 'Components', children: [
-      { label: 'Avatar',            id: 'components/avatar' },
-      { label: 'Badge',             id: 'components/badge' },
       {
         label: 'Buttons', children: [
           { label: 'Button',       id: 'components/button' },
@@ -22,26 +20,15 @@ const NAV_WEB = [
         ]
       },
       {
-        label: 'Card', children: [
+        label: 'Displaying Data', children: [
+          { label: 'Avatar',           id: 'components/avatar' },
+          { label: 'Avatar Group',     id: 'components/avatar-group' },
+          { label: 'Badge',            id: 'components/badge' },
+          { label: 'Banner',           id: 'components/banner' },
           { label: 'Card',             id: 'components/card' },
-          { label: 'Default Card',     id: 'components/card-default' },
-          { label: 'Clickable Card',   id: 'components/card-clickable' },
-          { label: 'Selectable Card',  id: 'components/card-selectable' },
-          { label: 'Collapsible Card', id: 'components/card-collapsible' },
-          { label: 'Scrollable Card',  id: 'components/card-scrollable' },
-        ]
-      },
-      {
-        label: 'Data Table', children: [
-          { label: 'Data Table',                id: 'components/data-table' },
-          { label: 'Frozen Column First',  id: 'components/data-table-frozen-column' },
-          { label: 'Frozen Column Last',   id: 'components/data-table-frozen-column-last' },
-          { label: 'Data Table Toolbar',   id: 'components/data-table-toolbar' },
-          { label: 'Data Table Actions',   id: 'components/data-table-actions' },
-          { label: 'Inline Editing',       id: 'components/data-table-inline-editing' },
-          { label: 'InCell Editing',       id: 'components/data-table-incell-editing' },
-          { label: 'Filtering',            id: 'components/data-table-filtering' },
-          { label: 'Sorting',              id: 'components/data-table-sorting' },
+          { label: 'Data Table',       id: 'components/data-table' },
+          { label: 'Divider',          id: 'components/divider' },
+          { label: 'Kbd',              id: 'components/kbd' },
         ]
       },
       {
@@ -77,9 +64,6 @@ const NAV_WEB = [
           { label: 'Tab Menu Vertical',      id: 'components/tab-menu-vertical' },
         ]
       },
-      { label: 'List Item',         id: 'components/list-item' },
-      { label: 'Progress',          id: 'components/progress' },
-      { label: 'Skeleton',          id: 'components/skeleton' },
       {
         label: 'Overlays', children: [
           { label: 'Alert Dialog', id: 'components/alert-dialog' },
@@ -1752,6 +1736,7 @@ PAGES_WEB['components/checkbox'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Checkbox kutusunun her state × checked kombinasyonu için kullanılan renk token'larını listeler. Kutu arka planı ve kenarlığı ${tk('--bt-surface-brand-default')} / ${tk('--bt-border-primary-default')} gibi semantik token'larla, focus halkası ise sabit box-shadow değeriyle tanımlanır. Blazor/Telerik'te bu değişimler ${tk('TelerikCheckBox')} bileşeninin state CSS sınıfları aracılığıyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -1797,6 +1782,7 @@ PAGES_WEB['components/checkbox'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Üç boyut (Sm / Md / Lg) için kutu ve checkmark boyutlarını tanımlar. Boyut token'ı olmayan ölçüler sabit piksel değerleriyle uygulanır — Figma'da her boyut ayrı ayrı doğrulanmıştır. Blazor/Telerik'te boyut ${tk('TelerikCheckBox')} bileşeninin ${tk('Size')} property'siyle seçilir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -1823,6 +1809,7 @@ PAGES_WEB['components/checkbox'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Label, Required Field ve Description metinlerinin renk token'larını listeler. Description, varsayılanda ${tk('--bt-text-primary-emphasis')} ile soluk gösterilirken invalid state'te ${tk('--bt-text-error-default')} kırmızısına döner; disabled durumda tüm metinler ${tk('--bt-text-primary-muted')} ile nötr hale getirilir. Blazor/Telerik'te bu renkler ${tk('TelerikCheckBox')} bileşeninin label ve description slot'larına uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2174,6 +2161,7 @@ PAGES_WEB['components/radio-button'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Radio Button'ın her state × selected kombinasyonu için kullanılan renk token'larını listeler. Seçilmemiş kutunun kenarlığı ${tk('--bt-border-primary-default')} ile başlar; selected state'te ${tk('--bt-surface-brand-default')} arka planı, hover'da ${tk('--bt-surface-brand-intense')} tonu devreye girer. Blazor/Telerik'te bu değişimler ${tk('TelerikRadioButton')} bileşeninin state CSS sınıflarıyla yönetilir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2216,6 +2204,7 @@ PAGES_WEB['components/radio-button'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Üç boyut (Sm / Md / Lg) için dış daire çapı ve iç nokta boyutlarını tanımlar. Boyutlar token karşılığı olmayan sabit piksel değerleriyle uygulanır; Figma'da her boyut ayrı varyant olarak tanımlanmıştır. Blazor/Telerik'te boyut ${tk('TelerikRadioButton')} bileşeninin ${tk('Size')} parametresiyle belirlenir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2241,6 +2230,7 @@ PAGES_WEB['components/radio-button'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Label, Required Field ve Description metinlerinin konuma göre renk token'larını listeler. Label ve Required field ${tk('--bt-text-primary-default')} ile koyu renkte kalırken Description ${tk('--bt-text-primary-emphasis')} ile soluk gösterilir; invalid state'te ${tk('--bt-text-error-default')} kırmızısına döner. Blazor/Telerik'te ${tk('TelerikRadioButton')} bileşeninin label slot'una uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2596,6 +2586,7 @@ PAGES_WEB['components/switch'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Switch track'inin Off ve On durumları için her state kombinasyonundaki renk token'larını listeler. Off state ${tk('--bt-surface-primary-emphasis')} griyle başlarken On state ${tk('--bt-surface-brand-default')} mavi arka planı kullanır; disabled'da her iki durum da soluk (muted) tona düşer. Blazor/Telerik'te bu değişimler ${tk('TelerikSwitch')} bileşeninin state CSS sınıflarıyla yönetilir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2636,6 +2627,7 @@ PAGES_WEB['components/switch'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Üç boyut (Sm / Md / Lg) için track ve thumb ölçülerini tanımlar. Track genişliği thumb'ın iki katı artı boşluk olacak şekilde hesaplanmış sabit piksel değerleridir; token karşılığı yoktur. Blazor/Telerik'te boyut ${tk('TelerikSwitch')} bileşeninin ${tk('Size')} parametresiyle belirlenir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2664,6 +2656,7 @@ PAGES_WEB['components/switch'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Thumb ve metin öğelerinin renk/gölge token'larını listeler. Thumb her state'te ${tk('--bt-surface-primary-default')} beyaz kalırken ${tk('Shadow/md')} gölgesi ve ${tk('--bt-radius-sm')} köşe yarıçapıyla yüzer görünüm sağlanır; label ve description renkleri Checkbox bileşeniyle aynı semantik token'ları paylaşır. Blazor/Telerik'te ${tk('TelerikSwitch')} bileşeninin label slot'u ve CSS değişkenleriyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2906,6 +2899,7 @@ PAGES_WEB['components/searchbox'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">SearchBox konteynerinin her state için sınır ve arka plan token'larını listeler. Default state ${tk('--bt-border-primary-default')} griyle başlar; hover ve active'de ${tk('--bt-border-brand-default')} maviye döner, active'de ek olarak mavi focus ring eklenir. Blazor/Telerik'te ${tk('TelerikTextBox')} bileşenine ${tk('.bt-sbx')} CSS sınıfları uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -2929,6 +2923,7 @@ PAGES_WEB['components/searchbox'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Metin, placeholder ve ikon öğelerinin tipografi ve boyut token'larını listeler. Input metni ${tk('--bt-text-xs-regular')} fontuyla, placeholder ${tk('--bt-text-primary-muted')} rengiyle gösterilir; sabit 24×24px ikon kutusu içindeki arama ve temizleme ikonları sabit piksel değerleriyle tanımlanmıştır. Blazor/Telerik'te ${tk('TelerikTextBox')} içinde custom ikon slot'larıyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -3450,9 +3445,10 @@ PAGES_WEB['components/button'] = {
 
     // ── Examples ─────────────────────────────────────────────────
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Solid, Outline, Flat ve Ghost fill modlari; 7 tema rengi, 7 boyut, 2 icerik tipi ve 4 state ile.</p>
+      <p class="page-desc">Button'ın dört fill modu her biri farklı bir görsel öncelik katmanını temsil eder: Solid en yüksek ağırlıkla birincil aksiyonlar için, Outline ikincil aksiyonlar için, Flat araç çubuğu ve panel içi aksiyonlar için, Ghost ise en düşük görsel ağırlıkla bağlam içi yardımcı aksiyonlar için tasarlandı. Tüm fill modlarında aynı 7 tema rengi, 7 boyut ve 2 içerik tipi (icon-text / icon only) geçerlidir.</p>
 
       <h2>Solid</h2>
+      <p class="page-desc">Arka planı tam dolu renk olan Solid, en yüksek görsel önceliği taşır ve kullanıcının dikkatini doğrudan çeker. Sayfa başına tek bir Solid buton konulmalıdır — birden fazlası kullanıcının odağını böler ve hiyerarşiyi anlamsızlaştırır. Hover'da arka plan şema renginin daha koyu tonuna geçer (${tk('--bt-*-intense')}), Active'de ise kısaca daha da koyulaşarak basılma hissini güçlendirir. CSS class yapısı: ${tk('bt-btn bt-btn--{size} bt-btn--{theme}-solid')}.</p>
       ${registerPlayground({
         id: 'pgd-btn-solid-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3466,6 +3462,7 @@ PAGES_WEB['components/button'] = {
       })}
 
       <h2>Outline</h2>
+      <p class="page-desc">Şeffaf arka plan üzerinde belirgin bir kenarlıkla ikincil aksiyonları temsil eder. Solid ile aynı sayfada yan yana kullanıldığında ikisi arasındaki öncelik hiyerarşisi net okunur; kullanıcı Solid'i birincil, Outline'ı destekleyici eylem olarak sezgisel biçimde tanır. Hover'da arka plan açık tema rengiyle dolar (${tk('--bt-*-subtle')}), kenarlık ve metin rengi aynı kalır. CSS class yapısı: ${tk('bt-btn bt-btn--{size} bt-btn--{theme}-outline')}.</p>
       ${registerPlayground({
         id: 'pgd-btn-outline-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3479,6 +3476,7 @@ PAGES_WEB['components/button'] = {
       })}
 
       <h2>Flat</h2>
+      <p class="page-desc">Dinlenme durumunda kenarlık ve dolu arka plan taşımayan Flat, görsel kalabalığı azaltmak istenen bağlamlarda kullanılır: araç çubuğu, tablo satır aksiyonları, panel başlığı kontrolleri. Yalnızca hover'da açık arka plan belirerek etkileşim iletir — bu "sessiz ama hâlâ tıklanabilir" davranış, yoğun layout bölgelerinde veriyi öne çıkarmaya devam eder. Solid veya Outline ile aynı satırda karıştırılmaz; bu kombinasyon hiyerarşiyi belirsizleştirir. CSS class yapısı: ${tk('bt-btn bt-btn--{size} bt-btn--{theme}-flat')}.</p>
       ${registerPlayground({
         id: 'pgd-btn-flat-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3492,6 +3490,7 @@ PAGES_WEB['components/button'] = {
       })}
 
       <h2>Ghost</h2>
+      <p class="page-desc">Kenarlıksız ve arka plansız en hafif buton türüdür; yalnızca metin ve ikon görünür. Bir arka yüzey rengi üzerinde okunabilir — izole beyaz boşluklarda görsel olarak kaybolur, bu nedenle mutlaka bir bağlam içinde (panel, kart, liste) konumlandırılmalıdır. İkon butonları, navigasyon öğeleri ve yoğun layout bölgelerindeki yardımcı aksiyonlar için idealdir. Hover'da açık tema rengi belirerek tıklanabilirlik korunur. CSS class yapısı: ${tk('bt-btn bt-btn--{size} bt-btn--{theme}-ghost')}.</p>
       ${registerPlayground({
         id: 'pgd-btn-ghost-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3507,7 +3506,7 @@ PAGES_WEB['components/button'] = {
 
     // ── CSS Properties ───────────────────────────────────────────
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Primary Button icin kullanilan design token - CSS degisken eslesmeler.</p>
+      <p class="page-desc">Button bileşeninin tüm fill modları, boyutları ve state'leri için kullanılan design token — CSS değişken eşleşmeleri. Aşağıdaki tokenlar Primary tema için listelenmiştir; diğer temalar aynı yapıyı izler — yalnızca ${tk('--bt-primary-*')} prefix'i ${tk('--bt-secondary-*')}, ${tk('--bt-error-*')} vb. ile değişir. Her değer hardcoded değil, ${tk('--bt-*')} namespace'inden alınır; token adı değiştiğinde tüm buton varyantlarına anında yansır.</p>
       <table class="token-table">
         <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
         <tbody>
@@ -3533,7 +3532,7 @@ PAGES_WEB['components/button'] = {
 
     // ── Usage ────────────────────────────────────────────────────
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Primary Button kullanim kilavuzu.</p>
+      <p class="page-desc">Hangi fill modunun, hangi bağlamda ve hangi içerik tipiyle kullanılacağına dair kılavuz. Yanlış fill modu seçimi kullanıcı dikkatini yanlış aksiyona çeker, yanlış state kullanımı ise etkileşim beklentisini bozar. Aşağıdaki kurallar tasarım tutarlılığını ve kullanılabilirliği korumak için Figma kaynaklı tasarım kararlarına dayanır.</p>
       <h2>Do</h2>
       <ul>
         <li>Solid butonu sayfanin tek ana aksiyonu (CTA) icin kullan</li>
@@ -3551,6 +3550,7 @@ PAGES_WEB['components/button'] = {
 
     // ── Overview ─────────────────────────────────────────────────
     return { title, html: `
+      <p class="page-desc">Aksiyon tetikleyen tıklanabilir UI elemanı. Fill modu (Solid / Outline / Flat / Ghost) görsel önceliği, tema rengi (Base / Primary / Secondary / Success / Warning / Error / Information) renk tokenlarını, boyut (2xs–2xl) tıklanabilir alanı belirler; tümü birbirinden bağımsız yapılandırılabilir. Her kombinasyon design tokenlarıyla ifade edilir — hardcoded renk veya boyut değeri bulunmaz. Blazor tarafında ${tk('BtButton')} veya HTML'de ${tk('bt-btn')} class ailesiyle kullanılır.</p>
       ${registerPlayground({
         id: 'pgd-btn-overview',
         variants: BTN_FILL_VARIANTS,
@@ -3565,9 +3565,8 @@ PAGES_WEB['components/button'] = {
         css:     (fill, p) => btnCss(fill, p),
       })}
 
-      <p class="page-desc">Aksiyon tetikleyen tiklanabilir UI elemani. Fill mode (Solid / Outline / Flat / Ghost), 7 tema rengi (Base / Primary / Secondary / Success / Warning / Error / Information), 7 boyut (2xs–2xl) ve 2 icerik tipiyle yapilandirilabilir.</p>
-
       <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Button'ın görsel mimarisi dört katmandan oluşur: container (fill, border, border-radius, focus ring), label (font, boyut, ağırlık), ikon (16×16px — tüm boyutlarda sabit) ve spacing (her boyut için ayrı yatay/dikey padding çifti). Fill modu container görünümünü belirlerken tema rengi renk tokenlarını seçer; boyut ise spacing ve label boyutunu birlikte ölçekler. Focus ring erişilebilirlik için zorunludur — klavye navigasyonunda tıklanabilir öğeyi belirginleştirir. Her değer ${tk('--bt-*')} design tokenlarından gelir.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
         <tbody>
@@ -3592,6 +3591,7 @@ PAGES_WEB['components/button'] = {
       </table>
 
       <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Button 7 boyut sunar (2xs'ten 2xl'e): her boyut adımı yatay/dikey padding değerlerini ölçekler, label font boyutu tüm boyutlarda sabittir (12px / 400 / 16px). Bu karar bilinçlidir — farklı boyutlardaki butonların metin okunabilirliği tutarlı kalır, yalnızca tıklanabilir alan ve görsel ağırlık büyür. Boyut seçimi bağlama göre yapılır: sayfa düzeyindeki birincil CTA büyük boyut (lg/xl), tablo satırı veya kompakt panel içi aksiyonlar küçük boyut (2xs/xs) tercih eder. CSS'te boyut ${tk('bt-btn--{size}')} modifier'ıyla uygulanır.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Size</th><th>Preview</th></tr></thead>
         <tbody>
@@ -3604,6 +3604,7 @@ PAGES_WEB['components/button'] = {
       </table>
 
       <h2 id="States">States</h2>
+      <p class="page-desc">Button dört etkileşim durumu barındırır: Default (dinlenme), Hover (üzerine gelme), Active (basılı tutma) ve Disabled (etkisiz). Hover ve Active, fill moduna göre farklı görsel tepkiler verir: Solid'de arka plan koyulaşır (${tk('--bt-*-intense')}), Outline ve Ghost'ta arka plan açık tema rengiyle dolar (${tk('--bt-*-subtle')}). Disabled state butonun görünürde kalmasını sağlar — gizlemek yerine devre dışı bırakmak kullanıcıya aksiyonun var olduğunu ama şu an kullanılamayacağını iletir ve layout stabilitesini korur. HTML'de ${tk('disabled')} attribute veya ${tk('.bt-btn--disabled')} class'ıyla uygulanır.</p>
       ${BTN_THEME_OPTS.map(theme => `
       <h3 style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${theme.label}</h3>
       ${_btnStateTable(theme.key)}`).join('')}
@@ -4734,6 +4735,7 @@ PAGES_WEB['components/multi-select'] = {
         css:     (state, p) => tbxCss(state, p),
       })}
       <h2>Anatomy</h2>
+      <p class="page-desc">Multi-Select bileşeni; meta satırı, sol kontrol, chip alanı, temizleme butonu ve yardım metni olmak üzere 7 yapısal öğeden oluşur. Chip'ler ${tk('.bt-msl__content')} konteyneri içinde dizilir; ${tk('.bt-tbx__control--left')} sol aksiyonu, ${tk('.bt-tbx--filled')} state modifier'ı ise temizle butonunun görünürlüğünü yönetir. Blazor/Telerik'te ${tk('TelerikMultiSelect')} bileşeniyle uygulanır.</p>
       <ol>
         <li><strong>Meta</strong> — label + required field satırı</li>
         <li><strong>Left control</strong> — plus ikonu, yeni seçim eklemek için (${tk('.bt-tbx__control--left')})</li>
@@ -5012,6 +5014,7 @@ PAGES_WEB['components/date-picker'] = {
         css:     (state, p) => tbxCss(state, p),
       })}
       <h2>Anatomy</h2>
+      <p class="page-desc">Date Picker bileşeni; meta satırı, sabit takvim ikonu, metin alanı, temizleme kontrolü ve doğrulama ikonu olmak üzere 6 yapısal öğeden oluşur. Sol taraftaki ${tk('.bt-tbx__control')} takvim ikonunu barındırırken ${tk('.bt-tbx__clear')} filled state'te ortaya çıkar; metin girişi ${tk('.bt-tbx__field')} sınıfıyla yönetilir. Blazor/Telerik'te ${tk('TelerikDatePicker')} bileşeniyle uygulanır.</p>
       <ol>
         <li><strong>Meta</strong> — label + required field satırı</li>
         <li><strong>Left control</strong> — sabit calendar ikonu (${tk('.bt-tbx__control')})</li>
@@ -5419,6 +5422,7 @@ PAGES_WEB['components/avatar'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Avatar konteynerinin şekil, kenarlık ve tipografi özelliklerini tanımlar. Dairesel form ${tk('--bt-radius-full')} ile elde edilir; initials font boyutu küçük boyutlarda (2xs/xs/sm) ${tk('--bt-text-xs-medium')}, orta-büyük boyutlarda (md/lg/xl) ${tk('--bt-text-sm-medium')} kullanır. Blazor/Telerik'te ${tk('.bt-avatar')} ve ${tk('.bt-avatar--{size}')} sınıflarıyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5450,6 +5454,7 @@ PAGES_WEB['components/avatar'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Default ve Brand teması için arka plan ve metin/ikon renk token'larını listeler. Default tema ${tk('--bt-surface-primary-subtle')} arka plana koyu metin ve soluk ikon kullanırken Brand tema ${tk('--bt-surface-brand-default')} arka plana ${tk('--bt-text-primary-inverted')} ve ${tk('--bt-icon-primary-inverted')} uygular. Her iki tema da aynı ${tk('--bt-border-primary-default')} kenarlığı paylaşır. Blazor/Telerik'te ${tk('.bt-avatar--brand')} modifier sınıfıyla tema değiştirilir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5477,6 +5482,7 @@ PAGES_WEB['components/avatar'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Altı boyut (2xs / xs / sm / md / lg / xl) için konteyner boyut token'larını listeler. Her boyut ${tk('--bt-base-sizing-*')} spacing token'ıyla tanımlanmıştır; px değeri referans olarak gösterilir. Blazor/Telerik'te boyut ${tk('.bt-avatar--{size}')} sınıfıyla belirlenir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5784,6 +5790,7 @@ PAGES_WEB['components/accordion'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Accordion bileşeninin konteyner, header, başlık ve içerik öğelerine ait tüm renk, spacing ve tipografi token'larını listeler. Basic varyant her öğeyi ${tk('--bt-border-primary-default')} alt kenarlıkla ayırırken Bordered varyant aynı token'la dış çerçeve oluşturur ve ${tk('--bt-radius-md')} köşe yuvarlaması uygular. Blazor/Telerik'te ${tk('TelerikPanelBar')} bileşeniyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5819,6 +5826,7 @@ PAGES_WEB['components/accordion'] = {
       <p class="page-desc" style="margin-top:-8px;">Bordered'ın <strong>Hover</strong>'ı Focused ile aynı nötr ring'i kullanır — Figma'da Basic için ayrı bir Hover varyantı tanımlı değil.</p>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">State'e özel görsel değişimlerin token ve değerlerini listeler: hover altçizgisi, focused/Bordered-hover için ${tk('Focus Ring/neutral')} nötr focus halkası ve disabled durumda ${tk('--bt-text-primary-muted')} ile soluklaşan başlık, açıklama ve ikon renkleri. Tüm state geçişleri CSS pseudo-class ve modifier sınıflarıyla yönetilir. Blazor/Telerik'te ${tk('TelerikPanelBar')} bileşeninin state sınıflarıyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5846,6 +5854,7 @@ PAGES_WEB['components/accordion'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Chevron ve Plus ikon tiplerinin aktif (açık) state'teki dönüş animasyonu ve ikon alanı token'larını listeler. Chevron 180° dönüşle yukarı ok haline gelirken Plus 45° dönüşle × şekline dönüşür; her iki animasyon da 200ms ease transition kullanır. Opsiyonel sol ikon ${tk('--bt-icon-primary-strong')} rengiyle tanımlanır ve ${tk('--bt-space-xs')} gap ile başlıktan ayrılır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -6545,6 +6554,7 @@ PAGES_WEB['components/upload'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Standart Upload'un drop zone konteynerinin arka plan, kenarlık ve spacing token'larıyla durum bazlı metin renklerini listeler. Drop zone ${tk('--bt-surface-primary-subtle')} arka plan ve kesik kenarlıkla gösterilir; Select Files linki ve durum metni Default / Uploading / Completed / Failed state'lerine göre farklı semantik token renklerini alır. Blazor/Telerik'te ${tk('TelerikUpload')} bileşeninin template slot'larıyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -6574,6 +6584,7 @@ PAGES_WEB['components/upload'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">External Drop Zone'un dikey, vurgulu kutu yapısını oluşturan token'ları listeler. Drop zone yine ${tk('--bt-surface-primary-subtle')} arka plan ve kesik kenarlık kullanır; Select Files butonu ${tk('bt-btn bt-btn--sm bt-btn--base-outline')} sınıfıyla gerçek buton bileşenini yeniden kullanır. Durum metni ${tk('--bt-space-lg')} gap ile butondan ayrılır; renk duruma göre standart Standart Upload ile aynı semantik token'lara başvurur. Blazor/Telerik'te ${tk('TelerikUpload')} bileşeninin DropZone template'iyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -6602,6 +6613,7 @@ PAGES_WEB['components/upload'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Upload File satır öğesinin tipografi ve renk token'larını listeler. Dosya adı ${tk('--bt-text-xs-regular')} ve ${tk('--bt-text-primary-default')} koyu rengiyle, boyut/durum bilgisi daha küçük ${tk('--bt-text-2xs-regular')} ve ${tk('--bt-text-primary-emphasis')} soluk rengiyle gösterilir. Blazor/Telerik'te ${tk('TelerikUpload')} bileşeninin FileList template slot'uyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -6757,7 +6769,7 @@ function adlgCss(p) {
 
 
 PAGES_WEB['components/alert-dialog'] = {
-  tabs: ['Overview', 'CSS Properties', 'Usage'],
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
   toc:  ['Types', 'Button Layout'],
   render(tab) {
     const title = 'Alert Dialog';
@@ -6813,25 +6825,9 @@ PAGES_WEB['components/alert-dialog'] = {
       </ul>
     `};
 
-    // Overview
-    return { title, html: `
-      ${registerPlayground({
-        id: 'pgd-alert-dialog-overview',
-        variants: [{ key: 'default', label: 'Alert Dialog' }],
-        props: [
-          { key: 'type',     label: 'Type',            options: ADLG_TYPE_OPTS, default: 'information' },
-          { key: 'position', label: 'Button Position', options: ADLG_POS_OPTS,  default: 'horizontal' },
-          { key: 'segments', label: 'Button Segments', options: ADLG_SEG_OPTS,  default: '2' },
-        ],
-        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${adlgHtml(p)}</div>`,
-        code:    (v, p) => adlgHtml(p),
-        css:     (v, p) => adlgCss(p),
-        trigger: { label: 'Click Me', modal: true },
-      })}
-
-      <p class="page-desc">Alert Dialog, kullanıcıdan onay gerektiren veya önemli bilgi içeren modal bir iletişim kutusudur. 4 anlam tipi, 2 buton düzeni ve 1–3 buton segmentiyle özelleştirilebilir.</p>
-
+    if (tab === 'Examples') return { title, html: `
       <h2 id="Types">Types</h2>
+      <p class="page-desc">Alert Dialog dört anlamsal tipte gelir; tip seçimi yalnızca görsel değil, kullanıcıya iletilen mesajın duygusal ağırlığını da belirler. Information nötr bilgilendirme, Success başarılı bir eylemin teyidi, Warning geri alınamaz olabilecek bir seçimin uyarısı, Error ise yıkıcı eylemlerin (silme, kaldırma) onayı için kullanılır. Blazor tarafında ${tk('Type')} prop'u bu renk ve ikon setini tek satırda değiştirir.</p>
       <table class="token-table">
         <thead><tr><th>Type</th><th>Preview</th><th>Icon</th><th>Kullanım</th></tr></thead>
         <tbody>
@@ -6862,25 +6858,8 @@ PAGES_WEB['components/alert-dialog'] = {
         </tbody>
       </table>
 
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Icon wrap · Information</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
-          <tr><td>Icon wrap · Success</td><td>Background</td><td>${tk('--bt-success-subtle')}</td><td>#daede5</td></tr>
-          <tr><td>Icon wrap · Warning</td><td>Background</td><td>${tk('--bt-warning-subtle')}</td><td>#f9f2ce</td></tr>
-          <tr><td>Icon wrap · Error</td><td>Background</td><td>${tk('--bt-error-subtle')}</td><td>#fde6e6</td></tr>
-          <tr><td>Icon · Information</td><td>Color</td><td>${tk('--bt-icon-information-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Icon · Success</td><td>Color</td><td>${tk('--bt-icon-success-default')}</td><td>#2d584b</td></tr>
-          <tr><td>Icon · Warning</td><td>Color</td><td>${tk('--bt-icon-warning-default')}</td><td>#aa820a</td></tr>
-          <tr><td>Icon · Error</td><td>Color</td><td>${tk('--bt-icon-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px / 20px</td></tr>
-          <tr><td>Title / Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
-        </tbody>
-      </table>
-
       <h2 id="Button Layout">Button Layout</h2>
+      <p class="page-desc">Footer, iki buton düzeni (Horizontal / Vertical) ve 1–3 arası segment sayısını destekler. Horizontal düzende butonlar sağa hizalanır ve her biri 80px sabit genişlik alır; Vertical düzende butonlar tam genişlikte üst üste dizilir — mobil uyumlu onay ekranları için tercih edilir. Segment sayısı birincil eylem (Confirm), geri adım (Cancel) ve üçüncül seçenek (örn. Sil) arasındaki dengeyi belirler.</p>
       <table class="token-table">
         <thead><tr><th>Position</th><th>Segments</th><th>Preview</th></tr></thead>
         <tbody>
@@ -6916,8 +6895,115 @@ PAGES_WEB['components/alert-dialog'] = {
           </tr>
         </tbody>
       </table>
+    `};
 
-      <h2>Anatomy</h2>
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-alert-dialog-overview',
+        variants: [{ key: 'default', label: 'Alert Dialog' }],
+        props: [
+          { key: 'type',     label: 'Type',            options: ADLG_TYPE_OPTS, default: 'information' },
+          { key: 'position', label: 'Button Position', options: ADLG_POS_OPTS,  default: 'horizontal' },
+          { key: 'segments', label: 'Button Segments', options: ADLG_SEG_OPTS,  default: '2' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${adlgHtml(p)}</div>`,
+        code:    (v, p) => adlgHtml(p),
+        css:     (v, p) => adlgCss(p),
+        trigger: { label: 'Click Me', modal: true },
+      })}
+
+      <p class="page-desc">Alert Dialog, kullanıcıdan onay gerektiren veya önemli bilgi içeren modal bir iletişim kutusudur. 420px sabit genişliğiyle ekranın odak noktası olur ve arka plan etkileşimini engeller — bu, kullanıcının kararını erteleyemeyeceği kritik anlarda kasıtlı bir tasarım kararıdır. 4 anlam tipi, 2 buton düzeni ve 1–3 buton segmentiyle özelleştirilebilir; Blazor tarafında ${tk('Type')}, ${tk('ButtonPosition')} ve ${tk('Segments')} prop'larıyla yönetilir.</p>
+
+      <h2 id="Types">Types</h2>
+      <p class="page-desc">Dört anlamsal tip — Information, Success, Warning, Error — ikon arka plan ve renk token'larını otomatik olarak değiştirir. Her tip, kullanıcıya mesajın duygusal ağırlığını ileten farklı bir semantik renk paleti kullanır; tasarım sistemi bu renkleri merkezi olarak yönetir, geliştiricinin ayrıca stil yazması gerekmez. Blazor'da ${tk('Type')} prop'unun değiştirilmesi ikon setini ve buton rengini birlikte günceller.</p>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Icon</th><th>Kullanım</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Information</span></td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '1' })}</td>
+            <td>circle-info</td>
+            <td>Bilgilendirici, nötr içerik. Kullanıcıya bir bağlamı açıklar.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Success</span></td>
+            <td>${adlgHtml({ type: 'success', position: 'vertical', segments: '1' })}</td>
+            <td>circle-check</td>
+            <td>Başarılı tamamlanan bir eylemi onaylar.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Warning</span></td>
+            <td>${adlgHtml({ type: 'warning', position: 'vertical', segments: '1' })}</td>
+            <td>triangle-alert</td>
+            <td>Dikkat gerektiren, geri alınamaz olabilecek eylemler için.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Error</span></td>
+            <td>${adlgHtml({ type: 'error', position: 'vertical', segments: '1' })}</td>
+            <td>circle-alert</td>
+            <td>Yıkıcı veya hata içeren eylemler için — silme, kaldırma vb.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Her tipin ikon alanı 32×32px yuvarlak (${tk('--bt-radius-full')}) bir kutudur; arka plan rengi tipe özgü ${tk('--bt-*-subtle')} token'ından, ikon rengi ise ${tk('--bt-icon-*-default')} token'ından gelir. Başlık ${tk('--bt-title-sm-medium')} (500 · 14px/20px) tipografisini, açıklama ${tk('--bt-text-xs-regular')} (400 · 12px/16px) tipografisini kullanır.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Icon wrap · Information</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Icon wrap · Success</td><td>Background</td><td>${tk('--bt-success-subtle')}</td><td>#daede5</td></tr>
+          <tr><td>Icon wrap · Warning</td><td>Background</td><td>${tk('--bt-warning-subtle')}</td><td>#f9f2ce</td></tr>
+          <tr><td>Icon wrap · Error</td><td>Background</td><td>${tk('--bt-error-subtle')}</td><td>#fde6e6</td></tr>
+          <tr><td>Icon · Information</td><td>Color</td><td>${tk('--bt-icon-information-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Success</td><td>Color</td><td>${tk('--bt-icon-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Icon · Warning</td><td>Color</td><td>${tk('--bt-icon-warning-default')}</td><td>#aa820a</td></tr>
+          <tr><td>Icon · Error</td><td>Color</td><td>${tk('--bt-icon-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px / 20px</td></tr>
+          <tr><td>Title / Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Button Layout">Button Layout</h2>
+      <p class="page-desc">Footer, Horizontal ve Vertical olmak üzere iki buton düzeni sunar; segment sayısı 1–3 arasında seçilebilir. Horizontal düzende butonlar sağa hizalanır ve 80px sabit genişlik alır, Vertical düzende ise tam genişlikte üst üste dizilir. Confirm butonu ${tk('bt-btn--*-solid')} (tipe göre değişir), Cancel butonu ${tk('bt-btn--base-flat')} class'ını kullanır.</p>
+      <table class="token-table">
+        <thead><tr><th>Position</th><th>Segments</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Vertical</span></td>
+            <td>1</td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '1' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Vertical</span></td>
+            <td>2</td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '2' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Vertical</span></td>
+            <td>3</td>
+            <td>${adlgHtml({ type: 'information', position: 'vertical', segments: '3' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Horizontal</span></td>
+            <td>1</td>
+            <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '1' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Horizontal</span></td>
+            <td>2</td>
+            <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '2' })}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Horizontal</span></td>
+            <td>3</td>
+            <td>${adlgHtml({ type: 'information', position: 'horizontal', segments: '3' })}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Footer, ${tk('--bt-border-primary-muted')} üst kenarlık ve ${tk('--bt-space-xl')} / ${tk('--bt-space-2xl')} padding ile body'den ayrılır; butonlar arası boşluk ${tk('--bt-space-md')} (8px) ile sabitlenir. Tip rengine bağlı Confirm buton class'ları tasarım sistemindeki solid varyantları kullanır — renk token'ları merkezi olarak tanımlıdır, override gerekmez.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7229,6 +7315,7 @@ PAGES_WEB['components/dialog'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Dialog konteynerinin boyut, arka plan ve header öğelerine ait token'ları listeler. Konteyner 420px genişlikte ${tk('--bt-base-default')} beyaz arka plan ve ${tk('--bt-radius-md')} köşe yuvarlamasıyla gösterilir; header 40px minimum yükseklikte ${tk('--bt-base-subtle')} açık gri arka plan ve ${tk('--bt-border-primary-muted')} alt kenarlık alır. Sol ve sağ kontrol slotları 40×40px boyutunda; Center tipinde ikon slotu 24×24px wrapper içinde 16×16px ikon barındırır. Blazor/Telerik'te ${tk('TelerikWindow')} bileşeniyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7258,6 +7345,7 @@ PAGES_WEB['components/dialog'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Subtitle ve Body alanının tipografi ve spacing token'larını listeler. Subtitle ${tk('--bt-text-xs-regular')} fontu ve ${tk('--bt-text-primary-emphasis')} soluk rengiyle başlığın altında ikincil bilgi sunar; Body ${tk('--bt-space-2xl')} padding ve aynı gap değeriyle içerik öğelerini düzenler. Blazor/Telerik'te ${tk('TelerikWindow')} bileşeninin header subtitle ve body template'iyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7282,6 +7370,7 @@ PAGES_WEB['components/dialog'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Footer bölümünün kenarlık, spacing ve buton düzeni token'larını listeler. Footer ${tk('--bt-border-primary-muted')} üst kenarlıkla body'den ayrılır; butonlar horizontal düzende 80px sabit genişlikte, vertical düzende tam genişlikte konumlandırılır. Primary buton ${tk('bt-btn--sm bt-btn--primary-solid')}, secondary buton ${tk('bt-btn--sm bt-btn--base-flat')} sınıflarıyla gerçek buton bileşenini yeniden kullanır. Blazor/Telerik'te ${tk('TelerikWindow')} bileşeninin footer template'iyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7732,7 +7821,7 @@ function crdCss(variant, props) {
 
 PAGES_WEB['components/card'] = {
   tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Header Types', 'Control Slots', 'Body', 'Footer'],
+  toc:  ['Header Types', 'Control Slots', 'Body', 'Footer', 'Default Card', 'Clickable Card', 'Selectable Card', 'Collapsible Card', 'Scrollable Card'],
   render(tab) {
     const title = 'Card';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
@@ -7900,6 +7989,7 @@ PAGES_WEB['components/card'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Card Header konteynerinin kenarlık, köşe yarıçapı ve header öğelerinin renk ve tipografi token'larını listeler. Konteyner ${tk('--bt-border-primary-default')} ve ${tk('--bt-radius-md')} ile çerçevelenir; header 40px yükseklikte Background On durumunda ${tk('--bt-base-subtle')} açık gri arka plan alır. Bordered tipte ${tk('--bt-border-primary-default')} alt kenarlık eklenir, Borderless tipte bu kenarlık kaldırılır. Blazor/Telerik'te ${tk('TelerikCard')} bileşeninin header slot'uyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7933,6 +8023,7 @@ PAGES_WEB['components/card'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Header ve Body Title/Subtitle bölümlerindeki kontrol slotlarının boyut ve renk token'larını listeler. Header slotları 40×40px, Body Title/Subtitle slotları 28×28px sabit boyuttadır; Icon ${tk('--bt-icon-primary-strong')} rengiyle, Badge ${tk('--bt-base-muted')} arka plan ve ${tk('--bt-radius-full')} köşeyle gösterilir. Her slot içeriği; ikon, buton, checkbox, switch veya avatar gibi design system bileşenlerini yeniden kullanır. Blazor/Telerik'te ${tk('TelerikCard')} bileşeninin kontrol slotlarıyla uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7960,6 +8051,7 @@ PAGES_WEB['components/card'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Card Body'nin padding, gap ve Row Segment öğelerinin tipografi ile renk token'larını listeler. Body ${tk('--bt-space-2xl')} padding ve ${tk('--bt-space-md')} gap ile içerik öğelerini düzenler; her Row sol ikon slotu (28×28px wrapper, 24×24px ikon) ve sağ ikon slotuna sahiptir. Label ve Value ${tk('--bt-label-xs-regular')}, ek açıklama ${tk('--bt-text-primary-emphasis')} soluk rengiyle gösterilir. Blazor/Telerik'te ${tk('TelerikCard')} bileşeninin body template'iyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -7994,6 +8086,7 @@ PAGES_WEB['components/card'] = {
       </table>
 
       <h2>Anatomy</h2>
+      <p class="page-desc">Card Footer'ının kenarlık, padding ve buton düzeni token'larını listeler. Footer ${tk('--bt-border-primary-muted')} üst kenarlıkla body'den ayrılır; ${tk('--bt-space-xl')} dikey ve ${tk('--bt-space-2xl')} yatay padding ile butonlar ${tk('--bt-space-md')} arayla konumlandırılır. Horizontal düzende butonlar 80px sabit genişlikte, vertical düzende tam genişlikte gösterilir — Dialog footer ile birebir aynı yapıyı paylaşır. Blazor/Telerik'te ${tk('TelerikCard')} bileşeninin footer template'iyle uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -8003,6 +8096,396 @@ PAGES_WEB['components/card'] = {
           <tr><td>Footer</td><td>Gap between buttons</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           <tr><td>Footer · Horizontal button</td><td>Width</td><td>—</td><td>80px (sabit)</td></tr>
           <tr><td>Footer · Vertical button</td><td>Width</td><td>—</td><td>100%</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Default Card">Default Card</h2>
+      <p class="page-desc">Header, Body Title/Subtitle ve Footer kapalı olan temel Card görünümü; sade içerik gruplamak için en yaygın kullanım biçimidir. Başlık veya navigasyon gerektirmeyen bağlamlarda — form alanı özeti, bilgi paneli, veri kartı — sadece Description ve/veya Label/Value satırlarından oluşan içerik minimum karmaşıklıkla sunulabilir; ek modifier class olmadan doğrudan <code style="font-family:var(--mono);font-size:12px;">bt-card</code> yeterlidir. Header açıkken Card'a dönüşür, Footer açıkken aksiyonlar eklenir — bu proplar ihtiyaca göre açılıp kapatılabilir. Blazor/Telerik'te <code style="font-family:var(--mono);font-size:12px;">TelerikCard</code> bileşeninin Header ve Footer kaldırılmış halidir.</p>
+      ${registerPlayground({
+        id: 'pgd-card-default-sec',
+        variants: [{ key: 'default', label: 'Default Card' }],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdHtml(v, p)}</div>`,
+        code:    (v, p) => crdHtml(v, p),
+        css:     (v, p) => crdCss(v, p),
+      })}
+
+      <h3>Body Content</h3>
+      <p class="page-desc">Body, üç temel içerik katmanından oluşur: açıklama metni (Description), bölüm ayracı (Body Title/Subtitle) ve satır listeleri (Row Segments). Bu katmanlar bağımsız açılıp kapatılabilir; sadece Description + birkaç Segment açıkken bile kart anlamlı bir görünüm kazanır. Row Segment her satır için sol ikon, Label/Value çifti ve sağ ikon/kontrolden oluşur — segment sayısı 1'den 5'e kadar çıkabilir. Body'nin padding değeri <code style="font-family:var(--mono);font-size:12px;">--bt-space-2xl (16px)</code>, satırlar arası gap <code style="font-family:var(--mono);font-size:12px;">--bt-space-md (8px)</code>'dir.</p>
+      <table class="token-table">
+        <thead><tr><th style="width:160px">Kombinasyon</th><th style="width:35%">Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Description Only</strong></td>
+            <td>${crdHtml('default', { showHeader:'off', showTitleSubtitle:'off', showDescription:'on', showSegments:'off', showFooter:'off' })}</td>
+            <td>Yalnızca açıklama metni. En sade Default Card görünümü.</td>
+          </tr>
+          <tr>
+            <td><strong>Title + Description</strong></td>
+            <td>${crdHtml('default', { showHeader:'off', showTitleSubtitle:'on', showDescription:'on', showSegments:'off', showFooter:'off' })}</td>
+            <td>Body Title/Subtitle bölüm ayracı + açıklama metni.</td>
+          </tr>
+          <tr>
+            <td><strong>Title + Segments</strong></td>
+            <td>${crdHtml('default', { showHeader:'off', showTitleSubtitle:'on', showDescription:'off', showSegments:'on', activeSegments:'1,2,3', showFooter:'off' })}</td>
+            <td>Label/Value satırları ile veri listesi — Description olmadan da kullanılabilir.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Default Card konteynerinin temel görsel yapısını oluşturan token'ları listeler. Konteyner 420px genişlikte ${tk('--bt-base-default')} beyaz arka plan, ${tk('--bt-border-primary-default')} kenarlık ve ${tk('--bt-radius-md')} köşeyle tanımlanır; body ${tk('--bt-space-2xl')} padding ve ${tk('--bt-space-md')} gap alır. Blazor/Telerik'te ${tk('TelerikCard')} bileşeninin ek modifier olmayan temel haliyle uygulanır.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width</td><td>—</td><td>420px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Description</td><td>Font</td><td>${tk('--bt-text-sm-regular')}</td><td>400 · 14px/20px</td></tr>
+          <tr><td>Description</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Body Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Body Subtitle</td><td>Font / Color</td><td>${tk('--bt-subtitle-xs-regular')} / ${tk('--bt-text-primary-emphasis')}</td><td>400 · 12px/16px / #727272</td></tr>
+          <tr><td>Row · Label / Value</td><td>Font</td><td>${tk('--bt-label-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Row · Additional Text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Clickable Card">Clickable Card</h2>
+      <p class="page-desc">Tüm kartın tek bir hedefe (detay sayfası, panel, işlem) yönlendiren bir etkileşim yüzeyine dönüştürüldüğü varyant — kullanıcı kartın herhangi bir yerine tıkladığında aynı aksiyon tetiklenir. <code style="font-family:var(--mono);font-size:12px;">bt-card--clickable</code> modifier'ı hover'da mavi kenarlık ve hafif gölge, active'de ise açık mavi arka plan uygular; tüm geçişler 150ms ease transition ile gerçekleşir. Kart içine ayrıca tıklanabilir öğe (buton, link) eklenmemeli — event bubble çakışması yaratır ve kullanıcıda hangi öğenin ne yaptığını karıştırır. Blazor/Telerik'te kart kök elementine <code style="font-family:var(--mono);font-size:12px;">@onclick</code> binding eklenerek sağlanır; <code style="font-family:var(--mono);font-size:12px;">cursor: pointer</code> modifier ile otomatik gelir.</p>
+      ${registerPlayground({
+        id: 'pgd-card-clickable-sec',
+        variants: [{ key: 'default', label: 'Clickable Card' }],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'state',        label: 'State',           options: CARD_CLICKABLE_STATE_OPTS, default: 'default' },
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdClickableHtml(v, p)}</div>`,
+        code:    (v, p) => crdClickableHtml(v, p),
+        css:     (v, p) => crdClickableCss(v, p),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Clickable Card, üç görsel state arasında geçiş yapar: Default'ta standart kenarlık, Hover'da mavi kenarlık ve hafif elevation gölgesi (kart yüksekmiş hissi verir), Active'de ise gölge kaldırılarak mavi arka plan eklenir — bu, "basıldı" geri bildirimini simüle eder. Tüm geçişler <code style="font-family:var(--mono);font-size:12px;">transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease</code> ile yönetilir; state sınıfları (<code style="font-family:var(--mono);font-size:12px;">bt-card--hover</code>, <code style="font-family:var(--mono);font-size:12px;">bt-card--active</code>) sadece dokümantasyon preview'ı içindir — gerçek hover/active CSS pseudo-class'larıyla tetiklenir.</p>
+      <table class="token-table">
+        <thead><tr><th style="width:100px">State</th><th style="width:35%">Preview</th><th>Değişen özellikler</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Default</span></td>
+            <td>${crdClickableHtml('default', { showHeader:'off', showTitleSubtitle:'on', showSegments:'off', showFooter:'off', state:'default' })}</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Hover</span></td>
+            <td>${crdClickableHtml('default', { showHeader:'off', showTitleSubtitle:'on', showSegments:'off', showFooter:'off', state:'hover' })}</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Shadow → ${tk('--bt-shadow-sm')}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Active</span></td>
+            <td>${crdClickableHtml('default', { showHeader:'off', showTitleSubtitle:'on', showSegments:'off', showFooter:'off', state:'active' })}</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Background → ${tk('--bt-surface-brand-subtle')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Clickable Card'ın Default / Hover / Active state geçişleri için renk ve gölge token'larını listeler. Default ${tk('--bt-border-primary-default')} gri kenarlıkla, Hover ${tk('--bt-border-brand-default')} mavi kenarlık ve ${tk('--bt-shadow-sm')} gölgeyle, Active ise ${tk('--bt-surface-brand-subtle')} açık mavi arka planla gösterilir. Tüm geçişler 150ms ease transition ile animasyonlanır. Blazor/Telerik'te ${tk('bt-card--clickable')} CSS modifier'ı ve ${tk('@onclick')} binding ile uygulanır.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default · Border</td><td>Stroke</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover · Shadow</td><td>Box Shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Active · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Cursor</td><td>—</td><td>—</td><td>pointer</td></tr>
+          <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease (border-color, box-shadow, background)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Selectable Card">Selectable Card</h2>
+      <p class="page-desc">Çoklu seçim listelerinde kullanılan varyant — plan seçimi, filtre kartları, kategori seçimi gibi bağlamlarda her kart tıklandığında seçim durumunu bağımsız toggle eder. Default state sade kenarlık gösterirken <code style="font-family:var(--mono);font-size:12px;">bt-card--selected</code> class'ı mavi kenarlık ve açık mavi arka plan uygular; Clickable Card'dan farkı tek yönlü navigasyon yerine kalıcı seçim durumu tutmasıdır ve aynı anda birden fazla kart seçili olabilir. Hover state, Clickable ile aynı mavi kenarlık + gölgeyi paylaşır; Selected state hover'ın üstüne geçer. Blazor'da <code style="font-family:var(--mono);font-size:12px;">bool IsSelected</code> property'si ve class binding ile yönetilir; <code style="font-family:var(--mono);font-size:12px;">bt-card--selectable</code> modifier zorunludur.</p>
+      ${registerPlayground({
+        id: 'pgd-card-selectable-sec',
+        variants: [{ key: 'default', label: 'Selectable Card' }],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'initialState', label: 'Initial State', options: CARD_SEL_STATE_OPTS, default: 'first' },
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdSelectableHtml(v, p)}</div>`,
+        code:    (v, p) => crdSelectableHtml(v, p),
+        css:     ()     => crdSelectableCss(),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Selectable Card, üç temel state'e sahiptir: Default (standart kenarlık, seçim yok), Hover (mavi kenarlık + hafif gölge — "seçilebilir" olduğunu ima eder), Selected (<code style="font-family:var(--mono);font-size:12px;">bt-card--selected</code> class'ıyla mavi kenarlık + açık mavi arka plan kalıcı olarak uygulanır). Selected state, hover üstüne yazılır — kullanıcı seçili bir kartın üzerine geldiğinde görünüm değişmez. Playground'da üç kart yan yana gösterilir; her birine tıklanarak toggle davranışı test edilebilir.</p>
+      <table class="token-table">
+        <thead><tr><th style="width:100px">State</th><th style="width:35%">Preview</th><th>Değişen özellikler</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Default</span></td>
+            <td>${_crdSelCard({ showDescription:'on' }, false, 'Card Title')}</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Hover</span></td>
+            <td><div class="bt-card bt-card--selectable" style="width:220px;max-width:220px;border-color:var(--bt-border-brand-default,#0d4e97);box-shadow:var(--bt-shadow-sm)"><div class="bt-card__body"><p class="bt-card__description">Description for additional information displayed below the title to clarify the purpose of the section.</p></div></div></td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Shadow → ${tk('--bt-shadow-sm')}</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Selected</span></td>
+            <td>${_crdSelCard({ showDescription:'on' }, true, 'Card Title')}</td>
+            <td>Border → ${tk('--bt-border-brand-default')} · Background → ${tk('--bt-surface-brand-subtle')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Anatomy</h3>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Default · Border</td><td>Stroke</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Hover · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover · Shadow</td><td>Box Shadow</td><td>${tk('--bt-shadow-sm')}</td><td>0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10)</td></tr>
+          <tr><td>Selected · Border</td><td>Stroke</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Selected · Background</td><td>Fill</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Transition</td><td>Duration</td><td>—</td><td>150ms ease (border-color, box-shadow, background)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Collapsible Card">Collapsible Card</h2>
+      <p class="page-desc">Header'ın sağ control slotundaki chevron butonuyla body içeriğinin daraltılıp genişletilebildiği varyant — detay bilgilerinin ikincil önem taşıdığı, başlangıçta gizlenmesinin tercih edildiği listelerde sayfa yoğunluğunu azaltır. Collapsed state'de body <code style="font-family:var(--mono);font-size:12px;">max-height: 32px</code> ile kısmi bir teaser önizleme gösterir; alt kenardaki blur/fade efekti (Description + Segments birlikte) kullanıcıya daha fazla içerik olduğunu ima eder. Genişleme 250ms ease transition ile animasyonludur; <code style="font-family:var(--mono);font-size:12px;">bt-card--expanded</code> class'ı hem chevron'ın 180° dönüşünü hem de max-height'ı <code style="font-family:var(--mono);font-size:12px;">600px</code>'e çıkarmayı yönetir. Blazor/Telerik'te Header'daki Button control'ün <code style="font-family:var(--mono);font-size:12px;">@onclick</code>'i <code style="font-family:var(--mono);font-size:12px;">IsExpanded</code> state'ini toggle eder ve class binding ile <code style="font-family:var(--mono);font-size:12px;">bt-card--expanded</code> sınıfı uygulanır.</p>
+      ${registerPlayground({
+        id: 'pgd-card-collapsible-sec',
+        variants: [{ key: 'default', label: 'Collapsible Card' }],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1,2,3').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'collapseState', label: 'State',       options: CARD_COLLAPSE_STATE_OPTS, default: 'collapsed' },
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'button' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS, default: 'on' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1,2,3' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'off' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdCollapsibleHtml(v, p)}</div>`,
+        code:    (v, p) => crdCollapsibleHtml(v, p),
+        css:     (v, p) => crdCollapsibleCss(v, p),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Collapsible Card iki karşıt state arasında geçiş yapar: Collapsed (daraltılmış) ve Expanded (genişletilmiş). Collapsed state'de body içeriği 32px teaser alanına sıkıştırılır ve alt kenarda blur/fade efekti belirir — bu efekt kasıtlı olarak içeriği tamamen gizlemez, kullanıcıya "devamı var" sinyali verir. Expanded state'de tüm içerik görünür, chevron 180° döner (yukarı ok). State geçişi <code style="font-family:var(--mono);font-size:12px;">bt-card--expanded</code> class'ının toggle'ıyla gerçekleşir; <code style="font-family:var(--mono);font-size:12px;">max-height</code> transition animasyonu 250ms sürer.</p>
+      <table class="token-table">
+        <thead><tr><th style="width:100px">State</th><th style="width:35%">Preview</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="token-name">Collapsed</span></td>
+            <td>${crdCollapsibleHtml('default', { collapseState:'collapsed', rightControl:'button', showDescription:'on', showSegments:'on', activeSegments:'1,2,3' })}</td>
+            <td>Segments kısmi görünür (32px teaser, giderek belirginleşen blur/fade). Chevron aşağı bakar.</td>
+          </tr>
+          <tr>
+            <td><span class="token-name">Expanded</span></td>
+            <td>${crdCollapsibleHtml('default', { collapseState:'expanded', rightControl:'button', showDescription:'on', showSegments:'on', activeSegments:'1,2,3' })}</td>
+            <td>Tüm segments görünür. Chevron 180° döner (yukarı ok). Chevron butonuna tekrar tıklanarak kapatılır.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Anatomy</h3>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Border / Radius</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-radius-md')}</td><td>#d4d4d4 / 6px</td></tr>
+          <tr><td>Trigger · Chevron</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Chevron · Collapsed</td><td>Transform</td><td>—</td><td>rotate(0deg) — aşağı ok (▾)</td></tr>
+          <tr><td>Chevron · Expanded</td><td>Transform</td><td>—</td><td>rotate(180deg) — yukarı ok (▴); transition 250ms ease</td></tr>
+          <tr><td>Collapse Content · Collapsed</td><td>Max-height</td><td>—</td><td>32px (teaser, tam gizli değil)</td></tr>
+          <tr><td>Collapse Content · Expanded</td><td>Max-height</td><td>—</td><td>600px; transition 250ms ease</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Konum / Boyut</td><td>—</td><td>Body ::after — alt kenarda 64px, sadece collapsed state'de</td></tr>
+          <tr><td>Body · Fade/Blur</td><td>Backdrop-filter</td><td>—</td><td>blur(16px); mask-image ile üstten alta belirginleşir</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Scrollable Card">Scrollable Card</h2>
+      <p class="page-desc">Header ve Footer her zaman görünür kalırken sadece Body'nin scroll olduğu varyant — uzun açıklama metinleri veya çok sayıda Row Segment içeren içeriklerde kart yüksekliğini sabit tutmak için kullanılır. Body'ye <code style="font-family:var(--mono);font-size:12px;">height: 120px; overflow-y: auto</code> uygulanır; <code style="font-family:var(--mono);font-size:12px;">max-height</code> değil sabit height bilinçli bir tasarım kararıdır — içerik kısa olsa bile body küçülmez, böylece kartlardan oluşan listelerde tüm elemanlar aynı yükseklikte kalır ve grid hizalaması bozulmaz. <code style="font-family:var(--mono);font-size:12px;">bt-card--scrollable</code> modifier'ı yalnızca <code style="font-family:var(--mono);font-size:12px;">.bt-card__body</code>'ye hedeflenir; Header ve Footer <code style="font-family:var(--mono);font-size:12px;">flex-shrink: 0</code> ile scroll dışında sabit kalır. Blazor/Telerik'te modifier class, kart body wrapper'ına eklenir.</p>
+      ${registerPlayground({
+        id: 'pgd-card-scrollable-sec',
+        variants: [{ key: 'default', label: 'Scrollable Card' }],
+        props: (p) => {
+          const activeSegs = (p.activeSegments != null ? p.activeSegments : '1').split(',').filter(Boolean);
+          const segProps = [];
+          [1,2,3,4,5].filter(n => activeSegs.includes(String(n))).forEach(n => {
+            segProps.push(
+              { key: `seg${n}LeftControl`,         label: 'Left Control',          group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'icon' },
+              { key: `seg${n}LeftAdditionalText`,  label: 'Left Additional Text',  group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}RightControl`,        label: 'Right Control',         group: `Segment ${n}`, options: CARD_CONTROL_OPTS, default: 'none' },
+              { key: `seg${n}RightAdditionalText`, label: 'Right Additional Text', group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'off'  },
+              { key: `seg${n}ShowLabel`,           label: 'Show Label',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+              { key: `seg${n}ShowValue`,           label: 'Show Value',            group: `Segment ${n}`, options: TBX_BOOL_OPTS,     default: 'on'   },
+            );
+          });
+          return [
+            { key: 'showHeader',   label: 'Show',          group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'type',         label: 'Type',          group: 'Header', options: CARD_TYPE_OPTS,     default: 'bordered' },
+            { key: 'background',   label: 'Background',    group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'position',     label: 'Position',      group: 'Header', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'showSubtitle', label: 'Subtitle',      group: 'Header', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'leftControl',  label: 'Left Control',  group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'rightControl', label: 'Right Control', group: 'Header', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showTitleSubtitle',        label: 'Show',          group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitlePosition',     label: 'Position',      group: 'Body Title/Subtitle', options: CARD_POSITION_OPTS, default: 'left' },
+            { key: 'titleSubtitleSubtitle',     label: 'Subtitle',      group: 'Body Title/Subtitle', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'titleSubtitleLeftControl',  label: 'Left Control',  group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'titleSubtitleRightControl', label: 'Right Control', group: 'Body Title/Subtitle', options: CARD_CONTROL_OPTS,  default: 'none' },
+            { key: 'showDescription',  label: 'Description', group: 'Body', options: TBX_BOOL_OPTS,      default: 'on' },
+            { key: 'showSegments',     label: 'Segments',    group: 'Body', options: TBX_BOOL_OPTS,      default: 'off' },
+            { key: 'activeSegments',   label: 'Active',      group: 'Body', type: 'multiselect', options: [{key:'1',label:'1'},{key:'2',label:'2'},{key:'3',label:'3'},{key:'4',label:'4'},{key:'5',label:'5'}], default: '1' },
+            ...segProps,
+            { key: 'showFooter',     label: 'Show',            group: 'Footer', options: TBX_BOOL_OPTS,     default: 'on' },
+            { key: 'footerBtnPos',   label: 'Button Position', group: 'Footer', options: CARD_BTN_POS_OPTS, default: 'horizontal' },
+            { key: 'footerSegments', label: 'Segments',        group: 'Footer', options: CARD_SEG_OPTS,     default: '2' },
+          ];
+        },
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${crdScrollableHtml(v, p)}</div>`,
+        code:    (v, p) => crdScrollableHtml(v, p),
+        css:     ()     => crdScrollableCss(),
+      })}
+
+      <h3>Anatomy</h3>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Width / Border / Radius</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-radius-md')}</td><td>420px / #d4d4d4 / 6px</td></tr>
+          <tr><td>Header / Footer</td><td>Flex-shrink</td><td>—</td><td>0 — scroll ile küçülmez, her zaman görünür kalır</td></tr>
+          <tr><td>Body</td><td>Height</td><td>—</td><td>120px sabit (max-height değil — içerik azsa da küçülmez)</td></tr>
+          <tr><td>Body</td><td>Overflow-y</td><td>—</td><td>auto — içerik taşarsa scroll çubuğu belirir</td></tr>
+          <tr><td>Body</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>Gap</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
         </tbody>
       </table>
     `};
@@ -9884,8 +10367,10 @@ function gridHeaderCellHtml(opts) {
   // sort'un tüm header'ı kapsayan click'ini tetiklemesin diye.
   const filterHtml   = showFilter ? `<span class="bt-grid__control"><button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon bt-grid__filter-btn" aria-label="Filter" onclick="event.stopPropagation();btGridFilterToggle(event,this)">${gridControlIcon(_gridIconFunnel)}</button></span>` : '';
   const rightHtml    = showRight  ? `<span class="bt-grid__control">${gridControlIcon(_gridIconEllipsis)}</span>` : '';
-  // Resize handle — sadece metin içerikli kolonlarda (checkbox-only kolonlarda yok)
-  const resizeHandle = showContent ? `<span class="bt-grid__resize-handle" onmousedown="btGridResizeStart(event,this)"></span>` : '';
+  // Resize handle — sadece metin içerikli kolonlarda (checkbox-only kolonlarda yok).
+  // position==='right' (son kolon) için render edilmez: right:-3px ile 3px dışarı
+  // taşar, bt-grid-scroll-x'te gereksiz horizontal scrollbar tetikler.
+  const resizeHandle = (showContent && position !== 'right') ? `<span class="bt-grid__resize-handle" onmousedown="btGridResizeStart(event,this)"></span>` : '';
 
   const widthStyleH = fillWidth ? `flex:1;min-width:${width}px;` : `width:${width}px;`;
   return `<div class="${cls}" style="${widthStyleH}box-sizing:border-box;${stickyStyle}"${sortClickAttrs}${sortDirAttr}>${leftHtml}${checkboxHtml}${contentHtml}${sortHtml}${filterHtml}${rightHtml}${resizeHandle}</div>`;
@@ -10162,14 +10647,14 @@ function gridTableColumns(p) {
   const showFilter    = p.showFilter === 'on';
   return [
     showCheckboxCol ? { width: 44, headerLeading: 'checkbox', cellLeading: 'checkbox' } : null,
-    { width: 90,  headerText: 'ID',    field: 'id',   contentLink: true, cellLeading: idContent.leading,   cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
-    { width: 200, headerText: 'Name',  field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
-    { width: 160, headerText: 'Role',  field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
+    { width: 72,  headerText: 'ID',    field: 'id',   contentLink: true, cellLeading: idContent.leading,   cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 148, headerText: 'Name',  field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
+    { width: 120, headerText: 'Role',  field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
     // statusLabel — _gridTableRowsData'da zaten var olan satır-bazlı
     // Active/Completed/Pending/Inactive değeri; Status'un "field"ı bu
     // (diğer kolonlarla AYNI field mekanizmasını kullanabilsin diye).
-    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
-    { width: 180, headerText: 'Email', field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 108, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
+    { width: 80, headerText: 'Email', field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
   ].filter(Boolean);
 }
 
@@ -10206,10 +10691,10 @@ function gridActionsColumns(p) {
   return [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
     { width: 80,  headerText: 'ID',     field: 'id',   contentLink: true, cellLeading: idContent.leading, cellTrailing: idContent.trailing, sort: showSort, filter: showFilter },
-    { width: 170, headerText: 'Name',   field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
-    { width: 140, headerText: 'Role',   field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
-    statusKind !== 'none' ? { width: 130, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
-    { width: 180, headerText: 'Email',  field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
+    { width: 148, headerText: 'Name',   field: 'name', cellLeading: nameContent.leading, cellTrailing: nameContent.trailing, sort: showSort, filter: showFilter },
+    { width: 120, headerText: 'Role',   field: 'role', cellLeading: roleContent.leading, cellTrailing: roleContent.trailing, sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 108, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, cellTrailing: statusContent.trailing, sort: showSort, filter: showFilter } : null,
+    { width: 100, headerText: 'Email',  field: 'email', fillWidth: true, cellLeading: emailContent.leading, cellTrailing: emailContent.trailing, sort: showSort, filter: showFilter },
     actionsKind !== 'none' ? { width: (actionsKind === 'textbox' || actionsKind === 'dropdown') ? 140 : 130, headerText: 'Actions', cellLeading: actionsContent.leading, cellTrailing: actionsContent.trailing } : null,
   ].filter(Boolean);
 }
@@ -10461,88 +10946,6 @@ function gridFrozenTableCss(_, props) {
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
-
-PAGES_WEB['components/data-table-frozen-column'] = {
-  tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Frozen Column'],
-  render(tab) {
-    const title = 'Data Table Frozen Column';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Frozen Column için kullanılan ek token'lar — geri kalan tüm hücre/kontrol token'ları için bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a> sayfasının CSS Properties tab'ı.</p>
-      <table class="token-table">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Scroll Wrapper</td><td>Class</td><td>—</td><td>${tk('.bt-grid-scroll-x')} (overflow-x: auto)</td></tr>
-          <tr><td>Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / 5</td></tr>
-          <tr><td>Donmuş Kenar</td><td>Shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035) — token'a bağlı olmayan, bu edge-fade efektine özel yumuşak/geniş-blur'lu bespoke gölge (<code style="font-family:var(--mono);font-size:12px;">.bt-grid__cell--frozen-edge</code>)</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Frozen Column kullanım kılavuzu.</p>
-      <h2>Do</h2>
-      <ul>
-        <li>Sadece kimlik/seçim bilgisini taşıyan kolonları dondur — Checkbox, Avatar+isim gibi satırı her zaman tanımlaması gereken kolonlar</li>
-        <li>Donmuş alanın sağ kenarında her zaman bir ayrım göstergesi (gölge) bırak — kullanıcı hangi kolonların sabit kaldığını görebilmeli</li>
-        <li>Çok kolonlu, gerçekten yatay scroll gerektiren tablolarda kullan — az kolonlu tablolarda gereksiz karmaşıklık yaratır</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Tablonun yarısından fazlasını dondurma — donmuş alan arttıkça scroll edilebilir/asıl veri alanı daralır</li>
-        <li>Action/Status gibi bağlamsal kolonları dondurma — bunlar genelde ilgili satırın diğer verileriyle birlikte okunur</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc">Data Table'ın, kolon sayısı arttığında ilk 1-2 kolonu (genelde Checkbox + isim) yatay scroll sırasında sabit tutan varyasyonu — <code style="font-family:var(--mono);font-size:12px;">position: sticky</code> ile, hücreleri yeniden yazmadan uygulanır. Aynı <code style="font-family:var(--mono);font-size:12px;">gridHeaderCellHtml</code>/<code style="font-family:var(--mono);font-size:12px;">gridCellHtml</code> yapı taşları reuse edilir, sadece ilgili hücrelere <code style="font-family:var(--mono);font-size:12px;">sticky</code>/<code style="font-family:var(--mono);font-size:12px;">frozenEdge</code> parametreleri geçilir.</p>
-
-      <h2 id="Frozen Column">Frozen Column</h2>
-      ${registerPlayground({
-        id: 'pgd-datatable-frozen-overview',
-        variants: [{ key: 'default', label: 'Frozen Column' }],
-        props: [
-          { key: 'rowCount',     label: 'Rows',            group: 'Table', options: GRID_TABLE_ROW_OPTS,     default: '6' },
-          { key: 'rowState',     label: 'Row State',       group: 'Table', options: GRID_STATE_OPTS,         default: 'default' },
-          { key: 'frozenCount',  label: 'Frozen Columns',  group: 'Table', options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
-          { key: 'showSort',     label: 'Sort',            group: 'Table', options: TBX_BOOL_OPTS,           default: 'off' },
-          { key: 'showFilter',   label: 'Filter',          group: 'Table', options: TBX_BOOL_OPTS,           default: 'off' },
-          // ID/Name/Role/Department/Location/Last Login/Status/Email — TÜMÜ
-          // AYNI generic content-kind mekanizması (kullanıcı isteğiyle: "tüm
-          // örneklerde tüm kolonların properties'i olmalı", bkz. HISTORY.md).
-          { key: 'idContent',         label: 'ID Content',          group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',       label: 'Name Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'roleContent',       label: 'Role Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'departmentContent', label: 'Department Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'locationContent',   label: 'Location Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'lastLoginContent',  label: 'Last Login Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'statusContent',     label: 'Status Column',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',      label: 'Email Content',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-        ],
-        preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div></div>`,
-        code:    (v, p) => gridFrozenTableHtml(p),
-        css:     (v, p) => gridFrozenTableCss(v, p),
-      })}
-
-      <p class="page-desc">Tabloyu yatay kaydır — <strong>Frozen Columns</strong> ile seçilen ilk 1 ya da 2 kolon (Checkbox / Checkbox + Name) yerinde kalırken Role/Department/Email/Location/Status/Last Login/Actions kolonları altından kayar. Donmuş alanın sağ kenarındaki ince gölge, sabit kalan alanı görsel olarak ayırır.</p>
-
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Scroll Wrapper</td><td>Overflow</td><td>—</td><td>${tk('.bt-grid-scroll-x')} → overflow-x: auto</td></tr>
-          <tr><td>Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
-          <tr><td>Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5 (kaydırılan hücrelerin üzerinde kalması için)</td></tr>
-          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035) — bespoke, yumuşak edge-fade</td></tr>
-        </tbody>
-      </table>
-    `};
-  },
-};
-
 // ── Data Table Frozen Column Last ────────────────────────────────
 // Frozen Column First ile aynı tablo yapısı — ek olarak sağdaki Actions
 // kolonu da position:sticky;right:0 ile dondurulur. Sola dondurulmuş
@@ -10689,94 +11092,6 @@ function gridFrozenLastTableCss(_, props) {
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
-
-PAGES_WEB['components/data-table-frozen-column-last'] = {
-  tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Frozen Column Last'],
-  render(tab) {
-    const title = 'Frozen Column Last';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Frozen Column Last için kullanılan ek token'lar — sol taraf token'ları Frozen Column First ile aynıdır. Sağdan donmuş kenar için ters yönlü gölge eklenir.</p>
-      <table class="token-table">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Scroll Wrapper</td><td>Class</td><td>—</td><td>${tk('.bt-grid-scroll-x')} (overflow-x: auto)</td></tr>
-          <tr><td>Soldan Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / left / 5</td></tr>
-          <tr><td>Sağdan Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / right: 0 / 5</td></tr>
-          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035) — sağa doğru, bespoke yumuşak gölge</td></tr>
-          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035) — sola doğru, bespoke yumuşak gölge</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Frozen Column Last kullanım kılavuzu.</p>
-      <h2>Do</h2>
-      <ul>
-        <li>Actions kolonunu sağdan dondur — kullanıcı yatay scroll yaparken eylem butonlarına her zaman erişebilmeli</li>
-        <li>Sol ve sağ donmuş alanların her ikisinde de kenar gölgesi bırak — ayrım noktaları net görünmeli</li>
-        <li>Çok kolonlu, gerçekten yatay scroll gerektiren tablolarda kullan</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Birden fazla kolonu sağdan dondurma — bu, kaydırılabilir alanı ciddi ölçüde daraltır</li>
-        <li>Az kolonlu tablolarda kullanma — scroll olmayan bir tabloda sticky anlamsız kalır</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc">Frozen Column First ile aynı tablo yapısı — ek olarak sağdaki <strong>Actions</strong> kolonu da <code style="font-family:var(--mono);font-size:12px;">position: sticky; right: 0</code> ile sabit tutulur. Kaydırma sırasında hem sol kimlik kolonları hem sağ eylem kolonu görünür kalırken orta kolonlar kayar.</p>
-
-      <h2 id="Frozen Column Last">Frozen Column Last</h2>
-      ${registerPlayground({
-        id: 'pgd-datatable-frozen-last-overview',
-        variants: [{ key: 'default', label: 'Frozen Column Last' }],
-        props: [
-          { key: 'rowCount',    label: 'Rows',           group: 'Table', options: GRID_TABLE_ROW_OPTS,    default: '6' },
-          { key: 'rowState',    label: 'Row State',      group: 'Table', options: GRID_STATE_OPTS,        default: 'default' },
-          { key: 'frozenCount', label: 'Frozen Columns', group: 'Table', options: GRID_FROZEN_COUNT_OPTS, default: '2' },
-          { key: 'showSort',    label: 'Sort',           group: 'Table', options: TBX_BOOL_OPTS,          default: 'off' },
-          { key: 'showFilter',  label: 'Filter',         group: 'Table', options: TBX_BOOL_OPTS,          default: 'off' },
-          // ID/Name/Role/Department/Location/Last Login/Status/Email — TÜMÜ
-          // AYNI generic content-kind mekanizması; Actions da Data Table
-          // Actions'la AYNI actionsContent mekanizması (kullanıcı isteğiyle:
-          // "tüm örneklerde tüm kolonların properties'i olmalı", bkz. HISTORY.md).
-          { key: 'idContent',         label: 'ID Content',          group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',       label: 'Name Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'roleContent',       label: 'Role Content',        group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'departmentContent', label: 'Department Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'locationContent',   label: 'Location Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'lastLoginContent',  label: 'Last Login Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'statusContent',     label: 'Status Column',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',      label: 'Email Content',       group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'actionsContent', label: 'Actions Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
-        ],
-        preview: (v, p) => `<div style="padding:24px 24px 40px;overflow-x:auto;"><div style="display:flex;flex-direction:column;height:356px;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div></div>`,
-        code:    (v, p) => gridFrozenLastTableHtml(p),
-        css:     (v, p) => gridFrozenLastTableCss(v, p),
-      })}
-
-      <p class="page-desc">Tabloyu yatay kaydır — soldan seçilen kolonlar (Checkbox / Checkbox + Name) ve sağdaki <strong>Actions</strong> kolonu yerinde kalırken orta kolonlar (Role/Department/Location/Last Login/Status/Email) altından kayar. Her iki donmuş alanın kenarında ince gölge, sınırı görsel olarak ayırır.</p>
-
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Scroll Wrapper</td><td>Overflow</td><td>—</td><td>${tk('.bt-grid-scroll-x')} → overflow-x: auto</td></tr>
-          <tr><td>Sol Donmuş Hücre</td><td>Position / Left</td><td>—</td><td>sticky / önceki donmuş kolonların toplam genişliği</td></tr>
-          <tr><td>Sağ Donmuş Hücre</td><td>Position / Right</td><td>—</td><td>sticky / 0px</td></tr>
-          <tr><td>Her İki Donmuş Hücre</td><td>Z-index</td><td>—</td><td>5</td></tr>
-          <tr><td>Sol Donmuş Kenar</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)</td></tr>
-          <tr><td>Sağ Donmuş Kenar</td><td>Box-shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035)</td></tr>
-        </tbody>
-      </table>
-    `};
-  },
-};
-
 // ── Data Table Actions ───────────────────────────────────────────
 // Actions kolonu — Button (primary-solid + More menu), Satır İçi TextBox,
 // Satır İçi Dropdown seçeneklerini ayrı bir sayfada demo eder.
@@ -10869,101 +11184,6 @@ function gridActionsTableCss(_, props) {
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
-
-PAGES_WEB['components/data-table-actions'] = {
-  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table Actions'],
-  render(tab) {
-    const title = 'Data Table Actions';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'Examples') return { title, html: `
-      <h2>Button</h2>
-      <p class="page-desc">Birincil eylem (örn. Düzenle) ve üç nokta More menüsü (Düzenle / Kopyala / Sil) — satır tıklamasını tetiklemeden bağımsız çalışır.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-actions-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'button' })}</div></div></div>
-
-      <h2>Satır İçi TextBox</h2>
-      <p class="page-desc">Hücre içinde doğrudan düzenlenebilir metin alanı — kayıt açmadan tabloda inline düzenleme için.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-actions-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'textbox' })}</div></div></div>
-
-      <h2>Satır İçi Dropdown</h2>
-      <p class="page-desc">Hücre içinde seçim yapılabilen açılır liste — durum, kategori veya atama gibi sınırlı seçenek setleri için.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:260px;"><div class="bt-grid-actions-container">${gridActionsTableHtml({ rowCount: '4', actionsContent: 'dropdown' })}</div></div></div>
-    `};
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <table class="token-table">
-        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>${tk('--bt-space-md')}</td><td>Cell padding</td><td>8px</td></tr>
-          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
-          <tr><td>${tk('--bt-border-primary-default')}</td><td>Cell border-bottom</td><td>#d4d4d4</td></tr>
-          <tr><td>${tk('--bt-base-subtle')}</td><td>Row hover background</td><td>#f5f5f5</td></tr>
-          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Row selected background</td><td>#e2edfc</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <h2>Do</h2>
-      <ul>
-        <li>Actions kolonu her zaman tablonun son kolonu olmalı.</li>
-        <li>Satır İçi TextBox/Dropdown, doğrudan tabloda düzenleme gerektiren durumlarda kullan.</li>
-        <li>Button + More menüsünü beş veya daha fazla satır içeren tablolarda tercih et.</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Actions kolonunu birden fazla ekleme; tüm eylemler tek bir kolon içinde gruplanmalı.</li>
-        <li>Button varyantında More menüsüne beşten fazla öğe ekleme.</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc">Data Table'ın Actions kolonu, her satır için hızlı işlem kontrollerini sağlar: <strong>Button</strong> (birincil eylem + More overflow menüsü), <strong>Satır İçi TextBox</strong> ve <strong>Satır İçi Dropdown</strong>.</p>
-
-      <h2 id="Data Table Actions">Data Table Actions</h2>
-      ${registerPlayground({
-        id: 'pgd-datatable-actions-overview',
-        variants: [{ key: 'default', label: 'Data Table Actions' }],
-        props: [
-          { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
-          { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
-          { key: 'showSort',      label: 'Sort',           group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
-          { key: 'showFilter',    label: 'Filter',         group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
-          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
-          // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
-          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
-        ],
-        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:flex;flex-direction:column;height:356px;">
-            <div class="bt-grid-actions-container">${gridActionsTableHtml(p)}</div>
-          </div>
-        </div>`,
-        code: (v, p) => gridActionsTableHtml(p),
-        css:  (v, p) => gridActionsTableCss(v, p),
-      })}
-
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Actions Cell · Button</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
-          <tr><td>Actions Cell · More</td><td>Icon Button</td><td>—</td><td>${tk('bt-btn--base-flat bt-btn--icon')}</td></tr>
-          <tr><td>Actions Cell · TextBox</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Actions Cell · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
-          <tr><td>Cell Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
-        </tbody>
-      </table>
-    `};
-  },
-};
-
 // ── Data Table Inline Editing ────────────────────────────────────
 // Satır bazlı düzenleme — Figma'da ayrı bir component YOK, kullanıcı
 // isteğiyle sıfırdan tasarlandı (bkz. HISTORY.md): Actions kolonundaki Edit
@@ -11002,11 +11222,11 @@ function gridInlineEditColumns(p) {
   return [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
     { width: 80,  headerText: 'ID',      field: 'id',          contentLink: true, cellLeading: idContent.leading, trailing: idContent.trailing, sort: showSort, filter: showFilter },
-    { width: 170, headerText: 'Name',    field: 'name',        cellLeading: nameContent.leading, trailing: nameContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
-    { width: 130, headerText: 'Role',    field: 'role',        cellLeading: roleContent.leading, trailing: roleContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
-    statusKind !== 'none' ? { width: 120, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, trailing: statusContent.trailing, editable: true, editKind: 'dropdown', sort: showSort, filter: showFilter } : null,
-    { width: 170, headerText: 'Email',   field: 'email',       fillWidth: true, cellLeading: emailContent.leading, trailing: emailContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
-    { width: 170, headerText: 'Actions', actionsCell: true },
+    { width: 148, headerText: 'Name',    field: 'name',        cellLeading: nameContent.leading, trailing: nameContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 120, headerText: 'Role',    field: 'role',        cellLeading: roleContent.leading, trailing: roleContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 108, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, trailing: statusContent.trailing, editable: true, editKind: 'dropdown', sort: showSort, filter: showFilter } : null,
+    { width: 100, headerText: 'Email',   field: 'email',       fillWidth: true, cellLeading: emailContent.leading, trailing: emailContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 160, headerText: 'Actions', actionsCell: true },
   ].filter(Boolean);
 }
 
@@ -11083,99 +11303,6 @@ function gridInlineEditTableCss(_, props) {
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
-
-PAGES_WEB['components/data-table-inline-editing'] = {
-  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table Inline Editing'],
-  render(tab) {
-    const title = 'Data Table Inline Editing';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'Examples') return { title, html: `
-      <h2>View Mode</h2>
-      <p class="page-desc">Normal durumda satır sadece metin/badge gösterir, Actions kolonunda Edit (primary) ve Delete (flat) butonları bekler.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml({ rowCount: '2' })}</div></div></div>
-
-      <h2>Edit Mode</h2>
-      <p class="page-desc">Edit butonuna tıklandıktan sonra: Name/Role/Status/Email AYNI ANDA gerçek input/dropdown'a döner, Actions Save/Cancel gösterir.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml({ rowCount: '2', forceEditRowIndex: 0 })}</div></div></div>
-    `};
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <table class="token-table">
-        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>${tk('--bt-space-md')}</td><td>Cell / edit input padding</td><td>8px</td></tr>
-          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
-          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Selected row background</td><td>#e2edfc</td></tr>
-          <tr><td>${tk('bt-btn--primary-solid')}</td><td>Save button</td><td>—</td></tr>
-          <tr><td>${tk('bt-btn--secondary-flat')}</td><td>Cancel button</td><td>—</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <h2>Do</h2>
-      <ul>
-        <li>Bir seferde sadece BİR satırın düzenleme modunda olmasına izin ver — kullanıcı başka bir satırın kalemine tıklarsa önce mevcut satırı kaydet/iptal ettir.</li>
-        <li>Kaydetmeden vazgeçilebilecek her alan için Cancel'ın orijinal değere geri döndüğünden emin ol.</li>
-        <li>Çok sayıda alanı aynı anda düzenlemek gerektiğinde (3+) Inline Editing'i tercih et — InCell Editing tek alan değişikliklerinde daha hızlıdır.</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>ID gibi değişmeyen/anahtar kolonları editable yapma.</li>
-        <li>Save/Cancel olmadan satırı sessizce edit modunda bırakma — kullanıcı her zaman açık bir çıkış yolu görmeli.</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc"><strong>Inline Editing</strong>, satır bazlı düzenlemedir: Actions kolonundaki Edit butonuna tıklandığında satırın TÜM düzenlenebilir hücreleri (Name/Role/Status/Email) aynı anda gerçek input/dropdown'a döner, Actions Save/Cancel çiftine dönüşür. Hücre bazlı anlık düzenleme için bkz. <a href="#" onclick="navigate('components/data-table-incell-editing');return false;">InCell Editing</a>.</p>
-
-      <h2 id="Data Table Inline Editing">Data Table Inline Editing</h2>
-      ${registerPlayground({
-        id: 'pgd-datatable-inline-editing-overview',
-        variants: [{ key: 'default', label: 'Data Table Inline Editing' }],
-        props: [
-          { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '3' },
-          { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
-          { key: 'showSort',   label: 'Sort',      group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
-          { key: 'showFilter', label: 'Filter',    group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
-          // View içeriği (editable/editKind'tan BAĞIMSIZ) — diğer TÜM Data
-          // Table sayfalarıyla AYNI generic content-kind mekanizması
-          // (kullanıcı isteğiyle, bkz. HISTORY.md).
-          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-        ],
-        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:flex;flex-direction:column;height:280px;">
-            <div class="bt-grid-actions-container">${gridInlineEditTableHtml(p)}</div>
-          </div>
-        </div>`,
-        code: (v, p) => gridInlineEditTableHtml(p),
-        css:  (v, p) => gridInlineEditTableCss(v, p),
-      })}
-
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Trigger</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')} (Edit)</td></tr>
-          <tr><td>Delete</td><td>Secondary Button</td><td>—</td><td>${tk('bt-btn--secondary-flat')}</td></tr>
-          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
-          <tr><td>Save</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
-          <tr><td>Cancel</td><td>Secondary Button</td><td>—</td><td>${tk('bt-btn--secondary-flat')}</td></tr>
-          <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__row--editing')} (satır seviyesi)</td></tr>
-        </tbody>
-      </table>
-    `};
-  },
-};
-
 // ── Data Table InCell Editing ────────────────────────────────────
 // Hücre bazlı düzenleme — Figma'da ayrı bir component YOK, kullanıcı
 // isteğiyle sıfırdan tasarlandı (Excel/Google Sheets deseni, bkz.
@@ -11204,11 +11331,11 @@ function gridIncellEditColumns(p) {
   const emailContent  = gridContentKindToSlots(pp.emailContent  || 'none');
   return [
     { width: 44,  headerLeading: 'checkbox', cellLeading: 'checkbox' },
-    { width: 90,  headerText: 'ID',     field: 'id',          contentLink: true, cellLeading: idContent.leading, trailing: idContent.trailing, sort: showSort, filter: showFilter },
-    { width: 200, headerText: 'Name',   field: 'name',        cellLeading: nameContent.leading, trailing: nameContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
-    { width: 160, headerText: 'Role',   field: 'role',        cellLeading: roleContent.leading, trailing: roleContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
-    statusKind !== 'none' ? { width: 140, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, trailing: statusContent.trailing, editable: true, editKind: 'dropdown', sort: showSort, filter: showFilter } : null,
-    { width: 220, headerText: 'Email',  field: 'email',       fillWidth: true, cellLeading: emailContent.leading, trailing: emailContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 80,  headerText: 'ID',     field: 'id',          contentLink: true, cellLeading: idContent.leading, trailing: idContent.trailing, sort: showSort, filter: showFilter },
+    { width: 168, headerText: 'Name',   field: 'name',        cellLeading: nameContent.leading, trailing: nameContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    { width: 136, headerText: 'Role',   field: 'role',        cellLeading: roleContent.leading, trailing: roleContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
+    statusKind !== 'none' ? { width: 120, headerText: 'Status', field: 'statusLabel', cellLeading: statusContent.leading, trailing: statusContent.trailing, editable: true, editKind: 'dropdown', sort: showSort, filter: showFilter } : null,
+    { width: 100, headerText: 'Email',  field: 'email',       fillWidth: true, cellLeading: emailContent.leading, trailing: emailContent.trailing, editable: true, editKind: 'textbox', sort: showSort, filter: showFilter },
   ].filter(Boolean);
 }
 
@@ -11285,96 +11412,6 @@ function gridIncellEditTableCss(_, props) {
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
-
-PAGES_WEB['components/data-table-incell-editing'] = {
-  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table InCell Editing'],
-  render(tab) {
-    const title = 'Data Table InCell Editing';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'Examples') return { title, html: `
-      <h2>View Mode</h2>
-      <p class="page-desc">Normal durumda her hücre sadece metin/badge gösterir — düzenlemek için doğrudan hücreye çift tıklanır.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml({ rowCount: '2' })}</div></div></div>
-
-      <h2>Edit Mode</h2>
-      <p class="page-desc">Name hücresine çift tıklandıktan sonra: SADECE o hücre gerçek input'a döner, diğer hücreler/satır etkilenmez. Enter veya dışarı tıklama kaydeder, Escape iptal eder.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:180px;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml({ rowCount: '2', forceEditCell: { rowIndex: 0, field: 'name' } })}</div></div></div>
-    `};
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <table class="token-table">
-        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>${tk('--bt-space-md')}</td><td>Cell / edit input padding</td><td>8px</td></tr>
-          <tr><td>${tk('--bt-text-xs-regular')}</td><td>Cell font</td><td>400 12px/16px</td></tr>
-          <tr><td>${tk('--bt-surface-brand-subtle')}</td><td>Düzenlenen hücre vurgusu</td><td>#e2edfc</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <h2>Do</h2>
-      <ul>
-        <li>Tek bir alanı hızlıca düzeltmek gerektiğinde InCell Editing'i tercih et — onay adımı gerektirmez.</li>
-        <li>Escape ile her zaman orijinal değere dönebilmeyi garanti et.</li>
-        <li>Aynı anda sadece BİR hücrenin düzenleme modunda olmasına izin ver.</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Birden fazla alanın birlikte tutarlı olması gereken (örn. başlangıç/bitiş tarihi) durumlarda InCell Editing kullanma — Inline Editing'in açık Save adımını tercih et.</li>
-        <li>Düzenlenebilir olmayan bir hücrede (ID gibi) çift tıklama beklentisi yaratma.</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc"><strong>InCell Editing</strong>, hücre bazlı düzenlemedir (Excel/Sheets deseni): herhangi bir düzenlenebilir hücreye ÇİFT tıklandığında SADECE o hücre gerçek input/dropdown'a döner, Enter veya dışarı tıklama (blur) ile otomatik kaydedilir, Escape ile eski değerine döner. Satır bazlı, Save/Cancel'lı düzenleme için bkz. <a href="#" onclick="navigate('components/data-table-inline-editing');return false;">Inline Editing</a>.</p>
-
-      <h2 id="Data Table InCell Editing">Data Table InCell Editing</h2>
-      ${registerPlayground({
-        id: 'pgd-datatable-incell-editing-overview',
-        variants: [{ key: 'default', label: 'Data Table InCell Editing' }],
-        props: [
-          { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '3' },
-          { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
-          { key: 'showSort',   label: 'Sort',      group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
-          { key: 'showFilter', label: 'Filter',    group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
-          // View içeriği (editable/editKind'tan BAĞIMSIZ) — diğer TÜM Data
-          // Table sayfalarıyla AYNI generic content-kind mekanizması
-          // (kullanıcı isteğiyle, bkz. HISTORY.md).
-          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-        ],
-        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:flex;flex-direction:column;height:280px;">
-            <div class="bt-grid-actions-container">${gridIncellEditTableHtml(p)}</div>
-          </div>
-        </div>`,
-        code: (v, p) => gridIncellEditTableHtml(p),
-        css:  (v, p) => gridIncellEditTableCss(v, p),
-      })}
-
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Trigger</td><td>Double click</td><td>—</td><td>${tk('ondblclick')} on editable cell</td></tr>
-          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
-          <tr><td>Commit</td><td>Enter / blur / dışarı tıklama</td><td>—</td><td>otomatik kaydeder</td></tr>
-          <tr><td>İptal</td><td>Escape</td><td>—</td><td>orijinal değere döner</td></tr>
-          <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__cell--editing')} (hücre seviyesi)</td></tr>
-        </tbody>
-      </table>
-    `};
-  },
-};
-
 // ── Data Table Toolbar ───────────────────────────────────────────
 // Figma: Container (border+radius+padding+gap) içinde Toolbar + DataTable.
 // Toolbar sol: Add (primary-solid) + Edit + Delete (secondary-flat), sağ: Search (320px, icon sağda).
@@ -11438,102 +11475,16 @@ function gridToolbarCss(_, p) {
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
-
-PAGES_WEB['components/data-table-toolbar'] = {
-  tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table Toolbar'],
-  render(tab) {
-    const title = 'Data Table Toolbar';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Panel ve Toolbar token'ları — tablo token'ları için bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a> sayfası.</p>
-      <table class="token-table">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Panel</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
-          <tr><td>Panel</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>1px solid #d4d4d4</td></tr>
-          <tr><td>Panel</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
-          <tr><td>Panel</td><td>Padding</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
-          <tr><td>Panel</td><td>Gap (toolbar → tablo)</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
-          <tr><td>Toolbar</td><td>Sol butonlar gap</td><td>—</td><td>10px</td></tr>
-          <tr><td>Add</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--primary-solid')}</td></tr>
-          <tr><td>Edit / Delete</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--secondary-flat')}</td></tr>
-          <tr><td>Search</td><td>Width</td><td>—</td><td>320px · ${tk('bt-tbx--sm')} · icon sağda</td></tr>
-          <tr><td>Search separator</td><td>Width / Color</td><td>${tk('--bt-border-primary-default')}</td><td>1px / #d4d4d4</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Data Table Toolbar kullanım kılavuzu.</p>
-      <h2>Do</h2>
-      <ul>
-        <li>Toolbar + tablo'yu her zaman ${tk('.bt-grid-panel')} içine al — border, radius ve padding buradan gelir</li>
-        <li>Sol tarafa birincil aksiyonları (Add, Edit, Delete) koy — sağ tarafa search bırak</li>
-        <li>Satır seçilmediğinde Edit/Delete butonlarını devre dışı bırak</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Sol tarafa 4'ten fazla aksiyon ekleme — fazlası overflow menu (…) arkasına taşınmalı</li>
-        <li>Panel olmadan toolbar kullanma — border ve spacing tutarsız görünür</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc">Data Table'ı saran ${tk('.bt-grid-panel')} ve onun içindeki aksiyon çubuğu — sol: Add / Edit / Delete, sağ: Search (320px, icon sağda). Panel border, border-radius ve padding'i sağlar; toolbar ve tablo kendi border'larını taşımaz.</p>
-
-      <h2 id="Data Table Toolbar">Data Table Toolbar</h2>
-      ${registerPlayground({
-        id: 'pgd-datatable-toolbar-overview',
-        variants: [{ key: 'default', label: 'Data Table Toolbar' }],
-        props: [
-          { key: 'showAdd',    label: 'Add',    group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
-          { key: 'showEdit',   label: 'Edit',   group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
-          { key: 'showDelete', label: 'Delete', group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
-          { key: 'showSearch', label: 'Search', group: 'Toolbar', options: TBX_BOOL_OPTS, default: 'on' },
-          { key: 'rowCount',   label: 'Rows',      group: 'Table', options: GRID_TABLE_ROW_OPTS, default: '6' },
-          { key: 'rowState',   label: 'Row State', group: 'Table', options: GRID_STATE_OPTS,     default: 'default' },
-          { key: 'showSort',   label: 'Sort',      group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
-          { key: 'showFilter', label: 'Filter',    group: 'Table', options: TBX_BOOL_OPTS,       default: 'off' },
-          // ID/Name/Role/Status/Email — ana Data Table sayfasıyla AYNI generic
-          // content-kind mekanizması (kullanıcı isteğiyle, bkz. HISTORY.md).
-          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,         default: 'on' },
-          { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-          { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
-          { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
-          { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
-          { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
-        ],
-        preview: (v, p) => `<div style="padding:24px 24px 40px;"><div style="display:flex;flex-direction:column;height:420px;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div class="bt-grid-container">${gridTableHtml(p)}</div></div></div></div>`,
-        code:    (v, p) => `<div class="bt-grid-panel">\n  ${gridToolbarHtml(p)}\n  ${gridTableHtml(p)}\n</div>`,
-        css:     (v, p) => gridToolbarCss(v, p),
-      })}
-
-      <h2>Anatomy</h2>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Panel</td><td>Border / Radius / Padding</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-radius-sm')} / ${tk('--bt-space-2xl')}</td><td>#d4d4d4 / 4px / 16px</td></tr>
-          <tr><td>Panel gap</td><td>Toolbar → Tablo arası</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
-          <tr><td>Toolbar sol</td><td>Add / Edit / Delete gap</td><td>—</td><td>10px</td></tr>
-          <tr><td>Search</td><td>Width + icon konumu</td><td>—</td><td>320px · sağda separator + arama ikonu</td></tr>
-        </tbody>
-      </table>
-    `};
-  },
-};
-
 PAGES_WEB['components/data-table'] = {
   tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table', 'Alanı Doldurma', 'Building Blocks'],
+  toc:  ['Data Table', 'Alanı Doldurma', 'Building Blocks', 'No Record Available', 'Toolbar', 'Actions', 'Frozen Column First', 'Frozen Column Last', 'Inline Editing', 'InCell Editing', 'Filtering', 'Sorting'],
   render(tab) {
     const title = 'Data Table';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Data Table (Header Cell + Grid Cell) için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">Data Table ve tüm varyantları için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <h2>Header Cell / Grid Cell</h2>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -11550,102 +11501,255 @@ PAGES_WEB['components/data-table'] = {
           <tr><td>Grid Cell · Active</td><td>Background</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
           <tr><td>Grid Cell · Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
           <tr><td>Grid Cell · Content</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
-          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 28px (hug content) / 28px sabit</td></tr>
+          <tr><td>Control slot</td><td>Width / Height</td><td>—</td><td>min-width 28px / 28px sabit</td></tr>
           <tr><td>Control · Dot</td><td>Size / Color</td><td>${tk('--bt-icon-brand-default')}</td><td>8×8, #0d4e97</td></tr>
           <tr><td>Control · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>16×16, #535353</td></tr>
-          <tr><td>Position · Left</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>sol kenar (+üst, header'da)</td></tr>
-          <tr><td>Position · Right</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>sağ kenar (+üst, header'da)</td></tr>
-          <tr><td>No Record Available</td><td>Height</td><td>—</td><td>56px</td></tr>
           <tr><td>No Record Available · Text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
-          <tr><td>Trailing · Control Group</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
-          <tr><td>Trailing · Control Group · More</td><td>Class</td><td>—</td><td>${tk('bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28)</td></tr>
-          <tr><td>Overflow Menu · List</td><td>Background / Shadow</td><td>${tk('--bt-surface-primary-default')} / ${tk('--bt-shadow-lg')}</td><td>Dropdown'ın açılır listesiyle aynı görünüm, bağımsız <code style="font-family:var(--mono);font-size:12px;">.bt-grid__menu-list</code> class'ı</td></tr>
-          <tr><td>Overflow Menu · Item</td><td>Padding / Font / Icon-text gap</td><td>${tk('--bt-space-sm')} ${tk('--bt-space-md')} / ${tk('--bt-text-xs-regular')} / ${tk('--bt-space-xs')}</td><td>6px 8px / 400 12px/16px / 4px</td></tr>
-          <tr><td>Overflow Menu · Item · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>16×16, #535353</td></tr>
-          <tr><td>Overflow Menu · Item · Danger</td><td>Color (text + icon)</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38 (<code style="font-family:var(--mono);font-size:12px;">.bt-grid__menu-item--danger</code>)</td></tr>
+          <tr><td>Overflow Menu · List</td><td>Background / Shadow</td><td>${tk('--bt-surface-primary-default')} / ${tk('--bt-shadow-lg')}</td><td>Dropdown listesiyle aynı görünüm</td></tr>
+          <tr><td>Overflow Menu · Item · Danger</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+        </tbody>
+      </table>
+      <h2>Toolbar / Panel</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Panel</td><td>Background / Border / Radius / Padding</td><td>${tk('--bt-base-default')} / ${tk('--bt-border-primary-default')} / ${tk('--bt-radius-sm')} / ${tk('--bt-space-2xl')}</td><td>#ffffff / #d4d4d4 / 4px / 16px</td></tr>
+          <tr><td>Panel gap</td><td>Toolbar → Tablo</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Add</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--primary-solid')}</td></tr>
+          <tr><td>Edit / Delete</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--secondary-flat')}</td></tr>
+          <tr><td>Search</td><td>Width</td><td>—</td><td>320px · ${tk('bt-tbx--sm')}</td></tr>
+          <tr><td>Search separator</td><td>Width / Color</td><td>${tk('--bt-border-primary-default')}</td><td>1px / #d4d4d4</td></tr>
+        </tbody>
+      </table>
+      <h2>Frozen Column</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / 5</td></tr>
+          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)</td></tr>
+          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035)</td></tr>
+        </tbody>
+      </table>
+      <h2>Sorting / Filtering</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Sort ikonu (rest)</td><td>Opacity</td><td>—</td><td>0 (hover'da 1)</td></tr>
+          <tr><td>Sort ikonu (aktif)</td><td>Renk</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Filter ikonu (pasif)</td><td>Renk</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Filter ikonu (aktif)</td><td>Class</td><td>—</td><td>${tk('.bt-btn--state-selected')}</td></tr>
+          <tr><td>Filter Panel</td><td>Background / Border / Shadow</td><td>${tk('--bt-surface-primary-default')} / ${tk('--bt-border-primary-default')} / ${tk('--bt-shadow-xl')}</td><td>#ffffff / #d4d4d4</td></tr>
+        </tbody>
+      </table>
+      <h2>Inline / InCell Editing</h2>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Edit · Text Field</td><td>Component</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Component</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Save</td><td>Component</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
+          <tr><td>Cancel / Delete</td><td>Component</td><td>—</td><td>${tk('bt-btn--secondary-flat')}</td></tr>
+          <tr><td>Inline Editing anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__row--editing')} (satır seviyesi)</td></tr>
+          <tr><td>InCell Editing anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__cell--editing')} (hücre seviyesi)</td></tr>
         </tbody>
       </table>
     `};
 
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Data Table kullanım kılavuzu.</p>
-      <h2>Do</h2>
+      <h2>Data Table</h2>
+      <h3>Do</h3>
       <ul>
-        <li>Her kolonun Position'ını doğru ayarla — tabloda ilk kolon Left, son kolon Right, arasındakiler Middle olmalı (aksi halde çift border oluşur)</li>
-        <li>Leading Control'ü (Checkbox/Dot/Avatar/Avatar Group) satırın kimliğini/durumunu gösteren bilgi için kullan; Trailing Control'ü (Badge/Button/Switch) aksiyon veya durum etiketleri için kullan</li>
-        <li>Actions kolonundaki birincil butona sık kullanılan tek bir aksiyonu ata; yanındaki flat-base "More" (ellipsis) butonunu daha az sık kullanılan aksiyonları listeleyen bir overflow menu'yü açmak için kullan — iki butonu da aynı önemde/görünürlükte tasarlama</li>
-        <li>Sort Control'ü sadece gerçekten sıralanabilir kolonlarda göster</li>
-        <li>Veri yoksa No Record Available'ı tablo genişliğinde, header'ın altında göster</li>
-        <li>Bir kolonun Header Cell'i ve altındaki tüm Grid Cell'leri her zaman aynı width'i paylaşmalı</li>
-        <li>Satır hover/seçim'i her zaman gerçek etkileşimle bırak (yukarıdaki Data Table playground'unda satırların üzerine gelip tıklayarak dene) — Row State prop'u sadece belirli bir durumu zorla önizlemek/dokümante etmek için var</li>
+        <li>Her kolonun Position'ını doğru ayarla — ilk kolon Left, son kolon Right, arasındakiler Middle olmalı</li>
+        <li>Leading Control'ü satırın kimliğini/durumunu göstermek, Trailing Control'ü aksiyon veya durum etiketleri için kullan</li>
+        <li>Veri yoksa No Record Available'ı tablo genişliğinde göster</li>
+        <li>Row State prop'unu sadece belirli durumu önizlemek/dokümante etmek için kullan — gerçek etkileşimi bozma</li>
       </ul>
-      <h2>Don't</h2>
+      <h3>Don't</h3>
       <ul>
-        <li>Aynı hücrede hem Leading hem Trailing control'ü aşırı kalabalık kombinasyonlarla doldurma (örn. Avatar Group + Inline Dropdown aynı anda)</li>
-        <li>Building Blocks'taki Header Cell/Grid Cell'i tek başına, bir tabloya dahil etmeden kullanma — bunlar hep birlikte bir Data Table oluşturur</li>
+        <li>Aynı hücreye hem Leading hem Trailing control'ü aşırı kombinasyonla ekleme</li>
+        <li>Header Cell/Grid Cell'i tek başına, bir tabloya dahil etmeden kullanma</li>
+      </ul>
+      <h2>Toolbar</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Toolbar + tablo'yu her zaman ${tk('.bt-grid-panel')} içine al</li>
+        <li>Sol tarafa birincil aksiyonları (Add, Edit, Delete) koy, sağa search bırak</li>
+        <li>Satır seçilmediğinde Edit/Delete butonlarını devre dışı bırak</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>Sol tarafa 4'ten fazla aksiyon ekleme</li>
+        <li>Panel olmadan toolbar kullanma</li>
+      </ul>
+      <h2>Actions</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Actions kolonu her zaman tablonun son kolonu olmalı</li>
+        <li>Button + More menüsünü 5+ satırlı tablolarda tercih et</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>Actions kolonunu birden fazla ekleme</li>
+        <li>More menüsüne 5'ten fazla öğe ekleme</li>
+      </ul>
+      <h2>Frozen Column</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Sadece kimlik/seçim bilgisini taşıyan kolonları dondur (Checkbox, Avatar+isim)</li>
+        <li>Donmuş alanın kenarında her zaman gölge bırak</li>
+        <li>Çok kolonlu, gerçekten yatay scroll gerektiren tablolarda kullan</li>
+        <li>Actions kolonunu sağdan dondur — kullanıcı scroll yaparken eylemlere hep erişebilmeli</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>Tablonun yarısından fazlasını dondurma</li>
+        <li>Action/Status gibi bağlamsal kolonları dondurma</li>
+        <li>Birden fazla kolonu sağdan dondurma</li>
+      </ul>
+      <h2>Inline Editing</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Bir seferde sadece BİR satırın düzenleme modunda olmasına izin ver</li>
+        <li>Cancel her zaman orijinal değere döndürmeli</li>
+        <li>3+ alanı aynı anda düzenlenmesi gerektiğinde Inline Editing'i tercih et</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>ID gibi anahtar kolonları editable yapma</li>
+        <li>Save/Cancel olmadan satırı düzenleme modunda bırakma</li>
+      </ul>
+      <h2>InCell Editing</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Tek alanı hızlıca düzeltmek gerektiğinde InCell Editing'i tercih et</li>
+        <li>Escape ile her zaman orijinal değere dönülebilmeli</li>
+        <li>Aynı anda sadece BİR hücrenin düzenleme modunda olmasına izin ver</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>Birlikte tutarlı olması gereken alanlar için InCell Editing kullanma — Inline Editing'i tercih et</li>
+        <li>Düzenlenemeyen hücrede çift tıklama beklentisi yaratma</li>
+      </ul>
+      <h2>Filtering</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Sınırlı/tekrarlı değer setine sahip kolonlarda (Status, Role) filter aç</li>
+        <li>Seçenek listesini her zaman kolonun gerçek verisinden türet</li>
+        <li>Birden fazla aktif filtre AND mantığıyla çalışır — bunu kullanıcıya yansıt</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>Serbest metin kolonlarında filter yerine searchbox kullan</li>
+        <li>Aynı anda birden fazla filter panelini açık bırakma</li>
+      </ul>
+      <h2>Sorting</h2>
+      <h3>Do</h3>
+      <ul>
+        <li>Kullanıcının en sık karşılaştırdığı kolonlarda sıralamayı aç</li>
+        <li>Aktif sıralanan kolonun her zaman görünür kalmasını sağla</li>
+        <li>3. tıklamanın orijinal sıraya döndüğünü koru</li>
+      </ul>
+      <h3>Don't</h3>
+      <ul>
+        <li>Aynı anda birden fazla kolonu "aktif sıralanan" gösterme</li>
+        <li>Actions gibi veri taşımayan kolonları sıralanabilir yapma</li>
       </ul>
     `};
 
-    // Overview
+    // Overview — tüm varyantlar TOC bölümleri olarak
     return { title, html: `
-      <p class="page-desc">Data Table, Header Cell (başlık satırı) ve Grid Cell'in (veri satırları) birlikte oluşturduğu tam bir tablo component'i. Aşağıdaki playground gerçek bir tabloyu uçtan uca yapılandırır — kolon başına ayrı ayrı değil, <strong>Table</strong> yapı taşlarını tek yerden kontrol eder.</p>
-
+      <p class="page-desc">Kurumsal uygulamalarda verinin birincil görünüm biçimi. Data Table, onlarca ya da yüzlerce kaydın aynı ekranda taranabilir, karşılaştırılabilir ve eyleme geçirilebilir hale getirilmesi için tasarlandı. <strong>32px satır yüksekliği</strong> bilinçli bir yoğunluk kararıdır — kullanıcı kaydırmadan mümkün olduğunca çok kayda bakabilmeli, satır sınırları ise tıklanabilir olacak kadar belirgin kalmalıdır.</p>
+      <p class="page-desc">Her satır bir veri kaydına, her sütun bir alana karşılık gelir. <strong>Sütun genişlikleri manuel olarak belirlenir ve aynı değer hem header hem data cell'e verilir</strong> — otomatik genişlik mekanizması yoktur; bu sayede karmaşık sayfa düzenlerinde de layout tahmin edilebilir kalır. Blazor tarafında her satır tipik olarak bir model nesnesine (<code style="font-family:var(--mono);font-size:12px;">TItem</code>) bağlanır, sütunlar ise o nesnenin property'lerini gösterir.</p>
       <h2 id="Data Table">Data Table</h2>
       ${registerPlayground({
         id: 'pgd-datatable-overview',
         variants: [{ key: 'default', label: 'Data Table' }],
         props: [
-          { key: 'rowCount',      label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,        default: '3' },
-          { key: 'rowState',      label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,            default: 'default' },
-          { key: 'showSort',      label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,              default: 'off' },
-          { key: 'showFilter',    label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,              default: 'off' },
-          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,            default: 'on' },
-          // Aşağıdaki 5 prop — ID/Name/Role/Status/Email — ÖRNEK tablodaki
-          // HER kolonu kapsıyor, hepsi AYNI tam listeyi (GRID_TABLE_CONTENT_OPTS)
-          // reuse ediyor: hiçbir kolon başka bir kolonun alamayacağı bir
-          // seçeneğe sahip değil (kullanıcı isteğiyle, bkz. HISTORY.md) — örn.
-          // Status'u Badge'den Avatar'a, ID'yi None'dan Switch'e çevirebilirsin.
-          { key: 'idContent',     label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'none' },
-          { key: 'nameContent',   label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'avatar' },
-          { key: 'roleContent',   label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'dot' },
-          { key: 'statusContent', label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'badge' },
-          { key: 'emailContent',  label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS,    default: 'none' },
+          { key: 'rowCount',        label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
+          { key: 'rowState',        label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',        label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',      label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
-        // Önizleme .bt-grid-container'a sarılı, sabit 356px yükseklikte (36px
-        // header + 10×32px satır — Rows'un maksimumu) — "Alanı Doldurma"
-        // özelliği ayrı bir statik demoya gerek kalmadan burada canlı görünür:
-        // varsayılan 3 satırla kutunun kalan kısmı çerçeveyle doluyor, Rows'u
-        // 10'a çıkarınca boşluk kayboluyor (kullanıcı isteğiyle, bkz. HISTORY.md).
-        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:flex;flex-direction:column;height:356px;">
-            <div class="bt-grid-container">${gridTableHtml(p)}</div>
-          </div>
-        </div>`,
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:356px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-container">${gridTableHtml(p)}</div></div>`,
         code:    (v, p) => gridTableHtml(p),
         css:     (v, p) => gridTableCss(v, p),
       })}
-
-      <p class="page-desc"><strong>Table</strong> grubu genel tablo durumunu (satır sayısı, satır state'i, boş durum), <strong>Columns</strong> grubu kolon içeriklerini kontrol eder. Checkbox Column kapatılınca ilk kolon kaybolur, Status/Actions Column "None" seçilince o kolon tamamen kaldırılır — Position (Left/Middle/Right) her kombinasyonda otomatik yeniden hesaplanır.</p>
+      <p class="page-desc"><strong>Table</strong> grubu tüm satırları etkileyen genel ayarları barındırır: kaç satır gösterileceği, satır durumu (hover · active · selected · disabled) ve boş tablo görünümü. <strong>Columns</strong> grubu ise her kolonun görsel içeriğini bağımsız olarak kontrol eder — veri metni yanında Avatar, Badge, Dot gibi leading/trailing kontroller ihtiyaca göre açılıp kapatılabilir.</p>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Data Table dört katmanlı bir yapıdan oluşur: ${tk('.bt-grid-container')} tüm alanı flex ile doldurur, ${tk('.bt-grid')} overflow'u yönetir, ${tk('.bt-grid__row')} başlık satırını (36px), ${tk('.bt-grid__body')} kaydırılabilir veri bölgesini tanımlar. Satır durumları row'a eklenen state class'larıyla, renk geçişleri ise ${tk('--bt-base-*')} ve ${tk('--bt-surface-brand-subtle')} token'larıyla kontrol edilir. Blazor tarafında bu class hiyerarşisi ${tk('TelerikGrid')}'in render ettiği DOM ile birebir örtüşür.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-grid-container')}</td><td>Display / Layout</td><td>—</td><td>flex / column / flex: 1 / min-height: 0</td></tr>
+          <tr><td>${tk('.bt-grid__row')} (header)</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>${tk('.bt-grid__row')} (header)</td><td>Background · Default</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>${tk('.bt-grid__row')} (header · hover)</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>${tk('.bt-grid__body')}</td><td>Overflow-y</td><td>—</td><td>auto</td></tr>
+          <tr><td>Veri satırı</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Veri satırı · Default</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Veri satırı · Hover</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Veri satırı · Active / Selected</td><td>Background</td><td>${tk('--bt-surface-brand-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Veri satırı · Disabled</td><td>Opacity</td><td>—</td><td>0.5</td></tr>
+          <tr><td>Kolon sınırı</td><td>Border-color</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Alanı Doldurma">Alanı Doldurma</h2>
-      <p class="page-desc">Data Table'ı bir sayfa alanına (örn. bir tab panel, sağdan kayan panel) koyduğunda, satır sayısı az olsa bile tablonun çerçevesi (arka plan + border) o alanın ALT KENARINA kadar uzamalı — sadece satırları saran dar bir kutuda durup kalmamalı. Bunun için <code style="font-family:var(--mono);font-size:12px;">.bt-grid</code>'in dışına opsiyonel bir <code style="font-family:var(--mono);font-size:12px;">.bt-grid-container</code> sarmalayıcısı eklenir — <strong>yukarıdaki ana Data Table playground'unun önizlemesi zaten bu tekniği kullanıyor</strong>: sabit 356px'lik (10 satırlık) bir alana sarılı, <strong>Rows</strong>'u azalttıkça (örn. 10'dan 3'e) kalan boşluğun çerçeveyle dolduğunu, artırdıkça boşluğun kaybolduğunu doğrudan görebilirsin.</p>
-      <pre class="code-block" style="margin:0;">${(() => {
-        const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return esc(`<div class="tab-panel" style="display:flex;flex-direction:column;height:400px;"> <!-- parent kendi height/flex'ini sağlar -->
-  <div class="bt-grid-container">
-    <div class="bt-grid">
-      <div class="bt-grid__row">...header cells...</div>
-      <div class="bt-grid__body">...row cells...</div>
-    </div>
-  </div>
-</div>`);
-      })()}</pre>
-      <p class="page-desc">Dış border artık hücrelerde değil <code style="font-family:var(--mono);font-size:12px;">.bt-grid-container</code>'ın kendisinde (sol/sağ/alt — üst border Header'ın kendi border-top'undan geliyor) — bu yüzden az satırla bile alt kenara kadar devam eder. Header sabit kalır, <code style="font-family:var(--mono);font-size:12px;">.bt-grid__body</code> gerektiğinde kendi başına scroll olur.</p>
+      <p class="page-desc">Data Table'ın çerçevesi her zaman kendisine ayrılan alanın tamamını dikey olarak doldurmalıdır — tablonun altında kalan beyaz boşluk, içerik alanının bittiğini değil tablo bileşeninin yetersiz kaldığını çağrıştırır ve kullanıcıyı arayüzün kırık olduğunu düşündürebilir. ${tk('.bt-grid-container')} sarmalayıcısı bu sorunu çözer: ${tk('flex:1')} ile kendini dikey olarak gerer, ${tk('min-height:0')} ise flex container'ın overflow tuzağını önler. Blazor'da bu davranış, outer container'ın ${tk('height')} veya ${tk('flex-grow')} değeriyle birlikte çalışır.</p>
+
+      <h3>bt-grid-container ile (önerilen)</h3>
+      <p class="page-desc">${tk('.bt-grid-container')} yalnızca görsel bir sarmalayıcı değil, tablonun dikey layout davranışını da belirleyen bir flex katmanıdır. ${tk('flex: 1')} ile üst container'ın tamamını dikey olarak doldurur, ${tk('min-height: 0')} ise flex'in taşma tuzağını önlerek tablonun gerçekten sınırlanmasını sağlar. Kullanıcı kaç satır olursa olsun tablonun altında boşluk görmez — kurumsal listelerde verinin bütünlüklü ve eksiksiz sunulması için bu kritik bir layout kararıdır. Blazor/Telerik tarafında outer container'ın ${tk('display: flex; flex-direction: column; height: Xpx')} alması yeterlidir; ${tk('TelerikGrid')} bileşenini saran ${tk('bt-grid-container')} kalan alanı otomatik olarak doldurur.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-preview">
+          <div class="pgd-preview-inner">
+            <div class="pgd-viewport-frame" style="width:100%">
+              <div style="padding:32px;overflow-x:auto;">
+                <div style="height:340px;min-width:600px;border:2px solid var(--bt-border-brand-default,#0d4e97);border-radius:var(--bt-radius-sm,4px);display:flex;flex-direction:column;overflow:hidden;">
+                  <div class="bt-grid-container">${gridTableHtml({ rowCount: '3' })}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Sarmalayıcısız</h3>
+      <p class="page-desc">${tk('bt-grid-container')} olmadan tablo kendi içeriğinin doğal yüksekliğini kaplar: header 36px + her satır 32px + sınır değerleri. Tablonun altında kalan boşluk kullanıcıya arayüzün eksik ya da kırık olduğunu çağrıştırır; özellikle az veri döndüğü durumlarda bu etki daha belirgindir. Bu önizleme yanlış kullanım kalıbını somutlaştırmak için burada yer alır — üretimde her zaman ${tk('bt-grid-container')} kullanılmalıdır. Blazor tarafında da ${tk('TelerikGrid')}'i doğrudan sayfaya ${tk('height')} ya da ${tk('flex')} kısıtlaması olmadan bırakmak aynı soruna yol açar.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-preview">
+          <div class="pgd-preview-inner">
+            <div class="pgd-viewport-frame" style="width:100%">
+              <div style="padding:32px;overflow-x:auto;">
+                <div style="height:340px;min-width:600px;border:2px dashed var(--bt-border-primary-default,#d4d4d4);border-radius:var(--bt-radius-sm,4px);overflow:hidden;position:relative;">
+                  ${gridTableHtml({ rowCount: '3' })}
+                  <div style="position:absolute;inset:0;top:134px;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                    <span style="font:var(--bt-text-xs-regular,400 12px/16px var(--font));color:var(--bt-text-primary-placeholder,#b0b0b0);">boş alan</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Kullanım</h3>
+      <p class="page-desc">Aşağıdaki kod kalıbı ${tk('bt-grid-container')}'ın üretimde nasıl konumlandırılacağını gösterir. Outer wrapper'a ${tk('display: flex; flex-direction: column; height: 400px')} vermek yeterlidir; ${tk('bt-grid-container')} ve içindeki ${tk('bt-grid')} kalan alanı otomatik paylaşır. Sabit ${tk('height')} yerine ${tk('flex: 1; min-height: 0')} kombinasyonu da tercih edilebilir — bu, sayfanın kendisi bir flex container olduğunda ve tablonun dinamik alana uyum sağlaması gerektiğinde önerilen kalıptır. Blazor tarafında outer div yerine ${tk('TelerikGrid')}'i saran bileşenin layout CSS'i bu kuralla birebir örtüşür.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-code">
+          <pre id="ev-alani-doldurma-code">${(() => { const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); return esc(`<div style="display:flex;flex-direction:column;height:400px;">\n  <div class="bt-grid-container">\n    <div class="bt-grid">\n      <div class="bt-grid__row"><!-- header cells --></div>\n      <div class="bt-grid__body"><!-- rows --></div>\n    </div>\n  </div>\n</div>`); })()}</pre>
+        </div>
+      </div>
 
       <h2 id="Building Blocks">Building Blocks</h2>
-      <p class="page-desc">Data Table, Header Cell ve Grid Cell'in tekrarlanmasıyla oluşur. Yukarıdaki tablo playground'u kapsamadığı özel senaryolar için (örn. farklı bir kolon kombinasyonu, tek başına bir hücre önizlemesi) bu iki yapı taşı ayrı ayrı da özelleştirilebilir.</p>
-
+      <p class="page-desc">Data Table tek bir temel yapının tekrarlanmasından büyür: <strong>Header Cell</strong> sütun başlığını, <strong>Grid Cell</strong> ise her veri satırını oluşturur. Bu ayrım kasıtlıdır — başlık hücresi metin hizalamasını, sıralama ve filtre kontrollerini taşırken grid cell yalnızca içeriği gösterir; her katman tek bir sorumluluğa odaklanır. Tüm veri hücrelerinin sabit yüksekliği 32px'dir — bu bilinçli bir kompaktlık kararıdır; aynı ekranda daha fazla satır göstererek kullanıcının dikey scroll ihtiyacını ve dolayısıyla göz yorgunluğunu azaltır. Blazor'da her sütun bir <code>GridColumn</code> tanımıdır: <code>HeaderText</code> başlık hücresine, <code>Field</code> veya <code>Template</code> ise veri hücresine karşılık gelir.</p>
       <h3>Header Cell</h3>
+      <p class="page-desc">Header Cell, bir kolonun kimliğini ve etkileşim kontrollerini taşıyan 36px yüksekliğindeki başlık hücresidir. Sütun adı metni, opsiyonel sıralama ikonları ve filtre butonu olmak üzere en fazla üç içerik bölgesi barındırır. Sıralama ikonları varsayılan olarak gizlidir (opacity: 0) ve yalnızca hover'da belirir — tablonun pasif durumda görsel sadeliğini koruma kararıdır; aktif sıralama ikonu ise kalıcı olarak görünür kalır. Filtre butonu her zaman görünürdür, aktif olduğunda ${tk('bt-btn--state-selected')} rengi alır. Blazor/Telerik'te ${tk('HeaderText')} prop'u bu hücrenin metin içeriğini, ${tk('Sortable')} ve ${tk('Filterable')} prop'ları ise ilgili kontrollerin varlığını belirler.</p>
       ${registerPlayground({
         id: 'pgd-datatable-header-overview',
         variants: [{ key: 'default', label: 'Header Cell' }],
@@ -11664,17 +11768,8 @@ PAGES_WEB['components/data-table'] = {
         code:    (v, p) => gridHeaderCellHtml(p),
         css:     (v, p) => gridHeaderCellCss(v, p),
       })}
-
-      <table class="token-table">
-        <thead><tr><th>Position</th><th>Preview</th></tr></thead>
-        <tbody>
-          <tr><td>Left</td><td>${gridHeaderCellHtml({ position: 'left', showContent: 'on', contentText: 'Name', showSort: 'on' })}</td></tr>
-          <tr><td>Middle</td><td>${gridHeaderCellHtml({ position: 'middle', showContent: 'on', contentText: 'Role' })}</td></tr>
-          <tr><td>Right</td><td>${gridHeaderCellHtml({ position: 'right', showContent: 'on', contentText: 'Actions', showRight: 'on' })}</td></tr>
-        </tbody>
-      </table>
-
-      <h2>Anatomy</h2>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Header Cell'in temel boyutu ve içerik aralığı token'larla sabittir; sıralama ve filtre kontrolleri minimum dokunma hedefi gözetilerek boyutlandırılmıştır. Hover'da sıralama ikonunun belirmesi opacity geçişiyle (0→1) sağlanır; aktif sıralama ikonu ise ${tk('--bt-icon-brand-default')} rengiyle kalıcı görünür kalır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -11682,138 +11777,304 @@ PAGES_WEB['components/data-table'] = {
           <tr><td>Content</td><td>Padding / Font</td><td>${tk('--bt-space-sm')} / ${tk('--bt-text-xs-medium')}</td><td>6px / 500 12px/16px</td></tr>
           <tr><td>Sort · Icon</td><td>Size</td><td>—</td><td>24×24 slot, 16×16 ikon</td></tr>
           <tr><td>Filter · Icon</td><td>Size</td><td>—</td><td>28×28 buton, 14×14 ikon</td></tr>
-          <tr><td>Right · Icon</td><td>Size</td><td>—</td><td>28×28 slot, 16×16 ikon</td></tr>
         </tbody>
       </table>
-
       <h3>Grid Cell</h3>
+      <p class="page-desc">Grid Cell, her veri satırında tekrar eden 32px yüksekliğindeki hücredir. Sabit yükseklik bilinçli bir yoğunluk kararıdır: aynı ekranda daha fazla kayıt görünür, kullanıcının dikey scroll ihtiyacı azalır. Her hücre sol kontrol (checkbox veya ikon), ana içerik (metin, avatar, badge, buton vb.) ve sağ kontrol (trailing ikon veya eylem) olmak üzere üç içerik bölgesi barındırabilir. Hangi kombinasyonun kullanılacağı kolonun veri türüne göre belirlenir: kimlik kolonları bağlantı, durum kolonları badge, isim kolonları avatar + metin desenini izler. Blazor/Telerik'te ana içerik ${tk('Field')} parametresi veya <code style="font-size:12px;font-family:var(--mono)">&lt;Template&gt;</code> RenderFragment ile, leading/trailing kontroller ise özel ${tk('GridColumn')} şablonlarıyla tanımlanır.</p>
       ${registerPlayground({
         id: 'pgd-datatable-cell-overview',
         variants: [{ key: 'default', label: 'Grid Cell' }],
         props: [
-          { key: 'position',    label: 'Position',       options: GRID_POSITION_OPTS,  default: 'left' },
-          { key: 'state',       label: 'State',           options: GRID_STATE_OPTS,     default: 'default' },
-          { key: 'showLeft',    label: 'Left Control',    options: TBX_BOOL_OPTS,       default: 'off' },
-          { key: 'leading',     label: 'Leading Control',  options: GRID_LEADING_OPTS,   default: 'none' },
-          { key: 'showContent', label: 'Content',         options: TBX_BOOL_OPTS,       default: 'on'  },
-          { key: 'trailing',    label: 'Trailing Control', options: GRID_TRAILING_OPTS,  default: 'none' },
-          { key: 'showRight',   label: 'Right Control',   options: TBX_BOOL_OPTS,       default: 'off' },
+          { key: 'position',    label: 'Position',        options: GRID_POSITION_OPTS, default: 'left' },
+          { key: 'state',       label: 'State',           options: GRID_STATE_OPTS,    default: 'default' },
+          { key: 'showLeft',    label: 'Left Control',    options: TBX_BOOL_OPTS,      default: 'off' },
+          { key: 'leading',     label: 'Leading Control', options: GRID_LEADING_OPTS,  default: 'none' },
+          { key: 'showContent', label: 'Content',         options: TBX_BOOL_OPTS,      default: 'on'  },
+          { key: 'trailing',    label: 'Trailing Control',options: GRID_TRAILING_OPTS, default: 'none' },
+          { key: 'showRight',   label: 'Right Control',   options: TBX_BOOL_OPTS,      default: 'off' },
         ],
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${gridCellHtml(p)}</div>`,
         code:    (v, p) => gridCellHtml(p),
         css:     (v, p) => gridCellCss(v, p),
       })}
-
-      <p class="page-desc"><strong>Leading Control</strong> (Checkbox/Dot/Avatar/Avatar Group) metinden önce, <strong>Trailing Control</strong> (Badge/Button/Switch/Inline TextBox/Inline Dropdown) metinden sonra gelir — Figma'daki gerçek DOM sırasıyla eşleşir.</p>
-
-      <table class="token-table">
-        <thead><tr><th>Kombinasyon</th><th>Preview</th></tr></thead>
-        <tbody>
-          <tr><td>Sadece Text</td><td>${gridCellHtml({ contentText: 'Plain Text' })}</td></tr>
-          <tr><td>Checkbox + Text</td><td>${gridCellHtml({ leading: 'checkbox', contentText: 'Selectable Row' })}</td></tr>
-          <tr><td>Avatar + Text</td><td>${gridCellHtml({ leading: 'avatar', contentText: 'Emre Göçer' })}</td></tr>
-          <tr><td>Avatar Group + Text</td><td>${gridCellHtml({ leading: 'avatarGroup', contentText: 'Design Team' })}</td></tr>
-          <tr><td>Dot + Text</td><td>${gridCellHtml({ leading: 'dot', contentText: 'Active' })}</td></tr>
-          <tr><td>Text + Badge</td><td>${gridCellHtml({ showContent: 'off', trailing: 'badge' })}</td></tr>
-          <tr><td>Text + Button</td><td>${gridCellHtml({ showContent: 'off', trailing: 'button' })}</td></tr>
-          <tr><td>Text + Switch</td><td>${gridCellHtml({ showContent: 'off', trailing: 'switch' })}</td></tr>
-          <tr><td>Inline TextBox</td><td>${gridCellHtml({ showContent: 'off', trailing: 'textbox' })}</td></tr>
-          <tr><td>Inline Dropdown</td><td>${gridCellHtml({ showContent: 'off', trailing: 'dropdown' })}</td></tr>
-        </tbody>
-      </table>
-
-      <h2>Anatomy</h2>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Grid Cell'in 32px sabit yüksekliği, içerik miktarından bağımsız olarak tüm satırların eşit aralıkta görünmesini sağlar; bu kompaktlık kararı kullanıcının kaydırmadan görebileceği satır sayısını maksimize eder. Leading ve trailing kontrol slotları 28px minimum genişlikle dokunma hedefini korur; avatar bileşeni ${tk('bt-avatar--xs')} class'ıyla sabit boyutlandırılır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Container</td><td>Height</td><td>—</td><td>32px</td></tr>
           <tr><td>Content</td><td>Padding / Font</td><td>${tk('--bt-space-md')} / ${tk('--bt-text-xs-regular')}</td><td>8px / 400 12px/16px</td></tr>
-          <tr><td>Leading · Dot</td><td>Size</td><td>—</td><td>8×8</td></tr>
           <tr><td>Leading · Avatar</td><td>Class</td><td>—</td><td>${tk('bt-avatar bt-avatar--xs')} (28×28)</td></tr>
           <tr><td>Trailing · Inline TextBox/Dropdown</td><td>Min-width</td><td>—</td><td>120px</td></tr>
         </tbody>
       </table>
+      <h2 id="No Record Available">No Record Available</h2>
+      <p class="page-desc">Boş durum (empty state) tablonun tasarım dilinin ayrılmaz bir parçasıdır — harici bir bileşenle değil, tablonun kendisiyle birlikte gelir. Veri yokken tablo gövdesi kaybolmaz; tam genişlikte tek bir satır görünür ve kullanıcıya net bir geri bildirim verir. Bu yaklaşım tablonun yüksekliğini sabit tutar ve layout'un aniden çökmesini önler — sayfa iskelet yapısı daima aynı kalır. Filtre aktifken "Arama kriterlerine uyan kayıt bulunamadı" gibi bağlama özgü mesajlar için <code>NoRecordsTemplate</code>'in özelleştirilmesi şarttır; genel "No records" mesajı yalnızca filtresiz boş tablolarda uygundur. Blazor'da <code>NoRecordsTemplate</code> RenderFragment olarak enjekte edilir; içine ikon, başlık veya eylem butonu eklenebilir.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-norecord-overview',
+        variants: [{ key: 'default', label: 'No Record Available' }],
+        props: [
+          { key: 'showText',        label: 'Text',            options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'showCheckboxCol', label: 'Checkbox Column', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'nameContent',     label: 'Name Content',    options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',     label: 'Role Content',    options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',   label: 'Status Column',   options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',    label: 'Email Content',   options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:200px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-container">${gridTableHtml(Object.assign({}, p, { rowCount: '0' }))}</div></div>`,
+        code: (v, p) => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(`<div class="bt-grid__no-record">\n  <span class="bt-grid__no-record-text">No records available</span>\n</div>`)}</pre>`;
+        },
+        css: (v, p) => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(`.bt-grid__no-record {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  min-height: 0;\n}\n\n.bt-grid__no-record-text {\n  font: var(--bt-text-sm-regular);  /* #727272 */\n  color: var(--bt-text-primary-emphasis);\n}`)}</pre>`;
+        },
+      })}
 
-      <h3>No Record Available</h3>
-      <p class="page-desc">Tabloda veri olmadığında Header Cell'in altında, tablo genişliğinde gösterilir — yukarıdaki ana Data Table playground'unda <strong>Rows</strong> prop'unu <strong>0 (No Record)</strong>'a getirerek de tetiklenebilir; ayrı bir toggle yoktur, doğrudan kayıt sayısına bağlıdır.</p>
-      <div style="overflow-x:auto;padding:8px 0;">${gridNoRecordHtml({ width: 620 })}</div>
-    `};
-  },
-};
-
-// ── Data Table Filtering ──────────────────────────────────────────
-// Ana Data Table sayfasıyla (gridTableColumns/gridTableHtml) BİREBİR aynı
-// tabloyu reuse eder — Filter zaten TÜM standart Data Table sayfalarında var
-// olan genel bir Table-group prop'u (bkz. §17.6); bu sayfanın TEK farkı
-// showFilter varsayılanının 'on' olması (kullanıcı isteğiyle: "Filtering
-// örneğini ekle, filter active state gelecek") — ayrı bir kolon/render
-// fonksiyonu YOK, kod tekrarı yok. NOT: filter ikonu şu an SADECE görsel/
-// statik bir sinyal — hangi kolonların filtrelenebilir olduğunu gösteriyor
-// ama tıklanınca gerçek bir filtre paneli/overlay'i AÇMIYOR henüz; kullanıcı
-// gerçek filtreleme mekanizmasının nasıl çalışması gerektiğini ayrı bir
-// mesajda tarif edecek (bkz. HISTORY.md) — bu sayfa o davranış eklenene
-// kadar sadece "aktif/statik ikon" durumunu belgeliyor.
-PAGES_WEB['components/data-table-filtering'] = {
-  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table Filtering'],
-  render(tab) {
-    const title = 'Data Table Filtering';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'Examples') return { title, html: `
-      <h2>Filter Kapalı</h2>
-      <p class="page-desc">Filter kapalıyken hiçbir kolon header'ında filter ikonu görünmez.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showFilter: 'off' })}</div></div></div>
-
-      <h2>Filter Açık — Panel Kapalı</h2>
-      <p class="page-desc"><code style="font-family:var(--mono);font-size:12px;">field</code>'ı olan HER kolon header'ında bir filter ikonu belirir — Sort'un aksine hover'a bağlı değil, her zaman görünür. Tıklanmadığı sürece ikon nötr (flat) görünür.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showFilter: 'on' })}</div></div></div>
-
-      <h2>Filter Aktif (uygulanmış)</h2>
-      <p class="page-desc">Bir kolonda değer seçilip <strong>Uygula</strong>'ya basıldığında filter ikonu basılı/aktif (<code style="font-family:var(--mono);font-size:12px;">.bt-btn--state-selected</code>) görünüme döner — kullanıcı hangi kolonda aktif bir filtre olduğunu ikonun rengine bakarak anlayabilir. Yukarıdaki Overview playground'unda bir Status değerini kaldırıp Uygula'ya basarak canlı deneyebilirsin; satırlar gerçekten filtrelenip görünmez olur.</p>
-    `};
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <table class="token-table">
-        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
+      <h2 id="Toolbar">Toolbar</h2>
+      <p class="page-desc">Toolbar, tablonun üzerinde yer alan komut çubuğudur ve kullanıcının tablo genelinde işlem yapabileceği tek tutarlı noktadır. Sol blok CRUD eylemlerini (Add / Edit / Delete) barındırır; sağ blok 320px sabit genişlikte anlık arama sunar. Arama input'u her tuş vuruşunda tüm görünür kolonları tarar ve satırları gerçek zamanlı filtreler — backend çağrısı gerektirmez. ${tk('.bt-grid-panel')} sarmalayıcısı border, border-radius ve padding'i üstlenir; böylece tablo ve toolbar görsel olarak tek bir blok oluşturur. Delete gibi tehlikeli eylemlere seçim kontrolü bağlanması önerilir: hiçbir satır seçili değilken Delete pasif kalmalıdır. Blazor'da Toolbar içeriği <code>ToolbarContent</code> RenderFragment'ı ile özelleştirilir; seçili kayıt sayısı <code>SelectedItems.Count</code> üzerinden okunur.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-toolbar-overview',
+        variants: [{ key: 'default', label: 'Data Table Toolbar' }],
+        props: [
+          { key: 'showAdd',         label: 'Add',             group: 'Toolbar', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'showEdit',        label: 'Edit',            group: 'Toolbar', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'showDelete',      label: 'Delete',          group: 'Toolbar', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'showSearch',      label: 'Search',          group: 'Toolbar', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'rowCount',        label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '6' },
+          { key: 'rowState',        label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',        label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',      label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showCheckboxCol', label: 'Checkbox Column', group: 'Columns', options: TBX_BOOL_OPTS,           default: 'on' },
+          { key: 'idContent',       label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',     label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',     label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:410px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-panel" style="flex:1;min-height:0;">${gridToolbarHtml(p)}<div class="bt-grid-container">${gridTableHtml(p)}</div></div></div>`,
+        code:    (v, p) => `<div class="bt-grid-panel">\n  ${gridToolbarHtml(p)}\n  ${gridTableHtml(p)}\n</div>`,
+        css:     (v, p) => gridToolbarCss(v, p),
+      })}
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>${tk('--bt-icon-primary-strong')}</td><td>Filter ikonu rengi (pasif)</td><td>#535353</td></tr>
-          <tr><td>${tk('--bt-primary-subtle')}</td><td>Filter butonu arka planı (aktif)</td><td>${tk('.bt-btn--state-selected')} — Button component'inin mevcut modifier'ı, reuse edildi</td></tr>
-          <tr><td>${tk('--bt-primary-default')}</td><td>Filter butonu iç border (aktif)</td><td>${tk('inset 0 0 0 1px')}</td></tr>
-          <tr><td>${tk('--bt-surface-primary-default')}</td><td>Panel arka planı</td><td>#ffffff</td></tr>
-          <tr><td>${tk('--bt-border-primary-default')}</td><td>Panel border</td><td>#d4d4d4</td></tr>
-          <tr><td>${tk('--bt-shadow-xl')}</td><td>Panel gölgesi</td><td>Overflow Menu'den daha belirgin</td></tr>
-          <tr><td>${tk('--bt-border-primary-default')}</td><td>Tümünü Seç ayırıcı / Footer üst ayırıcı</td><td>#d4d4d4</td></tr>
-          <tr><td>—</td><td>Search input</td><td>Bespoke değil — gerçek ${tk('.bt-searchbox--md')} component'i reuse edilir</td></tr>
-          <tr><td>—</td><td>Seçenek satırı yüksekliği</td><td>32px (Tümünü Seç dahil)</td></tr>
-          <tr><td>—</td><td>Filter ikonu görünürlüğü</td><td>Her zaman görünür (Sort'un aksine hover'a bağlı DEĞİL)</td></tr>
+          <tr><td>Panel</td><td>Border / Radius / Padding</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-radius-sm')} / ${tk('--bt-space-2xl')}</td><td>#d4d4d4 / 4px / 16px</td></tr>
+          <tr><td>Panel gap</td><td>Toolbar → Tablo</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Search</td><td>Width</td><td>—</td><td>320px · separator + arama ikonu sağda</td></tr>
         </tbody>
       </table>
-    `};
 
-    if (tab === 'Usage') return { title, html: `
-      <h2>Do</h2>
-      <ul>
-        <li>Kullanıcının gerçekten daraltmak isteyeceği, sınırlı/tekrarlı değer setine sahip kolonlarda (Status, Role, Department gibi) Filter'ı aç.</li>
-        <li>Filter ikonunu Sort ile aynı header'da birlikte kullanabilirsin — ikisi bağımsız çalışır, birbirini etkilemez.</li>
-        <li>Aynı anda birden fazla kolonda filtre aktifken hepsi AND mantığıyla birlikte uygulanır (bir satır TÜM aktif filtrelere uymalı) — bunu kullanıcıya doğru yansıt.</li>
-        <li>Seçenek listesini her zaman kolonun GERÇEK verisinden türet (hardcoded liste değil) — panel her açıldığında o an tablodaki satırlardan benzersiz değerleri okur.</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Serbest metin (email, isim gibi sınırsız değer aralığı olan) kolonlarda filter yerine arama/searchbox'ı tercih et.</li>
-        <li>Aynı anda birden fazla filtre panelini açık bırakma — yeni bir panel açılınca öncekini kapat.</li>
-      </ul>
-    `};
+      <h2 id="Actions">Actions</h2>
+      <p class="page-desc">Satır içi eylemler, kullanıcının bir kayda işlem yapmak için tablodan ayrılmasına gerek kalmadan hız kazandırır — modal açmak yerine doğrudan satırda işlem yapılır. Actions kolonu sağ tarafta sabit genişlikte durur ve üç farklı kontrol sunar: <strong>Button</strong> (birincil eylem + görünürlüğü düşük işlemler için More overflow menüsü), <strong>Satır İçi TextBox</strong> ve <strong>Satır İçi Dropdown</strong>. More menüsünün varlığı Actions kolonunun dar kalmasını sağlar — az yer tutar, veri kolonlarına daha fazla alan bırakır. Frontend'de her Actions kontrolü satırın verisine bağlanır; Blazor'da <code>GridCommandColumn</code> veya özel <code>Template</code> kullanılır, eylem callback'leri <code>OnClick</code> event'iyle tetiklenir. Silme gibi geri dönüşü zor işlemler için More menüsünde bir onay adımı eklenmesi şiddetle tavsiye edilir.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-actions-overview',
+        variants: [{ key: 'default', label: 'Data Table Actions' }],
+        props: [
+          { key: 'rowCount',      label: 'Rows',           group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
+          { key: 'rowState',      label: 'Row State',      group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',      label: 'Sort',           group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',    label: 'Filter',         group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'idContent',     label: 'ID Content',     group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',   label: 'Role Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'statusContent', label: 'Status Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'actionsContent',label: 'Actions Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:356px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridActionsTableHtml(p)}</div></div>`,
+        code: (v, p) => gridActionsTableHtml(p),
+        css:  (v, p) => gridActionsTableCss(v, p),
+      })}
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Actions · Button</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
+          <tr><td>Actions · More</td><td>Icon Button</td><td>—</td><td>${tk('bt-btn--base-flat bt-btn--icon')}</td></tr>
+          <tr><td>Actions · TextBox</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Actions · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+        </tbody>
+      </table>
 
-    // Overview
-    return { title, html: `
-      <p class="page-desc"><strong>Filtering</strong>, Data Table'ın <strong>Table</strong> grubundaki <strong>Filter</strong> prop'udur — açıldığında <code style="font-family:var(--mono);font-size:12px;">field</code>'ı olan HER kolon header'ında bir filter ikonu (funnel) belirir, Sort'un aksine hover'a bağlı değildir, her zaman görünür kalır. İkona tıklanınca <strong>Ara</strong> input'u + <strong>Tümünü Seç</strong> + kolonun KENDİ verisinden türetilen bir checkbox listesi + <strong>Temizle/Uygula</strong> footer'ından oluşan bir overlay açılır; Uygula'ya basınca satırlar GERÇEKTEN filtrelenir (seçilmeyen değerlere sahip satırlar gizlenir) ve filter ikonu o kolonda aktif bir filtre olduğunu gösteren basılı/mavi bir görünüme (<code style="font-family:var(--mono);font-size:12px;">.bt-btn--state-selected</code>) döner. Aynı ana Data Table tablosu (<code style="font-family:var(--mono);font-size:12px;">gridTableColumns</code>/<code style="font-family:var(--mono);font-size:12px;">gridTableHtml</code>) reuse edilir — bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a> ve <a href="#" onclick="navigate('components/data-table-sorting');return false;">Sorting</a>.</p>
+      <h2 id="Frozen Column First">Frozen Column First</h2>
+      <p class="page-desc">Yatay scroll gerektiren tablolarda kullanıcı sağa kaydırdığında hangi satıra baktığını kaybedebilir — özellikle 8–12 kolon içeren listelerde bu ciddi bir sorun olur. Frozen Column First, ilk 1–2 kolonu (Checkbox + kimlik alanı) ekranda sabit tutar: kullanıcı ne kadar kaydırırsa kaydırsın satır kimliği her zaman görünürde kalır. CSS katmanında ${tk('position: sticky')} ile uygulanır; JavaScript veya DOM manipülasyonu gerekmez, mevcut hücreler yeniden yazılmaz, yalnızca ilgili <code>th</code>/<code>td</code> öğelerine sticky sınıfı eklenir. Son sabitlenen kolonun sağ kenarında belirgin bir box-shadow, kullanıcıya "bu noktanın solu kaymuyor" mesajını görsel olarak iletir. Blazor'da freeze davranışı kolon bazında <code>Frozen</code> prop'u ile aktive edilir.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-frozen-overview',
+        variants: [{ key: 'default', label: 'Frozen Column First' }],
+        props: [
+          { key: 'rowCount',          label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '6' },
+          { key: 'rowState',          label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'frozenCount',       label: 'Frozen Columns',  group: 'Table',   options: GRID_FROZEN_COUNT_OPTS,  default: '2' },
+          { key: 'showSort',          label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',        label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'idContent',         label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',       label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',       label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'departmentContent', label: 'Department Content', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'locationContent',   label: 'Location Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'lastLoginContent',  label: 'Last Login Content', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent',     label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',      label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:356px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-frozen-container">${gridFrozenTableHtml(p)}</div></div>`,
+        code:    (v, p) => gridFrozenTableHtml(p),
+        css:     (v, p) => gridFrozenTableCss(v, p),
+      })}
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Donmuş Hücre</td><td>Position / Left / Z-index</td><td>—</td><td>sticky / önceki kolonların genişliği / 5</td></tr>
+          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)</td></tr>
+        </tbody>
+      </table>
 
-      <h2 id="Data Table Filtering">Data Table Filtering</h2>
+      <h2 id="Frozen Column Last">Frozen Column Last</h2>
+      <p class="page-desc">Frozen Column First ile aynı sticky mekanizmasını kullanır — fark, sağdaki <strong>Actions</strong> kolonunun da sabitlenmesidir. Bu konfigürasyonda hem kimlik (sol) hem de eylemler (sağ) her zaman görünürde kalır; kullanıcı ortadaki veri kolonlarını özgürce kaydırabilir. Sağ freeze için ${tk('position: sticky; right: 0')} yeterlidir; z-index değerlerinin sol ve sağ frozen kolonların kesişim noktasında çakışmaması için doğru sıralanması gerekir. Soldan ve sağdan gelen box-shadow'lar kullanıcıya iki yönlü sabitlemeyi sezgisel biçimde gösterir. Blazor'da son Actions kolonuna da aynı <code>Frozen</code> prop'u uygulanır; framework sağdan sabitlemeyi otomatik algılar.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-frozen-last-overview',
+        variants: [{ key: 'default', label: 'Frozen Column Last' }],
+        props: [
+          { key: 'rowCount',          label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,    default: '6' },
+          { key: 'rowState',          label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,        default: 'default' },
+          { key: 'frozenCount',       label: 'Frozen Columns',  group: 'Table',   options: GRID_FROZEN_COUNT_OPTS, default: '2' },
+          { key: 'showSort',          label: 'Sort',            group: 'Table',   options: TBX_BOOL_OPTS,          default: 'off' },
+          { key: 'showFilter',        label: 'Filter',          group: 'Table',   options: TBX_BOOL_OPTS,          default: 'off' },
+          { key: 'idContent',         label: 'ID Content',      group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',       label: 'Name Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'avatar' },
+          { key: 'roleContent',       label: 'Role Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'dot' },
+          { key: 'departmentContent', label: 'Department Content', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'locationContent',   label: 'Location Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'lastLoginContent',  label: 'Last Login Content', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent',     label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',      label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'actionsContent',    label: 'Actions Column',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'button' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:356px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-frozen-container">${gridFrozenLastTableHtml(p)}</div></div>`,
+        code:    (v, p) => gridFrozenLastTableHtml(p),
+        css:     (v, p) => gridFrozenLastTableCss(v, p),
+      })}
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Sol Donmuş Hücre</td><td>Position / Left / Z-index</td><td>—</td><td>sticky / önceki kolonların genişliği / 5</td></tr>
+          <tr><td>Sağ Donmuş Hücre</td><td>Position / Right / Z-index</td><td>—</td><td>sticky / 0px / 5</td></tr>
+          <tr><td>Sol Kenar</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06)</td></tr>
+          <tr><td>Sağ Kenar</td><td>Box-shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Inline Editing">Inline Editing</h2>
+      <p class="page-desc">Satır bazlı düzenleme, kullanıcının bir kaydı bütünüyle güncellemek istediği senaryolar için tasarlanmıştır. Edit butonuna tıklandığında satırın tüm düzenlenebilir hücreleri aynı anda input ve dropdown'a dönüşür; Actions kolonu da Save/Cancel çiftine geçer. Bu "hepsini birden düzenle" yaklaşımı kullanıcının değişiklikleri göndermeden önce satır bütünlüğünü gözden geçirebileceği anlamına gelir — geri dönüş Cancel ile tek tıktır, tarayıcı geçmişi veya undo mekanizması gerektirmez. Yalnızca bir satır aynı anda edit modunda olabilir; yeni bir satıra tıklamak mevcut düzenlemeyi iptal eder. CSS katmanında geçiş ${tk('.bt-grid__row--editing')} sınıfı toggle'ı ile yönetilir. Blazor'da <code>GridEditMode.Inline</code> modu bu davranışı yerleşik sunar; <code>OnRowUpdate</code> event'i model güncellemesini işler ve tipik olarak bir PUT veya PATCH isteğine dönüşür.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-inline-editing-overview',
+        variants: [{ key: 'default', label: 'Inline Editing' }],
+        props: [
+          { key: 'rowCount',      label: 'Rows',       group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
+          { key: 'rowState',      label: 'Row State',  group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',      label: 'Sort',       group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',    label: 'Filter',     group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'idContent',     label: 'ID Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'roleContent',   label: 'Role Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent', label: 'Status Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:280px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml(p)}</div></div>`,
+        code: (v, p) => gridInlineEditTableHtml(p),
+        css:  (v, p) => gridInlineEditTableCss(v, p),
+      })}
+      <h3>View Mode</h3>
+      <p class="page-desc">Satır varsayılan okuma modundadır: tüm hücreler salt metin, Status badge olarak görünür. Actions kolonunda yalnızca <strong>Edit</strong> butonu yer alır. Her satır kendi edit akışını bağımsız yönetir — kullanıcının önce satırı seçip sonra düzenleme başlatma adımı yoktur; bu tasarım kararı özellikle hızlı kayıt güncelleme senaryolarında akışı kısaltır ve yanlışlıkla toplu seçim riskini ortadan kaldırır. Blazor/Telerik tarafında bu görünüm ${tk('GridEditMode.Inline')} modunun default state'idir; satır henüz ${tk('OnEdit')} callback'ini tetiklememiştir.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-preview">
+          <div class="pgd-preview-inner">
+            <div class="pgd-viewport-frame" style="width:100%">
+              <div style="display:flex;flex-direction:column;height:180px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml({ rowCount: '2' })}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3>Edit Mode</h3>
+      <p class="page-desc">Edit butonuna tıklandığında o satırın tüm düzenlenebilir hücreleri aynı anda input'a dönüşür: Name → metin alanı, Role → dropdown, Status → dropdown. Actions kolonu da <strong>Save</strong> ve <strong>Cancel</strong> çiftine geçer. Aynı anda yalnızca bir satır edit modunda olabilir — başka bir satıra tıklamak mevcut düzenlemeyi iptal eder. CSS katmanında bu geçiş satıra ${tk('.bt-grid__row--editing')} eklenmesiyle yönetilir; view/edit alanları aynı DOM'da birlikte bulunur, sınıf hangisinin görünür olduğunu belirler.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-preview">
+          <div class="pgd-preview-inner">
+            <div class="pgd-viewport-frame" style="width:100%">
+              <div style="display:flex;flex-direction:column;height:180px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridInlineEditTableHtml({ rowCount: '2', forceEditRowIndex: 0 })}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')} (Edit)</td></tr>
+          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Save / Cancel</td><td>Buttons</td><td>—</td><td>${tk('bt-btn--primary-solid')} / ${tk('bt-btn--secondary-flat')}</td></tr>
+          <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__row--editing')} (satır seviyesi)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="InCell Editing">InCell Editing</h2>
+      <p class="page-desc">Hücre bazlı düzenleme, büyük veri kümelerinde hızlı spot-editing için tasarlanmıştır. Excel ve Google Sheets alışkanlığını web tablosuna taşır: düzenlenebilir hücreye çift tıklandığında yalnızca o hücre input'a dönüşür. Enter veya blur (odak kaybı) kaydeder, Escape değişikliği geri alır. Inline Editing'den temel farkı kapsam ve onay akışıdır: her hücre bağımsız olarak düzenlenir ve onaylanır, satır bütünlüğü kontrolü yoktur. Bu, kullanıcının az sayıda alanı sık değiştirdiği listelerde çok daha hızlı bir akış sunar. CSS katmanında geçiş ${tk('.bt-grid__cell--editing')} sınıfı toggle'ı ile yönetilir (satır değil, hücre seviyesinde). Blazor'da <code>GridEditMode.InCell</code> kullanılır; her <code>OnCellEdit</code> event'i tek bir alan güncellemesi gönderir ve backend PATCH endpoint'leriyle doğrudan eşlenir.</p>
+      ${registerPlayground({
+        id: 'pgd-datatable-incell-editing-overview',
+        variants: [{ key: 'default', label: 'InCell Editing' }],
+        props: [
+          { key: 'rowCount',      label: 'Rows',       group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '3' },
+          { key: 'rowState',      label: 'Row State',  group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
+          { key: 'showSort',      label: 'Sort',       group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'showFilter',    label: 'Filter',     group: 'Table',   options: TBX_BOOL_OPTS,           default: 'off' },
+          { key: 'idContent',     label: 'ID Content',    group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'nameContent',   label: 'Name Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'roleContent',   label: 'Role Content',  group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+          { key: 'statusContent', label: 'Status Column', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
+          { key: 'emailContent',  label: 'Email Content', group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
+        ],
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:280px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml(p)}</div></div>`,
+        code: (v, p) => gridIncellEditTableHtml(p),
+        css:  (v, p) => gridIncellEditTableCss(v, p),
+      })}
+      <h3>View Mode</h3>
+      <p class="page-desc">Tüm hücreler salt okunur görünümündedir; düzenlenebilir hücreler görsel olarak diğerlerinden ayrışmaz — bu kasıtlı bir tasarım kararıdır. Tek tıklama satır seçimini değiştirir, düzenleme başlatmaz; edit için çift tıklama gerekir. Görsel ipucu olmayan çift tıklama beklentisi alışkın olmayan kullanıcılar için keşfedilemez olabilir, bu yüzden InCell Editing'i yalnızca tablo etkileşimine hâkim kullanıcıların çalıştığı yönetim paneli ve backoffice ekranlarında tercih edin. Blazor/Telerik tarafında bu görünüm ${tk('GridEditMode.InCell')} modunun default state'idir; henüz hiçbir hücre ${tk('OnEdit')} callback'ini tetiklememiştir.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-preview">
+          <div class="pgd-preview-inner">
+            <div class="pgd-viewport-frame" style="width:100%">
+              <div style="display:flex;flex-direction:column;height:180px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml({ rowCount: '2' })}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3>Edit Mode</h3>
+      <p class="page-desc">Kullanıcı Name hücresine çift tıkladığında yalnızca o hücre input'a dönüşür; aynı satırdaki diğer hücreler (Role, Status, Email) okuma modunda kalmaya devam eder. Enter veya odak kaybı (blur) değişikliği kaydeder, Escape orijinal değere döner. Hücre bazlı onay akışı, tüm satırın kayıt gönderme overhead'ini ortadan kaldırır — tek bir hücre güncellenir ve işlem biter. CSS katmanında bu geçiş ${tk('.bt-grid__cell--editing')} sınıfıyla hücre seviyesinde yönetilir; aynı hücre içindeki view ve edit alanları DOM'da birlikte yer alır, sınıf hangisinin göründüğünü belirler.</p>
+      <div class="example-viewer">
+        <div class="example-viewer-preview">
+          <div class="pgd-preview-inner">
+            <div class="pgd-viewport-frame" style="width:100%">
+              <div style="display:flex;flex-direction:column;height:180px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-actions-container">${gridIncellEditTableHtml({ rowCount: '2', forceEditCell: { rowIndex: 0, field: 'name' } })}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Trigger</td><td>Double click</td><td>—</td><td>${tk('ondblclick')} on editable cell</td></tr>
+          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Commit / İptal</td><td>Klavye</td><td>—</td><td>Enter veya blur kaydeder, Escape iptal eder</td></tr>
+          <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__cell--editing')} (hücre seviyesi)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Filtering">Filtering</h2>
+      <p class="page-desc">Filtering, kullanıcının tablo verisini kolon bazında daraltmasını sağlar. <strong>Filter</strong> prop'u açıkken her veri kolonunun başlığında bir funnel ikonu belirir; tıklanınca anlık arama input'u, Tümünü Seç checkbox'ı, kolon verisinden otomatik türetilen çok seçimli liste ve Temizle/Uygula footer'ından oluşan bir overlay paneli açılır. Uygula'ya basıldığında satırlar fiilen filtrelenir ve funnel ikonu aktif durumuna geçerek kullanıcıya hangi kolonların filtrelendiğini görsel olarak iletir. Bu deneyim Excel'in AutoFilter mekanizmasını web tablosuna taşır ve veri analizi akışını hızlandırır. Birden fazla kolon aynı anda filtrelenebilir; filtreler AND mantığıyla birleşir. Frontend katmanında <code>window.btGridApplyFilters</code> tüm aktif filtreleri satır bazında değerlendirir. Blazor'da <code>FilterMode</code> prop'u ile istemci veya sunucu tarafı filtreleme seçilir; <code>OnFilterChanged</code> event'i OData <code>$filter</code> parametresini oluşturmak için kullanılır.</p>
       ${registerPlayground({
         id: 'pgd-datatable-filtering-overview',
-        variants: [{ key: 'default', label: 'Data Table Filtering' }],
+        variants: [{ key: 'default', label: 'Filtering' }],
         props: [
           { key: 'rowCount',        label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '6' },
           { key: 'rowState',        label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
@@ -11826,96 +12087,27 @@ PAGES_WEB['components/data-table-filtering'] = {
           { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
           { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
-        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:flex;flex-direction:column;height:356px;">
-            <div class="bt-grid-container">${gridTableHtml(p)}</div>
-          </div>
-        </div>`,
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:356px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-container">${gridTableHtml(p)}</div></div>`,
         code: (v, p) => gridTableHtml(p),
         css:  (v, p) => gridTableCss(v, p),
       })}
-
-      <h2>Anatomy</h2>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Filter Trigger</td><td>Icon Button</td><td>—</td><td>${tk('bt-btn--sm bt-btn--base-flat bt-btn--icon')} (28×28, funnel 14×14)</td></tr>
           <tr><td>Filter Trigger · Aktif</td><td>Class</td><td>—</td><td>${tk('.bt-btn--state-selected')}</td></tr>
-          <tr><td>Panel</td><td>Konumlandırma</td><td>—</td><td>${tk('position: fixed')} + ${tk('document.body')} portal (Overflow Menu ile aynı desen)</td></tr>
-          <tr><td>Panel · Search</td><td>Input</td><td>—</td><td>Gerçek ${tk('.bt-searchbox--md')} component'i, listeyi canlı filtreler</td></tr>
-          <tr><td>Panel · Seçenek</td><td>Yükseklik</td><td>—</td><td>32px (Tümünü Seç dahil TÜM satırlar)</td></tr>
-          <tr><td>Panel · Seçenek</td><td>Checkbox</td><td>—</td><td>Gerçek ${tk('.bt-checkbox__box')}, kolonun kendi verisinden türetilir</td></tr>
-          <tr><td>Panel · Footer</td><td>Butonlar</td><td>—</td><td>${tk('bt-btn--secondary-flat')} (Temizle) / ${tk('bt-btn--primary-solid')} (Uygula)</td></tr>
-          <tr><td>Satır filtreleme</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridApplyFilters')} — birden fazla aktif kolon AND mantığıyla birlikte uygulanır</td></tr>
+          <tr><td>Panel</td><td>Konumlandırma</td><td>—</td><td>${tk('position: fixed')} + ${tk('document.body')} portal</td></tr>
+          <tr><td>Panel · Search</td><td>Input</td><td>—</td><td>Gerçek ${tk('.bt-searchbox--md')} component'i</td></tr>
+          <tr><td>Panel · Footer</td><td>Butonlar</td><td>—</td><td>${tk('bt-btn--secondary-flat')} / ${tk('bt-btn--primary-solid')}</td></tr>
+          <tr><td>Satır filtreleme</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridApplyFilters')} — AND mantığı</td></tr>
         </tbody>
       </table>
-    `};
-  },
-};
 
-// ── Data Table Sorting ────────────────────────────────────────────
-// Ana Data Table sayfasıyla (gridTableColumns/gridTableHtml) BİREBİR aynı
-// tabloyu reuse eder — sıralama zaten TÜM standart Data Table sayfalarında
-// var olan genel bir özellik (bkz. §17.6, window.btGridSortBy); bu sayfanın
-// TEK farkı showSort varsayılanının 'on' olması (kullanıcı isteğiyle:
-// "Sorting olarak yeni bir örnek ekle, sorting default olarak aktif
-// gelecek") — ayrı bir kolon/render fonksiyonu YOK, kod tekrarı yok.
-PAGES_WEB['components/data-table-sorting'] = {
-  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Data Table Sorting'],
-  render(tab) {
-    const title = 'Data Table Sorting';
-    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
-
-    if (tab === 'Examples') return { title, html: `
-      <h2>Unsorted (varsayılan sıra)</h2>
-      <p class="page-desc">Hiçbir kolona tıklanmadığında satırlar render sırasında geldiği gibi kalır.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showSort: 'on' })}</div></div></div>
-
-      <h2>Ascending (1. tık)</h2>
-      <p class="page-desc">ID kolonuna ilk tıklama — küçükten büyüğe sıralar, ok yukarı yönlü ve marka mavisiyle kalıcı görünür.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showSort: 'on', forceSortField: 'id', forceSortDir: 'asc' })}</div></div></div>
-
-      <h2>Descending (2. tık)</h2>
-      <p class="page-desc">Aynı kolona ikinci tıklama — büyükten küçüğe sıralar, ok aşağı yönlüye döner. Üçüncü tıklama ise sıralamayı tamamen kaldırıp orijinal sıraya (Unsorted) geri döner.</p>
-      <div style="padding:16px;overflow-x:auto;"><div style="display:inline-flex;flex-direction:column;height:220px;"><div class="bt-grid-container">${gridTableHtml({ rowCount: '4', showSort: 'on', forceSortField: 'id', forceSortDir: 'desc' })}</div></div></div>
-    `};
-
-    if (tab === 'CSS Properties') return { title, html: `
-      <table class="token-table">
-        <thead><tr><th>Token</th><th>Property</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>—</td><td>Sort ikonu rest state</td><td>${tk('opacity: 0')} (sadece hover'da görünür)</td></tr>
-          <tr><td>—</td><td>Sort ikonu geçişi</td><td>${tk('transition: opacity .12s ease')}</td></tr>
-          <tr><td>${tk('--bt-icon-brand-default')}</td><td>Aktif sıralanan kolon ikon rengi</td><td>#0d4e97</td></tr>
-          <tr><td>—</td><td>Sortable header cursor</td><td>${tk('cursor: pointer')}</td></tr>
-          <tr><td>—</td><td>Görünürlük anahtarı</td><td>${tk('.bt-grid__header-cell--sorted')} + ${tk('[data-sort-dir]')}</td></tr>
-        </tbody>
-      </table>
-    `};
-
-    if (tab === 'Usage') return { title, html: `
-      <h2>Do</h2>
-      <ul>
-        <li>Kullanıcının en sık aradığı/karşılaştırdığı kolonlarda (ID, tarih, isim, tutar) sıralamayı aç.</li>
-        <li>Aktif sıralanan kolonun her zaman (hover olmasa da) görünür kalmasını sağla — kullanıcı hangi kolona göre sıralandığını kaybetmemeli.</li>
-        <li>Üçüncü tıklamanın orijinal sıraya döndüğünü (reset) net bir davranış olarak koru — sonsuz asc/desc döngüsü değil.</li>
-      </ul>
-      <h2>Don't</h2>
-      <ul>
-        <li>Aynı anda birden fazla kolonu "aktif sıralanan" gösterme — tek kolon kuralını boz</li>
-        <li>Actions gibi veri taşımayan kolonları sıralanabilir yapma</li>
-      </ul>
-    `};
-
-    // Overview
-    return { title, html: `
-      <p class="page-desc"><strong>Sorting</strong>, Data Table'ın header'a tıklayarak satırları gerçekten sıralayan davranışıdır — <strong>Table</strong> grubundaki <strong>Sort</strong> prop'u açıkken <code style="font-family:var(--mono);font-size:12px;">field</code>'ı olan HER kolon header'ı tıklanabilir hale gelir. Sort ikonları varsayılan olarak gizlidir, sadece header hover'dayken belirir; aktif sıralanan kolon hover olmadan da görünür kalıp SADECE kendi yönünü (asc→yukarı ok, desc→aşağı ok) marka mavisiyle gösterir. Bir kolona <strong>3 kez</strong> tıklamak asc → desc → <strong>reset</strong> (orijinal sıra) döngüsünü tamamlar. Aynı ana Data Table tablosu (<code style="font-family:var(--mono);font-size:12px;">gridTableColumns</code>/<code style="font-family:var(--mono);font-size:12px;">gridTableHtml</code>) reuse edilir — bkz. <a href="#" onclick="navigate('components/data-table');return false;">Data Table</a>.</p>
-
-      <h2 id="Data Table Sorting">Data Table Sorting</h2>
+      <h2 id="Sorting">Sorting</h2>
+      <p class="page-desc">Sıralama, kullanıcının veriyi kendi önceliğine göre yeniden düzenlemesine olanak tanır. <strong>Sort</strong> prop'u açıkken veri kolonlarının başlığına tıklayarak üçlü döngü başlatılır: artan (↑) → azalan (↓) → sıfırla. Sort ikonları yalnızca hover'da belirir; bu, tabloyu görsel olarak sade tutar ve deneyimsiz kullanıcıları gereksiz UI gürültüsünden korur. Aktif sıralama ikonu ise hover olmadan da kalıcı olarak görünür — kullanıcı mevcut sıralamanın ne olduğunu her zaman okuyabilir. Bu "sessiz ama bilgilendirici" yaklaşım, sistemin pasif durumlarda sade kalırken aktif durumlarda şeffaf olma felsefesini yansıtır. Blazor'da <code>SortMode</code> prop'u tek ve çoklu sıralamayı belirler; <code>OnSortChanged</code> event'i OData <code>$orderby</code> parametresini günceller ve büyük veri kümelerinde sıralama her zaman sunucu tarafında yapılır.</p>
       ${registerPlayground({
         id: 'pgd-datatable-sorting-overview',
-        variants: [{ key: 'default', label: 'Data Table Sorting' }],
+        variants: [{ key: 'default', label: 'Sorting' }],
         props: [
           { key: 'rowCount',        label: 'Rows',            group: 'Table',   options: GRID_TABLE_ROW_OPTS,     default: '6' },
           { key: 'rowState',        label: 'Row State',       group: 'Table',   options: GRID_STATE_OPTS,         default: 'default' },
@@ -11928,30 +12120,23 @@ PAGES_WEB['components/data-table-sorting'] = {
           { key: 'statusContent',   label: 'Status Column',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'badge' },
           { key: 'emailContent',    label: 'Email Content',   group: 'Columns', options: GRID_TABLE_CONTENT_OPTS, default: 'none' },
         ],
-        preview: (v, p) => `<div style="padding:24px;overflow-x:auto;">
-          <div style="display:flex;flex-direction:column;height:356px;">
-            <div class="bt-grid-container">${gridTableHtml(p)}</div>
-          </div>
-        </div>`,
+        preview: (v, p) => `<div style="display:flex;flex-direction:column;height:356px;max-width:860px;width:100%;margin:0 auto;"><div class="bt-grid-container">${gridTableHtml(p)}</div></div>`,
         code: (v, p) => gridTableHtml(p),
         css:  (v, p) => gridTableCss(v, p),
       })}
-
-      <h2>Anatomy</h2>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Trigger</td><td>Header Cell click</td><td>—</td><td>${tk('.bt-grid__header-cell--sortable')} (tüm header tıklanabilir)</td></tr>
+          <tr><td>Trigger</td><td>Header Cell click</td><td>—</td><td>${tk('.bt-grid__header-cell--sortable')}</td></tr>
           <tr><td>Sort ikonu (rest)</td><td>Opacity</td><td>—</td><td>0 (hover'da 1)</td></tr>
           <tr><td>Sort ikonu (aktif)</td><td>Renk</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97, sadece kendi yönü</td></tr>
           <tr><td>Döngü</td><td>3 tık</td><td>—</td><td>asc → desc → reset</td></tr>
-          <tr><td>Karşılaştırma</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridSortBy')} — sayısal veya ${tk("localeCompare(v,'tr')")}</td></tr>
+          <tr><td>Karşılaştırma</td><td>Fonksiyon</td><td>—</td><td>${tk('window.btGridSortBy')} — sayısal veya localeCompare</td></tr>
         </tbody>
       </table>
     `};
   },
 };
-
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 PAGES_WEB['components/nav-drawer'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
