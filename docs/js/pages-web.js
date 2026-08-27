@@ -12137,6 +12137,286 @@ PAGES_WEB['components/data-table'] = {
     `};
   },
 };
+// ─── Segmented Control ────────────────────────────────────────────────────────
+
+function btSegSelect(el) {
+  const ctrl = el.closest('.bt-seg-ctrl');
+  if (!ctrl) return;
+  ctrl.querySelectorAll('.bt-segment').forEach(s => s.classList.remove('bt-segment--selected'));
+  el.classList.add('bt-segment--selected');
+}
+
+const SEG_SIZE_OPTS = [
+  { key: 'sm', label: 'Sm (Default)' },
+  { key: 'md', label: 'Md' },
+  { key: 'lg', label: 'Lg' },
+];
+const SEG_CONTENT_OPTS = [
+  { key: 'label',      label: 'Label' },
+  { key: 'icon',       label: 'Icon' },
+  { key: 'icon-label', label: 'Icon & Label' },
+];
+const SEG_COUNT_OPTS = [
+  { key: '2', label: '2' },
+  { key: '3', label: '3' },
+  { key: '4', label: '4' },
+];
+const SEG_SELECTED_OPTS = [
+  { key: '0',    label: '1st' },
+  { key: '1',    label: '2nd' },
+  { key: '2',    label: '3rd' },
+  { key: '3',    label: '4th' },
+  { key: 'none', label: 'None' },
+];
+
+function segCtrlHtml(p) {
+  const size       = p.size    || 'sm';
+  const content    = p.content || 'label';
+  const count      = parseInt(p.count    || '3', 10);
+  const selIdx     = p.selected === 'none' ? -1 : parseInt(p.selected ?? '0', 10);
+  const sizeClass  = size === 'md' ? ' bt-seg-ctrl--md' : size === 'lg' ? ' bt-seg-ctrl--lg' : '';
+  const labels     = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  const segs = Array.from({ length: count }, (_, i) => {
+    const sel      = i === selIdx;
+    const selCls   = sel ? ' bt-segment--selected' : '';
+    const iconOnly = content === 'icon' ? ' bt-segment--icon' : '';
+    const icon     = (content === 'icon' || content === 'icon-label')
+      ? `<span class="bt-segment__icon"><i data-lucide="layers"></i></span>` : '';
+    const label    = (content === 'label' || content === 'icon-label')
+      ? `<span class="bt-segment__label">${labels[i]}</span>` : '';
+    return `<button class="bt-segment${selCls}${iconOnly}" onclick="btSegSelect(this)">${icon}${label}</button>`;
+  }).join('');
+
+  return `<div class="bt-seg-ctrl${sizeClass}">${segs}</div>`;
+}
+
+function segCtrlCss(v, p) {
+  const esc  = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ln   = (k, val) => `  ${k}: ${val};`;
+  const h    = p.size === 'lg' ? '36px' : p.size === 'md' ? '32px' : '28px';
+  const lines = [
+    '.bt-seg-ctrl {',
+    ln('display',       'inline-flex'),
+    ln('align-items',   'center'),
+    ln('padding',       '3px'),
+    ln('background',    'var(--bt-base-subtle)  /* #f5f5f5 */'),
+    ln('border',        '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'),
+    ln('border-radius', 'var(--bt-radius-sm)  /* 4px */'),
+    '}', '',
+    '.bt-segment {',
+    ln('display',         'inline-flex'),
+    ln('align-items',     'center'),
+    ln('justify-content', 'center'),
+    ln('gap',             'var(--bt-space-xs)  /* 4px */'),
+    ln('padding',         '0 var(--bt-space-xl)  /* 0 12px */'),
+    ln('height',          h),
+    ln('border',          '1px solid transparent'),
+    ln('border-radius',   'var(--bt-radius-sm)  /* 4px */'),
+    ln('background',      'transparent'),
+    ln('font',            'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
+    ln('color',           'var(--bt-text-primary-default)  /* #1a1a1a */'),
+    '}', '',
+    '.bt-segment--selected {',
+    ln('background',    'var(--bt-primary-subtle)  /* #e2edfc */'),
+    ln('border-color',  'var(--bt-border-brand-default)  /* #0d4e97 */'),
+    ln('color',         'var(--bt-text-brand-default)  /* #0d4e97 */'),
+    ln('font',          'var(--bt-text-xs-medium)  /* 500 12px/16px */'),
+    '}', '',
+    '.bt-segment:disabled {',
+    ln('color',   'var(--bt-text-primary-muted)  /* #a3a3a3 */'),
+    ln('cursor',  'not-allowed'),
+    '}',
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/segmented-control'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['States', 'Sizes', 'Content Types'],
+  render(tab) {
+    const title = 'Segmented Control';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    // Static segment helper (no onclick — for state/anatomy tables)
+    const seg = ({ label = '', icon = false, sel = false, dis = false, focus = false, hover = false } = {}) => {
+      const cls   = ['bt-segment', sel && 'bt-segment--selected', icon && !label && 'bt-segment--icon'].filter(Boolean).join(' ');
+      const style = focus ? ' style="box-shadow:0 0 0 3px rgba(212,212,212,.5)"'
+                  : hover ? ' style="background:rgba(0,0,0,.05)"' : '';
+      const disA  = dis ? ' disabled' : '';
+      const iconEl  = icon  ? `<span class="bt-segment__icon"><i data-lucide="layers"></i></span>` : '';
+      const labelEl = label ? `<span class="bt-segment__label">${label}</span>` : '';
+      return `<button class="${cls}"${disA}${style}>${iconEl}${labelEl}</button>`;
+    };
+    const ctrl = (inner, size = '') => {
+      const cls = size === 'md' ? ' bt-seg-ctrl--md' : size === 'lg' ? ' bt-seg-ctrl--lg' : '';
+      return `<div class="bt-seg-ctrl${cls}">${inner}</div>`;
+    };
+    // Interactive segment (with onclick — for Examples tab)
+    const iseg = (opts) => seg(opts).replace('<button ', '<button onclick="btSegSelect(this)" ');
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Segmented Control bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Padding</td><td>—</td><td>3px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Segment · Sm</td><td>Height</td><td>—</td><td>28px</td></tr>
+          <tr><td>Segment · Md</td><td>Height</td><td>—</td><td>32px</td></tr>
+          <tr><td>Segment · Lg</td><td>Height</td><td>—</td><td>36px</td></tr>
+          <tr><td>Segment</td><td>Padding H</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Segment</td><td>Gap (icon+label)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Segment · Default</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Segment · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Segment · Selected</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Segment · Selected</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Segment · Selected</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Segment · Selected</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
+          <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Segment · Focus</td><td>Box Shadow</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
+          <tr><td>Icon Slot</td><td>Size</td><td>—</td><td>28×28px</td></tr>
+          <tr><td>Icon</td><td>Size</td><td>—</td><td>16×16px</td></tr>
+          <tr><td>Icon · Default</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Icon · Selected</td><td>Color</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Disabled</td><td>Color</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Birbirini dışlayan görünüm veya mod seçimlerinde kullan — "Günlük / Haftalık / Aylık" gibi</li>
+        <li>Tüm seçenekleri aynı anda görünebilir sayıda tut — 2–5 segment idealdir</li>
+        <li>Yalnızca ikon kullanan segmentlere tooltip ile etiket ekle</li>
+        <li>Her zaman bir segment seçili bırak — boş seçim durumu son kullanıcıya sunulmamalı</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Sayfa navigasyonu için kullanma — sayfa geçişleri Tab Menu ile yapılmalı</li>
+        <li>6'dan fazla segment ekleme; uzun listeler için Dropdown/Select kullan</li>
+        <li>Segment etiketlerini çok uzun tutma — içeriğe göre genişler, dar alanlarda taşar</li>
+      </ul>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Üç boyut — Sm, Md, Lg — farklı arayüz yoğunluklarına göre seçilir. Sm (28px) compact toolbar'lar için, Md (32px) form bölümleri ve panel başlıkları için, Lg (36px) sayfanın birincil mod geçişleri için uygundur. Boyut ${tk('.bt-seg-ctrl--md')} ve ${tk('.bt-seg-ctrl--lg')} class'larıyla container üzerinden belirlenir; Sm varsayılan olduğundan ek class gerekmez.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm (Default)</td><td>28px</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Md</td><td>32px</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }), 'md')}</td></tr>
+          <tr><td>Lg</td><td>36px</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }), 'lg')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Content Types">Content Types</h2>
+      <p class="page-desc">Segment üç içerik tipini destekler: sadece etiket, sadece ikon ve ikon+etiket birlikte. Yalnızca ikon kullanan segmentler ${tk('.bt-segment--icon')} modifier'ıyla kare boyutuna döner; padding sıfırlanır, boyut yükseklikle eşitlenir. İkon slotu 28×28px sabit kalır, içindeki ikon 16×16px — dokunma hedefi yeterlidir. Blazor tarafında içerik tipi, ${tk('ChildContent')} RenderFragment ile belirlenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Content</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Icon</td><td>${ctrl(iseg({ icon: true, sel: true }) + iseg({ icon: true }) + iseg({ icon: true }))}</td></tr>
+          <tr><td>Icon & Label</td><td>${ctrl(iseg({ icon: true, label: 'Option 1', sel: true }) + iseg({ icon: true, label: 'Option 2' }) + iseg({ icon: true, label: 'Option 3' }))}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-seg-ctrl-overview',
+        variants: [{ key: 'default', label: 'Segmented Control' }],
+        props: [
+          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'sm' },
+          { key: 'content',  label: 'Content',  options: SEG_CONTENT_OPTS,  default: 'label' },
+          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml(p)}</div>`,
+        code:    (v, p) => segCtrlHtml(p),
+        css:     (v, p) => segCtrlCss(v, p),
+      })}
+
+      <p class="page-desc">Segmented Control, birbirini dışlayan seçenekleri yatay bir buton grubu olarak sunar — kullanıcı yalnızca bir segmenti aynı anda aktif yapabilir. Kompakt yapısı onu toolbar'lar, panel başlıkları ve görünüm geçişleri için ideal kılar; Tab Menu'nun aksine sayfa navigasyonu için değil, aynı içeriğin farklı modları arasında geçiş için tasarlanmıştır. Seçili segment ${tk('.bt-segment--selected')} class'ıyla işaretlenir; Blazor tarafında seçim durumu genellikle bağlı bir ${tk('bool')} property veya ${tk('TelerikButtonGroup')} ile yönetilir.</p>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Her segment altı görsel durumu destekler. Default ve Hover aynı gri zemini paylaşır; hover'da hafif opaklık değişimi tıklanabilirliği hissettirir. Selected ve Active aynı stili kullanır: ${tk('--bt-primary-subtle')} arka plan ve ${tk('--bt-border-brand-default')} kenar rengi. Focus ring yalnızca klavye navigasyonunda görünür — erişilebilirlik gereksinimini karşılar. Disabled segment tıklanamaz ve muted renk alır; container üzerindeki diğer segmentler etkilenmez.</p>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>${ctrl(seg({ label: 'Option 1' }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Hover</td><td>${ctrl(seg({ label: 'Option 1', hover: true }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Selected</td><td>${ctrl(seg({ label: 'Option 1', sel: true }) + seg({ label: 'Option 2' }) + seg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Focus</td><td>${ctrl(seg({ label: 'Option 1', focus: true }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Disabled</td><td>${ctrl(seg({ label: 'Option 1', dis: true }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Her segment, 1px şeffaf border ve transparent arka planla başlar; seçildiğinde border rengi ve arka plan token'ları değişir, font-weight 400'den 500'e geçer. Container'ın 3px iç dolgusu, seçili segmentin 1px border'ını dış container border'ından görsel olarak ayırır ve tıklama hedefini genişletir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Padding</td><td>—</td><td>3px</td></tr>
+          <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Segment · Default</td><td>Border</td><td>—</td><td>1px solid transparent</td></tr>
+          <tr><td>Segment · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Segment · Default</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Segment · Selected</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Segment · Selected</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Segment · Selected</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Segment · Selected</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
+          <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Segment · Focus</td><td>Box Shadow</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Üç boyut — Sm (28px), Md (32px), Lg (36px) — farklı arayüz yoğunluklarına göre seçilir. Boyut yalnızca segment yüksekliğini etkiler; yatay padding ve tipografi her boyutta sabit kalır. Boyut ${tk('.bt-seg-ctrl--md')} veya ${tk('.bt-seg-ctrl--lg')} class'larıyla container üzerinde belirlenir; Sm varsayılan olduğundan ek class gerekmez.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Class</th><th>Height</th></tr></thead>
+        <tbody>
+          <tr><td>Sm (Default)</td><td>—</td><td>28px</td></tr>
+          <tr><td>Md</td><td>${tk('.bt-seg-ctrl--md')}</td><td>32px</td></tr>
+          <tr><td>Lg</td><td>${tk('.bt-seg-ctrl--lg')}</td><td>36px</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Boyut değişimi yalnızca height'ı etkiler; padding, gap ve tipografi tüm boyutlarda sabit kalır. Bu tutarlılık, farklı boyutlardaki segment kontrollerinin aynı içerik hizasını korumasını sağlar. İkon slotu da boyutla birlikte büyür — Sm'de 28×28px, Md'de 32×32px, Lg'de 36×36px.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Size</th><th>Height</th><th>H. Padding</th><th>Icon Slot</th></tr></thead>
+        <tbody>
+          <tr><td>Sm (Default)</td><td>28px</td><td>${tk('--bt-space-xl')} (12px)</td><td>28×28px</td></tr>
+          <tr><td>Md</td><td>32px</td><td>${tk('--bt-space-xl')} (12px)</td><td>32×32px</td></tr>
+          <tr><td>Lg</td><td>36px</td><td>${tk('--bt-space-xl')} (12px)</td><td>36×36px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Content Types">Content Types</h2>
+      <p class="page-desc">Segment üç içerik tipini destekler: sadece etiket, sadece ikon ve ikon+etiket birlikte. Yalnızca ikon kullanan segmentler ${tk('.bt-segment--icon')} modifier'ıyla kare boyutuna döner; padding sıfırlanır, genişlik yükseklikle eşitlenir. İkon her zaman ${tk('.bt-segment__icon')} slotuna yerleştirilir — 28×28px slot içinde 16×16px ikon kullanılır.</p>
+      <h3>Anatomy</h3>
+      <p class="page-desc">İkon slotu (${tk('.bt-segment__icon')}) sabit boyutuyla dokunma hedefini korur; label metni ${tk('.bt-segment__label')} ile sarılır ve segment genişliği metne göre büyür. Yalnızca ikon modunda sabit kare boyutu devreye girer, label ve icon+label modlarında genişlik içeriğe göre belirlenir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Icon Slot (${tk('.bt-segment__icon')})</td><td>Size (Sm)</td><td>—</td><td>28×28px</td></tr>
+          <tr><td>Icon</td><td>Size</td><td>—</td><td>16×16px</td></tr>
+          <tr><td>Icon · Default</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Icon · Selected</td><td>Color</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Disabled</td><td>Color</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Label H. Padding</td><td>Padding</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Icon + Label Gap</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 PAGES_WEB['components/nav-drawer'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],

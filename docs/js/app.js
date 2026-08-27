@@ -39,19 +39,20 @@ function getPages()      { return currentPlatform === 'mobile' ? PAGES : PAGES_W
 function getPage(id)     { return getPages()[id] || makePage(id); }
 
 function findOpenGroups(id) {
-  function search(items, path) {
+  function search(items, pathPrefix) {
     for (const item of items) {
       if (item.id === id) return true;
       if (item.children) {
-        if (search(item.children, [...path, item.label])) {
-          openGroups.add(item.label);
+        const groupKey = pathPrefix + item.label;
+        if (search(item.children, groupKey + '/')) {
+          openGroups.add(groupKey);
           return true;
         }
       }
     }
     return false;
   }
-  search(getCurrentNav(), []);
+  search(getCurrentNav(), '');
 }
 
 // ── Navigate ────────────────────────────────────────────────
@@ -77,7 +78,7 @@ window.addEventListener('hashchange', () => {
 function renderSidebar() {
   const el = document.getElementById('sidebar-nav');
 
-  function renderItem(item, depth) {
+  function renderItem(item, depth, pathPrefix = '') {
     const depthCls = depth === 0 ? 'nav-item' : depth === 1 ? 'nav-child' : depth === 2 ? 'nav-grandchild' : 'nav-great-grandchild';
 
     if (!item.children) {
@@ -90,7 +91,7 @@ function renderSidebar() {
     if (item.id) {
       return `
         <div class="${depthCls} ${item.id === currentId ? 'active' : ''}" onclick="navigate('${item.id}')">${item.label}</div>
-        ${item.children.map(c => renderItem(c, depth + 1)).join('')}
+        ${item.children.map(c => renderItem(c, depth + 1, pathPrefix)).join('')}
       `;
     }
 
@@ -98,18 +99,21 @@ function renderSidebar() {
     if (item.static) {
       return `
         <div class="nav-section-label">${item.label}</div>
-        ${item.children.map(c => renderItem(c, depth + 1)).join('')}
+        ${item.children.map(c => renderItem(c, depth + 1, pathPrefix)).join('')}
       `;
     }
 
-    const isOpen = openGroups.has(item.label);
+    // Aynı label'a sahip iki farklı grup (örn. Components/Layout ile üst seviye
+    // Layout) çakışmasın diye path tabanlı benzersiz key kullanılır.
+    const groupKey = pathPrefix + item.label;
+    const isOpen = openGroups.has(groupKey);
     const kidCls = depth === 0 ? 'nav-children' : 'nav-grandchildren';
     // Components'ın altı neredeyse tamamen alt-gruplardan oluşuyor (Buttons/
     // Card/Data Table/Inputs — her biri zaten kendi çizgisini taşıyor), üstüne
     // bir de Components'ın kendi çizgisi eklenince görünüm karışıyordu —
     // kullanıcı isteğiyle sadece bu grup için çizgi/indicator kaldırıldı.
     const showLine = item.label !== 'Components';
-    const listItems = item.children.map(c => `<div class="nav-group-item">${renderItem(c, depth+1)}</div>`).join('');
+    const listItems = item.children.map(c => `<div class="nav-group-item">${renderItem(c, depth+1, groupKey + '/')}</div>`).join('');
 
     // Grup içi çocuklar: sabit ince çizgi + aktif öğenin hizasına kayan accent
     // segment (bkz. Figma 985:115153 "Indıcator Line"/"Line 305" — TOC'taki
@@ -118,20 +122,20 @@ function renderSidebar() {
     // trigger'ı (Foundations/Components/Buttons hepsi) birebir aynı stili
     // paylaşır (bkz. HISTORY.md — "Buttons'ı Components gibi stille").
     return `
-      <div class="nav-item-group" onclick="toggleGroup('${item.label}')">
+      <div class="nav-item-group" onclick="toggleGroup('${groupKey}')">
         <span>${item.label}</span>
         <span class="nav-chevron-slot">
-          <svg class="nav-chevron ${isOpen ? 'open' : ''}" data-group-chevron="${item.label}" width="16" height="16"
+          <svg class="nav-chevron ${isOpen ? 'open' : ''}" data-group-chevron="${groupKey}" width="16" height="16"
                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m9 5 7 7-7 7"/>
           </svg>
         </span>
       </div>
-      <div class="${kidCls} ${isOpen ? 'open' : ''}" data-group-panel="${item.label}">
+      <div class="${kidCls} ${isOpen ? 'open' : ''}" data-group-panel="${groupKey}">
         <div class="nav-group-inner">
           ${showLine ? `
           <div class="nav-group-row">
-            <div class="nav-group-line"><div class="nav-group-indicator" data-group-indicator="${item.label}"></div></div>
+            <div class="nav-group-line"><div class="nav-group-indicator" data-group-indicator="${groupKey}"></div></div>
             <div class="nav-group-list">${listItems}</div>
           </div>` : `
           <div class="nav-group-list nav-group-list--flush">${listItems}</div>`}
@@ -164,12 +168,12 @@ function updateNavIndicators() {
 }
 window.updateNavIndicators = updateNavIndicators;
 
-window.toggleGroup = function(label) {
-  const wasOpen = openGroups.has(label);
-  wasOpen ? openGroups.delete(label) : openGroups.add(label);
+window.toggleGroup = function(groupKey) {
+  const wasOpen = openGroups.has(groupKey);
+  wasOpen ? openGroups.delete(groupKey) : openGroups.add(groupKey);
 
-  const panel   = document.querySelector(`[data-group-panel="${label}"]`);
-  const chevron = document.querySelector(`[data-group-chevron="${label}"]`);
+  const panel   = document.querySelector(`[data-group-panel="${groupKey}"]`);
+  const chevron = document.querySelector(`[data-group-chevron="${groupKey}"]`);
   if (panel)   panel.classList.toggle('open', !wasOpen);
   if (chevron) chevron.classList.toggle('open', !wasOpen);
   // Grid-rows expand/collapse animasyonu (220ms) bitip gerçek geometri

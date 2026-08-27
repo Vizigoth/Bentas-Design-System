@@ -1386,7 +1386,7 @@ a { color: inherit; text-decoration: none; }
 .page-desc {
   font-size: 15px;
   line-height: 1.7;
-  color: var(--bt-text-emphasis);
+  color: var(--bt-text-default);
   margin-bottom: 32px;
 }
 
@@ -1397,7 +1397,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 700;
   color: var(--bt-text-default);
   letter-spacing: -0.01em;
-  margin: 40px 0 16px;
+  margin: 80px 0 16px;
   padding-top: 8px;
 }
 .content h2:first-child { margin-top: 0; }
@@ -1412,9 +1412,9 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.05em;
 }
 
-.content p  { font-size: 14px; line-height: 1.75; color: var(--bt-text-emphasis); margin-bottom: 16px; }
+.content p  { font-size: 14px; line-height: 1.75; color: var(--bt-text-default); margin-bottom: 16px; }
 .content ul { padding-left: 20px; margin-bottom: 16px; }
-.content li { font-size: 14px; line-height: 1.75; color: var(--bt-text-emphasis); margin-bottom: 4px; }
+.content li { font-size: 14px; line-height: 1.75; color: var(--bt-text-default); margin-bottom: 4px; }
 
 code {
   font-family: var(--mono);
@@ -5407,6 +5407,89 @@ pre.code-block.line-numbers {
 .bt-card--vertical .bt-card__footer { flex-direction: column; }
 .bt-card--vertical .bt-card__footer .bt-btn { width: 100%; justify-content: center; }
 
+/* ── Segmented Control ──────────────────────────────── */
+/* Container — 3px padding seçili segmentin border'ını dış border'dan görsel ayırır */
+.bt-seg-ctrl {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  background: var(--bt-base-subtle, #f5f5f5);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+}
+.bt-segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-xs, 4px);
+  padding: 0 var(--bt-space-xl, 12px);
+  height: 28px;
+  border-radius: var(--bt-radius-sm, 4px);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+/* Icon slot — 28×28, içinde 16×16 ikon */
+.bt-segment__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+.bt-segment__icon i,
+.bt-segment__icon svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+/* Icon-only: kare, yatay padding yok */
+.bt-segment--icon {
+  padding: 0;
+  width: 28px;
+}
+/* Selected / Active */
+.bt-segment--selected {
+  background: var(--bt-primary-subtle, #e2edfc);
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-segment--selected .bt-segment__icon i,
+.bt-segment--selected .bt-segment__icon svg {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+/* Hover — seçili ve disabled dışı */
+.bt-segment:not(.bt-segment--selected):not(:disabled):hover {
+  background: rgba(0, 0, 0, .05);
+}
+/* Focus ring */
+.bt-segment:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 212, 212, .5);
+}
+/* Disabled */
+.bt-segment:disabled {
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  cursor: not-allowed;
+}
+.bt-segment:disabled .bt-segment__icon i,
+.bt-segment:disabled .bt-segment__icon svg {
+  color: var(--bt-icon-primary-muted, #a3a3a3);
+}
+/* Size — Md (32px) */
+.bt-seg-ctrl--md .bt-segment       { height: 32px; }
+.bt-seg-ctrl--md .bt-segment--icon { width: 32px; }
+.bt-seg-ctrl--md .bt-segment__icon { width: 32px; height: 32px; }
+/* Size — Lg (36px) */
+.bt-seg-ctrl--lg .bt-segment       { height: 36px; }
+.bt-seg-ctrl--lg .bt-segment--icon { width: 36px; }
+.bt-seg-ctrl--lg .bt-segment__icon { width: 36px; height: 36px; }
+
 /* Collapsible — borderless header collapse trigger */
 /* Collapsible header trigger artık sadece icon button — header'ın kendisi tıklanabilir değil */
 .bt-card__chevron {
@@ -5592,7 +5675,6 @@ pre.code-block.line-numbers {
 .bt-grid-container .bt-grid {
   display: flex;
   width: 100%;
-  min-width: max-content;
   flex: 1;
   min-height: 0;
 }
@@ -5710,7 +5792,6 @@ pre.code-block.line-numbers {
 .bt-grid-actions-container .bt-grid {
   display: flex;
   width: 100%;
-  min-width: max-content;
   flex: 1;
   min-height: 0;
 }
