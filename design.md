@@ -3633,3 +3633,184 @@ Headless Chrome + DevTools Protokolü ile kapsamlıca doğrulandı: Status kolon
 **Not (2026-08-24 devam 22):** 2px pratikte "yok gibi" göründüğü için `--bt-space-xs`'e (4px) çıkarıldı. Dikkat: `padding: 0 var(--bt-space-2xs, 2px)` deseni dosyada `.bt-card__control-item`'da da (alakasız, Card'a ait) var — sadece `.bt-grid__filter-option`'daki değiştirildi. Doğrulandı: computed padding-left/right 4px.
 
 **Not (2026-08-24 devam 23-24):** `.bt-grid__filter-list`'in yönlere göre padding'i ayrıştırıldı: top=`0` (none), right=`var(--bt-space-xs, 4px)`, bottom=`var(--bt-space-lg, 10px)`, left=`var(--bt-space-lg, 10px)` — `padding: 0 var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-lg, 10px)` (4 değerli shorthand). Kullanıcı önce sağı da `none` istedi, ardından `4px`'e düzeltti — bu son hâl. Doğrulandı: computed `paddingTop=0px`, `paddingRight=4px`, `paddingBottom=10px`, `paddingLeft=10px`.
+
+## 18. Segmented Control
+
+Figma kaynağı: `Segmented Control` component set (Size × Content × Segments, 45 varyant) + alt `Segment` component set (Size × Content × State, 54 varyant). İki seviyeli yapı: **container (track)** + tekrarlanan **segment** düğmeleri. Birbirini dışlayan görünüm/mod seçimleri için — sekme navigasyonu değil.
+
+**Not — ters "thumb" mantığı:** Track ve seçilmemiş segmentler **aynı zemini** kullanır (base/subtle gri). Yani resting segmentler track'e karışır; ayrımı yalnız seçili segmentin brand'li zemini + border'ı yapar. iOS'un "gri track üzerinde beyaz kayan thumb" modelinin tersi.
+
+**Not — Hover = Default:** Figma'da Segment'in Hover state'i Default ile birebir aynıdır (ayrı bir hover stili tanımlı değil). Implementasyonda da hover'da zemin DEĞİŞMEZ, yalnız `cursor: pointer` verilir. Active ve Selected state'leri de birbirinin aynısıdır.
+
+**Not — seçili segment büyümesi:** Figma'da seçili (Active/Selected) segment, dışa hizalı 1px stroke yüzünden resting'e göre ~1px büyür (örn. Sm'de 28→30px yükseklik). Implementasyonda bu **bilinçli olarak yok sayılır**: her segment sürekli `1px solid transparent` border taşır, seçilince yalnızca `border-color` değişir → seçim değiştiğinde layout shift olmaz.
+
+**Not — varsayılan boyut = Md (Figma sapması, kullanıcı kararı):** Figma'da `Size` varyantının varsayılanı `sm`'dir; bu projede docs + implementasyon için **Md varsayılan** kabul edilir. Md = modifiersiz `.bt-seg-ctrl` (segment 32px); Sm için `.bt-seg-ctrl--sm` (28px), Lg için `.bt-seg-ctrl--lg` (36px). Icon & Label ikon↔label boşluğu varsayılanda (Md/Lg) 4px, `.bt-seg-ctrl--sm`'de 0. Playground'ların `size` prop varsayılanı `md`, demo etiketleri `Label 1 / Label 2 / …`.
+
+### 18.1 Markup
+
+Taşıyıcı hiyerarşisi Figma'nın **Segment › Base Segment › Left Control / Label / Right Control** yapısıyla birebir:
+
+```html
+<div class="bt-seg-ctrl">                              <!-- + bt-seg-ctrl--sm | bt-seg-ctrl--lg (Md = varsayılan, modifiersiz) -->
+  <button class="bt-segment bt-segment--icon-label bt-segment--selected"
+          onclick="btSegSelect(this)">                <!-- = Figma "Segment": STATE + content padding -->
+    <span class="bt-segment__base">                   <!-- = Figma "Base Segment": iç flex satırı, ikon↔label gap -->
+      <span class="bt-segment__left">                  <!-- = "Left Control" 28×28 (Content = Icon / Icon & Label) -->
+        <span class="bt-segment__icon">                <!-- = "Icon Control" 24×24 -->
+          <svg width="18" height="18" …>…</svg>        <!-- 18×18, slotu doldurmaz -->
+        </span>
+      </span>
+      <span class="bt-segment__label-wrap">            <!-- = "Label" frame (Content = Label / Icon & Label) -->
+        <span class="bt-segment__label">Label 1</span> <!-- = "Segment Label" text -->
+      </span>
+      <!-- Right Control (.bt-segment__right) — "Counter Control" 28×28: sayaç rozeti
+           slotu. Figma'da Show Right Control = false → ŞU AN RENDER EDİLMİYOR. -->
+    </span>
+  </button>
+  <!-- ... -->
+</div>
+```
+
+**Figma layer → class:**
+
+| Figma layer | Class | Boyut / Rol |
+|---|---|---|
+| Segment | `.bt-segment` | STATE (fill/border/radius) + Content'e göre yatay padding · radius-sm |
+| Base Segment | `.bt-segment__base` | iç flex satırı · ikon↔label gap (Md/Lg 4px · Sm 0) |
+| Left Control | `.bt-segment__left` | 28×28 sabit · ikon taşıyıcı |
+| Icon Control | `.bt-segment__icon` | 24×24 · ikonu ortalar (doldurmaz) |
+| (ikon) | inline `<svg>` | 18×18 · `currentColor` |
+| Label | `.bt-segment__label-wrap` › `.bt-segment__label` | hug genişlik |
+| Right Control | `.bt-segment__right` | 28×28 · counter slotu · **implemente edilmedi** (Show Right Control = false) |
+
+**Content tipine göre görünürlük + modifier** (Figma `Show Left Control` / `Show Label` boolean'larının karşılığı):
+
+| Content | Modifier class | Görünen bölümler |
+|---|---|---|
+| Label | — | Label |
+| Icon | `.bt-segment--icon` | Left Control (kare segment) |
+| Icon & Label | `.bt-segment--icon-label` | Left Control + Label |
+
+**İkon = inline SVG (data-lucide DEĞİL):** Figma'da Icon Control placeholder olarak `Icon/loader` taşır. Kodda ikon `<span class="bt-segment__left"><span class="bt-segment__icon"><svg width="18" height="18" …>…</svg></span></span>` olarak gömülür — bu proje Lucide runtime'ı yüklemediği için `<i data-lucide="…">` deseni ikonu **boş render eder** (bkz. §15). CSS `.bt-segment__icon i, .bt-segment__icon svg` ikisini de hedefler; renk `currentColor` üzerinden state'ten gelir. Consuming projede SVG gerçek ikonla değiştirilir. Docs demolarında `_segIcons` = 6 elemanlık Lucide seti (loader / sparkles / sun / user-round / flame / map-pin); `segItemHtml({ iconIndex })` pozisyona göre seçer (`segCtrlHtml` `i`'yi geçer, taşarsa `% 6` ile başa döner) — böylece 2–6 segmentin her biri farklı ikon gösterir.
+
+### 18.2 CSS Tokens
+
+**Container (`.bt-seg-ctrl`)**
+
+| Property | Token | Fallback |
+|---|---|---|
+| padding | space/spacing-2xs | 2px |
+| background | color/base/subtle | #f5f5f5 |
+| border | border/primary/default | 1px #d4d4d4 |
+| border-radius | radius/radius-md | 6px |
+| segmentler arası gap | — | 0 (divider yok) |
+
+**Segment (`.bt-segment`)**
+
+| Property | Token | Fallback / Not |
+|---|---|---|
+| height · Md (varsayılan) | — | 32px (modifiersiz `.bt-seg-ctrl`) |
+| height · Sm / Lg | — | 28 / 36px (`.bt-seg-ctrl--sm` / `--lg`) · token karşılığı yok |
+| border-radius | radius/radius-sm | 4px |
+| border (resting) | — | 1px solid transparent |
+| background (resting) | color/base/subtle | #f5f5f5 — track ile aynı |
+| font (resting → seçili) | typography/text-xs-regular → -medium | 400 → 500, 12px/16px (tüm boyutlarda) |
+| color (resting) | text/primary/default | #1a1a1a |
+| color (disabled) | text/primary/muted | #a3a3a3 (zemin değişmez) |
+| focus ring | border/primary/default @ %50 | `0 0 0 3px rgba(212,212,212,.5)` — nötr gri, brand değil |
+
+**Segment yatay padding — Content tipine BAĞLI (anahtar detay):**
+
+| Content | padding-left | padding-right | genişlik |
+|---|---|---|---|
+| Label | space/spacing-xl (12px) | space/spacing-xl (12px) | içeriğe göre |
+| Icon | space/spacing-none (0) | space/spacing-none (0) | kare — genişlik = yükseklik (28/32/36) |
+| Icon & Label | space/spacing-none (0) | space/spacing-xl (12px) | içeriğe göre — **asimetrik**, ikon sol kenara yaslı |
+
+> Tüm `0` değerleri `--bt-space-none` token'ından gelir (Figma'da `Space/spacing-none`) — literal `0` yazılmaz. Dokümantasyon tablolarında `—`, o hücre için bir class/token **bulunmadığını** gösterir: varsayılan durum ek modifier istemez; segment yüksekliği (28/32/36px), Left Control (28×28), Icon Control (24×24), ikon (18×18) gibi ölçüler Figma'da bir design token'a karşılık gelmez (component-özel değerler).
+
+**Base Segment (`.bt-segment__base`)** — iç flex satırı; **ikon↔label gap BURADA** (Figma "Base Segment" itemSpacing), boyuta bağlı:
+
+| Size | gap |
+|---|---|
+| Sm | space/spacing-none (0) |
+| Md / Lg (varsayılan dahil) | space/spacing-xs (4px) |
+
+**Left Control / Icon Control / ikon** — Content = Icon veya Icon & Label'da render edilir:
+
+| Element | Class | Boyut / Not |
+|---|---|---|
+| Left Control | `.bt-segment__left` | 28×28 sabit (boyutla ölçeklenmez) |
+| Icon Control | `.bt-segment__icon` | 24×24 · ikonu ortalar, doldurmaz |
+| ikon | inline `<svg>` | 18×18 · `icon/primary/strong` → `icon/brand/default` (sel) → `icon/primary/muted` (dis) |
+
+**Seçili / Active (`.bt-segment--selected`)**
+
+| Property | Token | Fallback |
+|---|---|---|
+| background | color/primary/subtle | #e2edfc |
+| border-color | border/brand/default | #0d4e97 |
+| color | text/brand/default | #0d4e97 |
+| icon color | icon/brand/default | #0d4e97 |
+| font-weight | typography/text-xs-medium | 500 |
+
+**Boyutla değişen TEK şeyler:** Segment yüksekliği, Icon-only kare genişliği, Base Segment'in ikon↔label boşluğu (Sm 0 / Md-Lg 4px). Yatay padding, tipografi, Left Control (28×28), Icon Control (24×24), ikon (18×18) tüm boyutlarda sabit — Figma'da hiçbiri boyutla ölçeklenmez.
+
+**Vertical (`.bt-seg-ctrl--vertical`)** — Figma'da yok, dar alanlar için design-language kararıyla eklenen dizilim varyantı. Segmentler dikey istiflenir, her biri tam genişlik:
+
+| Element | Property | Değer |
+|---|---|---|
+| `.bt-seg-ctrl--vertical` | flex-direction | column |
+| `.bt-seg-ctrl--vertical` | align-items | stretch |
+| `.bt-seg-ctrl--vertical .bt-segment` (+ `--icon` / `--icon-label`) | width | 100% |
+| `.bt-seg-ctrl--vertical .bt-segment` | padding-left / -right | space/spacing-xl (12px) — **Content tipinden bağımsız simetrik**; yataydaki asimetrik/0 padding kuralı dikeyde geçmez |
+| `.bt-seg-ctrl--vertical .bt-segment__base` | justify-content | **flex-start** — içerik sola hizalı; Label / Icon Only / With Icon satırlarında ikon ve metin AYNI x'ten başlar (yataydaki merkezleme dikeyde satırlar arası kaymaya = "farklı padding" hissine yol açardı) |
+
+Segment yüksekliği (28/32/36), radius, tüm state/renk token'ları, "divider yok — ayrımı seçili segmentin brand border'ı yapar" yaklaşımı ve iç yapı (`.bt-segment__base` › Left Control / Label) yatayla **birebir aynı**. Toplam yükseklik = segment sayısı × yükseklik + 2× container dolgusu.
+
+**Motion** — segmentler arası geçiş yumuşak: `.bt-segment { transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease; }` + `.bt-segment__icon svg { transition: color .18s ease; }`. Seçim değişince zemin/kenar/metin/ikon rengi ease'lenir; font-weight (400→500) animate edilemez, anında değişir. Layout shift yoktur (her segment sürekli 1px şeffaf border taşır).
+
+**Separator (`.bt-seg-ctrl--separated`)** — Figma'da yok, kullanıcı isteğiyle eklendi ve **docs playground'unda varsayılan açık**. Bitişik segmentler arasına ince dikey çizgi:
+
+| Property | Değer |
+|---|---|
+| Selector | `.bt-seg-ctrl--separated .bt-segment + .bt-segment::before` (2. segment'e biner) |
+| `.bt-segment` | `position: relative` gerekir (pseudo anchor) |
+| content / position | `""` / `absolute`, `left: -1px` (seam'e ortalı), `width: 1px` |
+| renk | `var(--bt-border-primary-emphasis, #a3a3a3)` — **#a3a3a3** |
+| kalınlık | 1px |
+| dikey inset (yatay dizilim) | `top`/`bottom: var(--bt-space-sm, 6px)` — çizgi segment yüksekliğini TAM kaplamaz |
+| efektif yükseklik | segment H − 2px border − 12px boşluk → **Sm 14px · Md 18px · Lg 22px** |
+| seçili segment komşuluğu | `.bt-segment--selected + .bt-segment::before` ve `.bt-segment--selected::before` → `opacity: 0` (aktif pill kenarıyla çakışmasın) |
+| Vertical | çizgi yatay: `left`/`right: var(--bt-space-sm)`, `top: -1px`, `height: 1px` |
+
+### 18.3 JS Davranışı
+
+Tek fonksiyon: seçili class'ı taşımak.
+
+```js
+function btSegSelect(el) {
+  const ctrl = el.closest('.bt-seg-ctrl');
+  if (!ctrl) return;
+  ctrl.querySelectorAll('.bt-segment').forEach(s => s.classList.remove('bt-segment--selected'));
+  el.classList.add('bt-segment--selected');
+}
+```
+
+Her segment `<button onclick="btSegSelect(this)">`. Consuming projede (Blazor) seçim genellikle bağlı bir `bool`/enum ile veya `TelerikButtonGroup` ile yönetilir; `bt-segment--selected` class binding'i yeterli.
+
+**Disabled — segment bazında:** Tüm kontrolü değil, tek bir segmenti kapatmak için o segment `<button class="bt-segment" disabled>` olur (tıklama tarayıcıca engellenir, `btSegSelect` çağrılmaz). Görsel: segment/track zemini DEĞİŞMEZ, yalnız `.bt-segment:disabled` metni `text/primary/muted` (#a3a3a3), ikonu `icon/primary/muted` (#a3a3a3) yapar ve `cursor: not-allowed` verir; diğer segmentler etkilenmez. Blazor karşılığı `Enabled="false"` veya bağlı bir `bool`. Docs sayfasında hem Overview/Examples playground'larında hem ayrı "Disabled" bölümündeki playground'da bir `Disabled` property'si (None / 1st…6th) hangi segmentin kapatılacağını seçtirir.
+
+### 18.4 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
+
+1. **Content tipi padding'i değiştirir** — Label 12/12, Icon 0/0 (kare), Icon & Label **0/12 asimetrik** (ikon sola yaslı). Tek bir sabit yatay padding yok.
+2. **Icon ↔ Label boşluğu boyuta bağlı** — Sm'de 0, Md/Lg'de 4px.
+3. **Hover ayrı state değil** — Default ile aynı.
+4. **Active = Selected** — görsel olarak birebir aynı.
+5. **Focus ring nötr gri** — seçili segment brand mavisi olsa bile ring `border/primary/default @ %50` (gri), brand rengi değil.
+6. **Label tipografisi boyutla ölçeklenmez** — Lg'de bile 12px/16px.
+7. **Left/Icon Control boyutla büyümez** — her boyutta Left Control 28×28 · Icon Control 24×24 · ikon 18×18 (yalnız Icon-only segmentin dış karesi 28/32/36 olur).
+8. **Track ve resting segment aynı zemin** — seçilmemiş segmentler track'e karışır.
+9. **Segments 2–6** desteklenir.
+10. **Base Segment ayrı bir katman** — Segment (state + padding) ile içerik (Left Control / Label) arasında bir "Base Segment" flex satırı var; ikon↔label gap bu katmanda yaşar, Segment'te değil.
+11. **Right Control (counter) Figma'da tanımlı ama pasif** — Base Segment'in 3. bölümü olan Right Control (28×28 sayaç rozeti: `radius-full` `surface/brand`, `text-2xs` beyaz sayı) var; ancak shipped Segmented Control'de `Show Right Control = false`, docs implementasyonunda henüz render edilmiyor (`.bt-segment__right` slotu ayrıldı).

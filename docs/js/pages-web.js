@@ -12147,8 +12147,8 @@ function btSegSelect(el) {
 }
 
 const SEG_SIZE_OPTS = [
-  { key: 'sm', label: 'Sm (Default)' },
-  { key: 'md', label: 'Md' },
+  { key: 'sm', label: 'Sm' },
+  { key: 'md', label: 'Md (Default)' },
   { key: 'lg', label: 'Lg' },
 ];
 const SEG_CONTENT_OPTS = [
@@ -12160,127 +12160,276 @@ const SEG_COUNT_OPTS = [
   { key: '2', label: '2' },
   { key: '3', label: '3' },
   { key: '4', label: '4' },
+  { key: '5', label: '5' },
+  { key: '6', label: '6' },
 ];
 const SEG_SELECTED_OPTS = [
   { key: '0',    label: '1st' },
   { key: '1',    label: '2nd' },
   { key: '2',    label: '3rd' },
   { key: '3',    label: '4th' },
+  { key: '4',    label: '5th' },
+  { key: '5',    label: '6th' },
   { key: 'none', label: 'None' },
 ];
+const SEG_DISABLED_OPTS = [
+  { key: 'none', label: 'None' },
+  { key: '0',    label: '1st' },
+  { key: '1',    label: '2nd' },
+  { key: '2',    label: '3rd' },
+  { key: '3',    label: '4th' },
+  { key: '4',    label: '5th' },
+  { key: '5',    label: '6th' },
+];
+const SEG_ORIENT_OPTS = [
+  { key: 'horizontal', label: 'Horizontal (Default)' },
+  { key: 'vertical',   label: 'Vertical' },
+];
+
+// Figma component'inde ikon slotu şu an "Icon/loader" placeholder'ı taşıyor.
+// Bu site Lucide runtime'ı YÜKLEMİYOR (data-lucide hiçbir yerde çalışmaz — bkz.
+// _dlgIconScan notu), o yüzden diğer tüm component'ler gibi inline SVG gömülüyor.
+// Consuming projede bu SVG'ler gerçek ikonlarla değiştirilir. İkon 18×18 (Icon
+// Control 24×24 — slotu doldurmaz, ortalanır; Left Control 28×28).
+// Segment sayısı 2–6 olabildiği için her pozisyona ayrı bir ikon veriliyor
+// (loader / sparkles / sun / user-round / flame / map-pin — Lucide seti).
+// segItemHtml `iconIndex` ile bu diziden seçer, taşarsa başa döner.
+const _segIconWrap = p => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const _segIcons = [
+  _segIconWrap('<line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/><line x1="4.93" x2="7.76" y1="4.93" y2="7.76"/><line x1="16.24" x2="19.07" y1="16.24" y2="19.07"/><line x1="2" x2="6" y1="12" y2="12"/><line x1="18" x2="22" y1="12" y2="12"/><line x1="4.93" x2="7.76" y1="19.07" y2="16.24"/><line x1="16.24" x2="19.07" y1="7.76" y2="4.93"/>'), // loader
+  _segIconWrap('<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>'), // sparkles
+  _segIconWrap('<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'), // sun
+  _segIconWrap('<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'), // user-round
+  _segIconWrap('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'), // flame
+  _segIconWrap('<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'), // map-pin
+];
+const _segIcon = _segIcons[0];   // geri uyumluluk (tek-ikon isteyen yerler)
+
+// Tek segment markup'ı — Figma "Segment" › "Base Segment" › Left Control / Label
+// (Right Control = counter slotu, Figma'da Show Right Control=false → render edilmez).
+function segItemHtml({ label = '', content = 'label', sel = false, dis = false, extraAttr = '', iconIndex = 0 } = {}) {
+  const selCls     = sel ? ' bt-segment--selected' : '';
+  const contentCls = content === 'icon' ? ' bt-segment--icon'
+                   : content === 'icon-label' ? ' bt-segment--icon-label' : '';
+  const disAttr    = dis ? ' disabled' : '';
+  const icon  = _segIcons[((iconIndex % _segIcons.length) + _segIcons.length) % _segIcons.length];
+  const left  = (content === 'icon' || content === 'icon-label')
+    ? `<span class="bt-segment__left"><span class="bt-segment__icon">${icon}</span></span>` : '';
+  const lab   = (content === 'label' || content === 'icon-label')
+    ? `<span class="bt-segment__label-wrap"><span class="bt-segment__label">${label}</span></span>` : '';
+  return `<button class="bt-segment${selCls}${contentCls}"${disAttr}${extraAttr}>`
+       + `<span class="bt-segment__base">${left}${lab}</span>`
+       + `</button>`;
+}
 
 function segCtrlHtml(p) {
-  const size       = p.size    || 'sm';
+  const size       = p.size    || 'md';
   const content    = p.content || 'label';
   const count      = parseInt(p.count    || '3', 10);
   const selIdx     = p.selected === 'none' ? -1 : parseInt(p.selected ?? '0', 10);
-  const sizeClass  = size === 'md' ? ' bt-seg-ctrl--md' : size === 'lg' ? ' bt-seg-ctrl--lg' : '';
-  const labels     = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+  const disIdx     = (p.disabled == null || p.disabled === 'none') ? -1 : parseInt(p.disabled, 10);
+  // Varsayılan boyut = Md (modifiersiz); Sm/Lg için modifier class
+  const sizeClass  = size === 'sm' ? ' bt-seg-ctrl--sm' : size === 'lg' ? ' bt-seg-ctrl--lg' : '';
+  const orientCls  = p.orientation === 'vertical' ? ' bt-seg-ctrl--vertical' : '';
+  const sepCls     = p.separator === 'on' ? ' bt-seg-ctrl--separated' : '';
+  const labels     = ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5', 'Label 6'];
 
-  const segs = Array.from({ length: count }, (_, i) => {
-    const sel      = i === selIdx;
-    const selCls   = sel ? ' bt-segment--selected' : '';
-    const iconOnly = content === 'icon' ? ' bt-segment--icon' : '';
-    const icon     = (content === 'icon' || content === 'icon-label')
-      ? `<span class="bt-segment__icon"><i data-lucide="layers"></i></span>` : '';
-    const label    = (content === 'label' || content === 'icon-label')
-      ? `<span class="bt-segment__label">${labels[i]}</span>` : '';
-    return `<button class="bt-segment${selCls}${iconOnly}" onclick="btSegSelect(this)">${icon}${label}</button>`;
-  }).join('');
-
-  return `<div class="bt-seg-ctrl${sizeClass}">${segs}</div>`;
+  const segs = Array.from({ length: count }, (_, i) =>
+    segItemHtml({ label: labels[i], content, sel: i === selIdx, dis: i === disIdx, iconIndex: i, extraAttr: ' onclick="btSegSelect(this)"' })
+  ).join('');
+  return `<div class="bt-seg-ctrl${sizeClass}${orientCls}${sepCls}">${segs}</div>`;
 }
 
 function segCtrlCss(v, p) {
   const esc  = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const ln   = (k, val) => `  ${k}: ${val};`;
-  const h    = p.size === 'lg' ? '36px' : p.size === 'md' ? '32px' : '28px';
+  const size    = p.size || 'md';
+  const content = p.content || 'label';
+  const h       = size === 'sm' ? '28px' : size === 'lg' ? '36px' : '32px';   /* varsayılan Md */
+  // Varsayılan Md modifiersiz; Sm/Lg için container'a modifier class
+  const sizeSel = size === 'sm' ? '.bt-seg-ctrl--sm ' : size === 'lg' ? '.bt-seg-ctrl--lg ' : '';
+  // Yatay padding CONTENT tipine bağlı (0 = --bt-space-none token'ı)
+  const padComment = content === 'icon'       ? 'var(--bt-space-none)  /* 0 — kare, genişlik = yükseklik */'
+                   : content === 'icon-label' ? 'var(--bt-space-none) var(--bt-space-xl) var(--bt-space-none) var(--bt-space-none)  /* sağ 12px · sol 0 (ikon sola yaslı) */'
+                   :                            'var(--bt-space-none) var(--bt-space-xl)  /* 0 / 12px */';
+  // Base Segment ikon↔label boşluğu: Sm = 0, Md/Lg = space-xs (4px)
+  const gapVal = (size === 'sm')
+    ? 'var(--bt-space-none)  /* 0 — Sm */'
+    : 'var(--bt-space-xs)  /* 4px — Md/Lg (varsayılan dahil) */';
+  const segMod = content === 'icon' ? '.bt-segment--icon' : content === 'icon-label' ? '.bt-segment--icon-label' : '';
+  const vertical = p.orientation === 'vertical';
   const lines = [
     '.bt-seg-ctrl {',
     ln('display',       'inline-flex'),
     ln('align-items',   'center'),
-    ln('padding',       '3px'),
+    ln('padding',       'var(--bt-space-2xs)  /* 2px */'),
     ln('background',    'var(--bt-base-subtle)  /* #f5f5f5 */'),
     ln('border',        '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'),
-    ln('border-radius', 'var(--bt-radius-sm)  /* 4px */'),
+    ln('border-radius', 'var(--bt-radius-md)  /* 6px */'),
     '}', '',
-    '.bt-segment {',
+    ...(vertical ? [
+      '/* Vertical — segmentler dikey istiflenir, tam genişlik, içerik sola hizalı */',
+      '.bt-seg-ctrl--vertical {',
+      ln('flex-direction', 'column'),
+      ln('align-items',    'stretch'),
+      '}',
+      '.bt-seg-ctrl--vertical .bt-segment {',
+      ln('width',   '100%'),
+      ln('padding', 'var(--bt-space-none) var(--bt-space-xl)  /* 12px — Content\'ten bağımsız simetrik */'),
+      '}',
+      '.bt-seg-ctrl--vertical .bt-segment__base {',
+      ln('justify-content', 'flex-start  /* ikon/label tüm satırlarda aynı x\'ten başlar */'),
+      '}', '',
+    ] : []),
+    `/* Figma "Segment" — STATE + content padding */`,
+    `${sizeSel}.bt-segment${segMod} {`,
     ln('display',         'inline-flex'),
-    ln('align-items',     'center'),
-    ln('justify-content', 'center'),
-    ln('gap',             'var(--bt-space-xs)  /* 4px */'),
-    ln('padding',         '0 var(--bt-space-xl)  /* 0 12px */'),
+    ln('align-items',     'stretch'),
+    ln('padding',         padComment),
     ln('height',          h),
-    ln('border',          '1px solid transparent'),
+    ln('border',          '1px solid transparent  /* seçilince renklenir → layout shift yok */'),
     ln('border-radius',   'var(--bt-radius-sm)  /* 4px */'),
-    ln('background',      'transparent'),
+    ln('background',      'var(--bt-base-subtle)  /* #f5f5f5 — track ile aynı */'),
     ln('font',            'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
     ln('color',           'var(--bt-text-primary-default)  /* #1a1a1a */'),
+    ln('transition',      'background-color .18s ease, border-color .18s ease, color .18s ease  /* segment geçişi yumuşak */'),
     '}', '',
-    '.bt-segment--selected {',
+    `/* Figma "Base Segment" — iç flex satırı, ikon↔label gap */`,
+    `${sizeSel}.bt-segment__base {`,
+    ln('flex',            '1'),
+    ln('display',         'flex'),
+    ln('align-items',     'center'),
+    ln('justify-content', 'center'),
+    ln('gap',             gapVal),
+    '}', '',
+    ...((content === 'icon' || content === 'icon-label') ? [
+      `/* Figma "Left Control" 28×28 › "Icon Control" 24×24 › ikon 18×18 */`,
+      '.bt-segment__left {',
+      ln('width',  '28px'),
+      ln('height', '28px'),
+      ln('display', 'flex'),
+      ln('align-items', 'center'),
+      ln('justify-content', 'center'),
+      '}',
+      '.bt-segment__icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }',
+      '.bt-segment__icon svg {',
+      ln('width',  '18px'),
+      ln('height', '18px'),
+      ln('color',  'var(--bt-icon-primary-strong)  /* #535353 */'),
+      '}', '',
+    ] : []),
+    '.bt-segment--selected {  /* = Active — Figma\'da ikisi aynı */',
     ln('background',    'var(--bt-primary-subtle)  /* #e2edfc */'),
     ln('border-color',  'var(--bt-border-brand-default)  /* #0d4e97 */'),
     ln('color',         'var(--bt-text-brand-default)  /* #0d4e97 */'),
     ln('font',          'var(--bt-text-xs-medium)  /* 500 12px/16px */'),
+    '}',
+    '.bt-segment--selected .bt-segment__icon svg {',
+    ln('color', 'var(--bt-icon-brand-default)  /* #0d4e97 */'),
     '}', '',
-    '.bt-segment:disabled {',
+    '.bt-segment:focus-visible {  /* nötr gri ring, brand değil */',
+    ln('box-shadow', '0 0 0 3px rgba(212, 212, 212, .5)  /* #d4d4d4 @ 50% */'),
+    '}', '',
+    '.bt-segment:disabled {  /* zemin değişmez, yalnız içerik muted */',
     ln('color',   'var(--bt-text-primary-muted)  /* #a3a3a3 */'),
     ln('cursor',  'not-allowed'),
     '}',
+    ...(p.separator === 'on' ? [
+      '',
+      '/* Separator (opsiyonel) — bitişik segmentler arası çizgi, üst/alt boşluklu */',
+      '.bt-seg-ctrl--separated .bt-segment + .bt-segment::before {',
+      ln('content',    '""'),
+      ln('position',   'absolute'),
+      ln('left',       '-1px'),
+      ln('top',        'var(--bt-space-sm)  /* 6px boşluk */'),
+      ln('bottom',     'var(--bt-space-sm)  /* 6px boşluk */'),
+      ln('width',      '1px'),
+      ln('background', 'var(--bt-border-primary-emphasis)  /* #a3a3a3 */'),
+      '}',
+      '.bt-seg-ctrl--separated .bt-segment--selected + .bt-segment::before,',
+      '.bt-seg-ctrl--separated .bt-segment--selected::before {',
+      ln('opacity', '0  /* seçili segmentin iki yanında gizli */'),
+      '}',
+    ] : []),
   ];
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
 
 PAGES_WEB['components/segmented-control'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['States', 'Sizes', 'Content Types'],
+  toc:  ['States', 'Sizes', 'Content Types', 'Label', 'Icon Only', 'With Icon', 'Disabled', 'Vertical'],
   render(tab) {
     const title = 'Segmented Control';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
-    // Static segment helper (no onclick — for state/anatomy tables)
-    const seg = ({ label = '', icon = false, sel = false, dis = false, focus = false, hover = false } = {}) => {
-      const cls   = ['bt-segment', sel && 'bt-segment--selected', icon && !label && 'bt-segment--icon'].filter(Boolean).join(' ');
-      const style = focus ? ' style="box-shadow:0 0 0 3px rgba(212,212,212,.5)"'
-                  : hover ? ' style="background:rgba(0,0,0,.05)"' : '';
-      const disA  = dis ? ' disabled' : '';
-      const iconEl  = icon  ? `<span class="bt-segment__icon"><i data-lucide="layers"></i></span>` : '';
-      const labelEl = label ? `<span class="bt-segment__label">${label}</span>` : '';
-      return `<button class="${cls}"${disA}${style}>${iconEl}${labelEl}</button>`;
+    // Static segment helper (no onclick — for state/anatomy tables). Nested markup
+    // Figma "Segment" › "Base Segment" › Left Control / Label ile aynı (segItemHtml).
+    // hover: Figma'da Hover = Default olduğu için görsel fark üretmez, yalnız satır etiketi için tutulur.
+    const seg = ({ label = '', icon = false, sel = false, dis = false, focus = false, hover = false, iconIndex = 0 } = {}) => {
+      const content = icon && label ? 'icon-label' : icon ? 'icon' : 'label';
+      const extra   = focus ? ' style="box-shadow:0 0 0 3px rgba(212,212,212,.5)"' : '';
+      return segItemHtml({ label, content, sel, dis, iconIndex, extraAttr: extra });
     };
-    const ctrl = (inner, size = '') => {
-      const cls = size === 'md' ? ' bt-seg-ctrl--md' : size === 'lg' ? ' bt-seg-ctrl--lg' : '';
+    const ctrl = (inner, size = '', orient = '', sep = false) => {
+      const cls = (size === 'sm' ? ' bt-seg-ctrl--sm' : size === 'lg' ? ' bt-seg-ctrl--lg' : '')   /* varsayılan Md = modifiersiz */
+                + (orient === 'vertical' ? ' bt-seg-ctrl--vertical' : '')
+                + (sep ? ' bt-seg-ctrl--separated' : '');
       return `<div class="bt-seg-ctrl${cls}">${inner}</div>`;
     };
+    // N segment'lik satır — her pozisyona sırayla farklı görünüm ikonu (grid/list/…).
+    // opts: { withLabel, selIdx, size, orient, dis } — icon rows için kısa yol.
+    const segIconRow = (n, { withLabel = false, selIdx = 0, size = '', orient = '', disIdx = -1 } = {}) => ctrl(
+      Array.from({ length: n }, (_, i) => seg({
+        icon: true,
+        label: withLabel ? `Label ${i + 1}` : '',
+        sel: i === selIdx,
+        dis: i === disIdx,
+        iconIndex: i,
+      })).join(''), size, orient);
     // Interactive segment (with onclick — for Examples tab)
     const iseg = (opts) => seg(opts).replace('<button ', '<button onclick="btSegSelect(this)" ');
+    const isegIconRow = (n, o) => segIconRow(n, o).replace(/<button /g, '<button onclick="btSegSelect(this)" ');
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Segmented Control bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">Segmented Control bileşeni için kullanılan design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>Segmented Control</em> component set'inden (Size × Content × Segments) ve alt <em>Segment</em> set'inden (State) birebir doğrulanmıştır.</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Container</td><td>Padding</td><td>—</td><td>3px</td></tr>
+          <tr><td>Container</td><td>Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
           <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
-          <tr><td>Segment · Sm</td><td>Height</td><td>—</td><td>28px</td></tr>
-          <tr><td>Segment · Md</td><td>Height</td><td>—</td><td>32px</td></tr>
-          <tr><td>Segment · Lg</td><td>Height</td><td>—</td><td>36px</td></tr>
-          <tr><td>Segment</td><td>Padding H</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
-          <tr><td>Segment</td><td>Gap (icon+label)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
-          <tr><td>Segment · Default</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Container</td><td>Gap (segmentler arası)</td><td>—</td><td>0 · divider yok</td></tr>
+          <tr><td>Segment · Sm</td><td>Height</td><td>${tk('.bt-seg-ctrl--sm')}</td><td>28px</td></tr>
+          <tr><td>Segment · Md (Default)</td><td>Height</td><td>— · modifiersiz</td><td>32px</td></tr>
+          <tr><td>Segment · Lg</td><td>Height</td><td>${tk('.bt-seg-ctrl--lg')}</td><td>36px</td></tr>
+          <tr><td>Segment · Radius</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Segment · Content = Label</td><td>Padding (L / R)</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-xl')}</td><td>12px / 12px</td></tr>
+          <tr><td>Segment · Content = Icon</td><td>Padding (L / R)</td><td>—</td><td>0 / 0 · kare (W = H)</td></tr>
+          <tr><td>Segment · Content = Icon &amp; Label</td><td>Padding (L / R)</td><td>${tk('--bt-space-none')} / ${tk('--bt-space-xl')}</td><td>0 / 12px · <strong>asimetrik</strong></td></tr>
+          <tr><td>Base Segment (${tk('.bt-segment__base')}) · Sm</td><td>Gap (icon ↔ label)</td><td>${tk('--bt-space-none')}</td><td>0</td></tr>
+          <tr><td>Base Segment (${tk('.bt-segment__base')}) · Md/Lg</td><td>Gap (icon ↔ label)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Vertical · ${tk('.bt-seg-ctrl--vertical')}</td><td>flex-direction / align-items</td><td>—</td><td>column / stretch</td></tr>
+          <tr><td>Vertical · Segment</td><td>Width / Padding (L / R)</td><td>${tk('--bt-space-xl')}</td><td>100% · 12 / 12 (Content'ten bağımsız)</td></tr>
+          <tr><td>Vertical · ${tk('.bt-segment__base')}</td><td>justify-content</td><td>—</td><td>flex-start (içerik sola hizalı)</td></tr>
+          <tr><td>Motion · Segment</td><td>transition</td><td>—</td><td>background-color / border-color / color / box-shadow · 0.18s ease</td></tr>
+          <tr><td>Separator · ${tk('.bt-seg-ctrl--separated')} (playground'da default)</td><td>::before</td><td>${tk('--bt-border-primary-emphasis')} · #a3a3a3</td><td>1px · yükseklik 14/18/22px (Sm/Md/Lg) · üst/alt ${tk('--bt-space-sm')} (6px) boşluk · seçili komşuda opacity 0</td></tr>
+          <tr><td>Segment · Default</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5 · track ile aynı</td></tr>
+          <tr><td>Segment · Default</td><td>Border</td><td>—</td><td>1px solid transparent</td></tr>
+          <tr><td>Segment · Default</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px · tüm boyutlarda</td></tr>
           <tr><td>Segment · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Segment · Selected</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
-          <tr><td>Segment · Selected</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Segment · Selected</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Segment · Selected</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
-          <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Segment · Focus</td><td>Box Shadow</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
-          <tr><td>Icon Slot</td><td>Size</td><td>—</td><td>28×28px</td></tr>
-          <tr><td>Icon</td><td>Size</td><td>—</td><td>16×16px</td></tr>
+          <tr><td>Segment · Hover</td><td>—</td><td>—</td><td>= Default (ayrı state yok)</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>1px · #0d4e97</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
+          <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3 · zemin değişmez</td></tr>
+          <tr><td>Segment · Focus</td><td>Box Shadow</td><td>${tk('--bt-border-primary-default')} @ 50%</td><td>0 0 0 3px rgba(212,212,212,.5) · nötr</td></tr>
+          <tr><td>Left Control (${tk('.bt-segment__left')})</td><td>Size</td><td>—</td><td>28×28px · tüm boyutlarda sabit</td></tr>
+          <tr><td>Icon Control (${tk('.bt-segment__icon')})</td><td>Size</td><td>—</td><td>24×24px · ikonu ortalar</td></tr>
+          <tr><td>Icon</td><td>Size</td><td>—</td><td>18×18px inline SVG</td></tr>
           <tr><td>Icon · Default</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
-          <tr><td>Icon · Selected</td><td>Color</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Selected / Active</td><td>Color</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Icon · Disabled</td><td>Color</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
         </tbody>
       </table>
@@ -12293,35 +12442,92 @@ PAGES_WEB['components/segmented-control'] = {
         <li>Tüm seçenekleri aynı anda görünebilir sayıda tut — 2–5 segment idealdir</li>
         <li>Yalnızca ikon kullanan segmentlere tooltip ile etiket ekle</li>
         <li>Her zaman bir segment seçili bırak — boş seçim durumu son kullanıcıya sunulmamalı</li>
+        <li>Yatay dizilim taşacaksa <code style="font-size:12px;font-family:var(--mono)">.bt-seg-ctrl--vertical</code> ile dikeye geç — segmentler tam genişlik istifllenir</li>
       </ul>
       <h2>Don't</h2>
       <ul>
         <li>Sayfa navigasyonu için kullanma — sayfa geçişleri Tab Menu ile yapılmalı</li>
         <li>6'dan fazla segment ekleme; uzun listeler için Dropdown/Select kullan</li>
-        <li>Segment etiketlerini çok uzun tutma — içeriğe göre genişler, dar alanlarda taşar</li>
+        <li>Segment etiketlerini çok uzun tutma — yatayda içeriğe göre genişler, dar alanlarda taşar (Vertical bunu çözer)</li>
+        <li>Vertical'ı uzun bir menü gibi kullanma — 2–5 mod için; daha fazlası Navigation Drawer / List işidir</li>
       </ul>
     `};
 
     if (tab === 'Examples') return { title, html: `
       <h2 id="Sizes">Sizes</h2>
-      <p class="page-desc">Üç boyut — Sm, Md, Lg — farklı arayüz yoğunluklarına göre seçilir. Sm (28px) compact toolbar'lar için, Md (32px) form bölümleri ve panel başlıkları için, Lg (36px) sayfanın birincil mod geçişleri için uygundur. Boyut ${tk('.bt-seg-ctrl--md')} ve ${tk('.bt-seg-ctrl--lg')} class'larıyla container üzerinden belirlenir; Sm varsayılan olduğundan ek class gerekmez.</p>
+      <p class="page-desc">Üç boyut — Sm (28px), Md (32px), Lg (36px) — farklı arayüz yoğunluklarına göre seçilir; Sm compact toolbar'lar, <strong>Md (varsayılan)</strong> form bölümleri ve panel başlıkları, Lg sayfanın birincil mod geçişleri için. Boyut değişince yalnız Segment yüksekliği (ve Icon-only'de kare genişliği, Base Segment'in Md/Lg için 4px ikon↔label boşluğu) değişir — yatay padding, tipografi, Left/Icon Control ve ikon sabit kalır. Varsayılan Md modifiersizdir; Sm için ${tk('.bt-seg-ctrl--sm')}, Lg için ${tk('.bt-seg-ctrl--lg')} class'ı eklenir.</p>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Sm (Default)</td><td>28px</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }))}</td></tr>
-          <tr><td>Md</td><td>32px</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }), 'md')}</td></tr>
-          <tr><td>Lg</td><td>36px</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }), 'lg')}</td></tr>
+          <tr><td>Sm</td><td>28px</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), 'sm')}</td></tr>
+          <tr><td>Md (Default)</td><td>32px</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), 'md')}</td></tr>
+          <tr><td>Lg</td><td>36px</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), 'lg')}</td></tr>
         </tbody>
       </table>
 
       <h2 id="Content Types">Content Types</h2>
-      <p class="page-desc">Segment üç içerik tipini destekler: sadece etiket, sadece ikon ve ikon+etiket birlikte. Yalnızca ikon kullanan segmentler ${tk('.bt-segment--icon')} modifier'ıyla kare boyutuna döner; padding sıfırlanır, boyut yükseklikle eşitlenir. İkon slotu 28×28px sabit kalır, içindeki ikon 16×16px — dokunma hedefi yeterlidir. Blazor tarafında içerik tipi, ${tk('ChildContent')} RenderFragment ile belirlenir.</p>
+      <p class="page-desc">Segment üç içerik tipini destekler ve her tipin yatay padding'i farklıdır; aşağıdaki üç bölüm (<strong>Label</strong> · <strong>Icon Only</strong> · <strong>With Icon</strong>) her birini interaktif olarak tüm boyutlarda gösterir. Bu tablo padding/gap farkını özetler — detaylı anatomi için Overview sekmesine bakın.</p>
+      <table class="token-table">
+        <thead><tr><th>Content</th><th>Preview</th><th>Modifier</th><th>Padding (L / R)</th><th>Icon ↔ Label gap</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }))}</td><td>—</td><td>12px / 12px</td><td>—</td></tr>
+          <tr><td>Icon Only</td><td>${isegIconRow(2, {})}</td><td>${tk('.bt-segment--icon')}</td><td>0 / 0 · kare</td><td>—</td></tr>
+          <tr><td>With Icon</td><td>${isegIconRow(2, { withLabel: true })}</td><td>${tk('.bt-segment--icon-label')}</td><td>0 / 12px · asimetrik</td><td>Sm: 0 · Md/Lg: 4px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Label">Label</h2>
+      <p class="page-desc">Yalnız metin. Simetrik 12px yatay padding, genişlik metne göre. Segmentlere tıklayarak seçimi taşıyabilirsiniz.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), 'sm')}</td></tr>
+          <tr><td>Md</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), 'md')}</td></tr>
+          <tr><td>Lg</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), 'lg')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Icon Only">Icon Only</h2>
+      <p class="page-desc">Yalnız ikon — ${tk('.bt-segment--icon')} ile padding sıfırlanır, segment kare olur (genişlik = yükseklik). İkon: Left Control 28×28 › Icon Control 24×24 › SVG 18×18, her boyutta sabit.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm</td><td>${isegIconRow(3, { size: 'sm' })}</td></tr>
+          <tr><td>Md</td><td>${isegIconRow(3, { size: 'md' })}</td></tr>
+          <tr><td>Lg</td><td>${isegIconRow(3, { size: 'lg' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="With Icon">With Icon</h2>
+      <p class="page-desc">İkon + metin — ${tk('.bt-segment--icon-label')} ile asimetrik padding (sol 0, sağ 12px), ikon sol kenara yaslı. İkon↔label boşluğu Sm'de 0, Md/Lg'de 4px.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm</td><td>${isegIconRow(3, { withLabel: true, size: 'sm' })}</td></tr>
+          <tr><td>Md</td><td>${isegIconRow(3, { withLabel: true, size: 'md' })}</td></tr>
+          <tr><td>Lg</td><td>${isegIconRow(3, { withLabel: true, size: 'lg' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Disabled">Disabled</h2>
+      <p class="page-desc">Disabled tek segmente uygulanır — segment/track zemini değişmez, yalnız metin ve ikon ${tk('--bt-text-primary-muted')} / ${tk('--bt-icon-primary-muted')} (#a3a3a3) rengine düşer ve ${tk('cursor: not-allowed')} olur. Markup'ta ${tk('&lt;button disabled&gt;')}, Blazor'da ${tk('Enabled="false"')}. Detaylı anatomi ve interaktif "hangi segment" seçici için Overview sekmesine bakın.</p>
+      <table class="token-table">
+        <thead><tr><th>Örnek</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Label · 2. disabled</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2', dis: true }) + iseg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Icon Only · 3. disabled</td><td>${isegIconRow(3, { disIdx: 2 })}</td></tr>
+          <tr><td>With Icon · 2. disabled</td><td>${isegIconRow(3, { withLabel: true, disIdx: 1 })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Vertical">Vertical</h2>
+      <p class="page-desc">${tk('.bt-seg-ctrl--vertical')} ile segmentler dikey istiflenir, her biri tam genişlik. Yatay padding Content tipinden bağımsız simetrik 12px (${tk('--bt-space-xl')}) ve içerik <strong>sola hizalı</strong> — ikon/label tüm satırlarda aynı x'ten başlar. Yükseklik, state ve renk kuralları yatayla aynı. Detaylı anatomi + interaktif demo için Overview sekmesine bakın.</p>
       <table class="token-table">
         <thead><tr><th>Content</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Label</td><td>${ctrl(iseg({ label: 'Option 1', sel: true }) + iseg({ label: 'Option 2' }) + iseg({ label: 'Option 3' }))}</td></tr>
-          <tr><td>Icon</td><td>${ctrl(iseg({ icon: true, sel: true }) + iseg({ icon: true }) + iseg({ icon: true }))}</td></tr>
-          <tr><td>Icon & Label</td><td>${ctrl(iseg({ icon: true, label: 'Option 1', sel: true }) + iseg({ icon: true, label: 'Option 2' }) + iseg({ icon: true, label: 'Option 3' }))}</td></tr>
+          <tr><td>Label</td><td>${ctrl(iseg({ label: 'Label 1', sel: true }) + iseg({ label: 'Label 2' }) + iseg({ label: 'Label 3' }), '', 'vertical')}</td></tr>
+          <tr><td>Icon Only</td><td>${isegIconRow(3, { orient: 'vertical' })}</td></tr>
+          <tr><td>With Icon</td><td>${isegIconRow(3, { withLabel: true, orient: 'vertical' })}</td></tr>
         </tbody>
       </table>
     `};
@@ -12332,85 +12538,315 @@ PAGES_WEB['components/segmented-control'] = {
         id: 'pgd-seg-ctrl-overview',
         variants: [{ key: 'default', label: 'Segmented Control' }],
         props: [
-          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'sm' },
-          { key: 'content',  label: 'Content',  options: SEG_CONTENT_OPTS,  default: 'label' },
-          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
-          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'orientation', label: 'Orientation', options: SEG_ORIENT_OPTS,   default: 'horizontal' },
+          { key: 'size',        label: 'Size',        options: SEG_SIZE_OPTS,     default: 'md' },
+          { key: 'content',     label: 'Content',     options: SEG_CONTENT_OPTS,  default: 'label' },
+          { key: 'count',       label: 'Segments',    options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected',    label: 'Selected',    options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'disabled',    label: 'Disabled',    options: SEG_DISABLED_OPTS, default: 'none' },
+          { key: 'separator',   label: 'Separator',   options: TBX_BOOL_OPTS,     default: 'on' },
         ],
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml(p)}</div>`,
         code:    (v, p) => segCtrlHtml(p),
         css:     (v, p) => segCtrlCss(v, p),
       })}
 
-      <p class="page-desc">Segmented Control, birbirini dışlayan seçenekleri yatay bir buton grubu olarak sunar — kullanıcı yalnızca bir segmenti aynı anda aktif yapabilir. Kompakt yapısı onu toolbar'lar, panel başlıkları ve görünüm geçişleri için ideal kılar; Tab Menu'nun aksine sayfa navigasyonu için değil, aynı içeriğin farklı modları arasında geçiş için tasarlanmıştır. Seçili segment ${tk('.bt-segment--selected')} class'ıyla işaretlenir; Blazor tarafında seçim durumu genellikle bağlı bir ${tk('bool')} property veya ${tk('TelerikButtonGroup')} ile yönetilir.</p>
+      <p class="page-desc">Segmented Control, birbirini dışlayan seçenekleri yatay bir buton grubu olarak sunar — kullanıcı yalnızca bir segmenti aynı anda aktif yapabilir. Kompakt yapısı onu toolbar'lar, panel başlıkları ve görünüm geçişleri için ideal kılar; Tab Menu'nun aksine sayfa navigasyonu için değil, aynı içeriğin farklı modları arasında geçiş için tasarlanmıştır. Figma set'i 2–6 segment, üç boyut (Sm/Md/Lg) ve üç içerik tipini (Label / Icon / Icon &amp; Label) kapsar; dar alanlar için ${tk('.bt-seg-ctrl--vertical')} ile dikey dizilim de desteklenir (bkz. Vertical). Track ile seçilmemiş segmentler <strong>aynı zemini</strong> (${tk('--bt-base-subtle')}) paylaşır — yalnız seçili segment brand'li zemin + border ile öne çıkar (iOS'un beyaz "thumb" modelinin tersi). Seçili segment ${tk('.bt-segment--selected')} class'ıyla işaretlenir; Blazor tarafında seçim durumu genellikle bağlı bir ${tk('bool')} property veya ${tk('TelerikButtonGroup')} ile yönetilir.</p>
 
       <h2 id="States">States</h2>
-      <p class="page-desc">Her segment altı görsel durumu destekler. Default ve Hover aynı gri zemini paylaşır; hover'da hafif opaklık değişimi tıklanabilirliği hissettirir. Selected ve Active aynı stili kullanır: ${tk('--bt-primary-subtle')} arka plan ve ${tk('--bt-border-brand-default')} kenar rengi. Focus ring yalnızca klavye navigasyonunda görünür — erişilebilirlik gereksinimini karşılar. Disabled segment tıklanamaz ve muted renk alır; container üzerindeki diğer segmentler etkilenmez.</p>
+      <p class="page-desc">Segment'in altı state'i Figma'da tanımlı ama görsel karşılıkları üçe iner. <strong>Default, Hover ve Focus aynı zemini paylaşır</strong> — Figma'da Hover için ayrı bir stil yoktur (yalnız cursor değişir), Focus ise Default görünümün üzerine nötr gri bir ring ekler (${tk('--bt-border-primary-default')} @ %50 — brand mavisi değil). <strong>Selected ve Active birebir aynıdır:</strong> ${tk('--bt-primary-subtle')} zemin, ${tk('--bt-border-brand-default')} kenar, ${tk('--bt-text-xs-medium')} ağırlık. Disabled'da yalnız metin + ikon ${tk('--bt-text-primary-muted')}'a düşer; segment ve track zemini değişmez, diğer segmentler etkilenmez. Not: Figma'da seçili segment dış stroke ile ~1px büyür; implementasyonda her segment sürekli 1px şeffaf border taşıdığından seçim değişiminde layout shift olmaz.</p>
       <table class="token-table">
-        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <thead><tr><th>State</th><th>Görünüm</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Default</td><td>${ctrl(seg({ label: 'Option 1' }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
-          <tr><td>Hover</td><td>${ctrl(seg({ label: 'Option 1', hover: true }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
-          <tr><td>Selected</td><td>${ctrl(seg({ label: 'Option 1', sel: true }) + seg({ label: 'Option 2' }) + seg({ label: 'Option 3' }))}</td></tr>
-          <tr><td>Focus</td><td>${ctrl(seg({ label: 'Option 1', focus: true }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
-          <tr><td>Disabled</td><td>${ctrl(seg({ label: 'Option 1', dis: true }) + seg({ label: 'Option 2', sel: true }) + seg({ label: 'Option 3' }))}</td></tr>
+          <tr><td>Default</td><td>Track zemini (${tk('--bt-base-subtle')}), şeffaf border</td><td>${ctrl(seg({ label: 'Label 1' }) + seg({ label: 'Label 2', sel: true }) + seg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Hover</td><td>= Default (ayrı hover stili yok)</td><td>${ctrl(seg({ label: 'Label 1', hover: true }) + seg({ label: 'Label 2', sel: true }) + seg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Selected / Active</td><td>Brand subtle zemin + brand border + Medium ağırlık</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Focus</td><td>Default + nötr gri ring (0 0 0 3px @ %50)</td><td>${ctrl(seg({ label: 'Label 1', focus: true }) + seg({ label: 'Label 2', sel: true }) + seg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Disabled</td><td>Yalnız metin + ikon muted; zemin değişmez</td><td>${ctrl(seg({ label: 'Label 1', dis: true }) + seg({ label: 'Label 2', sel: true }) + seg({ label: 'Label 3' }))}</td></tr>
         </tbody>
       </table>
       <h3>Anatomy</h3>
-      <p class="page-desc">Her segment, 1px şeffaf border ve transparent arka planla başlar; seçildiğinde border rengi ve arka plan token'ları değişir, font-weight 400'den 500'e geçer. Container'ın 3px iç dolgusu, seçili segmentin 1px border'ını dış container border'ından görsel olarak ayırır ve tıklama hedefini genişletir.</p>
+      <p class="page-desc">Taşıyıcı hiyerarşisi Figma'nın <em>Segment › Base Segment › Left Control / Label / Right Control</em> yapısıyla birebir. <strong>Container</strong> (${tk('.bt-seg-ctrl')}) track'i çizer; segmentler bitişik, divider yok. <strong>Segment</strong> (${tk('.bt-segment')}) = Figma "Segment" — STATE katmanı (fill/border/radius) + Content'e göre yatay padding. İçinde tek çocuk <strong>Base Segment</strong> (${tk('.bt-segment__base')}) = iç flex satırı, ikon↔label boşluğu (gap) burada. Base Segment'in üç bölümü: <strong>Left Control</strong> (${tk('.bt-segment__left')}, 28×28) ikonu taşır → içinde <strong>Icon Control</strong> (${tk('.bt-segment__icon')}, 24×24) → ikon 18×18 (slotu doldurmaz); <strong>Label</strong> (${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')}); <strong>Right Control</strong> (${tk('.bt-segment__right')}, 28×28) sayaç rozeti için ayrılmış slot — Figma'da <em>Show Right Control = false</em>, bu yüzden şu an render edilmiyor.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Figma layer</th><th>Class</th><th>Boyut / Rol</th></tr></thead>
+        <tbody>
+          <tr><td>Segment</td><td>${tk('.bt-segment')}</td><td>STATE katmanı · Content'e göre yatay padding · radius-sm</td></tr>
+          <tr><td>Base Segment</td><td>${tk('.bt-segment__base')}</td><td>iç flex satırı · ikon↔label gap (Md/Lg 4px, Sm 0)</td></tr>
+          <tr><td>Left Control</td><td>${tk('.bt-segment__left')}</td><td>28×28 · ikon taşıyıcı · Content = Icon / Icon &amp; Label'da görünür</td></tr>
+          <tr><td>Icon Control</td><td>${tk('.bt-segment__icon')}</td><td>24×24 · ikonu ortalar (doldurmaz) · ikon 18×18</td></tr>
+          <tr><td>Label</td><td>${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')}</td><td>hug · Content = Label / Icon &amp; Label'da görünür</td></tr>
+          <tr><td>Right Control</td><td>${tk('.bt-segment__right')}</td><td>28×28 · counter slotu · <strong>şu an render edilmez</strong> (Show Right Control = false)</td></tr>
+        </tbody>
+      </table>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Container</td><td>Padding</td><td>—</td><td>3px</td></tr>
+          <tr><td>Container</td><td>Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
           <tr><td>Container</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4</td></tr>
+          <tr><td>Container</td><td>Border Radius</td><td>${tk('--bt-radius-md')}</td><td>6px</td></tr>
+          <tr><td>Container</td><td>Segment gap</td><td>—</td><td>0 · divider yok</td></tr>
+          <tr><td>Segment</td><td>Border Radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Segment · Default</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5 · track ile aynı</td></tr>
           <tr><td>Segment · Default</td><td>Border</td><td>—</td><td>1px solid transparent</td></tr>
           <tr><td>Segment · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
           <tr><td>Segment · Default</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
-          <tr><td>Segment · Selected</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
-          <tr><td>Segment · Selected</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Segment · Selected</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Segment · Selected</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>1px · #0d4e97</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Segment · Selected / Active</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
           <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Segment · Focus</td><td>Box Shadow</td><td>—</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
+          <tr><td>Segment · Focus</td><td>Box Shadow</td><td>${tk('--bt-border-primary-default')} @ 50%</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
+          <tr><td>Base Segment (${tk('.bt-segment__base')})</td><td>Gap (icon ↔ label)</td><td>${tk('--bt-space-xs')} / ${tk('--bt-space-none')}</td><td>Md/Lg 4px · Sm 0</td></tr>
+          <tr><td>Left Control (${tk('.bt-segment__left')})</td><td>Size</td><td>—</td><td>28×28 · sabit</td></tr>
+          <tr><td>Icon Control (${tk('.bt-segment__icon')})</td><td>Size</td><td>—</td><td>24×24 · ikon 18×18</td></tr>
+          <tr><td>Icon · Default / Selected / Disabled</td><td>Color</td><td>${tk('--bt-icon-primary-strong')} / ${tk('--bt-icon-brand-default')} / ${tk('--bt-icon-primary-muted')}</td><td>#535353 / #0d4e97 / #a3a3a3</td></tr>
+          <tr><td>Segment · Motion</td><td>Transition</td><td>—</td><td>background-color · border-color · color · box-shadow, 0.18s ease</td></tr>
+        </tbody>
+      </table>
+      <p class="page-desc">Segmentler arası geçiş <strong>yumuşak animasyonlu</strong>: seçim değişince zemin (${tk('--bt-primary-subtle')}), kenar (${tk('--bt-border-brand-default')}), metin ve ikon rengi 0.18s ease ile geçiş yapar; font-weight animate edilemediğinden anında değişir. Layout shift yok (her segment sürekli 1px şeffaf border taşır), sadece renk katmanı canlanır.</p>
+
+      <h3>Separator</h3>
+      <p class="page-desc">Bitişik segmentler arasına ince bir dikey çizgi konur — playground'da <strong>varsayılan olarak açık</strong> (${tk('.bt-seg-ctrl--separated')} modifier'ı; Figma'da bu ayraç yoktu, docs'a kullanıcı isteğiyle eklendi ve default'a alındı). Çizgi <strong>1px</strong>, rengi ${tk('--bt-border-primary-emphasis')} (<strong>#a3a3a3</strong>) ve segment yüksekliğini <strong>tam kaplamaz</strong> — üstten/alttan ${tk('--bt-space-sm')} (6px) boşluklu; efektif yükseklik = segment yüksekliği − 2px border − 12px boşluk (Sm 14px · Md 18px · Lg 22px). Çizgi bir ${tk('::before')} pseudo-element'idir (ikinci segment'e biner, seam'e ortalı) ve <strong>seçili segmentin iki yanında gizlenir</strong> (opacity 0) ki aktif pill'in kenarıyla çakışmasın; Vertical dizilimde ayraç yatay olur (soldan/sağdan 6px boşluklu). Kapatmak için container'dan ${tk('.bt-seg-ctrl--separated')} class'ı kaldırılır.</p>
+      <table class="token-table">
+        <thead><tr><th>Durum</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Ayraçlı (varsayılan)</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }) + seg({ label: 'Label 4' }), '', '', true)}</td></tr>
+          <tr><td>Ayraçlı · seçim ortada</td><td>${ctrl(seg({ label: 'Label 1' }) + seg({ label: 'Label 2', sel: true }) + seg({ label: 'Label 3' }) + seg({ label: 'Label 4' }), '', '', true)}</td></tr>
+          <tr><td>Ayraçlı · Vertical</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }), '', 'vertical', true)}</td></tr>
+          <tr><td>Ayraçsız (${tk('.bt-seg-ctrl--separated')} olmadan)</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }) + seg({ label: 'Label 4' }))}</td></tr>
+        </tbody>
+      </table>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Property</th><th>Token / Value</th></tr></thead>
+        <tbody>
+          <tr><td>Selector</td><td>${tk('.bt-seg-ctrl--separated .bt-segment + .bt-segment::before')}</td></tr>
+          <tr><td>Renk</td><td>${tk('--bt-border-primary-emphasis')} · <strong>#a3a3a3</strong></td></tr>
+          <tr><td>Kalınlık</td><td>1px</td></tr>
+          <tr><td>Yükseklik (Sm / Md / Lg)</td><td><strong>14 / 18 / 22px</strong> (segment H − 2px border − 12px boşluk)</td></tr>
+          <tr><td>Üst / alt boşluk (yatay)</td><td>${tk('--bt-space-sm')} · 6px + 6px</td></tr>
+          <tr><td>Sol / sağ boşluk (vertical)</td><td>${tk('--bt-space-sm')} · 6px + 6px</td></tr>
+          <tr><td>Seçili segment komşuluğu</td><td>opacity 0 (gizli)</td></tr>
         </tbody>
       </table>
 
       <h2 id="Sizes">Sizes</h2>
-      <p class="page-desc">Üç boyut — Sm (28px), Md (32px), Lg (36px) — farklı arayüz yoğunluklarına göre seçilir. Boyut yalnızca segment yüksekliğini etkiler; yatay padding ve tipografi her boyutta sabit kalır. Boyut ${tk('.bt-seg-ctrl--md')} veya ${tk('.bt-seg-ctrl--lg')} class'larıyla container üzerinde belirlenir; Sm varsayılan olduğundan ek class gerekmez.</p>
+      <p class="page-desc">Üç boyut — Sm (28px), Md (32px), Lg (36px) — farklı arayüz yoğunluklarına göre seçilir; Sm compact toolbar'lar, <strong>Md (varsayılan)</strong> form bölümleri ve panel başlıkları, Lg birincil mod geçişleri için. Boyut değiştiğinde yalnız <strong>segment yüksekliği</strong>, Icon-only segmentin <strong>kare genişliği</strong> ve Icon &amp; Label'daki <strong>ikon↔label boşluğu</strong> değişir — yatay padding, tipografi (${tk('--bt-text-xs-regular')}, tüm boyutlarda 12px/16px), Left Control (28×28), Icon Control (24×24) ve ikon (18×18) sabittir. Varsayılan Md <strong>modifiersiz</strong> durumdur; Sm için ${tk('.bt-seg-ctrl--sm')}, Lg için ${tk('.bt-seg-ctrl--lg')} container class'ı eklenir.</p>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Class</th><th>Height</th></tr></thead>
         <tbody>
-          <tr><td>Sm (Default)</td><td>—</td><td>28px</td></tr>
-          <tr><td>Md</td><td>${tk('.bt-seg-ctrl--md')}</td><td>32px</td></tr>
+          <tr><td>Sm</td><td>${tk('.bt-seg-ctrl--sm')}</td><td>28px</td></tr>
+          <tr><td>Md (Default)</td><td>— · modifier gerekmez</td><td>32px</td></tr>
           <tr><td>Lg</td><td>${tk('.bt-seg-ctrl--lg')}</td><td>36px</td></tr>
         </tbody>
       </table>
+      <p class="page-desc" style="margin-top:8px;font-size:12px;opacity:.7">Tablolarda ${tk('—')} = o hücre için bir class/token <em>yok</em>: varsayılan (Md) durum ek modifier istemez, yükseklik (28/32/36px) gibi ölçüler ise Figma'da bir design token'a karşılık gelmez (component-özel değer).</p>
       <h3>Anatomy</h3>
-      <p class="page-desc">Boyut değişimi yalnızca height'ı etkiler; padding, gap ve tipografi tüm boyutlarda sabit kalır. Bu tutarlılık, farklı boyutlardaki segment kontrollerinin aynı içerik hizasını korumasını sağlar. İkon slotu da boyutla birlikte büyür — Sm'de 28×28px, Md'de 32×32px, Lg'de 36×36px.</p>
+      <p class="page-desc">Boyut değişimi dar bir yüzeyi etkiler: <strong>Segment</strong> yüksekliği (28/32/36), Icon-only segmentin genişliği (yükseklikle eşit — 28/32/36 kare) ve <strong>Base Segment</strong>'in ikon↔label boşluğu — Sm'de <strong>0</strong>, Md/Lg'de ${tk('--bt-space-xs')} (4px). Yatay padding her boyutta ${tk('--bt-space-xl')} (12px, Content tipine göre uygulanış farkı için bkz. Content Types), tipografi ${tk('--bt-text-xs-regular')} (tüm boyutlarda 12px/16px), Left Control 28×28 · Icon Control 24×24 · ikon 18×18 sabittir — Figma'da bunların hiçbiri boyutla ölçeklenmez.</p>
       <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Size</th><th>Height</th><th>H. Padding</th><th>Icon Slot</th></tr></thead>
+        <thead><tr><th>Size</th><th>Segment H</th><th>Icon-only W</th><th>Icon ↔ Label gap</th><th>H. Padding</th><th>Left Ctrl / Icon Ctrl / Icon</th></tr></thead>
         <tbody>
-          <tr><td>Sm (Default)</td><td>28px</td><td>${tk('--bt-space-xl')} (12px)</td><td>28×28px</td></tr>
-          <tr><td>Md</td><td>32px</td><td>${tk('--bt-space-xl')} (12px)</td><td>32×32px</td></tr>
-          <tr><td>Lg</td><td>36px</td><td>${tk('--bt-space-xl')} (12px)</td><td>36×36px</td></tr>
+          <tr><td>Sm</td><td>28px</td><td>28px</td><td>0</td><td>${tk('--bt-space-xl')} (12px)</td><td>28×28 / 24×24 / 18×18</td></tr>
+          <tr><td>Md (Default)</td><td>32px</td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-xl')} (12px)</td><td>28×28 / 24×24 / 18×18</td></tr>
+          <tr><td>Lg</td><td>36px</td><td>36px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-xl')} (12px)</td><td>28×28 / 24×24 / 18×18</td></tr>
         </tbody>
       </table>
 
       <h2 id="Content Types">Content Types</h2>
-      <p class="page-desc">Segment üç içerik tipini destekler: sadece etiket, sadece ikon ve ikon+etiket birlikte. Yalnızca ikon kullanan segmentler ${tk('.bt-segment--icon')} modifier'ıyla kare boyutuna döner; padding sıfırlanır, genişlik yükseklikle eşitlenir. İkon her zaman ${tk('.bt-segment__icon')} slotuna yerleştirilir — 28×28px slot içinde 16×16px ikon kullanılır.</p>
-      <h3>Anatomy</h3>
-      <p class="page-desc">İkon slotu (${tk('.bt-segment__icon')}) sabit boyutuyla dokunma hedefini korur; label metni ${tk('.bt-segment__label')} ile sarılır ve segment genişliği metne göre büyür. Yalnızca ikon modunda sabit kare boyutu devreye girer, label ve icon+label modlarında genişlik içeriğe göre belirlenir.</p>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+      <p class="page-desc">Segment üç içerik tipini destekler ve <strong>her tipin yatay padding'i farklıdır</strong> — Figma'da ${tk('Content')} varyantı yalnız neyin gösterildiğini değil, segment kutusunun iç boşluğunu da belirler. Aşağıdaki üç bölüm (<strong>Label</strong> · <strong>Icon Only</strong> · <strong>With Icon</strong>) her tipi tüm boyutlarda ayrı ayrı gösterir; bu tablo hepsinin padding/gap/genişlik farkını tek bakışta özetler. İçerik tipi ${tk('.bt-segment--icon')} / ${tk('.bt-segment--icon-label')} modifier'larıyla (modifiersiz = Label) seçilir; Blazor tarafında ${tk('ChildContent')} RenderFragment ile belirlenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Content</th><th>Preview</th><th>Modifier</th><th>Padding L / R</th><th>Icon ↔ Label gap</th><th>Genişlik</th></tr></thead>
         <tbody>
-          <tr><td>Icon Slot (${tk('.bt-segment__icon')})</td><td>Size (Sm)</td><td>—</td><td>28×28px</td></tr>
-          <tr><td>Icon</td><td>Size</td><td>—</td><td>16×16px</td></tr>
-          <tr><td>Icon · Default</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
-          <tr><td>Icon · Selected</td><td>Color</td><td>${tk('--bt-icon-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Icon · Disabled</td><td>Color</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Label H. Padding</td><td>Padding</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
-          <tr><td>Icon + Label Gap</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Label</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }))}</td><td>—</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-xl')} · 12 / 12</td><td>—</td><td>İçeriğe göre</td></tr>
+          <tr><td>Icon Only</td><td>${segIconRow(2, {})}</td><td>${tk('.bt-segment--icon')}</td><td>0 / 0</td><td>—</td><td>Kare · W = H (28/32/36)</td></tr>
+          <tr><td>With Icon</td><td>${segIconRow(2, { withLabel: true })}</td><td>${tk('.bt-segment--icon-label')}</td><td>${tk('--bt-space-none')} / ${tk('--bt-space-xl')} · 0 / 12 · <strong>asimetrik</strong></td><td>Sm: 0 · Md/Lg: ${tk('--bt-space-xs')} (4px)</td><td>İçeriğe göre</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Label">Label</h2>
+      <p class="page-desc">Yalnız metin taşıyan segment — Segmented Control'ün varsayılan ve en yaygın biçimi; "Günlük / Haftalık / Aylık" gibi kısa, birbirini dışlayan mod adları için. Modifier gerekmez, segment doğrudan bir ${tk('.bt-segment__label')} içerir ve yatay padding her iki yanda simetrik ${tk('--bt-space-xl')} (12px); genişlik metne göre büyür. Metin resting'de ${tk('--bt-text-xs-regular')} (400 · ${tk('--bt-text-primary-default')}), seçilince ${tk('--bt-text-xs-medium')} (500 · ${tk('--bt-text-brand-default')}) — tipografi boyutla değişmez, her boyutta 12px/16px.</p>
+      ${registerPlayground({
+        id: 'pgd-seg-ctrl-label-sec',
+        variants: [{ key: 'default', label: 'Label' }],
+        props: [
+          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'md' },
+          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'disabled', label: 'Disabled', options: SEG_DISABLED_OPTS, default: 'none' },
+          { key: 'separator', label: 'Separator', options: TBX_BOOL_OPTS,     default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml({ ...p, content: 'label' })}</div>`,
+        code:    (v, p) => segCtrlHtml({ ...p, content: 'label' }),
+        css:     (v, p) => segCtrlCss(v, { ...p, content: 'label' }),
+      })}
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }), 'sm')}</td></tr>
+          <tr><td>Md</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }), 'md')}</td></tr>
+          <tr><td>Lg</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }), 'lg')}</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">${tk('.bt-segment')} › ${tk('.bt-segment__base')} › ${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')}. Left Control (ikon) render edilmez; padding simetriktir ve boyut yalnız Segment yüksekliğini etkiler. Bu tipte gap kavramı yoktur.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Segment · Padding L / R</td><td>${tk('--bt-space-xl')}</td><td>12px / 12px</td></tr>
+          <tr><td>Label · Font (resting → seçili)</td><td>${tk('--bt-text-xs-regular')} → ${tk('--bt-text-xs-medium')}</td><td>400 → 500 · 12px/16px</td></tr>
+          <tr><td>Label · Color (resting → seçili)</td><td>${tk('--bt-text-primary-default')} → ${tk('--bt-text-brand-default')}</td><td>#1a1a1a → #0d4e97</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Icon Only">Icon Only</h2>
+      <p class="page-desc">Yalnız ikon taşıyan segment — dar toolbar'larda veya evrensel anlamı olan simgelerde (liste/ızgara görünümü, metin hizası vb.) kullanılır. ${tk('.bt-segment--icon')} modifier'ı yatay padding'i sıfırlar ve segmenti kareye kilitler: genişlik boyut yüksekliğine eşitlenir (Sm 28 · Md 32 · Lg 36). İkon <strong>Left Control</strong> (${tk('.bt-segment__left')}, 28×28) › <strong>Icon Control</strong> (${tk('.bt-segment__icon')}, 24×24) içinde 18×18 render edilir — slotu doldurmaz, ortalanır; rengi resting'de ${tk('--bt-icon-primary-strong')}, seçilince ${tk('--bt-icon-brand-default')}. Erişilebilirlik için her segmente ${tk('aria-label')} veya tooltip eklenmelidir. Demolarda her pozisyon <strong>ayrı bir ikon</strong> alır (loader · sparkles · sun · user-round · flame · map-pin — Lucide seti, 2–6 segment için); gerçek kullanımda her segmente kendi anlamlı ikonu verilir.</p>
+      ${registerPlayground({
+        id: 'pgd-seg-ctrl-icon-sec',
+        variants: [{ key: 'default', label: 'Icon Only' }],
+        props: [
+          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'md' },
+          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'disabled', label: 'Disabled', options: SEG_DISABLED_OPTS, default: 'none' },
+          { key: 'separator', label: 'Separator', options: TBX_BOOL_OPTS,     default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml({ ...p, content: 'icon' })}</div>`,
+        code:    (v, p) => segCtrlHtml({ ...p, content: 'icon' }),
+        css:     (v, p) => segCtrlCss(v, { ...p, content: 'icon' }),
+      })}
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm</td><td>${segIconRow(3, { size: 'sm' })}</td></tr>
+          <tr><td>Md</td><td>${segIconRow(3, { size: 'md' })}</td></tr>
+          <tr><td>Lg</td><td>${segIconRow(3, { size: 'lg' })}</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">${tk('.bt-segment.bt-segment--icon')} › ${tk('.bt-segment__base')} › ${tk('.bt-segment__left')} (28×28) › ${tk('.bt-segment__icon')} (24×24) › inline ${tk('&lt;svg&gt;')} 18×18. Label render edilmez; segment kare olduğu için genişlik boyut yüksekliğiyle birlikte değişen tek ölçüdür. Left/Icon Control ve ikon boyutu boyutla ölçeklenmez.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Segment · Padding L / R</td><td>${tk('--bt-space-none')}</td><td>0 / 0</td></tr>
+          <tr><td>Segment · Genişlik = Yükseklik</td><td>—</td><td>28 / 32 / 36px · token yok (component ölçüsü)</td></tr>
+          <tr><td>Left Control (${tk('.bt-segment__left')})</td><td>—</td><td>28×28px · token yok</td></tr>
+          <tr><td>Icon Control (${tk('.bt-segment__icon')})</td><td>—</td><td>24×24px · token yok</td></tr>
+          <tr><td>Icon</td><td>—</td><td>18×18px inline SVG · token yok</td></tr>
+          <tr><td>Icon color (resting / seçili / disabled)</td><td>${tk('--bt-icon-primary-strong')} / ${tk('--bt-icon-brand-default')} / ${tk('--bt-icon-primary-muted')}</td><td>#535353 / #0d4e97 / #a3a3a3</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="With Icon">With Icon</h2>
+      <p class="page-desc">İkon + metin birlikte — segmentin anlamını hem simge hem etiketle güçlendirir. Base Segment'te <strong>Left Control</strong> + <strong>Label</strong> birlikte görünür. ${tk('.bt-segment--icon-label')} modifier'ı <strong>asimetrik padding</strong> uygular: sol ${tk('--bt-space-none')} (0), sağ ${tk('--bt-space-xl')} (12px) — ikon segmentin sol kenarına yaslanır, sağda label'dan sonra 12px kalır. İkon↔label boşluğu (Base Segment gap) boyuta bağlıdır: Sm'de 0 (bitişik), Md/Lg'de ${tk('--bt-space-xs')} (4px). Left/Icon Control ve rengi Icon Only ile, metin tipografisi/rengi Label ile aynı kuralı izler.</p>
+      ${registerPlayground({
+        id: 'pgd-seg-ctrl-with-icon-sec',
+        variants: [{ key: 'default', label: 'With Icon' }],
+        props: [
+          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'md' },
+          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'disabled', label: 'Disabled', options: SEG_DISABLED_OPTS, default: 'none' },
+          { key: 'separator', label: 'Separator', options: TBX_BOOL_OPTS,     default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml({ ...p, content: 'icon-label' })}</div>`,
+        code:    (v, p) => segCtrlHtml({ ...p, content: 'icon-label' }),
+        css:     (v, p) => segCtrlCss(v, { ...p, content: 'icon-label' }),
+      })}
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sm</td><td>${segIconRow(3, { withLabel: true, size: 'sm' })}</td></tr>
+          <tr><td>Md</td><td>${segIconRow(3, { withLabel: true, size: 'md' })}</td></tr>
+          <tr><td>Lg</td><td>${segIconRow(3, { withLabel: true, size: 'lg' })}</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">${tk('.bt-segment.bt-segment--icon-label')} › ${tk('.bt-segment__base')} › [ ${tk('.bt-segment__left')} (28×28 › ${tk('.bt-segment__icon')} 24×24 › 18×18 SVG) + ${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')} ]. Sol padding 0 olduğu için ikon kenara yaslıdır; sağ padding 12px label'ı dengeler. Gap (Base Segment) yalnız Md/Lg'de devreye girer — Sm'de ikon ve metin bitişiktir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Segment · Padding L</td><td>${tk('--bt-space-none')}</td><td>0</td></tr>
+          <tr><td>Segment · Padding R</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
+          <tr><td>Base Segment · Gap (icon ↔ label)</td><td>${tk('--bt-space-xs')} / ${tk('--bt-space-none')}</td><td>Sm: 0 · Md/Lg: 4px</td></tr>
+          <tr><td>Left Ctrl / Icon Ctrl / Icon</td><td>—</td><td>28×28 / 24×24 / 18×18px</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Disabled">Disabled</h2>
+      <p class="page-desc">Disabled durumu <strong>tek tek segmente</strong> uygulanır — tüm kontrolü değil, yalnız seçilemez olması gereken segmenti kapatır (örn. o modun geçici olarak kullanılamadığı durumlar). Görsel olarak segment ve track zemini <strong>değişmez</strong>; yalnız metin ${tk('--bt-text-primary-muted')} (#a3a3a3), ikon ${tk('--bt-icon-primary-muted')} (#a3a3a3) rengine düşer ve ${tk('cursor: not-allowed')} olur. Markup'ta segment ${tk('&lt;button disabled&gt;')} olur (tıklama tarayıcı tarafından zaten engellenir); Blazor tarafında karşılığı ${tk('Enabled="false"')} veya bağlı bir ${tk('bool')}. Aşağıdaki playground'da <strong>Disabled</strong> property'sinden hangi segmentin kapatılacağını seçebilirsin (None = hiçbiri).</p>
+      ${registerPlayground({
+        id: 'pgd-seg-ctrl-disabled-sec',
+        variants: [{ key: 'default', label: 'Disabled' }],
+        props: [
+          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'md' },
+          { key: 'content',  label: 'Content',  options: SEG_CONTENT_OPTS,  default: 'icon-label' },
+          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'disabled', label: 'Disabled', options: SEG_DISABLED_OPTS, default: '1' },
+          { key: 'separator', label: 'Separator', options: TBX_BOOL_OPTS,     default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml(p)}</div>`,
+        code:    (v, p) => segCtrlHtml(p),
+        css:     (v, p) => segCtrlCss(v, p),
+      })}
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Örnek</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>2. segment disabled</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2', dis: true }) + seg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Disabled + seçili aynı segment</td><td>${ctrl(seg({ label: 'Label 1' }) + seg({ label: 'Label 2', sel: true, dis: true }) + seg({ label: 'Label 3' }))}</td></tr>
+          <tr><td>Icon &amp; Label · 3. disabled</td><td>${segIconRow(3, { withLabel: true, disIdx: 2 })}</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Disabled yalnız renk katmanını değiştirir — layout, border, zemin ve boyut resting ile birebir aynıdır. ${tk('.bt-segment:disabled')} kuralı metni ve (varsa) ikon rengini muted'a çeker, ${tk('cursor: not-allowed')} verir; container'daki diğer segmentler etkilenmez.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5 · resting ile aynı (değişmez)</td></tr>
+          <tr><td>Text color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Icon color</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Cursor</td><td>—</td><td>not-allowed</td></tr>
+          <tr><td>Markup</td><td>—</td><td>${tk('&lt;button class="bt-segment" disabled&gt;')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Vertical">Vertical</h2>
+      <p class="page-desc">Dar sütunlarda veya bir formun/panelin kenarına yerleşen mod seçicilerde, yatay dizilim taşacağı zaman segmentler dikey istiflenir — ${tk('.bt-seg-ctrl--vertical')} modifier'ı container'ı ${tk('flex-direction: column')} + ${tk('align-items: stretch')} yapar, her segment <strong>tam genişlik</strong> alır. Tasarım dili gereği iki kural devreye girer: (1) yatay padding Content tipinden <strong>bağımsız olarak simetrik</strong> ${tk('--bt-space-xl')} (12px) — yataydaki asimetrik/sıfır padding dikeyde geçmez; (2) içerik <strong>sola hizalanır</strong> (${tk('.bt-segment__base')} → ${tk('justify-content: flex-start')}) — böylece Label / Icon Only / With Icon satırlarında ikon ve metin <strong>aynı x'ten başlar</strong>. Yataydaki merkezleme dikey istifte satırlar arası kaymaya (farklı padding hissine) yol açardı. Segment yüksekliği (28/32/36), tüm state/renk kuralları, radius ve "divider yok, ayrımı seçili segmentin brand border'ı yapar" yaklaşımı yatayla birebir aynıdır. Toplam yükseklik = segment sayısı × segment yüksekliği + 2× container dolgusu.</p>
+      ${registerPlayground({
+        id: 'pgd-seg-ctrl-vertical-sec',
+        variants: [{ key: 'default', label: 'Vertical' }],
+        props: [
+          { key: 'size',     label: 'Size',     options: SEG_SIZE_OPTS,     default: 'md' },
+          { key: 'content',  label: 'Content',  options: SEG_CONTENT_OPTS,  default: 'label' },
+          { key: 'count',    label: 'Segments', options: SEG_COUNT_OPTS,    default: '3' },
+          { key: 'selected', label: 'Selected', options: SEG_SELECTED_OPTS, default: '0' },
+          { key: 'disabled', label: 'Disabled', options: SEG_DISABLED_OPTS, default: 'none' },
+          { key: 'separator', label: 'Separator', options: TBX_BOOL_OPTS,     default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml({ ...p, orientation: 'vertical' })}</div>`,
+        code:    (v, p) => segCtrlHtml({ ...p, orientation: 'vertical' }),
+        css:     (v, p) => segCtrlCss(v, { ...p, orientation: 'vertical' }),
+      })}
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Content</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td>${ctrl(seg({ label: 'Label 1', sel: true }) + seg({ label: 'Label 2' }) + seg({ label: 'Label 3' }), '', 'vertical')}</td></tr>
+          <tr><td>Icon Only</td><td>${segIconRow(3, { orient: 'vertical' })}</td></tr>
+          <tr><td>With Icon</td><td>${segIconRow(3, { withLabel: true, orient: 'vertical' })}</td></tr>
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Yalnızca container ekseni + içerik hizası değişir: ${tk('.bt-seg-ctrl--vertical')} → ${tk('flex-direction: column')} + ${tk('align-items: stretch')}; ${tk('.bt-seg-ctrl--vertical .bt-segment')} → ${tk('width: 100%')} + simetrik ${tk('--bt-space-xl')} yatay padding (Content modifier'larının padding'ini ezer); ${tk('.bt-seg-ctrl--vertical .bt-segment__base')} → ${tk('justify-content: flex-start')}. Segment iç yapısı (${tk('.bt-segment__base')} › Left Control / Label), boyutlar ve tüm state token'ları değişmeden kalır.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token / Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container · ${tk('.bt-seg-ctrl--vertical')}</td><td>flex-direction</td><td>column</td></tr>
+          <tr><td>Container · ${tk('.bt-seg-ctrl--vertical')}</td><td>align-items</td><td>stretch</td></tr>
+          <tr><td>Segment (vertical)</td><td>width</td><td>100%</td></tr>
+          <tr><td>Segment (vertical)</td><td>Padding L / R</td><td>${tk('--bt-space-xl')} / ${tk('--bt-space-xl')} · 12 / 12 (Content'ten bağımsız — tüm tipler eşit)</td></tr>
+          <tr><td>Base Segment (vertical)</td><td>justify-content</td><td>flex-start · ikon/label satırlar arası hizalı</td></tr>
+          <tr><td>Segment (vertical)</td><td>Height</td><td>28 / 32 / 36px (yatayla aynı)</td></tr>
+          <tr><td>Segment gap / divider</td><td>—</td><td>0 · yok (yatayla aynı)</td></tr>
         </tbody>
       </table>
     `};

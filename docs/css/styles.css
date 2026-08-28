@@ -5408,51 +5408,99 @@ pre.code-block.line-numbers {
 .bt-card--vertical .bt-card__footer .bt-btn { width: 100%; justify-content: center; }
 
 /* ── Segmented Control ──────────────────────────────── */
-/* Container — 3px padding seçili segmentin border'ını dış border'dan görsel ayırır */
+/* Container — Figma: base-subtle zemin + primary-default border, radius-md.
+   2px iç dolgu (space-2xs) seçili segmentin brand border'ını dış container
+   border'ından görsel olarak ayırır. itemSpacing yok — segmentler bitişik,
+   aralarında divider bulunmaz; ayrımı yalnız seçili segmentin border'ı yapar. */
 .bt-seg-ctrl {
   display: inline-flex;
   align-items: center;
-  padding: 3px;
+  padding: var(--bt-space-2xs, 2px);
   background: var(--bt-base-subtle, #f5f5f5);
   border: 1px solid var(--bt-border-primary-default, #d4d4d4);
-  border-radius: var(--bt-radius-sm, 4px);
+  border-radius: var(--bt-radius-md, 6px);
 }
+/* ── Segment yapısı — Figma "Segment" › "Base Segment" › Left Control / Label /
+   Right Control hiyerarşisiyle birebir. ────────────────────────────────────────
+   .bt-segment            = Figma "Segment"      — STATE katmanı: fill/border/radius
+                                                   + CONTENT'e göre yatay padding
+   .bt-segment__base      = Figma "Base Segment" — iç flex satırı, ikon↔label gap
+   .bt-segment__left      = Figma "Left Control" — 28×28 sabit ikon taşıyıcısı
+   .bt-segment__icon      = Figma "Icon Control" — 24×24, ikonu ortalar (doldurmaz)
+   .bt-segment__label-wrap= Figma "Label" frame
+   .bt-segment__label     = Figma "Segment Label" text
+   .bt-segment__right     = Figma "Right Control" — 28×28 sayaç rozeti slotu;
+                            Figma'da "Show Right Control" = false, bu yüzden
+                            ŞU AN RENDER EDİLMİYOR (ileride counter için ayrıldı).
+   VARSAYILAN BOYUT = Md (32px) — modifiersiz; Sm/Lg için --sm/--lg. */
 .bt-segment {
+  position: relative;   /* opsiyonel separator pseudo-element'i için */
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--bt-space-xs, 4px);
-  padding: 0 var(--bt-space-xl, 12px);
-  height: 28px;
+  align-items: stretch;
+  box-sizing: border-box;
+  padding: var(--bt-space-none, 0) var(--bt-space-xl, 12px);   /* Content = Label: 12px / 12px */
+  height: 32px;   /* Md = varsayılan */
   border-radius: var(--bt-radius-sm, 4px);
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid transparent;   /* seçilince renklenir → layout shift yok */
+  background: var(--bt-base-subtle, #f5f5f5);
   cursor: pointer;
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-default, #1a1a1a);
   white-space: nowrap;
-  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  /* Segmentler arası geçişte yumuşak animasyon — zemin/kenar/metin rengi ease'lenir
+     (font-weight animate edilemez, anında değişir). */
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
-/* Icon slot — 28×28, içinde 16×16 ikon */
-.bt-segment__icon {
+/* Content = Icon & Label — ikon SOL kenara yaslı: sol padding 0, sağ 12px (asimetrik) */
+.bt-segment--icon-label {
+  padding-left: var(--bt-space-none, 0);
+}
+/* Content = Icon — kare segment: yatay padding yok, genişlik = yükseklik */
+.bt-segment--icon {
+  padding: var(--bt-space-none, 0);
+  width: 32px;   /* Md = varsayılan */
+}
+/* Base Segment — iç flex satırı; ikon↔label boşluğu (gap) BURADA yaşar
+   (Figma "Base Segment" itemSpacing): Md/Lg = 4px, Sm = 0 (--sm override) */
+.bt-segment__base {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-xs, 4px);
+}
+/* Left Control — 28×28 sabit ikon taşıyıcı */
+.bt-segment__left {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
 }
+/* Icon Control — 24×24; ikon 18×18 (slotu doldurmaz, ortalanır) */
+.bt-segment__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
 .bt-segment__icon i,
 .bt-segment__icon svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
+  color: var(--bt-icon-primary-strong, #535353);
+  transition: color 0.18s ease;
 }
-/* Icon-only: kare, yatay padding yok */
-.bt-segment--icon {
-  padding: 0;
-  width: 28px;
+/* Label frame */
+.bt-segment__label-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-/* Selected / Active */
+/* Selected / Active — Figma'da bu iki state görsel olarak birebir aynı */
 .bt-segment--selected {
   background: var(--bt-primary-subtle, #e2edfc);
   border-color: var(--bt-border-brand-default, #0d4e97);
@@ -5463,16 +5511,15 @@ pre.code-block.line-numbers {
 .bt-segment--selected .bt-segment__icon svg {
   color: var(--bt-icon-brand-default, #0d4e97);
 }
-/* Hover — seçili ve disabled dışı */
-.bt-segment:not(.bt-segment--selected):not(:disabled):hover {
-  background: rgba(0, 0, 0, .05);
-}
-/* Focus ring */
+/* Hover — Figma'da Hover = Default (ayrı bir hover state tanımlı DEĞİL);
+   yalnız cursor:pointer ile tıklanabilirlik hissettirilir, zemin değişmez. */
+/* Focus ring — nötr gri (brand değil), %50 alfa; Figma drop-shadow spread 3,
+   #d4d4d4 @ 0.5 (Border/Primary/--bt-border-primary-default'ın yarı saydamı) */
 .bt-segment:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(212, 212, 212, .5);
 }
-/* Disabled */
+/* Disabled — track/segment zemini DEĞİŞMEZ; yalnız label + ikon muted'a düşer */
 .bt-segment:disabled {
   color: var(--bt-text-primary-muted, #a3a3a3);
   cursor: not-allowed;
@@ -5481,14 +5528,72 @@ pre.code-block.line-numbers {
 .bt-segment:disabled .bt-segment__icon svg {
   color: var(--bt-icon-primary-muted, #a3a3a3);
 }
-/* Size — Md (32px) */
-.bt-seg-ctrl--md .bt-segment       { height: 32px; }
-.bt-seg-ctrl--md .bt-segment--icon { width: 32px; }
-.bt-seg-ctrl--md .bt-segment__icon { width: 32px; height: 32px; }
-/* Size — Lg (36px) */
-.bt-seg-ctrl--lg .bt-segment       { height: 36px; }
-.bt-seg-ctrl--lg .bt-segment--icon { width: 36px; }
-.bt-seg-ctrl--lg .bt-segment__icon { width: 36px; height: 36px; }
+/* Size — varsayılan Md (modifiersiz, yukarıda). Yalnız segment yüksekliği
+   (+ Icon-only kare genişliği) ve Base Segment'in ikon↔label boşluğu değişir.
+   Yatay padding, tipografi, Left Control (28×28), ikon (18×18) tüm boyutlarda SABİT. */
+/* Sm (28px) — daha yoğun arayüzler */
+.bt-seg-ctrl--sm .bt-segment             { height: 28px; }
+.bt-seg-ctrl--sm .bt-segment--icon       { width: 28px; }
+.bt-seg-ctrl--sm .bt-segment__base       { gap: var(--bt-space-none, 0); }
+/* Lg (36px) */
+.bt-seg-ctrl--lg .bt-segment             { height: 36px; }
+.bt-seg-ctrl--lg .bt-segment--icon       { width: 36px; }
+/* Lg ikon↔label boşluğu = varsayılan 4px (--bt-space-xs), override gerekmez */
+
+/* ── Vertical — segmentler dikey istiflenir, her biri TAM GENİŞLİK. ─────────────
+   Design-language kararı:
+   1) Yatay padding Content tipinden BAĞIMSIZ olarak simetrik (--bt-space-xl /
+      12px) — yataydaki asimetrik/0 padding burada uygulanmaz.
+   2) İçerik SOLA hizalanır (base'in yataydaki merkezlemesi ezilir) — böylece
+      Label / Icon Only / With Icon satırlarında ikon ve metin AYNI x'ten başlar;
+      merkezleme dikey istifte satırlar arası kaymaya (farklı padding hissine)
+      yol açardı.
+   Segment yüksekliği (28/32/36) ve tüm state/renk kuralları yatayla aynı; ayrımı
+   yine seçili segmentin brand border'ı yapar (divider yok). radius korunur. */
+.bt-seg-ctrl--vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+.bt-seg-ctrl--vertical .bt-segment,
+.bt-seg-ctrl--vertical .bt-segment--icon,
+.bt-seg-ctrl--vertical .bt-segment--icon-label {
+  width: 100%;
+  padding-left: var(--bt-space-xl, 12px);
+  padding-right: var(--bt-space-xl, 12px);
+}
+.bt-seg-ctrl--vertical .bt-segment__base {
+  justify-content: flex-start;
+}
+
+/* ── Separator (opsiyonel) — bitişik segmentler arası ince çizgi. ──────────────
+   Varsayılan tasarımda YOK; `.bt-seg-ctrl--separated` ile açılır. Çizgi segment
+   yüksekliğini tam kaplamaz — üstten/alttan --bt-space-sm (6px) boşluklu. Pseudo
+   ikinci segment'e bin<er (`+ .bt-segment::before`), seam'e ortalanır. Seçili
+   segmentin İKİ yanında gizlenir (aktif pill'in kenarıyla çakışmasın). */
+.bt-seg-ctrl--separated .bt-segment + .bt-segment::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: var(--bt-space-sm, 6px);
+  bottom: var(--bt-space-sm, 6px);
+  width: 1px;
+  background: var(--bt-border-primary-emphasis, #a3a3a3);
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.bt-seg-ctrl--separated .bt-segment--selected + .bt-segment::before,
+.bt-seg-ctrl--separated .bt-segment--selected::before {
+  opacity: 0;
+}
+/* Vertical'da separator YATAY — bitişik segmentler arası, soldan/sağdan boşluklu */
+.bt-seg-ctrl--separated.bt-seg-ctrl--vertical .bt-segment + .bt-segment::before {
+  left: var(--bt-space-sm, 6px);
+  right: var(--bt-space-sm, 6px);
+  top: -1px;
+  bottom: auto;
+  width: auto;
+  height: 1px;
+}
 
 /* Collapsible — borderless header collapse trigger */
 /* Collapsible header trigger artık sadece icon button — header'ın kendisi tıklanabilir değil */
