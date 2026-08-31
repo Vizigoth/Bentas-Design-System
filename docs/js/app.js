@@ -106,7 +106,11 @@ function renderSidebar() {
     // Aynı label'a sahip iki farklı grup (örn. Components/Layout ile üst seviye
     // Layout) çakışmasın diye path tabanlı benzersiz key kullanılır.
     const groupKey = pathPrefix + item.label;
-    const isOpen = openGroups.has(groupKey);
+    // Yalnızca en üst seviye başlıklar (Components, Foundations, …) collapse
+    // olur — içlerindeki alt gruplar (Buttons, Inputs, Overlays …) chevron'suz
+    // ve her zaman açık gelir (kullanıcı isteği).
+    const collapsible = depth === 0;
+    const isOpen = collapsible ? openGroups.has(groupKey) : true;
     const kidCls = depth === 0 ? 'nav-children' : 'nav-grandchildren';
     // Components'ın altı neredeyse tamamen alt-gruplardan oluşuyor (Buttons/
     // Card/Data Table/Inputs — her biri zaten kendi çizgisini taşıyor), üstüne
@@ -118,11 +122,12 @@ function renderSidebar() {
     // Grup içi çocuklar: sabit ince çizgi + aktif öğenin hizasına kayan accent
     // segment (bkz. Figma 985:115153 "Indıcator Line"/"Line 305" — TOC'taki
     // .toc-line/.toc-indicator ile aynı desen, her grup kendi çizgisine sahip).
-    // nav-item-group — derinlikten bağımsız TEK class, her seviyedeki grup
-    // trigger'ı (Foundations/Components/Buttons hepsi) birebir aynı stili
-    // paylaşır (bkz. HISTORY.md — "Buttons'ı Components gibi stille").
-    return `
-      <div class="nav-item-group" onclick="toggleGroup('${groupKey}')">
+    // Trigger: collapse edilebilen üst-seviye başlıklar chevron'lu .nav-item-group;
+    // alt gruplar (Buttons/Inputs/…) chevron'suz .nav-section-label ile düz başlık
+    // (ikisi de aynı padding/font/renk — bkz. styles.css). Alt grupların accent
+    // çizgisi ve indicator'ı korunur.
+    const trigger = collapsible
+      ? `<div class="nav-item-group" onclick="toggleGroup('${groupKey}')">
         <span>${item.label}</span>
         <span class="nav-chevron-slot">
           <svg class="nav-chevron ${isOpen ? 'open' : ''}" data-group-chevron="${groupKey}" width="16" height="16"
@@ -130,7 +135,11 @@ function renderSidebar() {
             <path d="m9 5 7 7-7 7"/>
           </svg>
         </span>
-      </div>
+      </div>`
+      : `<div class="nav-section-label">${item.label}</div>`;
+
+    return `
+      ${trigger}
       <div class="${kidCls} ${isOpen ? 'open' : ''}" data-group-panel="${groupKey}">
         <div class="nav-group-inner">
           ${showLine ? `

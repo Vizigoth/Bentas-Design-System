@@ -3814,3 +3814,110 @@ Her segment `<button onclick="btSegSelect(this)">`. Consuming projede (Blazor) s
 9. **Segments 2–6** desteklenir.
 10. **Base Segment ayrı bir katman** — Segment (state + padding) ile içerik (Left Control / Label) arasında bir "Base Segment" flex satırı var; ikon↔label gap bu katmanda yaşar, Segment'te değil.
 11. **Right Control (counter) Figma'da tanımlı ama pasif** — Base Segment'in 3. bölümü olan Right Control (28×28 sayaç rozeti: `radius-full` `surface/brand`, `text-2xs` beyaz sayı) var; ancak shipped Segmented Control'de `Show Right Control = false`, docs implementasyonunda henüz render edilmiyor (`.bt-segment__right` slotu ayrıldı).
+
+
+## 19. Tab
+
+Figma kaynağı: "Bentas DS" dosyası, "Tabs" sayfası — **Base Tab** (`1040:6309`, atomik yapı) + **Tab** (`1045:22304`, 216 varyant: Size × Fill Mode × Content × Type × State) + "Tabs …" assembly frame'leri.
+
+Tab, aynı bağlamda birbirini dışlayan bölümler/görünümler arasında geçiş sağlar; Segmented Control'den farkı sayfa navigasyonu (route) için de kullanılabilmesidir. `components/tab` tek sayfa (Line/Bordered/Segmented Examples bölümleri, 4-tab standardı).
+
+### 19.1 Yapı — Base Tab
+
+`Base Tab` HORIZONTAL auto-layout, yatay padding `Space/spacing-xl` (12px), center/center:
+
+- **Left Control** (28×28) → Icon Control (24×24) → ikon 18×18 — `Show Icon` / Content = Icon & Label ile
+- **Label** (hug, iç pad 0 2px) → "Tab Label" — Geist 12px/400, line-height 16px
+- **Right Control** (28×28):
+  - **Counter** badge (min 14×14, `radius-full`, `surface/brand/default` zemin, `text/primary/inverted` sayı, 10px/12) — `Show Counter`
+  - **Button** = gerçek `Base Button` (xs, icon-only, 24×24, X ikonu) — `Show Button` / Type = Closable
+
+Boyutlar: Sm 28 / Md 32 / Lg 36 px. İkon↔label boşluğu Sm 0, Md/Lg `Space/spacing-xs` (4px). Yatay padding ve tipografi tüm boyutlarda sabit.
+
+Docs implementasyonu — markup:
+```html
+<div class="bt-tab-list bt-tab-list--{line|bordered|segmented}[ bt-tab-list--vertical]" role="tablist">
+  <button class="bt-tab bt-tab--{sm|md|lg}[ bt-tab--selected][ bt-tab--disabled]" onclick="btTabSelect(this)">
+    <span class="bt-tab__icon"><!-- 18×18 svg --></span>   <!-- Content = Icon & Label -->
+    <span class="bt-tab__label">Tab Label</span>
+    <span class="bt-tab__counter">1</span>                 <!-- Show Counter -->
+    <span class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon" role="button">…</span>  <!-- Type = Closable -->
+  </button>
+  …
+</div>
+```
+Not: close **`<span>`** (iç içe `<button>` geçersiz olurdu); `.bt-btn` class'ları span'e de tam stil verir.
+
+### 19.2 Fill Mode'lar
+
+| | Track (sarmalayıcı) | Seçili tab |
+|---|---|---|
+| **Line** (varsayılan) | yatay: `border-bottom` 1px `border/primary/default` — dikey: `border-right` | `border-bottom-color` (dikey: `border-right-color`) → `border/brand/default` (indicator) + metin `text/brand/default` |
+| **Bordered** | aynı alt/yan çizgi | üst+yan 1px `border/primary/default` kutu + `border-bottom` **beyaz** (`base/default`) "kesik" + `background` beyaz → alttaki panele bağlanır; metin rengi **değişmez**; üst köşeler `radius-sm` |
+| **Segmented** | pill: `base/subtle` zemin + 1px `border/primary/default` + `radius-md` (6px) + iç boşluk `spacing-2xs` (2px) | `primary/subtle` dolgu + 1px `border/brand/default` + metin `text/brand/default`; tab köşeleri `radius-sm` |
+
+Her tab sürekli şeffaf 1px border taşır → seçim değişince layout shift yok (Segmented Control ile aynı desen). Line/Bordered tab'larda `margin-bottom:-1px` (dikeyde `-1px` sağ/sol) ile track çizgisine biner.
+
+### 19.3 State'ler
+
+Default / Hover / Selected / Focus / Disabled (Figma'da ayrıca Active = Selected ile aynı).
+
+- **Hover** (yalnız Line): `border-bottom-color` → `border/primary/default`. Bordered/Segmented'de hover = Default.
+- **Focus** (tüm fill modes): `box-shadow: 0 0 0 3px rgba(212,212,212,0.5)` — nötr gri ring, brand değil (proje standardı; bkz. Accordion/Segmented Control notu).
+- **Disabled**: metin `text/primary/muted` (#a3a3a3), `cursor: not-allowed`, `pointer-events: none`. İkon rengi **değişmez** (`icon/primary/strong`, Figma böyle).
+- İkon rengi hiçbir state'te değişmez: her zaman `icon/primary/strong` (#535353).
+- Metin tipografisi state'ten bağımsız: Geist 400 12px/16px (`--bt-text-xs-regular`) — Selected'da da weight artmaz.
+
+### 19.4 Yatay / Dikey
+
+`.bt-tab-list--vertical` → `flex-direction: column`, tab içeriği sola hizalı (`justify-content: flex-start`). Line indicator alt-border yerine **sağ-border**. Bordered seçili tab (Figma `Tab Bordered Vertical` 1052:39818 — soldaki panele bağlanır): grey border **üst + sağ**, **sol kenar açık** (`border-left-color: transparent`), beyaz **alt-seam** (`border-bottom-color: base/default`), radius **sağ köşeler** (`0 4px 4px 0`). Segmented track dikey pill olur.
+
+### 19.5 JS davranışı
+
+```js
+// seçim
+window.btTabSelect = function (el) {
+  const list = el.closest('.bt-tab-list');
+  if (!list) return;
+  list.querySelectorAll('.bt-tab').forEach(t => t.classList.remove('bt-tab--selected'));
+  el.classList.add('bt-tab--selected');
+};
+
+// closable — × butonu tab'ı DOM'dan kaldırır; son tab kapatılamaz,
+// seçili tab kapatılırsa komşusu (önce sonraki, yoksa önceki) seçili olur
+window.btTabClose = function (el) {
+  const tab  = el.closest('.bt-tab');
+  const list = tab && tab.closest('.bt-tab-list');
+  if (!tab || !list) return;
+  const tabs = Array.from(list.querySelectorAll('.bt-tab'));
+  if (tabs.length <= 1) return;
+  const i = tabs.indexOf(tab);
+  const wasSelected = tab.classList.contains('bt-tab--selected');
+  const neighbour = tabs[i + 1] || tabs[i - 1];
+  tab.remove();
+  if (wasSelected && neighbour) neighbour.classList.add('bt-tab--selected');
+};
+
+// "Add Tab" — ilk tab'ı şablon alıp klonlar, Add Tab butonundan önce ekler
+window.btTabAdd = function (el) {
+  const list = el.closest('.bt-tab-list');
+  const tmpl = list && list.querySelector('.bt-tab');
+  if (!list || !tmpl) return;
+  const clone = tmpl.cloneNode(true);
+  clone.classList.remove('bt-tab--selected', 'bt-tab--disabled');
+  const label = clone.querySelector('.bt-tab__label');
+  if (label) label.textContent = 'Tab ' + (list.querySelectorAll('.bt-tab').length + 1);
+  list.insertBefore(clone, el);
+};
+```
+Close `<span>`: `onclick="event.stopPropagation();btTabClose(this)"` — tab seçimini tetiklemeden kapatır. **Add Tab** butonu (Figma `1055:40422`) `.bt-tab-list`'in son çocuğudur: `<button class="bt-tab-list__add bt-btn bt-btn--2xs bt-btn--base-flat" onclick="btTabAdd(this)">` (plus ikon + "Add Tab", 20px). `.bt-tab-list__add` yatayda `align-self: center` + `margin-left: --bt-space-xs`; dikeyde `align-self: stretch` + `justify-content: flex-start`. Blazor'da seçim bağlı bir index/enum veya `TelerikTabStrip` ile, kapatma/ekleme koleksiyon mutasyonuyla yönetilir.
+
+### 19.6 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
+
+1. **Bordered'ın "kutu"su tab'ın kendisinde, "beyaz kesik" container'da** — Figma'da Base Tab instance'ı 3 kenar (`sw:[1,1,0,1]`) `border/primary/default` alır, Tab container'ı `border-bottom` (`sw:[0,0,1,0]`) `base/default` (beyaz) alır. Docs'ta ikisi de tek `.bt-tab--selected` kuralında birleştirildi.
+2. **Bordered'da metin rengi değişmez** — Line ve Segmented seçili tab'da metin brand mavisine döner, Bordered'da `text/primary/default` kalır.
+3. **Segmented hover = Default** — hover'da track zemininin aynısı (`base/subtle`), görsel fark yok.
+4. **Disabled'da ikon muted OLMAZ** — yalnız metin `text/primary/muted`'a düşer, ikon `icon/primary/strong` kalır.
+5. **Dikeyde indicator/kesik kenarı döner** — Line: alt-border → sağ-border. Bordered: yatayda üst-köşe radius + alt-kesik; dikeyde **sağ-köşe radius + sol kenar açık + alt-seam** (panel solda).
+6. **Close butonu bespoke değil** — gerçek `bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon` (24×24). İç içe `<button>` sorunundan kaçınmak için `<span role="button">` olarak render edilir.
+7. **Counter Base Tab'da default açık** ama Tab component'inde ayrı bir varyant değil — `Show Counter` boolean'ı; docs playground'da `Counter` (On/Off) toggle'ıyla kontrol edilir.

@@ -60,8 +60,7 @@ const NAV_WEB = [
           { label: 'Breadcrumb',             id: 'components/breadcrumb' },
           { label: 'Segmented Control',      id: 'components/segmented-control' },
           { label: 'Sidebar',                id: 'components/sidebar' },
-          { label: 'Tab Menu Horizontal',    id: 'components/tab-menu-horizontal' },
-          { label: 'Tab Menu Vertical',      id: 'components/tab-menu-vertical' },
+          { label: 'Tab',                    id: 'components/tab' },
         ]
       },
       {
@@ -1215,6 +1214,19 @@ function spltCode(fill, size, state, theme = 'primary', content = 'icon-text') {
 </div>`;
 }
 
+// States → Themes alt bölümleri: her temanın divider odaklı description'ı.
+// Button'daki _btnThemeDoc deseninin Split Button karşılığı. tk render
+// closure'ından geldiği için fonksiyon olarak tutulur.
+const _spltThemeDoc = {
+  base: tk => `Nötr Split Button — divider her fill modunda opak gri ${tk('--bt-border-primary-default')} (#d4d4d4) çizgidir, yarı saydam değil. Solid'de her iki part açık gri (${tk('--bt-base-light')}) zeminli; Active'de brand-subtle mavi zemine + 1px brand border'a geçer. Focus halkası nötrdür (${tk('rgba(212,212,212,.50)')}).`,
+  primary: tk => `Marka renkli Split Button — sayfanın birincil aksiyonu için, bir görünümde tek. Solid'de her iki part koyu mavi (${tk('--bt-primary-default')}), hover / Active ${tk('--bt-primary-intense')}; divider tüm fill modlarında ${tk('--bt-primary-solid')} tokenıyla çizilir. Focus halkası brand mavisidir (${tk('rgba(13,78,151,.50)')}).`,
+  secondary: tk => `Sakin kurumsal Split Button — Solid'de divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Outline / Flat / Ghost'ta ise Base gibi nötr gri ${tk('--bt-border-primary-default')}. Solid zemin ${tk('--bt-secondary-default')}, hover / Active ${tk('--bt-secondary-intense')}.`,
+  success: tk => `Olumlu bağlam Split Button'ı — kaydet / onayla + alternatifleri. Solid'de divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Outline / Flat / Ghost'ta ${tk('--bt-border-success-default')}. Focus halkası yeşil tonda (${tk('rgba(68,135,113,.24)')}).`,
+  warning: tk => `Tek istisna tema — Solid part zemini açık amber olduğundan yarı saydam beyaz divider kaybolur; Solid divider yarı saydam <strong>siyah</strong> ${tk('rgba(0,0,0,0.15)')}. Outline / Flat / Ghost'ta divider ${tk('--bt-border-warning-default')}. Focus halkası amber tonda (${tk('rgba(212,175,44,0.25)')}).`,
+  error: tk => `Yıkıcı aksiyon Split Button'ı — sil + alternatifler. Solid'de divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Outline / Flat / Ghost'ta ${tk('--bt-border-error-default')}. Bir grupta birden çok yıkıcı aksiyon dikkatli kurgulanmalı (bkz. Usage).`,
+  information: tk => `Bilgi bağlamı Split Button'ı — Solid'de divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Outline / Flat / Ghost'ta ${tk('--bt-border-information-default')}. Görsel olarak Primary'ye yakın mavi tondur ama anlamı "marka CTA'sı" değil "bilgilendirme"dir.`,
+};
+
 function _spltStateTable(theme) {
   return `
       <table class="token-table" style="margin-bottom:24px;">
@@ -1231,16 +1243,17 @@ function _spltStateTable(theme) {
 
 PAGES_WEB['components/split-button'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc: ['Anatomy', 'Sizes', 'States'],
+  toc: ['Anatomy', 'Sizes', 'States', 'Themes', 'Base', 'Primary', 'Secondary', 'Success', 'Warning', 'Error', 'Information'],
   render: (tab) => {
     const title = 'Split Button';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     // ── Examples ─────────────────────────────────────────────────
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Solid, Outline, Flat ve Ghost fill modları; 7 tema rengi, 7 boyut ve 6 state ile. Sol part (Button) metin + ikon barındırır, sağ part (Split) dropdown tetikler.</p>
+      <p class="page-desc">Split Button'ın dört fill modu, her biri 7 boyutun tümünde ve tüm state'lerle interaktif olarak — Overview'daki tek birleşik playground'un aksine burada her mod ayrı ele alınır. Fill modu yalnızca part görünümünü değil, iki part arasındaki ${tk('--split-divider')} çizgisinin çizilme yöntemini de belirler. Dört modun tümünde aynı 7 tema, 3 içerik tipi (icon &amp; text / icon only / text only) ve 6 state birbirinden bağımsız uygulanır. CSS'te mod ${tk('.bt-split-btn--{theme}-{fill}')}, boyut ${tk('.bt-split-btn--{size}')} ile seçilir.</p>
 
       <h2>Solid</h2>
+      <p class="page-desc">Her iki partı dolu renk zeminli — en yüksek görsel ağırlık, birincil CTA + alternatifleri için. Divider yarı saydam beyaz veya siyah bir çizgidir (tema zeminine göre). Sayfa başına tek bir Solid Split Button önerilir; birden fazlası hiyerarşiyi zayıflatır.</p>
       ${registerPlayground({
         id: 'pgd-splt-solid-ex',
         variants: SPLT_SIZE_VARIANTS,
@@ -1254,6 +1267,7 @@ PAGES_WEB['components/split-button'] = {
       })}
 
       <h2>Outline</h2>
+      <p class="page-desc">Şeffaf zeminli, 1px ${tk('box-shadow')} kenarlıklı partlar — ikincil aksiyon + alternatifler. Divider temanın kendi border rengindedir; hover'da ilgili part açık tema zeminiyle (${tk('--bt-*-subtle')}) dolar. İki part kenarlığı sarmalayıcının tek dış kenarlığıyla hizalanır.</p>
       ${registerPlayground({
         id: 'pgd-splt-outline-ex',
         variants: SPLT_SIZE_VARIANTS,
@@ -1267,6 +1281,7 @@ PAGES_WEB['components/split-button'] = {
       })}
 
       <h2>Flat</h2>
+      <p class="page-desc">Dinlenmede kenarlıksız / zeminsiz partlar — araç çubukları ve panel içi aksiyonlar için görsel gürültüyü azaltır. Divider temanın düşük opaklıklı border rengindedir, böylece iki part ayrımı hover olmadan da okunur. Hover'da ilgili part açık tema zeminiyle dolar.</p>
       ${registerPlayground({
         id: 'pgd-splt-flat-ex',
         variants: SPLT_SIZE_VARIANTS,
@@ -1280,6 +1295,7 @@ PAGES_WEB['components/split-button'] = {
       })}
 
       <h2>Ghost</h2>
+      <p class="page-desc">En hafif Split Button — partlar yalnızca metin / ikon, divider Flat ile aynı düşük opaklıklı tema renginde. Bir arka yüzey (panel, kart) üzerinde kullanılmalı; izole beyaz alanda part sınırları kaybolur. Hover'da açık tema zemini belirerek tıklanabilirlik korunur.</p>
       ${registerPlayground({
         id: 'pgd-splt-ghost-ex',
         variants: SPLT_SIZE_VARIANTS,
@@ -1320,6 +1336,7 @@ PAGES_WEB['components/split-button'] = {
       </table>
 
       <h2 style="margin-top:32px;">Sub-component Classes</h2>
+      <p class="page-desc">Split Button'ın üç yapısal parçası ve her birinin köşe / divider davranışı. ${tk('.bt-split-btn__button')} ve ${tk('.bt-split-btn__split')} kendi iç state'lerini (hover / focus / active) bağımsız yönetir; divider rengini sarmalayıcının set ettiği ${tk('--split-divider')} custom property'sinden okur. Bu üç sınıf dışındaki tüm renk, boyut ve tipografi değerleri ${tk('.bt-btn')} sisteminden gelir.</p>
       <table class="token-table">
         <thead><tr><th>Class</th><th>Uygulama</th></tr></thead>
         <tbody>
@@ -1332,7 +1349,7 @@ PAGES_WEB['components/split-button'] = {
 
     // ── Usage ────────────────────────────────────────────────────
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Split Button kullanım kılavuzu.</p>
+      <p class="page-desc">Split Button'ın ne zaman seçileceği ve iki parçanın nasıl kurgulanacağına dair kurallar — sol part birincil aksiyon, sağ part yalnızca alternatifler / dropdown. Yanlış kullanım (sağ parta birincil aksiyon kopyası, ayraçsız iki buton, izole yüzeyde Ghost) bileşenin "tek kontrol" algısını ve dropdown beklentisini bozar.</p>
       <h2>Ne zaman kullanılır</h2>
       <ul>
         <li>Birincil aksiyon belirginken alternatif aksiyonların da sunulması gerektiğinde (örn. "Kaydet" + "Taslak Olarak Kaydet")</li>
@@ -1371,9 +1388,10 @@ PAGES_WEB['components/split-button'] = {
         css:     (fill, p) => spltCss(fill, p),
       })}
 
-      <p class="page-desc">İki parçalı buton bileşeni: sol <strong>Button</strong> parçası birincil aksiyonu tetikler, sağ <strong>Split</strong> parçası dropdown/alternatif seçenekleri açar. Fill mode (Solid / Outline / Flat / Ghost), 7 tema rengi, 7 boyut ve bağımsız hover/focus state'leri destekler.</p>
+      <p class="page-desc">Tek bir birincil aksiyonu, ona bağlı alternatif seçeneklerle birlikte sunan iki parçalı buton — sol ${tk('.bt-split-btn__button')} parçası aksiyonu doğrudan çalıştırır, sağ ${tk('.bt-split-btn__split')} parçası (chevron) bir dropdown açar. Bu, birincil aksiyonu bir tık uzakta tutarken alternatifleri gizlemeye yarar; araç çubuğu gibi dar alanlarda iki ayrı butona göre yer kazandırır. İki parça 1px'lik bir ${tk('.bt-split-btn__divider')} ile ayrılır ve tek yuvarlak köşeli birim olarak render edilir; fill mode (Solid / Outline / Flat / Ghost), 7 tema, 7 boyut ve her parça için bağımsız hover / focus state'leri destekler. Renk ve boyut tokenları ${tk('.bt-btn')} sisteminden miras alınır — HTML'de ${tk('.bt-split-btn')} + ${tk('.bt-split-btn--{theme}-{fill}')} + ${tk('.bt-split-btn--{size}')}, Blazor'da ${tk('BtSplitButton')}.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Split Button dört katmandan oluşur: ${tk('.bt-split-btn')} inline-flex sarmalayıcısı (${tk('align-items: stretch')} ile eşit yükseklik), sol ${tk('.bt-split-btn__button')} (ikon + label, yalnızca sol köşeler yuvarlı), ortadaki 1px ${tk('.bt-split-btn__divider')} ve sağ ${tk('.bt-split-btn__split')} (yalnızca chevron ikonu, yalnızca sağ köşeler yuvarlı). ${tk('--bt-radius-sm')} (4px) sarmalayıcıdan alt parçalara dağıtılır ki bileşen tek bir yuvarlak köşeli birim gibi görünsün. Renk ve state tokenları ${tk('.bt-btn')} sisteminden gelir; yalnızca ${tk('--split-divider')}, ${tk('--split-py')} / ${tk('--split-px')} custom property'leri Split Button'a özeldir. Blazor karşılığı ${tk('BtSplitButton')}.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
         <tbody>
@@ -1393,6 +1411,7 @@ PAGES_WEB['components/split-button'] = {
       </table>
 
       <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Split Button 7 boyut sunar (2xs–2xl); boyut yalnızca her iki parçanın ${tk('--split-py')} / ${tk('--split-px')} iç boşluklarını ölçekler (20px'den 48px yüksekliğe), label tipografisi (12px / 400 / 16px) ve 16×16 ikonlar tüm boyutlarda sabit kalır — Button'ın boyut sistemiyle birebir aynı. Her iki part her zaman aynı boyutu taşır; ${tk('.bt-split-btn--{size}')} modifier'ı sarmalayıcıya uygulanır ve iki parça arasındaki hizayı korur. Boyut seçimi bağlama göre yapılır: sayfa düzeyindeki CTA lg / xl, araç çubuğu veya kompakt panel aksiyonları 2xs / xs.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Size</th><th>Preview</th></tr></thead>
         <tbody>
@@ -1405,8 +1424,13 @@ PAGES_WEB['components/split-button'] = {
       </table>
 
       <h2 id="States">States</h2>
+      <p class="page-desc">Split Button altı etkileşim durumu barındırır: Default, Hover, Focus, Active, Selected ve Disabled. State'ler <strong>her part için bağımsız</strong> tetiklenir — sol Button'a hover ederken sağ Split nötr kalır (ve tersi); yalnızca Disabled her iki parçaya birlikte uygulanır (sarmalayıcıda ${tk('[aria-disabled="true"]')}). Hover ve Active fill moduna göre değişir — Solid'de zemin koyulaşır (${tk('--bt-*-intense')}), Outline / Flat'te açık tema rengiyle dolar (${tk('--bt-*-subtle')}); Focus her parta ayrı ayrı 3px'lik bir odak halkası (${tk('box-shadow')}) ekler, Selected ise Active görünümünü kalıcı kılar. HTML'de ${tk('.bt-split-btn--state-*')} veya ${tk('[aria-disabled="true"]')}; Blazor'da ${tk('BtSplitButton')}'ın ${tk('Enabled')} ve state parametreleri.</p>
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Split Button, temayı (${tk('Base')} / ${tk('Primary')} / ${tk('Secondary')} / ${tk('Success')} / ${tk('Warning')} / ${tk('Error')} / ${tk('Information')}) doğrudan ${tk('.bt-btn')} renk sisteminden alır; her iki part (Button + Split) aynı temayı paylaşır. Tema fill modundan ve boyuttan bağımsızdır — her tema aynı altı state'i çalıştırır, yalnızca ${tk('--bt-*')} renk ailesi ve iki part arasındaki ${tk('--split-divider')} çizgisinin rengi değişir. Divider Solid modda çoğu temada yarı saydam beyaz (${tk('rgba(255,255,255,0.30)')}) iken ${tk('Warning')} yarı saydam siyaha, ${tk('Base')} opak griye döner; Outline / Flat / Ghost'ta divider temanın kendi border rengidir. Aşağıda her tema kendi fill × state matrisiyle ayrı ele alınır; CSS'te ${tk('.bt-split-btn--{theme}-{fill}')}, Blazor'da ${tk('BtSplitButton')}'ın ${tk('Theme')} parametresi seçer.</p>
       ${BTN_THEME_OPTS.map(theme => `
-      <h3 style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${theme.label}</h3>
+      <h3 id="${theme.label}">${theme.label}</h3>
+      <p class="page-desc">${_spltThemeDoc[theme.key](tk)}</p>
       ${_spltStateTable(theme.key)}`).join('')}
     `};
   }
@@ -2970,6 +2994,40 @@ function _bgrpCls(fill, size, theme) {
   return `bt-btn-group bt-btn-group--${theme}-${fill}${outlineMod}`;
 }
 
+// Theme → per-tema alt bölümleri (divider odaklı description + fill × divider
+// tablosu). Button sayfasındaki _btnThemeDoc / per-tema bölüm deseninin Button
+// Group karşılığı. tk render closure'ından geldiği için fonksiyon olarak tutulur.
+const _bgrpThemeDoc = {
+  base: tk => `Nötr gruplayıcı — Solid modda item zemini açık gri (${tk('--bt-base-muted')}) olduğundan yarı saydam beyaz divider görünmez; yerine opak ${tk('--bt-border-primary-default')} (#d4d4d4) çizgi kullanılır. Flat ve Ghost modda divider nötr gri ${tk('rgba(163,163,163,0.40)')}. Outline / Flat ile birlikte en sık tercih edilen gruplayıcı temadır.`,
+  primary: tk => `Marka renkli grup — Solid item zemini koyu mavi olduğundan divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}. Flat ve Ghost modda divider marka mavisinin ~%25 tonu ${tk('rgba(13,78,151,0.25)')}. Bir grupta birden çok birincil aksiyon oluşturabildiği için gruplayıcı olarak dikkatli kullanılmalı (bkz. Usage).`,
+  secondary: tk => `Sakin kurumsal grup — Solid divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}; Flat ve Ghost modda ise Base gibi nötr gri ${tk('rgba(163,163,163,0.40)')} kullanır (kendi rengi divider için yeterince belirgin değil).`,
+  success: tk => `Olumlu bağlam grubu — Solid divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Flat ve Ghost modda yeşilin ~%25 tonu ${tk('rgba(68,135,113,0.25)')}.`,
+  warning: tk => `Tek istisna tema — Solid item zemini açık amber olduğundan yarı saydam beyaz divider kaybolur; bu yüzden Solid divider yarı saydam <strong>siyah</strong> ${tk('rgba(0,0,0,0.15)')}. Flat ve Ghost modda amberin ~%25 tonu ${tk('rgba(212,175,44,0.25)')}.`,
+  error: tk => `Yıkıcı aksiyon grubu — Solid divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Flat ve Ghost modda kırmızının ~%25 tonu ${tk('rgba(232,75,91,0.25)')}. Bir grupta birden çok yıkıcı aksiyon nadiren doğru kalıptır; genelde tek Error butonu + nötr gruplayıcı tercih edilir.`,
+  information: tk => `Bilgi bağlamı grubu — Solid divider yarı saydam beyaz ${tk('rgba(255,255,255,0.30)')}, Flat ve Ghost modda mavinin ~%25 tonu ${tk('rgba(13,78,151,0.25)')} (Primary ile aynı divider değeri).`,
+};
+
+function _bgrpThemeSection(themeKey, themeLabel, tk) {
+  const row = (fill, fillLabel) => {
+    const div = fill === 'outline'
+      ? '— (−1px margin merge)'
+      : tk(_bgrpDivider[`${themeKey}-${fill}`] || 'rgba(0,0,0,0.12)');
+    return `<tr><td>${fillLabel}</td><td>${div}</td><td>${bgrpPreview(fill, 'sm', 'icon-text', themeKey)}</td></tr>`;
+  };
+  return `
+      <h3 id="${themeLabel}">${themeLabel}</h3>
+      <p class="page-desc">${_bgrpThemeDoc[themeKey](tk)}</p>
+      <table class="token-table" style="margin-bottom:32px;">
+        <thead><tr><th>Fill</th><th>Divider (${tk('--grp-divider')})</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${row('solid', 'Solid')}
+          ${row('outline', 'Outline')}
+          ${row('flat', 'Flat')}
+          ${row('ghost', 'Ghost')}
+        </tbody>
+      </table>`;
+}
+
 function _bgrpItemCls(fill, size, theme, content) {
   const parts = [`bt-btn`, `bt-btn--${theme}-${fill}`, `bt-btn--${size}`];
   if (content === 'icon') parts.push('bt-btn--icon');
@@ -3081,13 +3139,16 @@ function bgrpCss(fill, props) {
 
 PAGES_WEB['components/button-group'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Anatomy', 'Fill Mode', 'Theme', 'Size'],
+  toc:  ['Anatomy', 'Sizes', 'Themes', 'Base', 'Primary', 'Secondary', 'Success', 'Warning', 'Error', 'Information', 'Fill Mode'],
   render(tab) {
     const title = 'Button Group';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Button Group'un dört fill modu, her biri 7 boyutun tümünde interaktif olarak — Overview'daki tek birleşik playground'un aksine burada her mod ayrı ele alınır. Fill modu yalnızca item görünümünü değil, item'lar arası divider yöntemini de belirler (Solid / Flat / Ghost'ta ${tk('::before')} pseudo-element, Outline'da ${tk('margin')} merge). Dört modun tümünde aynı 7 tema ve 3 içerik tipi (icon &amp; text / icon only / text only) birbirinden bağımsız uygulanır. CSS'te mod ${tk('.bt-btn-group--{theme}-{fill}')}, item boyutu ${tk('.bt-btn--{size}')} ile seçilir.</p>
+
       <h2>Solid</h2>
+      <p class="page-desc">Dolu zeminli item'lardan oluşan grup — en yüksek görsel ağırlık. Item'lar arası divider yarı saydam bir ${tk('::before')} çizgisidir (tema zeminine göre beyaz veya siyah). Bir grupta birden çok Solid aksiyon hiyerarşiyi zayıflattığı için gruplayıcı olarak genelde Outline / Flat tercih edilir (bkz. Usage).</p>
       ${registerPlayground({
         id: 'pgd-bgrp-solid-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3099,6 +3160,7 @@ PAGES_WEB['components/button-group'] = {
         code:    (sz, p) => bgrpCode('solid',   sz, p.content, p.theme),
       })}
       <h2>Outline</h2>
+      <p class="page-desc">Şeffaf zeminli, kenarlıklı item'lar — gruplayıcı için en yaygın seçim. Ayrı bir divider yoktur; her item ${tk('margin-left: -1px')} ile komşusuna kaydırılır, iki ${tk('box-shadow')} kenarlığı tek çizgide birleşir. Etkileşimdeki item ${tk('z-index: 1')} ile öne alınır ki kenarlığı kesintisiz görünsün.</p>
       ${registerPlayground({
         id: 'pgd-bgrp-outline-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3110,6 +3172,7 @@ PAGES_WEB['components/button-group'] = {
         code:    (sz, p) => bgrpCode('outline', sz, p.content, p.theme),
       })}
       <h2>Flat</h2>
+      <p class="page-desc">Dinlenmede kenarlıksız / zeminsiz item'lar — yoğun araç çubuklarında görsel gürültüyü azaltır. Divider, tema renginin düşük opaklıklı bir ${tk('::before')} çizgisidir, böylece item ayrımı hover olmadan da okunur. Hover'da ilgili item açık tema zeminiyle dolar.</p>
       ${registerPlayground({
         id: 'pgd-bgrp-flat-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3121,6 +3184,7 @@ PAGES_WEB['components/button-group'] = {
         code:    (sz, p) => bgrpCode('flat',    sz, p.content, p.theme),
       })}
       <h2>Ghost</h2>
+      <p class="page-desc">En hafif grup — item'lar yalnızca metin / ikon, divider Flat ile aynı düşük opaklıklı tema renginde. Bir arka yüzey (panel, kart) üzerinde kullanılmalı; izole beyaz alanda item sınırları kaybolur. Hover'da açık tema zemini belirerek tıklanabilirlik korunur.</p>
       ${registerPlayground({
         id: 'pgd-bgrp-ghost-ex',
         variants: BTN_SIZE_VARIANTS,
@@ -3134,8 +3198,9 @@ PAGES_WEB['components/button-group'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Button Group, child item'lar için mevcut <code style="font-family:var(--mono)">.bt-btn</code> sınıflarını kullanır; sadece sarmalayıcı ve köşe/divider davranışı yeni CSS ekler.</p>
+      <p class="page-desc">Button Group, child item'lar için mevcut ${tk('.bt-btn')} sınıflarını olduğu gibi kullanır — grup yalnızca sarmalayıcı düzeni, köşe radüsü ve item arası divider için yeni CSS ekler; renk, boyut ve state tokenlarının hiçbirini yeniden tanımlamaz. Aşağıdaki tablolar bu sarmalayıcı katmanının tüm özelliklerini fill / tema kırılımıyla listeler.</p>
       <h2>Container</h2>
+      <p class="page-desc">Sarmalayıcının kendisi — item'ları yatay bir satırda, eşit yükseklikte tutan bir ${tk('inline-flex')} kutusu. ${tk('align-items: stretch')} tüm item'ları en uzun olanın yüksekliğine çeker; ${tk('inline-flex')} ise grubun içeriği kadar yer kaplamasını (blok gibi tam satır genişliğine yayılmamasını) sağlar.</p>
       <table class="token-table">
         <thead><tr><th>Property</th><th>Value</th><th>Açıklama</th></tr></thead>
         <tbody>
@@ -3144,6 +3209,7 @@ PAGES_WEB['components/button-group'] = {
         </tbody>
       </table>
       <h2>Border Radius</h2>
+      <p class="page-desc">Grup, tek bir bitişik kontrol gibi görünmelidir: yalnızca ilk item'ın sol köşeleri ve son item'ın sağ köşeleri ${tk('var(--bt-radius-sm)')} (4px) yuvarlanır, aradaki tüm köşeler ${tk('0')}'a düzlenir. Bu, item'ların kendi ${tk('.bt-btn')} radüsünü sarmalayıcı seviyesinde ezerek yapılır; item sırası değişse bile ${tk(':first-child')} / ${tk(':last-child')} seçicileri doğru köşeleri hedefler.</p>
       <table class="token-table">
         <thead><tr><th>Selector</th><th>border-radius</th></tr></thead>
         <tbody>
@@ -3153,6 +3219,7 @@ PAGES_WEB['components/button-group'] = {
         </tbody>
       </table>
       <h2>Divider (Solid / Flat / Ghost)</h2>
+      <p class="page-desc">Solid, Flat ve Ghost modlarında item ayrımı, ikinci item'dan itibaren her item'ın soluna eklenen bir ${tk('::before')} pseudo-element çizgisiyle yapılır. Çizginin rengi ${tk('.bt-btn-group--{theme}-{fill}')} modifier'ının set ettiği ${tk('--grp-divider')} custom property'sinden gelir — aşağıdaki tablo her tema / fill kombinasyonu için bu değeri verir. Solid'de değer zemin kontrastına göre yarı saydam beyaz veya siyah, Flat / Ghost'ta tema renginin ~%25 tonudur.</p>
       <table class="token-table">
         <thead><tr><th>Theme</th><th>Fill</th><th>--grp-divider</th></tr></thead>
         <tbody>
@@ -3166,6 +3233,7 @@ PAGES_WEB['components/button-group'] = {
         </tbody>
       </table>
       <h2>Outline Merge</h2>
+      <p class="page-desc">Outline modunda item'lar zaten 1px ${tk('box-shadow')} kenarlık taşıdığı için ayrı bir divider gereksizdir; bunun yerine ilk hariç her item'a ${tk('margin-left: -1px')} verilir ve bitişik kenarlıklar tek çizgide üst üste biner. Bir item hover / focus-visible / active olduğunda ${tk('z-index: 1')} alır — böylece o item'ın tam kenarlığı komşularınınkinin üstünde, kesintisiz görünür.</p>
       <table class="token-table">
         <thead><tr><th>Selector</th><th>Property</th><th>Value</th></tr></thead>
         <tbody>
@@ -3176,7 +3244,7 @@ PAGES_WEB['components/button-group'] = {
     `};
 
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Button Group kullanım kılavuzu.</p>
+      <p class="page-desc">Button Group'un ne zaman ve nasıl kullanılacağına dair kurallar — item sayısı, fill modu seçimi ve tema/boyut tutarlılığı. Yanlış kullanım (karışık tema veya fill, çok fazla item, grup içinde birincil aksiyon) grubun "tek bitişik kontrol" algısını bozar ve hiyerarşiyi belirsizleştirir.</p>
       <h2>Do</h2>
       <ul>
         <li>İlgili, birbirini tamamlayan aksiyonları grupla (örn. Geri / Bugün / İleri)</li>
@@ -3206,9 +3274,10 @@ PAGES_WEB['components/button-group'] = {
         css:     (fill, p) => bgrpCss(fill, p),
       })}
 
-      <p class="page-desc">Aynı konteyde ilgili aksiyonları yan yana sunan buton bileşeni. Mevcut <code style="font-family:var(--mono)">.bt-btn</code> sınıflarını child item olarak kullanır; sarmalayıcı yalnızca köşe radüsü ve item arası divider davranışını yönetir.</p>
+      <p class="page-desc">Aynı bağlamdaki ilişkili aksiyonları tek bir bitişik kontrol olarak sunan sarmalayıcı bileşen — kullanıcı seçenekleri tek bir görsel birim olarak algılar, aralarındaki ilişki düzenden okunur. Child item'lar gerçek ${tk('.bt-btn')} bileşenleridir; sarmalayıcı yalnızca dış köşeleri yuvarlar, iç köşeleri düzler ve item'lar arasına fill moduna göre bir divider (Solid / Flat / Ghost'ta ${tk('::before')} pseudo-element, Outline'da ${tk('-1px')} margin ile box-shadow birleştirme) yerleştirir. State, boyut ve tema tamamen ${tk('.bt-btn')}'den miras alınır — grup kendi renk tokenı tanımlamaz, yalnızca ${tk('.bt-btn-group--{theme}-{fill}')} ile divider rengini seçer. Blazor'da ${tk('BtButtonGroup')} + child ${tk('BtButton')}'lar.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Button Group iki katmandan oluşur: dıştaki ${tk('.bt-btn-group')} inline-flex sarmalayıcısı ve içindeki standart ${tk('.bt-btn')} item'ları. Sarmalayıcı üç şey yapar — ilk/son item'ın dış köşelerine ${tk('--bt-radius-sm')} verip aradaki tüm köşeleri düzler, ${tk('.bt-btn-group--{theme}-{fill}')} modifier'ıyla ${tk('--grp-divider')} custom property'sini set eder ve Outline fill için ${tk('.bt-btn-group--outline')} ile −1px margin trick'ini açar. Item'lar kendi ${tk('.bt-btn--{theme}-{fill}')} ve ${tk('.bt-btn--{size}')} sınıflarını taşımaya devam eder; yalnızca border-radius'ları sarmalayıcı tarafından ezilir. Blazor karşılığı ${tk('BtButtonGroup')}.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Eleman</th><th>CSS Sınıfı</th><th>Açıklama</th></tr></thead>
         <tbody>
@@ -3219,32 +3288,9 @@ PAGES_WEB['components/button-group'] = {
         </tbody>
       </table>
 
-      <h2 id="Fill Mode">Fill Mode</h2>
-      <table class="token-table">
-        <thead><tr><th>Fill</th><th>Divider yöntemi</th><th>Açıklama</th></tr></thead>
-        <tbody>
-          <tr><td>Solid</td><td>${tk('::before')} pseudo-element</td><td>Yarı saydam beyaz/siyah divider</td></tr>
-          <tr><td>Outline</td><td>${tk('margin-left: -1px')}</td><td>Bitişik box-shadow'lar birleşir</td></tr>
-          <tr><td>Flat</td><td>${tk('::before')} pseudo-element</td><td>Tema renginde düşük opaklıklı divider</td></tr>
-          <tr><td>Ghost</td><td>${tk('::before')} pseudo-element</td><td>Flat ile aynı divider rengi</td></tr>
-        </tbody>
-      </table>
-
-      <h2 id="Theme">Theme</h2>
-      <table class="token-table">
-        <thead><tr><th>Theme</th><th>Solid Preview</th><th>Outline Preview</th></tr></thead>
-        <tbody>
-          ${BTN_THEME_OPTS.map(th => `
-          <tr>
-            <td><span class="token-name">${th.label}</span></td>
-            <td>${bgrpPreview('solid',   'sm', 'icon-text', th.key)}</td>
-            <td>${bgrpPreview('outline', 'sm', 'icon-text', th.key)}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-
-      <h2 id="Size">Size</h2>
-      <table class="token-table">
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Grup, boyutu tamamen item ${tk('.bt-btn--{size}')} sınıflarından alır — sarmalayıcının kendi boyut modifier'ı yoktur. Bir gruptaki tüm item'lar aynı boyutu taşımalıdır; karışık boyut, eşit-yükseklik (${tk('align-items: stretch')}) varsayımını bozar ve köşe hizası kayar. 7 boyut (2xs–2xl) Button ile birebir aynıdır: yalnızca yatay/dikey padding ölçeklenir, tipografi (12px / 400 / 16px) her boyutta sabit kalır.</p>
+      <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Size</th><th>Preview</th></tr></thead>
         <tbody>
           ${BTN_SIZE_VARIANTS.map(s => `
@@ -3252,6 +3298,22 @@ PAGES_WEB['components/button-group'] = {
             <td><span class="token-name">${s.label}</span></td>
             <td>${bgrpPreview('outline', s.key, 'icon-text', 'primary')}</td>
           </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Grup, buton temasını (${tk('Base')} / ${tk('Primary')} / ${tk('Secondary')} / ${tk('Success')} / ${tk('Warning')} / ${tk('Error')} / ${tk('Information')}) doğrudan item ${tk('.bt-btn')}'lerinden alır — kendi zemin veya metin rengi tanımlamaz. Temanın grup düzeyinde etkilediği tek şey ${tk('--grp-divider')} rengidir: Solid modda çoğu tema yarı saydam beyaz (${tk('rgba(255,255,255,0.30)')}) kullanır, ancak ${tk('Warning')} açık amber zemini yüzünden yarı saydam siyaha (${tk('rgba(0,0,0,0.15)')}), ${tk('Base')} ise açık gri zemini yüzünden opak ${tk('--bt-border-primary-default')} çizgiye döner. Flat ve Ghost modda divider her temada kendi renginin ~%25 opak tonudur (${tk('Secondary')} nötr gri kullanır). Aşağıda her tema kendi fill × divider tablosuyla ayrı ele alınır; CSS'te ${tk('.bt-btn-group--{theme}-{fill}')}, Blazor'da child ${tk('BtButton')}'ların ${tk('Theme')} parametresi seçer.</p>
+      ${BTN_THEME_OPTS.map(th => _bgrpThemeSection(th.key, th.label, tk)).join('')}
+
+      <h2 id="Fill Mode">Fill Mode</h2>
+      <p class="page-desc">Item'lar arasındaki ayırıcı çizginin nasıl çizildiği fill moduna göre değişir, çünkü her modun kenar yapısı farklıdır. Solid, Flat ve Ghost'ta divider bir ${tk('::before')} pseudo-element'idir — Solid'de yarı saydam beyaz veya siyah (zemin koyu olduğu için), Flat ve Ghost'ta tema renginde düşük opaklıklı. Outline'da ise her item zaten 1px ${tk('box-shadow')} kenarlık taşıdığından ayrı bir divider yerine bitişik item'a ${tk('margin-left: -1px')} verilir; iki kenarlık üst üste binerek tek çizgi olur, hover / focus / active'de ilgili item ${tk('z-index: 1')} ile öne alınır ki kenarlığı komşununkinin altında kalmasın. CSS'te bu ayrımı ${tk('.bt-btn-group--outline')} modifier'ı yönetir.</p>
+      <table class="token-table">
+        <thead><tr><th>Fill</th><th>Divider yöntemi</th><th>Açıklama</th></tr></thead>
+        <tbody>
+          <tr><td>Solid</td><td>${tk('::before')} pseudo-element</td><td>Yarı saydam beyaz/siyah divider</td></tr>
+          <tr><td>Outline</td><td>${tk('margin-left: -1px')}</td><td>Bitişik box-shadow'lar birleşir</td></tr>
+          <tr><td>Flat</td><td>${tk('::before')} pseudo-element</td><td>Tema renginde düşük opaklıklı divider</td></tr>
+          <tr><td>Ghost</td><td>${tk('::before')} pseudo-element</td><td>Flat ile aynı divider rengi</td></tr>
         </tbody>
       </table>
     `};
@@ -3350,6 +3412,14 @@ function btnCss(fill, props) {
   lines.push(p('padding', 'var(--btn-py) var(--btn-px)'));
   lines.push('}');
 
+  if (props.iconOnly) {
+    lines.push('');
+    lines.push('.bt-btn--icon {');
+    lines.push(p('gap', '0'));
+    lines.push(p('padding', 'var(--btn-py)  /* kare — yatay padding yok */'));
+    lines.push('}');
+  }
+
   lines.push('');
   lines.push(`.bt-btn--${theme}-${fill} {`);
   if (d.default.bg)     lines.push(p('background', d.default.bg));
@@ -3422,7 +3492,19 @@ function btnCode(fill, size, content, state, theme = 'primary') {
   return `<button class="${cls}"${disabled ? ' disabled' : ''}>\n  ${inner}\n</button>`;
 }
 
-function _btnStateTable(theme) {
+// Her tema bölümünün description'ı (States → Themes alt bölümleri). tk render
+// closure'ından geldiği için fonksiyon olarak tutulur.
+const _btnThemeDoc = {
+  base: tk => `Nötr, marka rengi taşımayan buton — ikincil yüzeylerde, araç çubuklarında ve bir aksiyonun öne çıkması istenmeyen yerlerde varsayılan seçimdir. Solid dolgu ${tk('--bt-base-muted')} (#e6e6e6) gri zemin + ${tk('--bt-text-primary-default')} metin taşır, hover'da ${tk('--bt-base-emphasis')}'e koyulaşır; diğer temaların aksine Active state'i marka vurgusu için ${tk('--bt-primary-subtle')} mavi zemin + 1px brand border alır. Focus halkası nötrdür (${tk('rgba(212,212,212,.50)')}), brand mavisi değil. CSS: ${tk('.bt-btn--base-{fill}')}.`,
+  primary: tk => `Sayfanın birincil marka aksiyonu (CTA) — bir görünümde yalnızca bir tane bulunmalı, aksi halde hiyerarşi okunmaz olur. Solid dolgu ${tk('--bt-primary-default')} (#0d4e97), hover ve Active ${tk('--bt-primary-intense')} (#0f447d); Outline / Flat / Ghost modlarında metin ve kenarlık ${tk('--bt-primary-default')}, hover zemini ${tk('--bt-primary-subtle')}. Focus halkası brand mavisidir (${tk('rgba(13,78,151,.50)')}). CSS: ${tk('.bt-btn--primary-{fill}')}.`,
+  secondary: tk => `Primary'nin yanında daha sakin duran, yine kurumsal ama düşük vurgulu bir alternatif — "ikincil ama hâlâ önemli" aksiyonlar için. Solid dolgu ${tk('--bt-secondary-default')}, hover / Active ${tk('--bt-secondary-intense')}, disabled ${tk('--bt-secondary-muted')}; Outline modunda kenarlık nötr ${tk('--bt-border-primary-default')} kalır (marka rengi almaz), hover zemini ${tk('--bt-secondary-emphasis')}. Focus halkası nötrdür. CSS: ${tk('.bt-btn--secondary-{fill}')}.`,
+  success: tk => `Olumlu / onaylayıcı sonuç bildiren aksiyonlar — kaydet, onayla, tamamla. Solid dolgu ${tk('--bt-success-default')}, hover / Active ${tk('--bt-success-intense')}; Outline / Flat / Ghost'ta metin ${tk('--bt-text-success-default')}, kenarlık ${tk('--bt-border-success-default')}, hover / Active zemini ${tk('--bt-success-subtle')}. Focus halkası yeşil tonda (${tk('rgba(68,135,113,.24)')}). CSS: ${tk('.bt-btn--success-{fill}')}.`,
+  warning: tk => `Dikkat isteyen ama yıkıcı olmayan aksiyonlar — geri alınabilir, ancak sonucu önemli işlemler. Solid dolgu ${tk('--bt-warning-default')}, hover / Active ${tk('--bt-warning-intense')}; Outline / Flat / Ghost'ta metin ${tk('--bt-text-warning-default')}, kenarlık ${tk('--bt-border-warning-default')}, hover / Active zemini ${tk('--bt-warning-subtle')}. Focus halkası amber tonda (${tk('rgba(212,175,44,0.25)')}). CSS: ${tk('.bt-btn--warning-{fill}')}.`,
+  error: tk => `Yıkıcı veya geri alınamayan aksiyonlar — sil, kaldır, kalıcı iptal et. Kırmızı renk kasıtlı bir sürtünme yaratır: kullanıcı bu butona basmadan önce iki kez düşünür. Solid dolgu ${tk('--bt-error-default')}, hover / Active ${tk('--bt-error-intense')}; Outline / Flat / Ghost'ta metin ${tk('--bt-text-error-default')}, kenarlık ${tk('--bt-border-error-default')}, hover / Active zemini ${tk('--bt-error-subtle')}. Focus halkası kırmızı tonda (${tk('rgba(232,75,91,.24)')}). CSS: ${tk('.bt-btn--error-{fill}')}.`,
+  information: tk => `Nötr bilgi veya yardımcı bağlam sunan aksiyonlar — detay göster, daha fazla bilgi. Görsel olarak Primary'ye yakın mavi bir tondur ama anlamı "marka CTA'sı" değil "bilgilendirme"dir. Solid dolgu ${tk('--bt-information-default')}, hover / Active ${tk('--bt-information-intense')}; Outline / Flat / Ghost'ta metin ${tk('--bt-information-default')}, hover / Active zemini ${tk('--bt-information-subtle')}. Focus halkası mavi tonda (${tk('rgba(13,78,151,.50)')}). CSS: ${tk('.bt-btn--information-{fill}')}.`,
+};
+
+function _btnStateTable(theme, content = 'icon-text') {
   return `
       <table class="token-table" style="margin-bottom:24px;">
         <thead><tr><th>State</th>${BTN_FILL_VARIANTS.map(f => `<th>${f.label}</th>`).join('')}</tr></thead>
@@ -3430,7 +3512,7 @@ function _btnStateTable(theme) {
           ${BTN_STATE_OPTS.map(s => `
           <tr>
             <td><span class="token-name">${s.label}</span></td>
-            ${BTN_FILL_VARIANTS.map(f => `<td>${btnPreview(f.key, 'sm', 'icon-text', s.key, theme)}</td>`).join('')}
+            ${BTN_FILL_VARIANTS.map(f => `<td>${btnPreview(f.key, 'sm', content, s.key, theme)}</td>`).join('')}
           </tr>`).join('')}
         </tbody>
       </table>`;
@@ -3438,14 +3520,14 @@ function _btnStateTable(theme) {
 
 PAGES_WEB['components/button'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc: ['Anatomy', 'Sizes', 'States'],
+  toc: ['Anatomy', 'Sizes', 'States', 'Themes', 'Base', 'Primary', 'Secondary', 'Success', 'Warning', 'Error', 'Information'],
   render: (tab) => {
     const title = 'Button';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     // ── Examples ─────────────────────────────────────────────────
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Button'ın dört fill modu her biri farklı bir görsel öncelik katmanını temsil eder: Solid en yüksek ağırlıkla birincil aksiyonlar için, Outline ikincil aksiyonlar için, Flat araç çubuğu ve panel içi aksiyonlar için, Ghost ise en düşük görsel ağırlıkla bağlam içi yardımcı aksiyonlar için tasarlandı. Tüm fill modlarında aynı 7 tema rengi, 7 boyut ve 2 içerik tipi (icon-text / icon only) geçerlidir.</p>
+      <p class="page-desc">Bu tab, Button'ın dört fill modunu ayrı ayrı, her biri 7 boyutun tümünde interaktif olarak gösterir — Overview'daki tek birleşik playground'un aksine burada her mod kendi bağlamıyla ele alınır. Fill modları azalan görsel öncelik sırasıyla bir merdiven oluşturur: Solid birincil aksiyon (CTA), Outline ikincil aksiyon, Flat araç çubuğu ve tablo satırı aksiyonları, Ghost ise en düşük ağırlıkla bağlam içi yardımcı aksiyonlar için. Dört modun tümünde aynı 7 tema rengi, 7 boyut (2xs–2xl) ve 3 içerik tipi (icon &amp; text / icon only / text only) birbirinden bağımsız uygulanır; hiçbir kombinasyonda hardcoded renk veya ölçü değeri yoktur. CSS'te mod ${tk('.bt-btn--{theme}-{fill}')}, boyut ${tk('.bt-btn--{size}')} modifier'ıyla seçilir; Blazor karşılığı ${tk('BtButton')}'ın ${tk('Fill')} ve ${tk('Size')} parametreleridir.</p>
 
       <h2>Solid</h2>
       <p class="page-desc">Arka planı tam dolu renk olan Solid, en yüksek görsel önceliği taşır ve kullanıcının dikkatini doğrudan çeker. Sayfa başına tek bir Solid buton konulmalıdır — birden fazlası kullanıcının odağını böler ve hiyerarşiyi anlamsızlaştırır. Hover'da arka plan şema renginin daha koyu tonuna geçer (${tk('--bt-*-intense')}), Active'de ise kısaca daha da koyulaşarak basılma hissini güçlendirir. CSS class yapısı: ${tk('bt-btn bt-btn--{size} bt-btn--{theme}-solid')}.</p>
@@ -3550,7 +3632,7 @@ PAGES_WEB['components/button'] = {
 
     // ── Overview ─────────────────────────────────────────────────
     return { title, html: `
-      <p class="page-desc">Aksiyon tetikleyen tıklanabilir UI elemanı. Fill modu (Solid / Outline / Flat / Ghost) görsel önceliği, tema rengi (Base / Primary / Secondary / Success / Warning / Error / Information) renk tokenlarını, boyut (2xs–2xl) tıklanabilir alanı belirler; tümü birbirinden bağımsız yapılandırılabilir. Her kombinasyon design tokenlarıyla ifade edilir — hardcoded renk veya boyut değeri bulunmaz. Blazor tarafında ${tk('BtButton')} veya HTML'de ${tk('bt-btn')} class ailesiyle kullanılır.</p>
+      <p class="page-desc">Aksiyon tetikleyen tıklanabilir UI elemanı. Fill modu (Solid / Outline / Flat / Ghost) görsel önceliği, tema rengi (Base / Primary / Secondary / Success / Warning / Error / Information) renk tokenlarını, boyut (2xs–2xl) tıklanabilir alanı belirler; tümü birbirinden bağımsız yapılandırılabilir. Her kombinasyon design tokenlarıyla ifade edilir — hardcoded renk veya boyut değeri bulunmaz. HTML'de kök ${tk('.bt-btn')} container'ı bileşik ${tk('.bt-btn--{theme}-{fill}')} ve ${tk('.bt-btn--{size}')} modifier'larını taşır; Blazor karşılığı ${tk('BtButton')} (${tk('Fill')} · ${tk('Theme')} · ${tk('Size')} parametreleri).</p>
       ${registerPlayground({
         id: 'pgd-btn-overview',
         variants: BTN_FILL_VARIANTS,
@@ -3566,7 +3648,7 @@ PAGES_WEB['components/button'] = {
       })}
 
       <h2 id="Anatomy">Anatomy</h2>
-      <p class="page-desc">Button'ın görsel mimarisi dört katmandan oluşur: container (fill, border, border-radius, focus ring), label (font, boyut, ağırlık), ikon (16×16px — tüm boyutlarda sabit) ve spacing (her boyut için ayrı yatay/dikey padding çifti). Fill modu container görünümünü belirlerken tema rengi renk tokenlarını seçer; boyut ise spacing ve label boyutunu birlikte ölçekler. Focus ring erişilebilirlik için zorunludur — klavye navigasyonunda tıklanabilir öğeyi belirginleştirir. Her değer ${tk('--bt-*')} design tokenlarından gelir.</p>
+      <p class="page-desc">Button'ın görsel mimarisi dört katmandan oluşur: container (fill, border, border-radius, focus ring), label (font, boyut, ağırlık), ikon (16×16px — tüm boyutlarda sabit) ve spacing (her boyut için ayrı yatay/dikey padding çifti). Fill modu container görünümünü belirlerken tema rengi renk tokenlarını seçer; boyut ise spacing ve label boyutunu birlikte ölçekler. Focus ring erişilebilirlik için zorunludur — klavye navigasyonunda tıklanabilir öğeyi belirginleştirir. Her değer ${tk('--bt-*')} design tokenlarından gelir; HTML'de kök ${tk('.bt-btn')} container'ı ${tk('.bt-btn--{theme}-{fill}')} ve ${tk('.bt-btn--{size}')} modifier'larını taşır, içinde 16×16 inline SVG (ikon) ve bir ${tk('&lt;span&gt;')} (label) bulunur — Blazor karşılığı ${tk('BtButton')}.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Element</th><th>Property</th><th>Figma token</th><th>Value</th></tr></thead>
         <tbody>
@@ -3584,9 +3666,10 @@ PAGES_WEB['components/button'] = {
           <tr><td>lg — py / px</td><td>${tk('Space/spacing-lg · Space/spacing-md')}</td><td>10px / 8px</td></tr>
           <tr><td>xl — py / px</td><td>${tk('Space/spacing-xl · Space/spacing-xl')}</td><td>12px / 12px</td></tr>
           <tr><td>2xl — py / px</td><td>${tk('Space/spacing-2xl · Space/spacing-xl')}</td><td>16px / 12px</td></tr>
-          <tr><td>Icon Only — padding</td><td>py degeri (kare)</td><td>size ile ayni py</td></tr>
+          <tr><td>Icon Only — kutu</td><td>${tk('.bt-btn--icon')} min-width + ${tk('.bt-btn')} min-height</td><td>2×py + 16px (kare, içerikten bağımsız)</td></tr>
           <tr><td>Icon–label gap</td><td>${tk('Space/spacing-sm')}</td><td>6px</td></tr>
-          <tr><td>Icon</td><td>Size (tum boyutlar)</td><td>—</td><td>16 × 16px</td></tr>
+          <tr><td>Icon</td><td>Size (tum boyutlar)</td><td>—</td><td>14 × 14px inline SVG</td></tr>
+          <tr><td>Min height (tum boyutlar)</td><td>${tk('calc(var(--btn-py) * 2 + 16px)')}</td><td>Yukseklik icerik tipinden bagimsiz</td></tr>
         </tbody>
       </table>
 
@@ -3604,10 +3687,184 @@ PAGES_WEB['components/button'] = {
       </table>
 
       <h2 id="States">States</h2>
-      <p class="page-desc">Button dört etkileşim durumu barındırır: Default (dinlenme), Hover (üzerine gelme), Active (basılı tutma) ve Disabled (etkisiz). Hover ve Active, fill moduna göre farklı görsel tepkiler verir: Solid'de arka plan koyulaşır (${tk('--bt-*-intense')}), Outline ve Ghost'ta arka plan açık tema rengiyle dolar (${tk('--bt-*-subtle')}). Disabled state butonun görünürde kalmasını sağlar — gizlemek yerine devre dışı bırakmak kullanıcıya aksiyonun var olduğunu ama şu an kullanılamayacağını iletir ve layout stabilitesini korur. HTML'de ${tk('disabled')} attribute veya ${tk('.bt-btn--disabled')} class'ıyla uygulanır.</p>
+      <p class="page-desc">Button altı etkileşim durumu barındırır: Default (dinlenme), Hover (üzerine gelme), Focus (klavye odağı), Active (basılı tutma), Selected (kalıcı seçili) ve Disabled (etkisiz). Hover ve Active fill moduna göre farklı tepki verir — Solid'de arka plan koyulaşır (${tk('--bt-*-intense')}), Outline / Flat / Ghost'ta açık tema rengiyle dolar (${tk('--bt-*-subtle')}); Focus her modda görünür bir odak halkası (${tk('box-shadow')}) ekler, Selected ise Active görünümünü kalıcı kılar. Disabled state butonun görünürde kalmasını sağlar — gizlemek yerine devre dışı bırakmak kullanıcıya aksiyonun var olduğunu ama şu an kullanılamayacağını iletir ve layout stabilitesini korur. HTML'de ${tk('disabled')} attribute'u, ${tk('.bt-btn--state-*')} (hover / focus / active / selected) veya ${tk(':disabled')} ile; Blazor'da ${tk('BtButton')}'ın ${tk('Enabled')} ve state parametreleriyle uygulanır.</p>
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Yedi tema, bir butonun rengini anlam taşıyan bir sinyale çevirir: ${tk('Base')} nötr / ikincil yüzeylerde, ${tk('Primary')} sayfanın birincil marka aksiyonunda, ${tk('Secondary')} daha sakin bir alternatif olarak, ${tk('Success')} / ${tk('Warning')} / ${tk('Error')} / ${tk('Information')} ise onay, uyarı, yıkıcı ve bilgi bağlamlarında kullanılır. Tema seçimi fill modundan ve boyuttan tamamen bağımsızdır — her tema aynı altı state'i çalıştırır, yalnızca ${tk('--bt-{theme}-*')} renk tokenı ailesi değişir; Base'de ek olarak Active, marka vurgusu için ${tk('--bt-primary-subtle')} zeminine geçer. Disabled tüm temalarda aynıdır: zemin ${tk('--bt-base-muted')}, metin ve ikon ${tk('--bt-text-primary-muted')}. CSS'te bileşik ${tk('.bt-btn--{theme}-{fill}')} modifier'ı, Blazor'da ${tk('BtButton')}'ın ${tk('Theme')} parametresi bu tema rengini seçer; her tema aşağıda kendi state matrisiyle ayrı ayrı ele alınır.</p>
       ${BTN_THEME_OPTS.map(theme => `
-      <h3 style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${theme.label}</h3>
+      <h3 id="${theme.label}">${theme.label}</h3>
+      <p class="page-desc">${_btnThemeDoc[theme.key](tk)}</p>
       ${_btnStateTable(theme.key)}`).join('')}
+    `};
+  }
+};
+
+// ── Icon Button ────────────────────────────────────────────────
+// Icon Button = Button'ın `.bt-btn--icon` (label'sız, kare) hâli. Ayrı bir
+// component değil; bu sayfa Button'ın tüm eksenlerini (fill / theme / size /
+// state) yalnızca "icon only" içerik tipiyle demonstre eder. Tüm helper'lar
+// (btnPreview / btnCode / btnCss / _btnStateTable / _btnThemeDoc) Button'dan
+// reuse edilir — content parametresi 'icon' olarak kilitlenir.
+PAGES_WEB['components/icon-button'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc: ['Anatomy', 'Sizes', 'States', 'Themes', 'Base', 'Primary', 'Secondary', 'Success', 'Warning', 'Error', 'Information'],
+  render: (tab) => {
+    const title = 'Icon Button';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    const sqPx = { '2xs': '20px', xs: '24px', sm: '28px', md: '32px', lg: '36px', xl: '40px', '2xl': '48px' };
+
+    // ── Examples ─────────────────────────────────────────────────
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Icon Button'ın dört fill modu, her biri 7 boyutun tümünde ve tüm state'lerle interaktif olarak — Overview'daki tek birleşik playground'un aksine burada her mod ayrı ele alınır. Icon Button, Button'ın ${tk('.bt-btn--icon')} hâlidir: label yoktur, ${tk('gap: 0')} ve dört yana eşit ${tk('--btn-py')} padding ile kutu kare olur; fill / theme / state davranışı Button ile birebir aynıdır. Dört modun tümünde aynı 7 tema ve 6 state uygulanır. CSS'te mod ${tk('.bt-btn--{theme}-{fill}')}, boyut ${tk('.bt-btn--{size}')}, içerik tipi ${tk('.bt-btn--icon')} ile seçilir.</p>
+
+      <h2>Solid</h2>
+      <p class="page-desc">Dolu renk zeminli kare ikon butonu — en yüksek görsel ağırlık, bir yüzeydeki birincil ikon aksiyonu için (örn. bir kartın "daha fazla" menüsü değil, ana eylemi). Hover'da zemin ${tk('--bt-*-intense')}'e koyulaşır. Bir bölgede tek Solid ikon butonu önerilir.</p>
+      ${registerPlayground({
+        id: 'pgd-ib-solid-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'theme', label: 'Theme', options: BTN_THEME_OPTS, default: 'primary' },
+          { key: 'state', label: 'State', options: BTN_STATE_OPTS, default: 'default' },
+        ],
+        preview: (sz, p) => btnPreview('solid', sz, 'icon', p.state, p.theme),
+        code:    (sz, p) => btnCode('solid', sz, 'icon', p.state, p.theme),
+      })}
+
+      <h2>Outline</h2>
+      <p class="page-desc">Şeffaf zeminli, 1px kenarlıklı kare ikon butonu — ikincil ikon aksiyonları için. Hover'da zemin açık tema rengiyle (${tk('--bt-*-subtle')}) dolar, kenarlık ve ikon rengi sabit kalır. Kenarlık ${tk('box-shadow: inset')} ile çizildiğinden kutu boyutu tam kare kalır.</p>
+      ${registerPlayground({
+        id: 'pgd-ib-outline-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'theme', label: 'Theme', options: BTN_THEME_OPTS, default: 'primary' },
+          { key: 'state', label: 'State', options: BTN_STATE_OPTS, default: 'default' },
+        ],
+        preview: (sz, p) => btnPreview('outline', sz, 'icon', p.state, p.theme),
+        code:    (sz, p) => btnCode('outline', sz, 'icon', p.state, p.theme),
+      })}
+
+      <h2>Flat</h2>
+      <p class="page-desc">Dinlenmede kenarlık ve dolu zemin taşımayan kare ikon butonu — araç çubukları, tablo satır aksiyonları, panel başlığı kontrolleri için en yaygın seçim. Yalnızca hover'da açık zemin belirir. Yoğun layout bölgelerinde ikonlar arasında görsel gürültü yaratmadan tıklanabilirlik sunar.</p>
+      ${registerPlayground({
+        id: 'pgd-ib-flat-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'theme', label: 'Theme', options: BTN_THEME_OPTS, default: 'primary' },
+          { key: 'state', label: 'State', options: BTN_STATE_OPTS, default: 'default' },
+        ],
+        preview: (sz, p) => btnPreview('flat', sz, 'icon', p.state, p.theme),
+        code:    (sz, p) => btnCode('flat', sz, 'icon', p.state, p.theme),
+      })}
+
+      <h2>Ghost</h2>
+      <p class="page-desc">Kenarlıksız ve arka plansız en hafif kare ikon butonu — yalnızca ikon görünür. Bir arka yüzey (panel, kart, liste) üzerinde kullanılmalı; izole beyaz alanda kaybolur. Navigasyon ikonları ve dense toolbar'lar için idealdir.</p>
+      ${registerPlayground({
+        id: 'pgd-ib-ghost-ex',
+        variants: BTN_SIZE_VARIANTS,
+        props: [
+          { key: 'theme', label: 'Theme', options: BTN_THEME_OPTS, default: 'primary' },
+          { key: 'state', label: 'State', options: BTN_STATE_OPTS, default: 'default' },
+        ],
+        preview: (sz, p) => btnPreview('ghost', sz, 'icon', p.state, p.theme),
+        code:    (sz, p) => btnCode('ghost', sz, 'icon', p.state, p.theme),
+      })}
+    `};
+
+    // ── CSS Properties ───────────────────────────────────────────
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Icon Button, Button'ın tüm design token–CSS değişken eşleşmelerini (renk, spacing, radius, tipografi, focus ring) olduğu gibi paylaşır — ayrı bir token seti yoktur. Tek fark ${tk('.bt-btn--icon')} modifier'ının getirdiği kare geometridir: label kaldırılır, ${tk('gap')} sıfırlanır, yatay padding dikey padding'e (${tk('--btn-py')}) eşitlenir ve ${tk('min-width')} devreye girer. Yükseklik ise ${tk('.bt-btn')}'in ${tk('min-height: calc(var(--btn-py) * 2 + 16px)')} kuralından gelir (14px ikon 16px'lik metin satırından kısa olduğu için) — bu iki kural birlikte kutuyu içerik tipinden bağımsız, tam ${tk('2×py + 16px')} kare tutar. Aşağıdaki tablo yalnızca bu modifier'ın ve boyut başına kutu ölçüsünün değerlerini listeler; renk/state tokenları için Button sayfasının CSS Properties sekmesine bakın.</p>
+      <table class="token-table">
+        <thead><tr><th>Selector / Token</th><th>Value</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">.bt-btn</span></td><td>min-height: calc(var(--btn-py) * 2 + 16px)</td><td>Yüksekliği içerik tipinden bağımsız kılar (icon-only 2px kısalmaz)</td></tr>
+          <tr><td><span class="token-name">.bt-btn--icon</span></td><td>gap: 0 · padding: var(--btn-py) · min-width: calc(var(--btn-py) * 2 + 16px)</td><td>Label'ı kaldırır, kutuyu tam kareye çevirir</td></tr>
+          <tr><td><span class="token-name">--bt-space-2xs</span></td><td>2px</td><td>py — 2xs · kutu 20 × 20px</td></tr>
+          <tr><td><span class="token-name">--bt-space-xs</span></td><td>4px</td><td>py — xs · kutu 24 × 24px</td></tr>
+          <tr><td><span class="token-name">--bt-space-sm</span></td><td>6px</td><td>py — sm · kutu 28 × 28px</td></tr>
+          <tr><td><span class="token-name">--bt-space-md</span></td><td>8px</td><td>py — md · kutu 32 × 32px</td></tr>
+          <tr><td><span class="token-name">--bt-space-lg</span></td><td>10px</td><td>py — lg · kutu 36 × 36px</td></tr>
+          <tr><td><span class="token-name">--bt-space-xl</span></td><td>12px</td><td>py — xl · kutu 40 × 40px</td></tr>
+          <tr><td><span class="token-name">--bt-space-2xl</span></td><td>16px</td><td>py — 2xl · kutu 48 × 48px</td></tr>
+          <tr><td><span class="token-name">--bt-radius-sm</span></td><td>4px</td><td>Border radius (tüm boyutlar) — Button ile aynı</td></tr>
+          <tr><td><span class="token-name">Icon</span></td><td>14 × 14px</td><td>Inline SVG (Button ile aynı ikon), kutuda ortalanır</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    // ── Usage ────────────────────────────────────────────────────
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Icon Button, metin etiketi taşımadığı için anlamı tamamen ikonun tanınabilirliğine bağlıdır — yanlış kullanımı erişilebilirlik ve anlaşılırlık sorunları yaratır. Aşağıdaki kurallar, ikonun tek başına yeterli bağlam taşıdığı durumları ve zorunlu erişilebilirlik gereksinimlerini kapsar.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Her Icon Button'a mutlaka bir ${tk('aria-label')} (veya görünür tooltip) ekle — ekran okuyucu için tek bilgi kaynağı budur</li>
+        <li>Yalnızca yaygın, kültürel olarak tanınan ikonlar kullan (ara, kapat, düzenle, sil, daha fazla)</li>
+        <li>Fill hiyerarşisini Button ile tutarlı tut: Solid → Outline → Flat → Ghost</li>
+        <li>Bir toolbar'daki tüm Icon Button'ları aynı fill + boyutta hizala</li>
+        <li>Dokunmatik hedefler için en az ${tk('md')} (32px) boyut kullan; ${tk('2xs')}/${tk('xs')} yalnızca yoğun masaüstü araç çubukları içindir</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Belirsiz veya projeye özel ikonları etiketsiz kullanma — metinli Button tercih et</li>
+        <li>Bir satırda birden fazla Solid Icon Button koyma</li>
+        <li>Ghost Icon Button'ı izole beyaz yüzeyde kullanma — arka plan olmadan kaybolur</li>
+        <li>Icon Button'ı birincil metin aksiyonu ("Kaydet", "Gönder") yerine kullanma — bu aksiyonlar label ister</li>
+      </ul>
+    `};
+
+    // ── Overview ─────────────────────────────────────────────────
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-ib-overview',
+        variants: BTN_FILL_VARIANTS,
+        props: [
+          { key: 'theme', label: 'Theme', options: BTN_THEME_OPTS,    default: 'primary' },
+          { key: 'size',  label: 'Size',  options: BTN_SIZE_VARIANTS, default: 'sm'      },
+          { key: 'state', label: 'State', options: BTN_STATE_OPTS,    default: 'default' },
+        ],
+        preview: (fill, p) => btnPreview(fill, p.size, 'icon', p.state, p.theme),
+        code:    (fill, p) => btnCode(fill, p.size, 'icon', p.state, p.theme),
+        css:     (fill, p) => btnCss(fill, { ...p, iconOnly: true }),
+      })}
+
+      <p class="page-desc">Tek bir ikon taşıyan, label'sız kare buton. Ayrı bir component değildir — Button'ın ${tk('.bt-btn--icon')} modifier'ıyla kullanılan hâlidir: ${tk('gap')} sıfırlanır, yatay padding dikey padding'e (${tk('--btn-py')}) eşitlenir ve kutu kare olur. Fill modu (Solid / Outline / Flat / Ghost), 7 tema rengi, 7 boyut ve altı state Button ile <strong>birebir aynı</strong> davranır; bu sayfa yalnızca bu eksenlerin "icon only" görünümünü demonstre eder. Label taşımadığından her Icon Button bir ${tk('aria-label')} veya tooltip ile anlamlandırılmalıdır. HTML'de ${tk('.bt-btn .bt-btn--{theme}-{fill} .bt-btn--{size} .bt-btn--icon')}, Blazor'da ${tk('BtButton')} (${tk('Icon')} parametresi, ${tk('ChildContent')} boş).</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Icon Button'ın geometrisi Button'ın üç katmanını (container, ikon, spacing) korur ama label katmanını atar. ${tk('.bt-btn--icon')} üç şey yapar: ${tk('gap: 0')} (ikon–label boşluğunu kaldırır), ${tk('padding: var(--btn-py)')} (dört yana eşit padding) ve ${tk('min-width: calc(var(--btn-py) * 2 + 16px)')} — bu sonuncusu kutuyu, Button'ın aynı boyuttaki yüksekliğiyle (${tk('.bt-btn')}'deki ${tk('min-height')} kuralı) eşit ve <strong>kare</strong> tutar. İkonun kendisi 14×14 olduğundan bu min-width/min-height olmasa kutu 2px küçülürdü; onlarla birlikte kutu her zaman ${tk('2×py + 16px')} kare (içerik tipinden bağımsız). Container görünümü ${tk('.bt-btn--{theme}-{fill}')}'den gelir; 14×14 inline SVG (Button ile aynı ikon) 16px'lik satır kutusunda ortalanır. Blazor karşılığı ${tk('BtButton')}'ın ${tk('Icon')} parametresidir.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Container</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Padding (dört yan)</td><td>${tk('--btn-py')} (size'a göre)</td><td>2 – 16px</td></tr>
+          <tr><td>Focus ring</td><td>${tk('Focus Ring/{theme}')}</td><td>box-shadow 0 0 0 3px</td></tr>
+          <tr><td>Icon</td><td>Size (tüm boyutlar)</td><td>—</td><td>14 × 14px inline SVG</td></tr>
+          <tr><td>Gap</td><td>${tk('.bt-btn--icon')}</td><td>0 (label yok)</td></tr>
+          <tr><td>Kutu (2xs → 2xl)</td><td>2×py + 16 (min-width & min-height)</td><td>20 / 24 / 28 / 32 / 36 / 40 / 48px kare</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Icon Button 7 boyut sunar (2xs–2xl). Kutu her boyutta <strong>kare</strong>dir; kenar uzunluğu Button'ın aynı boyuttaki yüksekliğine eşittir — ${tk('2×--btn-py + 16px')} (${tk('.bt-btn--icon')}'ın ${tk('min-width')}'i + ${tk('.bt-btn')}'in ${tk('min-height')}'ı bunu garanti eder). İkonun kendisi tüm boyutlarda 14×14 sabit kalır — yalnızca çevresindeki padding ölçeklenir, tıklama hedefi büyür. Boyut ${tk('.bt-btn--{size}')} ile seçilir; dokunmatik hedefler için ${tk('md')} (32px) ve üzeri, yoğun masaüstü araç çubukları için ${tk('2xs')}/${tk('xs')} önerilir.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Kutu</th><th>Padding (py)</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${BTN_SIZE_VARIANTS.map(s => `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td>${sqPx[s.key]}</td>
+            <td>${tk(_btnSizePyToken[s.key])} · ${_btnSizePyVal[s.key]}</td>
+            <td>${btnPreview('solid', s.key, 'icon', 'default', 'primary')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Icon Button altı etkileşim durumu barındırır: Default, Hover, Focus, Active, Selected ve Disabled — davranış Button ile birebir aynıdır. Hover ve Active fill moduna göre değişir (Solid'de zemin ${tk('--bt-*-intense')}'e koyulaşır, Outline / Flat / Ghost'ta ${tk('--bt-*-subtle')} ile dolar); Focus her modda 3px'lik bir odak halkası (${tk('box-shadow')}) ekler — label olmadığından bu halka klavye kullanıcısı için tek görünür işarettir, o yüzden hiçbir modda bastırılmaz. Disabled'da ikon ${tk('--bt-text-primary-muted')}'a düşer. HTML'de ${tk('disabled')} veya ${tk('.bt-btn--state-*')}.</p>
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Yedi tema, ikon butonunun rengini anlam taşıyan bir sinyale çevirir — Button'la aynı semantik: ${tk('Base')} nötr, ${tk('Primary')} birincil marka aksiyonu, ${tk('Secondary')} sakin alternatif, ${tk('Success')} / ${tk('Warning')} / ${tk('Error')} / ${tk('Information')} durum bağlamları. Tema fill modundan ve boyuttan bağımsızdır; her tema aynı altı state'i çalıştırır, yalnızca ${tk('--bt-{theme}-*')} renk ailesi değişir. Aşağıdaki per-tema açıklamalarında geçen "metin" ifadesi Icon Button'da <strong>ikon rengi</strong> olarak okunmalıdır (label yoktur); Base'de Active yine ${tk('--bt-primary-subtle')} zeminine geçer, Disabled tüm temalarda ${tk('--bt-base-muted')} zemin + ${tk('--bt-text-primary-muted')} ikondur. CSS'te ${tk('.bt-btn--{theme}-{fill}')}, Blazor'da ${tk('Theme')} parametresi seçer; her tema aşağıda kendi fill × state matrisiyle (icon only) ele alınır.</p>
+      ${BTN_THEME_OPTS.map(theme => `
+      <h3 id="${theme.label}">${theme.label}</h3>
+      <p class="page-desc">${_btnThemeDoc[theme.key](tk)}</p>
+      ${_btnStateTable(theme.key, 'icon')}`).join('')}
     `};
   }
 };
@@ -5334,14 +5591,22 @@ function avatarCss(size, props) {
 }
 
 PAGES_WEB['components/avatar'] = {
-  tabs: ['Overview', 'CSS Properties', 'Usage'],
-  toc:  ['Types', 'Themes', 'Sizes'],
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'Sizes', 'Themes', 'Types', 'Initials', 'Icon'],
   render(tab) {
     const title = 'Avatar';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    // playground'suz statik demolar — ortalı example-viewer (CLAUDE.md standardı)
+    const exampleViewer = (inner) => `
+      <div class="example-viewer">
+        <div class="example-viewer-preview" style="align-items:center;">
+          <div style="display:flex;flex-direction:column;gap:20px;align-items:center;">${inner}</div>
+        </div>
+      </div>`;
+    const row = (...avatars) => `<div style="display:flex;gap:16px;align-items:center;">${avatars.join('')}</div>`;
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Avatar bileşeni için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">Avatar için design token–CSS değişken eşleşmeleri. Konteyner şekil/kenarlık her boyut ve temada sabittir; yalnızca çap (Size), zemin/metin/ikon rengi (Theme) ve initials font boyutu (Size) değişir. İkon boyutu her koşulda 24×24'tür.</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5372,124 +5637,136 @@ PAGES_WEB['components/avatar'] = {
     `};
 
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">Avatar kullanım kılavuzu.</p>
+      <p class="page-desc">Avatar'ın hangi tip, tema ve boyutla kullanılacağına dair kılavuz. Yanlış tip seçimi (adı bilinen kullanıcıya Icon) veya bir listede karışık boyut, kimlik okunabilirliğini ve dikey hizayı bozar.</p>
       <h2>Do</h2>
       <ul>
-        <li>Kullanıcının gerçek adı biliniyorsa Initials tipini, kimliği belirsiz/genel bir bağlamda Icon tipini kullan</li>
-        <li>Initials için en fazla 2 karakter göster (örn. ad + soyad baş harfi)</li>
-        <li>Aktif/tanımlanmış kullanıcılar için Brand temayı, genel/atanmamış bağlamlar için Default temayı tercih et</li>
-        <li>Bir listede/tabloda tüm avatarları aynı boyutta tut — karışık boyut hizalamayı bozar</li>
+        <li>Kullanıcının gerçek adı biliniyorsa <strong>Initials</strong>, kimliği belirsiz/genel bir bağlamda <strong>Icon</strong> tipini kullan</li>
+        <li>Initials için en fazla 2 karakter göster (ad + soyad baş harfi)</li>
+        <li>Aktif/tanımlanmış kullanıcılar için <strong>Brand</strong>, genel/atanmamış bağlamlar için <strong>Default</strong> temayı seç</li>
+        <li>Bir listede/tabloda tüm avatarları aynı boyutta tut</li>
       </ul>
       <h2>Don't</h2>
       <ul>
         <li>Icon boyutunu avatar boyutuna göre büyütme — Figma'da bu ikon her zaman sabit 24×24'tür</li>
-        <li>Initials'a 2'den fazla karakter sığdırmaya çalışma — dairesel alan taşar</li>
-        <li>Brand temada border'ı kaldırma — iki tema da aynı border'ı paylaşır</li>
+        <li>Initials'a 2'den fazla karakter sığdırmaya çalışma — dairesel alan taşar, kırpma yok</li>
+        <li>Brand temada border'ı kaldırma — iki tema da aynı 1px ${tk('--bt-border-primary-default')} kenarlığı paylaşır</li>
       </ul>
     `};
 
-    // Overview
+    // ── Examples ──
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">İçerik tipi (Initials · Icon) ve tema (Default · Brand) kombinasyonlarının canlı örnekleri; ardından her tip kendi bölümünde tüm 6 boyutta gösterilir. Overview'daki playground'ların aksine burada kombinasyonlar tablo/örnek olarak yan yana.</p>
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Default (${tk('--bt-surface-primary-subtle')} zemin) ve Brand (${tk('--bt-surface-brand-default')} zemin) — geometri aynı, yalnız renk katmanı değişir. Solda Initials, sağda Icon.</p>
+      ${exampleViewer(
+        row(avatarHtml('lg', 'default', 'initials'), avatarHtml('lg', 'default', 'icon')) +
+        row(avatarHtml('lg', 'brand', 'initials'), avatarHtml('lg', 'brand', 'icon'))
+      )}
+
+      <h2 id="Types">Types</h2>
+      <p class="page-desc">Initials (baş harfler, en fazla 2 karakter) ve Icon (sabit 24×24 circle-user-round) — aynı dairesel konteyner, farklı içerik katmanı. Her iki temada:</p>
+      ${exampleViewer(
+        row(avatarHtml('lg', 'default', 'initials'), avatarHtml('lg', 'brand', 'initials')) +
+        row(avatarHtml('lg', 'default', 'icon'), avatarHtml('lg', 'brand', 'icon'))
+      )}
+
+      <h2 id="Initials">Initials</h2>
+      <p class="page-desc">Tüm boyutlarda (2xs–xl), her iki temada. Font 2xs/xs/sm'de ${tk('--bt-text-xs-medium')}, md/lg/xl'de ${tk('--bt-text-sm-medium')} — çapla birlikte ölçeklenir.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Default</th><th>Brand</th></tr></thead>
+        <tbody>
+          ${AVATAR_SIZE_VARIANTS.map(s => `<tr><td><span class="token-name">${s.key}</span> · ${_avatarSizePxMap[s.key]}px</td><td>${avatarHtml(s.key, 'default', 'initials')}</td><td>${avatarHtml(s.key, 'brand', 'initials')}</td></tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Icon">Icon</h2>
+      <p class="page-desc">Tüm boyutlarda ikon <strong>sabit 24×24</strong> kalır — yalnız konteyner büyür. Küçük boyutlarda ikon konteyneri neredeyse doldurur, büyük boyutlarda ortada küçük kalır.</p>
+      <table class="token-table">
+        <thead><tr><th>Size</th><th>Default</th><th>Brand</th></tr></thead>
+        <tbody>
+          ${AVATAR_SIZE_VARIANTS.map(s => `<tr><td><span class="token-name">${s.key}</span> · ${_avatarSizePxMap[s.key]}px</td><td>${avatarHtml(s.key, 'default', 'icon')}</td><td>${avatarHtml(s.key, 'brand', 'icon')}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    `};
+
+    // ── Overview ──
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-avatar-overview',
         variants: AVATAR_SIZE_VARIANTS,
         props: [
-          { key: 'theme', label: 'Theme', options: AVATAR_THEME_OPTS, default: 'default'  },
           { key: 'type',  label: 'Type',  options: AVATAR_TYPE_OPTS,  default: 'initials' },
+          { key: 'theme', label: 'Theme', options: AVATAR_THEME_OPTS, default: 'default'  },
         ],
         preview: (sz, p) => avatarPreview(sz, p),
         code:    (sz, p) => avatarCode(sz, p),
         css:     (sz, p) => avatarCss(sz, p),
       })}
 
-      <p class="page-desc">Avatar, bir kullanıcıyı veya varlığı dairesel bir konteyner içinde temsil eder. Initials veya Icon tipini, Default ya da Brand temada, 6 farklı boyutta destekler.</p>
+      <p class="page-desc">Avatar, bir kullanıcıyı veya varlığı sabit oranlı dairesel bir konteynerde temsil eder — liste, tablo, yorum, atama gibi "kim" sorusunun görsel yanıtı. İçerik tipi (${tk('Initials')} / ${tk('Icon')}) kimliğin bilinip bilinmediğini, tema (${tk('Default')} / ${tk('Brand')}) kullanıcının aktif/atanmış olup olmadığını, boyut (2xs–xl, 6 adım) yerleştiği bağlamı belirler; üçü birbirinden bağımsızdır. Avatar'ın etkileşim state'i yoktur (hover/focus/disabled taşımaz). HTML'de ${tk('.bt-avatar')} + ${tk('.bt-avatar--{size}')} (+ ${tk('.bt-avatar--brand')}), içinde ${tk('.bt-avatar__initials')} veya ${tk('.bt-avatar__icon')}; Blazor/Telerik'te ${tk('.bt-avatar')} sınıf ailesi.</p>
 
-      <h2 id="Types">Types</h2>
-      <table class="token-table">
-        <thead><tr><th>Type</th><th>Preview</th><th>Description</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="token-name">Initials</span></td>
-            <td><div style="display:flex;gap:8px;align-items:center;">${avatarHtml('md', 'default', 'initials')}${avatarHtml('md', 'brand', 'initials')}</div></td>
-            <td>Kullanıcının baş harflerini gösterir (en fazla 2 karakter).</td>
-          </tr>
-          <tr>
-            <td><span class="token-name">Icon</span></td>
-            <td><div style="display:flex;gap:8px;align-items:center;">${avatarHtml('md', 'default', 'icon')}${avatarHtml('md', 'brand', 'icon')}</div></td>
-            <td>Genel bir kullanıcı yer tutucusu olarak circle-user-round ikonunu kullanır.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>Anatomy</h2>
-      <p class="page-desc">Avatar konteynerinin şekil, kenarlık ve tipografi özelliklerini tanımlar. Dairesel form ${tk('--bt-radius-full')} ile elde edilir; initials font boyutu küçük boyutlarda (2xs/xs/sm) ${tk('--bt-text-xs-medium')}, orta-büyük boyutlarda (md/lg/xl) ${tk('--bt-text-sm-medium')} kullanır. Blazor/Telerik'te ${tk('.bt-avatar')} ve ${tk('.bt-avatar--{size}')} sınıflarıyla uygulanır.</p>
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Avatar tek bir dairesel konteyner (${tk('.bt-avatar')}) ve içindeki tek bir içerik katmanından oluşur: ${tk('.bt-avatar__initials')} (en fazla 2 karakter metin) veya ${tk('.bt-avatar__icon')} (sabit 24×24 circle-user-round). Konteyner ${tk('--bt-radius-full')} ile daireye döner, her iki temada da aynı 1px ${tk('--bt-border-primary-default')} kenarlığı taşır ve içeriği flexbox ile ortalar. Boyut yalnızca konteynerin genişlik/yüksekliğini ve initials font boyutunu ölçekler — ikon boyutu sabittir. Blazor karşılığı ${tk('.bt-avatar')} sınıf ailesi.</p>
       <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <thead><tr><th>Katman</th><th>Class</th><th>Rol</th></tr></thead>
         <tbody>
-          <tr><td>Container</td><td>Shape</td><td>${tk('--bt-radius-full')}</td><td>9999px</td></tr>
-          <tr><td>Container</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td>Initials · 2xs / xs / sm</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px / 16px</td></tr>
-          <tr><td>Initials · md / lg / xl</td><td>Font</td><td>${tk('--bt-text-sm-medium')}</td><td>500 · 14px / 16px</td></tr>
-          <tr><td>Icon</td><td>Size</td><td>—</td><td>24 × 24px</td></tr>
-        </tbody>
-      </table>
-
-      <h2 id="Themes">Themes</h2>
-      <table class="token-table">
-        <thead><tr><th>Theme</th><th>Initials</th><th>Icon</th><th>Description</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="token-name">Default</span></td>
-            <td>${avatarHtml('md', 'default', 'initials')}</td>
-            <td>${avatarHtml('md', 'default', 'icon')}</td>
-            <td>Açık gri arka plan, koyu metin/soluk ikon. Genel veya atanmamış bağlamlar için.</td>
-          </tr>
-          <tr>
-            <td><span class="token-name">Brand</span></td>
-            <td>${avatarHtml('md', 'brand', 'initials')}</td>
-            <td>${avatarHtml('md', 'brand', 'icon')}</td>
-            <td>Marka mavisi arka plan, beyaz metin/ikon. Tanımlanmış veya aktif kullanıcılar için.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>Anatomy</h2>
-      <p class="page-desc">Default ve Brand teması için arka plan ve metin/ikon renk token'larını listeler. Default tema ${tk('--bt-surface-primary-subtle')} arka plana koyu metin ve soluk ikon kullanırken Brand tema ${tk('--bt-surface-brand-default')} arka plana ${tk('--bt-text-primary-inverted')} ve ${tk('--bt-icon-primary-inverted')} uygular. Her iki tema da aynı ${tk('--bt-border-primary-default')} kenarlığı paylaşır. Blazor/Telerik'te ${tk('.bt-avatar--brand')} modifier sınıfıyla tema değiştirilir.</p>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Container · Default</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>Container · Brand</td><td>Background</td><td>${tk('--bt-surface-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>Initials · Default</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Initials · Brand</td><td>Color</td><td>${tk('--bt-text-primary-inverted')}</td><td>#ffffff</td></tr>
-          <tr><td>Icon · Default</td><td>Fill</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Icon · Brand</td><td>Fill</td><td>${tk('--bt-icon-primary-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Container</td><td>${tk('.bt-avatar')} + ${tk('.bt-avatar--{size}')} (+ ${tk('.bt-avatar--brand')})</td><td>daire · ${tk('--bt-radius-full')} · 1px ${tk('--bt-border-primary-default')} · içeriği ortalar</td></tr>
+          <tr><td>Initials katmanı</td><td>${tk('.bt-avatar__initials')}</td><td>≤2 karakter · 500 ağırlık · font boyuta göre (xs/sm-medium)</td></tr>
+          <tr><td>Icon katmanı</td><td>${tk('.bt-avatar__icon')}</td><td>sabit 24×24 circle-user-round · fill-path</td></tr>
         </tbody>
       </table>
 
       <h2 id="Sizes">Sizes</h2>
-      <table class="token-table">
-        <thead><tr><th>Size</th><th>Dimension</th><th>Default</th><th>Brand</th></tr></thead>
+      <p class="page-desc">Altı boyut — 2xs (24px), xs (28px), sm (32px), md (40px), lg (48px), xl (56px) — konteynerin çapını ${tk('--bt-base-sizing-*')} token'larından alır. Boyut yalnızca çapı ve <strong>initials</strong> font boyutunu (2xs/xs/sm → ${tk('--bt-text-xs-medium')}, md/lg/xl → ${tk('--bt-text-sm-medium')}) değiştirir; ikon her boyutta sabit 24×24 kalır (Figma'da böyle — büyütülmez). Bir listede/tabloda tüm avatarlar aynı boyutta tutulmalı. CSS'te ${tk('.bt-avatar--{size}')}.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Çap</th><th>Token</th><th>Preview</th></tr></thead>
         <tbody>
-          ${AVATAR_SIZE_VARIANTS.map(s => `
-          <tr>
-            <td><span class="token-name">${s.key}</span></td>
-            <td>${_avatarSizePxMap[s.key]}px</td>
-            <td><div style="display:flex;gap:8px;">${avatarHtml(s.key, 'default', 'initials')}${avatarHtml(s.key, 'default', 'icon')}</div></td>
-            <td><div style="display:flex;gap:8px;">${avatarHtml(s.key, 'brand', 'initials')}${avatarHtml(s.key, 'brand', 'icon')}</div></td>
-          </tr>`).join('')}
+          ${AVATAR_SIZE_VARIANTS.map(s => `<tr><td><span class="token-name">${s.key}</span></td><td>${_avatarSizePxMap[s.key]} × ${_avatarSizePxMap[s.key]}px</td><td>${tk(_avatarSizeTokenMap[s.key])}</td><td>${row(avatarHtml(s.key, 'default', 'initials'), avatarHtml(s.key, 'default', 'icon'))}</td></tr>`).join('')}
         </tbody>
       </table>
 
-      <h2>Anatomy</h2>
-      <p class="page-desc">Altı boyut (2xs / xs / sm / md / lg / xl) için konteyner boyut token'larını listeler. Her boyut ${tk('--bt-base-sizing-*')} spacing token'ıyla tanımlanmıştır; px değeri referans olarak gösterilir. Blazor/Telerik'te boyut ${tk('.bt-avatar--{size}')} sınıfıyla belirlenir.</p>
-      <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">İki tema bir renk katmanıdır — geometri değişmez. ${tk('Default')}: ${tk('--bt-surface-primary-subtle')} (#f5f5f5) açık gri zemin + ${tk('--bt-text-primary-default')} koyu metin + ${tk('--bt-icon-primary-muted')} soluk ikon — genel, atanmamış veya kimliği belirsiz bağlamlar için. ${tk('Brand')}: ${tk('--bt-surface-brand-default')} (#0d4e97) marka mavisi zemin + ${tk('--bt-text-primary-inverted')} / ${tk('--bt-icon-primary-inverted')} beyaz içerik — tanımlanmış veya aktif kullanıcılar için. Her iki tema da aynı ${tk('--bt-border-primary-default')} kenarlığı paylaşır (Brand'de border kaldırılmaz). CSS'te ${tk('.bt-avatar--brand')} modifier'ı.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Theme</th><th>Zemin</th><th>Metin / İkon</th><th>Preview</th></tr></thead>
         <tbody>
-          ${AVATAR_SIZE_VARIANTS.map(s => `
-          <tr><td>Container · ${s.key}</td><td>Width / Height</td><td>${tk(_avatarSizeTokenMap[s.key])}</td><td>${_avatarSizePxMap[s.key]} × ${_avatarSizePxMap[s.key]}px</td></tr>`).join('')}
+          <tr><td><span class="token-name">Default</span></td><td>${tk('--bt-surface-primary-subtle')}</td><td>${tk('--bt-text-primary-default')} / ${tk('--bt-icon-primary-muted')}</td><td>${row(avatarHtml('lg', 'default', 'initials'), avatarHtml('lg', 'default', 'icon'))}</td></tr>
+          <tr><td><span class="token-name">Brand</span></td><td>${tk('--bt-surface-brand-default')}</td><td>${tk('--bt-text-primary-inverted')} / ${tk('--bt-icon-primary-inverted')}</td><td>${row(avatarHtml('lg', 'brand', 'initials'), avatarHtml('lg', 'brand', 'icon'))}</td></tr>
         </tbody>
       </table>
+
+      <h2 id="Types">Types</h2>
+      <p class="page-desc">Avatar iki içerik tipini destekler — ikisi de aynı dairesel konteyner ve boyutları kullanır, yalnızca içerik katmanı değişir. ${tk('Initials')}: kullanıcının baş harfleri (en fazla 2 karakter), font çapla ölçeklenir — gerçek ad biliniyorsa. ${tk('Icon')}: sabit 24×24 circle-user-round yer tutucu — kimlik belirsiz, genel veya atanmamış bağlamda. Aşağıda her tip kendi bölümünde tüm boyut × tema kombinasyonuyla ele alınır. Tip, ${tk('.bt-avatar__initials')} vs ${tk('.bt-avatar__icon')} çocuğuyla belirlenir.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Type</th><th>İçerik</th><th>Preview (Default / Brand)</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Initials</span></td><td>≤2 karakter, 500 ağırlık, font boyuta göre</td><td>${row(avatarHtml('lg', 'default', 'initials'), avatarHtml('lg', 'brand', 'initials'))}</td></tr>
+          <tr><td><span class="token-name">Icon</span></td><td>sabit 24×24 circle-user-round</td><td>${row(avatarHtml('lg', 'default', 'icon'), avatarHtml('lg', 'brand', 'icon'))}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Initials">Initials</h2>
+      <p class="page-desc">Kullanıcının baş harflerini (en fazla 2 karakter) dairesel konteynerin ortasında gösterir — gerçek ad bilindiğinde tercih edilir. Font ağırlığı her zaman 500 (medium); boyut 2xs/xs/sm'de ${tk('--bt-text-xs-medium')} (12px), md/lg/xl'de ${tk('--bt-text-sm-medium')} (14px). Renk temaya bağlı: Default'ta ${tk('--bt-text-primary-default')}, Brand'de ${tk('--bt-text-primary-inverted')}. 2'den fazla karakter dairesel alanı taşırır — kırpma/ellipsis yok.</p>
+      ${registerPlayground({
+        id: 'pgd-avatar-initials-sec',
+        variants: AVATAR_SIZE_VARIANTS,
+        props: [{ key: 'theme', label: 'Theme', options: AVATAR_THEME_OPTS, default: 'default' }],
+        preview: (sz, p) => avatarPreview(sz, { ...p, type: 'initials' }),
+        code:    (sz, p) => avatarCode(sz, { ...p, type: 'initials' }),
+        css:     (sz, p) => avatarCss(sz, { ...p, type: 'initials' }),
+      })}
+
+      <h2 id="Icon">Icon</h2>
+      <p class="page-desc">Genel bir kullanıcı yer tutucusu olarak <strong>sabit 24×24</strong> circle-user-round ikonu gösterir — kimlik belirsiz veya atanmamış bağlamlar için. İkon avatar boyutuyla <strong>ölçeklenmez</strong> (Figma kararı): 2xs'te de xl'de de 24×24, yalnız konteyner büyür — bu yüzden küçük boyutlarda ikon konteyneri neredeyse doldurur, büyükte ortada küçük kalır. Renk temaya bağlı: Default'ta ${tk('--bt-icon-primary-muted')} (#a3a3a3), Brand'de ${tk('--bt-icon-primary-inverted')} (#ffffff). Figma'nın "Circle-User-Round" asset'inden birebir fill-path (lucide'ın stroke versiyonu değil).</p>
+      ${registerPlayground({
+        id: 'pgd-avatar-icon-sec',
+        variants: AVATAR_SIZE_VARIANTS,
+        props: [{ key: 'theme', label: 'Theme', options: AVATAR_THEME_OPTS, default: 'default' }],
+        preview: (sz, p) => avatarPreview(sz, { ...p, type: 'icon' }),
+        code:    (sz, p) => avatarCode(sz, { ...p, type: 'icon' }),
+        css:     (sz, p) => avatarCss(sz, { ...p, type: 'icon' }),
+      })}
     `};
   },
 };
@@ -12849,6 +13126,455 @@ PAGES_WEB['components/segmented-control'] = {
           <tr><td>Segment gap / divider</td><td>—</td><td>0 · yok (yatayla aynı)</td></tr>
         </tbody>
       </table>
+    `};
+  },
+};
+
+// ─── Tab ──────────────────────────────────────────────────────────────────────
+// Figma "Bentas DS" › "Tabs" (Base Tab 1040:6309 + Tab 1045:22304).
+// content='icon' hiç yok — sadece 'label' ve 'icon-label'. Close butonu gerçek
+// bt-btn (xs/base-flat/icon) reuse ediyor (CLAUDE.md "Mevcut Component'leri Reuse Et").
+// İkon seti: Segmented Control ile PAYLAŞILAN `_segIcons` (loader/sparkles/sun/
+// user-round/flame/map-pin, 18×18) — her tab pozisyonu döngüsel farklı ikon.
+const _tabIconAt = i => _segIcons[((i % _segIcons.length) + _segIcons.length) % _segIcons.length];
+const _tabCloseX = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3.5" y1="3.5" x2="10.5" y2="10.5"/><line x1="10.5" y1="3.5" x2="3.5" y2="10.5"/></svg>`;
+const _tabPlusIcon = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="7" y1="2.5" x2="7" y2="11.5"/><line x1="2.5" y1="7" x2="11.5" y2="7"/></svg>`;
+
+const TAB_FILL_OPTS     = [{ key: 'line', label: 'Line' }, { key: 'bordered', label: 'Bordered' }, { key: 'segmented', label: 'Segmented' }];
+const TAB_SIZE_OPTS     = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md (Default)' }, { key: 'lg', label: 'Lg' }];
+const TAB_SIZE_VARIANTS = [{ key: 'sm', label: 'sm' }, { key: 'md', label: 'md' }, { key: 'lg', label: 'lg' }];
+const TAB_ORIENT_OPTS   = [{ key: 'horizontal', label: 'Horizontal' }, { key: 'vertical', label: 'Vertical' }];
+const TAB_CONTENT_OPTS  = [{ key: 'label', label: 'Label' }, { key: 'icon-label', label: 'Icon & Label' }];
+const TAB_COUNT_OPTS    = [{ key: '2', label: '2' }, { key: '3', label: '3' }, { key: '4', label: '4' }, { key: '5', label: '5' }, { key: '6', label: '6' }];
+const TAB_SELECTED_OPTS = [{ key: '0', label: '1st' }, { key: '1', label: '2nd' }, { key: '2', label: '3rd' }, { key: '3', label: '4th' }, { key: '4', label: '5th' }, { key: '5', label: '6th' }];
+const TAB_STATE_OPTS    = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'selected', label: 'Selected' },
+  { key: 'focus',    label: 'Focus' },
+  { key: 'disabled', label: 'Disabled' },
+];
+
+function _tabCls(size, opts = {}) {
+  const p = ['bt-tab', `bt-tab--${size}`];
+  if (opts.selected) p.push('bt-tab--selected');
+  if (opts.disabled) p.push('bt-tab--disabled');
+  return p.join(' ');
+}
+
+// tek tab — static (state tabloları için) veya interaktif (idx verilirse onclick)
+function tabItemHtml(o = {}) {
+  const { label = 'Tab Label', size = 'md', content = 'label', counter = false, closable = false,
+          selected = false, disabled = false, focus = false, idx, iconIndex = 0 } = o;
+  const icon    = content === 'icon-label' ? `<span class="bt-tab__icon">${_tabIconAt(iconIndex)}</span>` : '';
+  const badge   = counter ? `<span class="bt-tab__counter">1</span>` : '';
+  // Close, iç içe <button> geçersiz olduğu için <span> — .bt-btn class'ları
+  // yine de tam stil verir (inline-flex). role/tabindex ile erişilebilir.
+  const close   = closable ? `<span class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon" role="button" aria-label="Close tab" tabindex="0" onclick="event.stopPropagation();btTabClose(this)">${_tabCloseX}</span>` : '';
+  const style   = focus ? ' style="box-shadow:0 0 0 3px rgba(212,212,212,.5);border-radius:var(--bt-radius-sm,4px);position:relative;z-index:1"' : '';
+  const onclick = (idx != null && !disabled) ? ` onclick="btTabSelect(this)"` : '';
+  return `<button type="button" class="${_tabCls(size, { selected, disabled })}"${onclick}${style}>${icon}<span class="bt-tab__label">${label}</span>${badge}${close}</button>`;
+}
+
+function tabListHtml(p = {}) {
+  const { fill = 'line', orientation = 'horizontal', size = 'md', count = '3', selected = '0',
+          content = 'label', closable = 'off', counter = 'off', addTab = 'off', interactive = true } = p;
+  const n = parseInt(count, 10) || 3;
+  const sel = parseInt(selected, 10) || 0;
+  const cls = ['bt-tab-list', `bt-tab-list--${fill}`];
+  if (orientation === 'vertical') cls.push('bt-tab-list--vertical');
+  const items = Array.from({ length: n }, (_, i) => tabItemHtml({
+    label: `Tab ${i + 1}`, size, content, iconIndex: i,
+    counter: counter === 'on',
+    closable: closable === 'on',
+    selected: i === sel,
+    idx: interactive ? i : undefined,
+  })).join('');
+  // Add Tab — Figma: Button 2xs / Flat / Base + plus ikon. Gerçek .bt-btn reuse.
+  const add = addTab === 'on'
+    ? `<button type="button" class="bt-tab-list__add bt-btn bt-btn--2xs bt-btn--base-flat" onclick="btTabAdd(this)">${_tabPlusIcon}<span>Add Tab</span></button>`
+    : '';
+  return `<div class="${cls.join(' ')}" role="tablist">${items}${add}</div>`;
+}
+
+function tabListCss(v, p = {}) {
+  const { fill = 'line', size = 'sm', orientation = 'horizontal' } = p;
+  const lines = [];
+  const pr = (k, val) => `  ${k}: ${val};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const vert = orientation === 'vertical';
+
+  lines.push(`/* Tab · ${fill[0].toUpperCase() + fill.slice(1)}${vert ? ' · Vertical' : ''}${size !== 'sm' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push('');
+  lines.push(`.bt-tab-list--${fill}${vert ? '.bt-tab-list--vertical' : ''} {`);
+  if (fill === 'segmented') {
+    lines.push(pr('display', 'flex'));
+    lines.push(pr('flex-direction', vert ? 'column' : 'row'));
+    lines.push(pr('background', 'var(--bt-base-subtle)  /* #f5f5f5 */'));
+    lines.push(pr('border', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+    lines.push(pr('border-radius', 'var(--bt-radius-md)  /* 6px */'));
+    lines.push(pr('padding', 'var(--bt-space-2xs)  /* 2px */'));
+    lines.push(pr('gap', 'var(--bt-space-2xs)  /* 2px */'));
+  } else {
+    lines.push(pr('display', 'flex'));
+    lines.push(pr('flex-direction', vert ? 'column' : 'row'));
+    lines.push(pr(vert ? (fill === 'line' ? 'border-right' : 'border-left') : 'border-bottom',
+      '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+  }
+  lines.push('}');
+
+  lines.push('');
+  lines.push(`.bt-tab--${size} {`);
+  lines.push(pr('height', size === 'lg' ? '36px' : size === 'md' ? '32px' : '28px'));
+  lines.push(pr('gap', size === 'sm' ? '0' : 'var(--bt-space-xs)  /* 4px */'));
+  lines.push(pr('padding', '0 var(--bt-space-xl)  /* 0 12px */'));
+  lines.push(pr('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'));
+  lines.push(pr('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+  lines.push('}');
+
+  lines.push('');
+  if (fill === 'line') {
+    lines.push('.bt-tab-list--line .bt-tab--selected {');
+    lines.push(pr(vert ? 'border-right-color' : 'border-bottom-color', 'var(--bt-border-brand-default)  /* #0d4e97 */'));
+    lines.push(pr('color', 'var(--bt-text-brand-default)  /* #0d4e97 */'));
+    lines.push('}');
+  } else if (fill === 'bordered') {
+    lines.push(`.bt-tab-list--bordered${vert ? '.bt-tab-list--vertical' : ''} .bt-tab--selected {`);
+    lines.push(pr('border-color', 'var(--bt-border-primary-default)  /* #d4d4d4 */'));
+    if (vert) {
+      lines.push(pr('border-left-color', 'transparent  /* sol açık — panele bağlanır */'));
+      lines.push(pr('border-bottom-color', 'var(--bt-base-default)  /* #ffffff · seam */'));
+      lines.push(pr('border-radius', '0 var(--bt-radius-sm) var(--bt-radius-sm) 0  /* sağ köşeler */'));
+    } else {
+      lines.push(pr('border-bottom-color', 'var(--bt-base-default)  /* #ffffff · panele "kesik" */'));
+      lines.push(pr('border-radius', 'var(--bt-radius-sm) var(--bt-radius-sm) 0 0  /* üst köşeler */'));
+    }
+    lines.push(pr('background', 'var(--bt-base-default)  /* #ffffff */'));
+    lines.push('}');
+  } else {
+    lines.push('.bt-tab-list--segmented .bt-tab--selected {');
+    lines.push(pr('background', 'var(--bt-primary-subtle)  /* #e2edfc */'));
+    lines.push(pr('border-color', 'var(--bt-border-brand-default)  /* #0d4e97 */'));
+    lines.push(pr('color', 'var(--bt-text-brand-default)  /* #0d4e97 */'));
+    lines.push('}');
+  }
+
+  lines.push('');
+  lines.push('.bt-tab:focus-visible {');
+  lines.push(pr('box-shadow', '0 0 0 3px rgba(212, 212, 212, 0.5)  /* nötr focus ring */'));
+  lines.push('}');
+  lines.push('.bt-tab--disabled {');
+  lines.push(pr('color', 'var(--bt-text-primary-muted)  /* #a3a3a3 */'));
+  lines.push(pr('cursor', 'not-allowed'));
+  lines.push('}');
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// tıklayınca aktif tab'ı taşır (Segmented Control'daki btSegSelect deseni)
+window.btTabSelect = function (el) {
+  const list = el.closest('.bt-tab-list');
+  if (!list) return;
+  list.querySelectorAll('.bt-tab').forEach(t => t.classList.remove('bt-tab--selected'));
+  el.classList.add('bt-tab--selected');
+};
+
+// Closable tab'ın × butonu — tab'ı DOM'dan kaldırır. Son tab kapatılamaz.
+// Seçili tab kapatılırsa komşu (önce sonraki, yoksa önceki) seçili olur.
+window.btTabClose = function (el) {
+  const tab  = el.closest('.bt-tab');
+  const list = tab && tab.closest('.bt-tab-list');
+  if (!tab || !list) return;
+  const tabs = Array.from(list.querySelectorAll('.bt-tab'));
+  if (tabs.length <= 1) return;
+  const i = tabs.indexOf(tab);
+  const wasSelected = tab.classList.contains('bt-tab--selected');
+  const neighbour = tabs[i + 1] || tabs[i - 1];
+  tab.remove();
+  if (wasSelected && neighbour) neighbour.classList.add('bt-tab--selected');
+};
+
+// "Add Tab" butonu — ilk tab'ı şablon alıp klonlar, Add Tab butonundan önce ekler.
+window.btTabAdd = function (el) {
+  const list = el.closest('.bt-tab-list');
+  const tmpl = list && list.querySelector('.bt-tab');
+  if (!list || !tmpl) return;
+  const clone = tmpl.cloneNode(true);
+  clone.classList.remove('bt-tab--selected', 'bt-tab--disabled');
+  const label = clone.querySelector('.bt-tab__label');
+  if (label) label.textContent = 'Tab ' + (list.querySelectorAll('.bt-tab').length + 1);
+  list.insertBefore(clone, el);
+};
+
+// Per-fill-mode ve per-content description'ları (Çok Eksenli Component
+// Dokümantasyonu standardı — bkz. CLAUDE.md). tk render closure'ından gelir.
+const _TAB_FILL_DESC = {
+  line: tk => `Tab'lar paylaşılan bir alt çizgide (${tk('--bt-border-primary-default')}, 1px) oturur; seçili tab'ın <strong>brand renkli alt-border'ı</strong> (${tk('--bt-border-brand-default')}) indicator görevi görür ve metin ${tk('--bt-text-brand-default')}'e döner, hover'da alt-border nötr griye gelir. En düşük görsel ağırlıklı fill mode — içerik başlığında veya sayfa içi bölüm geçişlerinde. Dikeyde indicator alt yerine <strong>sağ-border</strong> olur. CSS: ${tk('.bt-tab-list--line')} (varsayılan).`,
+  bordered: tk => `Seçili tab üç kenardan 1px ${tk('--bt-border-primary-default')} kutu alır ve <strong>beyaz alt-border</strong> (${tk('--bt-base-default')}) ile track çizgisini "keserek" alttaki panele bağlanır — klasör sekmesi görünümü, üst köşeler ${tk('--bt-radius-sm')} yuvarlı. Metin rengi Line/Segmented'in aksine <strong>değişmez</strong>. Bir kartın veya panelin üstüne oturan tab grupları için. Dikeyde: seçili tab'ın <strong>sol kenarı açık</strong> (soldaki panele bağlanır), grey border üst+sağ, beyaz alt-seam, <strong>sağ köşeler</strong> yuvarlı. CSS: ${tk('.bt-tab-list--bordered')}.`,
+  segmented: tk => `Pill track (${tk('--bt-base-subtle')} zemin + 1px border + ${tk('--bt-radius-md')} + ${tk('--bt-space-2xs')} iç boşluk) içinde tab'lar; seçili tab ${tk('--bt-primary-subtle')} dolgu + 1px ${tk('--bt-border-brand-default')} border + brand metin alır (Segmented Control ile aynı model). Kompakt toolbar'lar ve form bölümleri için. Track dikeyde dikey pill olur. CSS: ${tk('.bt-tab-list--segmented')}.`,
+};
+const _TAB_SUB_DESC = {
+  label: (tk, fl) => `${fl} tab'ının en yalın biçimi — yalnız metin, ikon yok. ${tk('.bt-tab__label')} (Geist 12px/400/16); yatay padding ${tk('--bt-space-xl')} (12px) tüm boyutlarda sabit. Tab'a tıklayarak seçimi taşıyın.`,
+  'icon-label': (tk, fl) => `${fl} + baştan 18×18 ikon (${tk('.bt-tab__icon')}, ${tk('--bt-icon-primary-strong')}). İkon↔label boşluğu Sm'de 0, Md/Lg'de ${tk('--bt-space-xs')} (4px) — Figma'nın <em>Content = Icon &amp; Label</em> varyantı. İkon rengi hiçbir state'te değişmez.`,
+  closable: (tk, fl) => `${fl} + her tab'ın sonunda kapatma butonu (${tk('Type=Closable')}). Buton bespoke değil, gerçek ${tk('.bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon')} (24×24). <strong>Çalışır:</strong> ×'e tıklamak tab'ı DOM'dan kaldırır (${tk('window.btTabClose')}); seçili tab kapatılırsa komşusu seçili olur, son tab kapatılamaz. Genelde <strong>Add Tab</strong> ile birlikte kullanılır.`,
+};
+
+PAGES_WEB['components/tab'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc: ['Anatomy', 'Sizes', 'States', 'Fill Modes', 'Line', 'Bordered', 'Segmented', 'Vertical', 'Counter', 'Add Tab'],
+  render(tab) {
+    const title = 'Tab';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    // static (non-interactive) tab list for state/anatomy tables
+    const staticList = (p) => tabListHtml({ ...p, interactive: false });
+    // playground preview'ları için basit ortalayıcı sarmalayıcı
+    const wrap = (html, pad = 24) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:${pad}px;overflow-x:auto;">${html}</div>`;
+    // playground'suz statik bölüm demoları — CLAUDE.md "Example Viewer" standardı.
+    // Örnekler alana yatay + dikey ortalanır (.example-viewer-preview zaten
+    // justify-content:center; align-items:center inline ile dikey ortalama).
+    const exampleViewer = (inner) => `
+      <div class="example-viewer">
+        <div class="example-viewer-preview" style="align-items:center;">
+          <div style="display:flex;flex-direction:column;gap:20px;align-items:center;">${inner}</div>
+        </div>
+      </div>`;
+
+    // shared playground prop atoms
+    const P_ORIENT   = { key: 'orientation', label: 'Orientation', options: TAB_ORIENT_OPTS,   default: 'horizontal' };
+    const P_SIZE     = { key: 'size',        label: 'Size',        options: TAB_SIZE_OPTS,     default: 'md' };
+    const P_COUNT    = { key: 'count',       label: 'Tabs',        options: TAB_COUNT_OPTS,    default: '3' };
+    const P_SELECTED = { key: 'selected',    label: 'Selected',    options: TAB_SELECTED_OPTS, default: '0' };
+    const P_CLOSABLE = { key: 'closable',    label: 'Closable',    options: TBX_BOOL_OPTS,     default: 'off' };
+    const P_COUNTER  = { key: 'counter',     label: 'Counter',     options: TBX_BOOL_OPTS,     default: 'off' };
+    const P_ADDTAB   = { key: 'addTab',      label: 'Add Tab',     options: TBX_BOOL_OPTS,     default: 'off' };
+
+    // ── Overview: bir fill mode bölümü — kilitli playground + 3 içerik alt-bölümü (her biri kendi playground'u) ──
+    const fillSection = (f) => `
+      <h2 id="${f.label}">${f.label}</h2>
+      <p class="page-desc">${_TAB_FILL_DESC[f.key](tk)}</p>
+      ${registerPlayground({
+        id: `pgd-tab-${f.key}-sec`,
+        variants: [{ key: 'default', label: f.label }],
+        props: [P_ORIENT, P_SIZE, P_COUNT, P_SELECTED, P_CLOSABLE, P_COUNTER, P_ADDTAB],
+        preview: (v, p) => wrap(tabListHtml({ ...p, fill: f.key })),
+        code:    (v, p) => tabListHtml({ ...p, fill: f.key }),
+        css:     (v, p) => tabListCss(v, { ...p, fill: f.key }),
+      })}
+      ${[
+        { key: 'label',      label: 'Label',        lock: { content: 'label',      closable: 'off' }, props: [P_SIZE, P_COUNT, P_SELECTED] },
+        { key: 'icon-label', label: 'Icon & Label', lock: { content: 'icon-label', closable: 'off' }, props: [P_SIZE, P_COUNT, P_SELECTED] },
+        { key: 'closable',   label: 'Closable',     lock: { content: 'label',      closable: 'on'  }, props: [P_SIZE, P_COUNT, P_SELECTED, P_ADDTAB] },
+      ].map(c => `
+      <h3>${c.label}</h3>
+      <p class="page-desc">${_TAB_SUB_DESC[c.key](tk, f.label)}</p>
+      ${registerPlayground({
+        id: `pgd-tab-${f.key}-${c.key.replace('-', '')}-sec`,
+        variants: [{ key: 'default', label: c.label }],
+        props: c.props,
+        preview: (v, p) => wrap(tabListHtml({ ...p, fill: f.key, ...c.lock })),
+        code:    (v, p) => tabListHtml({ ...p, fill: f.key, ...c.lock }),
+        css:     (v, p) => tabListCss(v, { ...p, fill: f.key }),
+      })}`).join('')}`;
+
+    // ── Examples: bir fill mode bölümü — interaktif preview tabloları ──
+    const fillExample = (f) => `
+      <h2 id="${f.label}">${f.label}</h2>
+      <p class="page-desc">${_TAB_FILL_DESC[f.key](tk)}</p>
+      <table class="token-table">
+        <thead><tr><th>İçerik</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td>${tabListHtml({ fill: f.key, count: '4', selected: '0' })}</td></tr>
+          <tr><td>Icon &amp; Label</td><td>${tabListHtml({ fill: f.key, count: '4', selected: '0', content: 'icon-label' })}</td></tr>
+          <tr><td>Closable</td><td>${tabListHtml({ fill: f.key, count: '4', selected: '0', closable: 'on' })}</td></tr>
+          <tr><td>With Counter</td><td>${tabListHtml({ fill: f.key, count: '3', selected: '0', counter: 'on' })}</td></tr>
+        </tbody>
+      </table>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Tab bileşeni için design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>Base Tab</em> (yapı) ve <em>Tab</em> (Fill Mode × State) component set'lerinden doğrulanmıştır. Close butonu ayrı token tanımlamaz — gerçek ${tk('.bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon')} bileşenini reuse eder.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Tab · Sm / Md / Lg</td><td>height</td><td>—</td><td>28 / 32 / 36px</td></tr>
+          <tr><td>Tab</td><td>padding (yatay)</td><td>${tk('--bt-space-xl')}</td><td>12px · tüm boyutlarda</td></tr>
+          <tr><td>Tab · Sm</td><td>gap (icon ↔ label)</td><td>${tk('--bt-space-none')}</td><td>0</td></tr>
+          <tr><td>Tab · Md / Lg</td><td>gap (icon ↔ label)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Tab</td><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px · tüm state'ler</td></tr>
+          <tr><td>Tab · Default</td><td>color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Tab · Selected (Line / Segmented)</td><td>color</td><td>${tk('--bt-text-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Tab · Selected (Bordered)</td><td>color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a · <strong>değişmez</strong></td></tr>
+          <tr><td>Tab · Disabled</td><td>color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Icon</td><td>size / color</td><td>${tk('--bt-icon-primary-strong')}</td><td>18×18 · #535353 · state'ten bağımsız</td></tr>
+          <tr><td>Track (Line / Bordered)</td><td>border-bottom (yatay)</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4</td></tr>
+          <tr><td>Track (Line / Bordered · Vertical)</td><td>border-right / border-left</td><td>${tk('--bt-border-primary-default')}</td><td>1px</td></tr>
+          <tr><td>Line · Hover</td><td>border-bottom-color</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Line · Selected</td><td>border-bottom-color</td><td>${tk('--bt-border-brand-default')}</td><td>1px · #0d4e97 (indicator)</td></tr>
+          <tr><td>Bordered · Selected (yatay)</td><td>border üst+yan + beyaz alt-kesik + bg</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-base-default')}</td><td>#d4d4d4 / #ffffff · radius 4px 4px 0 0</td></tr>
+          <tr><td>Bordered · Selected (dikey)</td><td>border üst+sağ + beyaz alt-seam + sol açık</td><td>${tk('--bt-border-primary-default')} / ${tk('--bt-base-default')}</td><td>radius 0 4px 4px 0 · sol kenar transparent</td></tr>
+          <tr><td>Segmented · Track</td><td>background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Segmented · Track</td><td>border / radius / padding</td><td>${tk('--bt-border-primary-default')} · ${tk('--bt-radius-md')} · ${tk('--bt-space-2xs')}</td><td>1px · 6px · 2px</td></tr>
+          <tr><td>Segmented · Tab</td><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Segmented · Selected</td><td>background</td><td>${tk('--bt-primary-subtle')}</td><td>#e2edfc</td></tr>
+          <tr><td>Segmented · Selected</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>1px · #0d4e97</td></tr>
+          <tr><td>Focus (tüm fill modes)</td><td>box-shadow</td><td>${tk('rgba(212,212,212,.5)')}</td><td>0 0 0 3px · nötr ring (proje standardı)</td></tr>
+          <tr><td>Counter badge</td><td>background / color</td><td>${tk('--bt-surface-brand-default')} / ${tk('--bt-text-primary-inverted')}</td><td>#0d4e97 / #ffffff · 10px/12 · min 14×14</td></tr>
+          <tr><td>Close button</td><td>class</td><td>—</td><td>${tk('.bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon')} (24×24) · onclick ${tk('btTabClose(this)')}</td></tr>
+          <tr><td>Add Tab button</td><td>class</td><td>—</td><td>${tk('.bt-tab-list__add .bt-btn bt-btn--2xs bt-btn--base-flat')} (20px) · onclick ${tk('btTabAdd(this)')}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Tab'ın ne zaman ve hangi fill mode ile kullanılacağına dair kılavuz. Tab, aynı bağlamda <strong>birbirini dışlayan görünümler / bölümler</strong> arasında geçiş içindir; sayfa navigasyonu (route değişimi) için de kullanılabilir — bu, Segmented Control'den (yalnız mod/görünüm geçişi) temel farkıdır.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>İçeriğin mantıksal bölümleri için kullan — her tab kendi panelini gösterir, her zaman biri seçili kalır</li>
+        <li>Fill mode'u bağlama göre seç: <strong>Line</strong> içerik başlığında/sayfa içi, <strong>Bordered</strong> bir panele/karta bağlı, <strong>Segmented</strong> kompakt toolbar veya form bölümü</li>
+        <li>Bir tab grubundaki tüm tab'ları aynı boyut + fill mode'da tut</li>
+        <li>Yalnız ikon gösteren tab'lara tooltip / ${tk('aria-label')} ekle</li>
+        <li>Dar alanlarda ${tk('.bt-tab-list--vertical')} ile dikeye geç</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>3–5'ten fazla tab kullanma; uzun listeler için Navigation Drawer / Select tercih et</li>
+        <li>Aynı grupta fill mode veya boyut karıştırma</li>
+        <li>Tek bir aksiyonu tetiklemek için tab kullanma — bu Button işi</li>
+        <li>Seçili tab bırakmadan boş durumda gösterme</li>
+      </ul>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Üç fill mode'un (Line · Bordered · Segmented) her biri, içerik tipi (Label / Icon &amp; Label / Closable / With Counter) kırılımıyla; ardından yatay/dikey diziliş, Counter ve Add Tab bölümleri. Tab'lara tıklayarak seçimi taşıyın, ×'lerle kapatın. Overview'daki kilitli playground'ların aksine burada her kombinasyon canlı tablo satırı olarak gösterilir.</p>
+
+      ${fillExample(TAB_FILL_OPTS[0])}
+      ${fillExample(TAB_FILL_OPTS[1])}
+      ${fillExample(TAB_FILL_OPTS[2])}
+
+      <h2 id="Vertical">Vertical</h2>
+      <p class="page-desc">${tk('.bt-tab-list--vertical')} ile tab'lar dikey istiflenir, içerik sola hizalanır. Line'da indicator alt-border yerine <strong>sağ-border</strong>, Bordered'da seçili tab'ın <strong>sol kenarı açılır</strong> (soldaki panele bağlanır) ve <strong>sağ köşeler</strong> yuvarlanır; Segmented track dikey pill olur. Yan menü veya dar panellerde tercih edilir.</p>
+      <table class="token-table">
+        <thead><tr><th>Fill</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Line</td><td>${tabListHtml({ fill: 'line', orientation: 'vertical', count: '4', selected: '0' })}</td></tr>
+          <tr><td>Bordered</td><td>${tabListHtml({ fill: 'bordered', orientation: 'vertical', count: '4', selected: '0' })}</td></tr>
+          <tr><td>Segmented</td><td>${tabListHtml({ fill: 'segmented', orientation: 'vertical', count: '4', selected: '0' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Counter">Counter</h2>
+      <p class="page-desc">Base Tab'ın ${tk('Show Counter')} özelliği — label'dan sonra bir sayı rozeti (${tk('.bt-tab__counter')}: ${tk('--bt-surface-brand-default')} zemin, ${tk('--bt-text-primary-inverted')} metin, 10px/12, min 14×14, tam yuvarlak). Her bölümdeki öğe sayısını (bildirim, sonuç, hata) gösterir; her üç fill mode'da çalışır.</p>
+      ${exampleViewer(
+        tabListHtml({ fill: 'line', count: '3', selected: '0', counter: 'on' }) +
+        tabListHtml({ fill: 'segmented', count: '3', selected: '0', counter: 'on' })
+      )}
+
+      <h2 id="Add Tab">Add Tab</h2>
+      <p class="page-desc">Figma'daki (${tk('1055:40422')}) desen — closable tab grubunun sonuna bir <strong>"Add Tab"</strong> butonu: gerçek ${tk('.bt-btn bt-btn--2xs bt-btn--base-flat')} (plus ikon + "Add Tab", 20px). <strong>Çalışır:</strong> tıklamak ilk tab'ı şablon alıp klonlar ve butonun önüne ekler (${tk('window.btTabAdd')}). Genelde ${tk('Closable')} ile birlikte. Aç, birkaç tab ekle, sonra ×'lerle kapat:</p>
+      ${exampleViewer(tabListHtml({ fill: 'line', count: '3', selected: '0', closable: 'on', addTab: 'on' }))}
+    `};
+
+    // ── Overview ──
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-tab-overview',
+        variants: [{ key: 'default', label: 'Tab' }],
+        props: [
+          { key: 'fill',        label: 'Fill Mode',   options: TAB_FILL_OPTS,     default: 'line' },
+          { key: 'orientation', label: 'Orientation', options: TAB_ORIENT_OPTS,   default: 'horizontal' },
+          { key: 'size',        label: 'Size',        options: TAB_SIZE_OPTS,     default: 'md' },
+          { key: 'content',     label: 'Content',     options: TAB_CONTENT_OPTS,  default: 'label' },
+          { key: 'count',       label: 'Tabs',        options: TAB_COUNT_OPTS,    default: '3' },
+          { key: 'selected',    label: 'Selected',    options: TAB_SELECTED_OPTS, default: '0' },
+          { key: 'closable',    label: 'Closable',    options: TBX_BOOL_OPTS,     default: 'off' },
+          { key: 'counter',     label: 'Counter',     options: TBX_BOOL_OPTS,     default: 'off' },
+          { key: 'addTab',      label: 'Add Tab',     options: TBX_BOOL_OPTS,     default: 'off' },
+        ],
+        preview: (v, p) => wrap(tabListHtml(p)),
+        code:    (v, p) => tabListHtml(p),
+        css:     (v, p) => tabListCss(v, p),
+      })}
+
+      <p class="page-desc">Aynı bağlamda birbirini dışlayan bölümler / görünümler arasında geçiş sağlayan bileşen — her zaman bir tab seçili kalır ve kendi panelini gösterir. Üç fill mode farklı görsel ağırlık ve bağlam sunar: <strong>Line</strong> (paylaşılan alt çizgi + brand alt-border indicator), <strong>Bordered</strong> (seçili tab bir panele bağlanır), <strong>Segmented</strong> (pill track, Segmented Control modeli). Boyut (Sm/Md/Lg), yatay/dikey diziliş, opsiyonel ikon, sayı rozeti (${tk('Show Counter')}) ve kapatma butonu (${tk('Type=Closable')}) desteklenir. HTML'de ${tk('.bt-tab-list')} + ${tk('.bt-tab-list--{fill}')} sarmalayıcı ve ${tk('.bt-tab.bt-tab--{size}')} çocukları; seçili tab ${tk('.bt-tab--selected')} taşır. Blazor tarafında ${tk('TelerikTabStrip')} / ${tk('BtTabStrip')} + ${tk('TabStripTab')}'lar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">İki katman: dıştaki ${tk('.bt-tab-list')} sarmalayıcısı (fill mode'a göre alt çizgi veya pill track çizer, diziliş yönünü belirler) ve içindeki ${tk('.bt-tab')} çocukları. Her ${tk('.bt-tab')} Figma'nın <em>Base Tab</em> yapısını izler: opsiyonel <strong>Left Control</strong> (18×18 ikon), <strong>Label</strong>, opsiyonel <strong>Right Control</strong> (sayı rozeti + kapatma butonu). Yatay padding tüm boyutlarda ${tk('--bt-space-xl')} (12px); yükseklik ve ikon↔label boşluğu boyuta göre değişir. Renk/border değerleri fill mode × state kombinasyonuna göre ${tk('.bt-tab-list--{fill}')} altında tanımlanır; kapatma butonu gerçek ${tk('.bt-btn')} bileşenidir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Figma layer</th><th>Class</th><th>Rol</th></tr></thead>
+        <tbody>
+          <tr><td>Tabs (container)</td><td>${tk('.bt-tab-list')} + ${tk('--{fill}')} + ${tk('--vertical')}</td><td>track çizgisi / pill · diziliş yönü</td></tr>
+          <tr><td>Tab</td><td>${tk('.bt-tab')} + ${tk('.bt-tab--{size}')}</td><td>STATE katmanı · yatay padding · yükseklik</td></tr>
+          <tr><td>Left Control › Icon Control</td><td>${tk('.bt-tab__icon')}</td><td>18×18 ikon · ${tk('--bt-icon-primary-strong')} · Content = Icon &amp; Label'da görünür · docs demo Segmented Control ile paylaşılan ${tk('_segIcons')} setini kullanır (pozisyona göre döngüsel)</td></tr>
+          <tr><td>Label</td><td>${tk('.bt-tab__label')}</td><td>Geist 12px/400/16</td></tr>
+          <tr><td>Right Control › Counter</td><td>${tk('.bt-tab__counter')}</td><td>min 14×14 · brand rozet · ${tk('Show Counter')}</td></tr>
+          <tr><td>Right Control › Button</td><td>${tk('.bt-tab__close')} = ${tk('.bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon')}</td><td>24×24 kapatma · ${tk('Type=Closable')} · tıklama tab'ı siler (${tk('btTabClose')})</td></tr>
+          <tr><td>Add Tab (Figma 1055:40422)</td><td>${tk('.bt-tab-list__add')} = ${tk('.bt-btn bt-btn--2xs bt-btn--base-flat')}</td><td>track sonunda · plus ikon + "Add Tab" · tıklama tab ekler (${tk('btTabAdd')})</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Üç boyut — Sm (28px), Md (32px), Lg (36px). Boyut yalnızca tab yüksekliğini ve ikon↔label boşluğunu (Sm: 0, Md/Lg: ${tk('--bt-space-xs')} 4px) değiştirir; yatay padding (${tk('--bt-space-xl')}, 12px), tipografi (${tk('--bt-text-xs-regular')}, her boyutta 12px/16px) ve 18×18 ikon sabit kalır. Boyut ${tk('.bt-tab--{size}')} ile her tab'a uygulanır; varsayılan Sm modifiersizdir.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${TAB_SIZE_VARIANTS.map(s => `<tr><td><span class="token-name">${s.label}</span></td><td>${s.key === 'lg' ? '36px' : s.key === 'md' ? '32px' : '28px'}</td><td>${staticList({ fill: 'line', size: s.key, count: '3', selected: '0' })}</td></tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Tab beş etkileşim durumu barındırır: Default, Hover, Selected, Focus ve Disabled (Figma'da ayrıca Active var — Selected ile birebir aynı görünür). Hover ve Selected fill mode'a göre farklı tepki verir; Focus her modda nötr bir 3px odak halkası (${tk('box-shadow')}, ${tk('rgba(212,212,212,.5)')} — proje standardı) ekler; Disabled'da yalnız metin ${tk('--bt-text-primary-muted')}'a düşer (ikon rengi değişmez, ${tk('pointer-events: none')}). HTML'de ${tk('.bt-tab--selected')} / ${tk('.bt-tab--disabled')} veya ${tk(':hover')} / ${tk(':focus-visible')}.</p>
+      ${TAB_FILL_OPTS.map(f => `
+      <div style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${f.label}</div>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${TAB_STATE_OPTS.map(s => {
+            const opts = { selected: s.key === 'selected', disabled: s.key === 'disabled', focus: s.key === 'focus' };
+            const row = `<div class="bt-tab-list bt-tab-list--${f.key}">`
+              + tabItemHtml({ label: 'Tab 1', size: 'md', ...opts })
+              + tabItemHtml({ label: 'Tab 2', size: 'md' })
+              + tabItemHtml({ label: 'Tab 3', size: 'md' })
+              + `</div>`;
+            return `<tr><td><span class="token-name">${s.label}</span></td><td>${row}</td></tr>`;
+          }).join('')}
+        </tbody>
+      </table>`).join('')}
+
+      <h2 id="Fill Modes">Fill Modes</h2>
+      <p class="page-desc">Fill mode hem tab'ın hem de sarmalayıcının görünümünü belirler — üçü de aynı Base Tab yapısını kullanır, yalnız track ve seçili-tab stili değişir. Aşağıdaki tablo üçünü tek bakışta karşılaştırır; ardından her biri <strong>kendi bölümünde</strong> (kilitli playground + Label / Icon &amp; Label / Closable alt kırılımları) ayrıntılı ele alınır. CSS'te ${tk('.bt-tab-list--line')} (varsayılan) / ${tk('.bt-tab-list--bordered')} / ${tk('.bt-tab-list--segmented')} ile seçilir.</p>
+      <table class="token-table">
+        <thead><tr><th>Fill Mode</th><th>Track</th><th>Seçili tab</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Line</td><td>alt çizgi ${tk('--bt-border-primary-default')}</td><td>brand alt-border + brand metin</td><td>${staticList({ fill: 'line', count: '3', selected: '0' })}</td></tr>
+          <tr><td>Bordered</td><td>alt çizgi ${tk('--bt-border-primary-default')}</td><td>3 kenar kutu + beyaz alt-kesik</td><td>${staticList({ fill: 'bordered', count: '3', selected: '0' })}</td></tr>
+          <tr><td>Segmented</td><td>pill: ${tk('--bt-base-subtle')} + border + ${tk('--bt-radius-md')}</td><td>${tk('--bt-primary-subtle')} dolgu + brand border</td><td>${staticList({ fill: 'segmented', count: '3', selected: '0' })}</td></tr>
+        </tbody>
+      </table>
+
+      ${fillSection(TAB_FILL_OPTS[0])}
+      ${fillSection(TAB_FILL_OPTS[1])}
+      ${fillSection(TAB_FILL_OPTS[2])}
+
+      <h2 id="Vertical">Vertical</h2>
+      <p class="page-desc">${tk('.bt-tab-list--vertical')} ile tab'lar dikey istiflenir, içerik sola hizalanır (${tk('justify-content: flex-start')}). Line'da indicator alt-border yerine <strong>sağ-border</strong>, Bordered'da seçili tab'ın <strong>sol kenarı açılır</strong> (soldaki panele bağlanır) ve <strong>sağ köşeler</strong> yuvarlanır; Segmented track dikey pill olur. Yükseklik, state ve renk kuralları yatayla aynıdır. Yan menü veya dar panellerde tercih edilir.</p>
+      ${registerPlayground({
+        id: 'pgd-tab-vertical-sec',
+        variants: [{ key: 'default', label: 'Vertical' }],
+        props: [{ key: 'fill', label: 'Fill Mode', options: TAB_FILL_OPTS, default: 'line' }, P_SIZE, P_COUNT, P_SELECTED],
+        preview: (v, p) => wrap(tabListHtml({ ...p, orientation: 'vertical' })),
+        code:    (v, p) => tabListHtml({ ...p, orientation: 'vertical' }),
+        css:     (v, p) => tabListCss(v, { ...p, orientation: 'vertical' }),
+      })}
+
+      <h2 id="Counter">Counter</h2>
+      <p class="page-desc">Base Tab'ın ${tk('Show Counter')} özelliği — label'dan sonra bir sayı rozeti (${tk('.bt-tab__counter')}: ${tk('--bt-surface-brand-default')} zemin, ${tk('--bt-text-primary-inverted')} metin, 10px/12, min 14×14, tam yuvarlak, sol boşluk ${tk('--bt-space-xs')}). Her bölümdeki öğe sayısını (bildirim, sonuç, hata) gösterir; her üç fill mode'da ve seçili/seçili-değil ayrımı gözetmeden çalışır — bu yüzden ayrı bir varyant değil, opsiyonel bir toggle.</p>
+      ${exampleViewer(
+        tabListHtml({ fill: 'line', count: '3', selected: '0', counter: 'on', interactive: false }) +
+        tabListHtml({ fill: 'segmented', count: '3', selected: '0', counter: 'on', interactive: false })
+      )}
+
+      <h2 id="Add Tab">Add Tab</h2>
+      <p class="page-desc">Figma'daki (${tk('1055:40422')}) desen — closable tab grubunun sonuna, ${tk('.bt-tab-list')}'in son çocuğu olarak bir <strong>"Add Tab"</strong> butonu (${tk('.bt-tab-list__add')} = gerçek ${tk('.bt-btn bt-btn--2xs bt-btn--base-flat')}, plus ikon + "Add Tab", 20px; Figma'yla birebir: pad ${tk('2px 4px')}, gap 6px). <strong>Çalışır:</strong> tıklamak ilk tab'ı ${tk('cloneNode')} ile şablon alıp butondan önce ekler (${tk('window.btTabAdd')}). Yatayda ${tk('align-self: center')}, dikeyde tam-genişlik satır. Master playground'da ${tk('Add Tab')} toggle'ıyla; genelde ${tk('Closable')} ile birlikte.</p>
+      ${exampleViewer(tabListHtml({ fill: 'line', count: '3', selected: '0', closable: 'on', addTab: 'on' }))}
     `};
   },
 };

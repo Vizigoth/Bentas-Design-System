@@ -2561,6 +2561,10 @@ pre.code-block.line-numbers {
   font-weight: 400;                   /* Font/Weight/Regular */
   font-size: 12px;                    /* Font/Size/text-xs */
   line-height: 16px;                  /* Font/Line-Height/text-lh-xs */
+  /* Height is always 2×py + 16px (the text line-box), independent of content.
+     Icon-only buttons have a 14px icon, so without this the box would be 2px
+     short — min-height locks it to the same height as the icon+text variant. */
+  min-height: calc(var(--btn-py) * 2 + 16px);
   border-radius: var(--bt-radius-sm); /* Radius/radius-sm = 4px */
   transition: background 120ms, box-shadow 120ms, color 120ms;
   white-space: nowrap;
@@ -2580,8 +2584,8 @@ pre.code-block.line-numbers {
 .bt-btn--xl  { --btn-py: var(--bt-space-xl);  --btn-px: var(--bt-space-xl);  padding: var(--btn-py) var(--btn-px); } /* 40px tall */
 .bt-btn--2xl { --btn-py: var(--bt-space-2xl); --btn-px: var(--bt-space-xl);  padding: var(--btn-py) var(--btn-px); } /* 48px tall */
 
-/* — Icon Only: square padding = py of matching size — */
-.bt-btn--icon { gap: 0; padding: var(--btn-py); }
+/* — Icon Only: square box = same height as icon+text (2×py + 16px) — */
+.bt-btn--icon { gap: 0; padding: var(--btn-py); min-width: calc(var(--btn-py) * 2 + 16px); }
 
 /* ── Primary / Solid ─────────────────────────────────────────── */
 .bt-btn--primary-solid {
@@ -2850,6 +2854,9 @@ pre.code-block.line-numbers {
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
+  /* Height is always 2×py + 16px, independent of content — see .bt-btn note.
+     Keeps Icon Only parts (14px icon) the same height as icon+text parts. */
+  min-height: calc(var(--split-py) * 2 + 16px);
   transition: background 120ms, box-shadow 120ms, color 120ms;
   user-select: none;
   outline: none;
@@ -2876,8 +2883,8 @@ pre.code-block.line-numbers {
   background: var(--split-divider, rgba(255,255,255,0.30));
 }
 
-/* — Icon Only: Button part square padding (gap kaldırılır, metin yok) — */
-.bt-split-btn__button--icon { gap: 0; padding: var(--split-py); }
+/* — Icon Only: Button part square box (gap kaldırılır, metin yok) — */
+.bt-split-btn__button--icon { gap: 0; padding: var(--split-py); min-width: calc(var(--split-py) * 2 + 16px); }
 
 /* — Sizes (height = 2×py + 16px, matches bt-btn exactly) — */
 .bt-split-btn--2xs { --split-py: var(--bt-space-2xs); --split-px: var(--bt-space-xs);  } /* 20px */
@@ -5594,6 +5601,201 @@ pre.code-block.line-numbers {
   width: auto;
   height: 1px;
 }
+
+/* ── Tab ─────────────────────────────────────────────────────────
+   Figma "Bentas DS" › page "Tabs" (Base Tab 1040:6309 + Tab 1045:22304).
+   Üç fill mode:
+     Line      — tab'lar paylaşılan bir alt çizgide oturur; seçili tab'ın
+                 brand renkli alt-border'ı indicator olur.
+     Bordered  — seçili tab 3 kenardan kutu + beyaz alt-kesik ile panele
+                 "bağlanır" (klasör sekmesi görünümü).
+     Segmented — pill track (bg + border + radius-md), seçili tab brand-subtle
+                 dolgu + brand border (Segmented Control ile aynı model).
+   Yatay + dikey. Tab yapısı: [icon] [label] [counter] [close].            */
+
+.bt-tab-list {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+}
+
+/* Line & Bordered — paylaşılan çizgi (yatay: alt, dikey: sağ/sol) */
+.bt-tab-list--line,
+.bt-tab-list--bordered {
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-tab-list--line.bt-tab-list--vertical,
+.bt-tab-list--bordered.bt-tab-list--vertical {
+  flex-direction: column;
+  border-bottom: none;
+}
+.bt-tab-list--line.bt-tab-list--vertical    { border-right: 1px solid var(--bt-border-primary-default, #d4d4d4); }
+.bt-tab-list--bordered.bt-tab-list--vertical { border-left:  1px solid var(--bt-border-primary-default, #d4d4d4); }
+
+/* Segmented — pill track */
+.bt-tab-list--segmented {
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  background: var(--bt-base-subtle, #f5f5f5);
+  border-radius: var(--bt-radius-md, 6px);
+  padding: var(--bt-space-2xs, 2px);
+  gap: var(--bt-space-2xs, 2px);
+}
+.bt-tab-list--segmented.bt-tab-list--vertical { flex-direction: column; }
+
+/* ── Tab item — varsayılan (modifiersiz) = Md ── */
+.bt-tab {
+  --tab-h: 32px;                                 /* Md (varsayılan) */
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-xs, 4px);                  /* Md/Lg: 4px · Sm: 0 */
+  height: var(--tab-h);
+  padding: 0 var(--bt-space-xl, 12px);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+  border-radius: 0;
+  transition: color 120ms, background 120ms, border-color 120ms, box-shadow 120ms;
+}
+.bt-tab--sm { --tab-h: 28px; gap: 0; }
+.bt-tab--md { --tab-h: 32px; gap: var(--bt-space-xs, 4px); }   /* = varsayılan */
+.bt-tab--lg { --tab-h: 36px; gap: var(--bt-space-xs, 4px); }
+
+.bt-tab__icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-icon-primary-strong, #535353);   /* tüm state'lerde sabit */
+}
+.bt-tab__icon svg { width: 18px; height: 18px; display: block; }
+
+.bt-tab__label { display: inline-block; }
+
+/* Counter badge (Show Counter) */
+.bt-tab__counter {
+  flex-shrink: 0;
+  min-width: 14px;
+  height: 14px;
+  margin-left: var(--bt-space-xs, 4px);
+  padding: 0 var(--bt-space-2xs, 2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--bt-surface-brand-default, #0d4e97);
+  color: var(--bt-text-primary-inverted, #ffffff);
+  font: 400 10px/12px var(--font);
+}
+
+/* Close (Type=Closable) — gerçek bt-btn reuse edilir:
+   <button class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon"> */
+.bt-tab__close {
+  margin-left: var(--bt-space-xs, 4px);
+  flex-shrink: 0;
+}
+
+/* ── Line ── */
+.bt-tab-list--line .bt-tab {
+  border-bottom: 1px solid transparent;   /* seçim değişince layout shift yok */
+  margin-bottom: -1px;                    /* track çizgisine biner */
+}
+.bt-tab-list--line .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  border-bottom-color: var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-tab-list--line .bt-tab--selected {
+  border-bottom-color: var(--bt-border-brand-default, #0d4e97);
+  color: var(--bt-text-brand-default, #0d4e97);
+}
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab {
+  border-bottom: none;
+  border-right: 1px solid transparent;
+  margin-bottom: 0;
+  margin-right: -1px;
+  justify-content: flex-start;
+}
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  border-right-color: var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab--selected {
+  border-right-color: var(--bt-border-brand-default, #0d4e97);
+}
+
+/* ── Bordered ── */
+.bt-tab-list--bordered .bt-tab {
+  border: 1px solid transparent;
+  border-radius: var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0 0;
+  margin-bottom: -1px;
+}
+.bt-tab-list--bordered .bt-tab--selected {
+  border-color: var(--bt-border-primary-default, #d4d4d4);
+  border-bottom-color: var(--bt-base-default, #ffffff);   /* beyaz kesik → panele bağlanır */
+  background: var(--bt-base-default, #ffffff);
+}
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab {
+  /* non-selected: varsayılan üst-köşe radius'u zaten şeffaf border ile görünmez */
+  margin-bottom: 0;
+  margin-left: -1px;                       /* container'ın sol çizgisine biner */
+  justify-content: flex-start;
+}
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab--selected {
+  /* Figma: grey top+right, beyaz bottom (seam), sol açık; sağ köşeler yuvarlı */
+  border-color: var(--bt-border-primary-default, #d4d4d4);
+  border-left-color: transparent;
+  border-bottom-color: var(--bt-base-default, #ffffff);
+  border-radius: 0 var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0;
+}
+
+/* ── Segmented ── */
+.bt-tab-list--segmented .bt-tab {
+  border: 1px solid transparent;
+  border-radius: var(--bt-radius-sm, 4px);
+}
+.bt-tab-list--segmented .bt-tab--selected {
+  background: var(--bt-primary-subtle, #e2edfc);
+  border-color: var(--bt-border-brand-default, #0d4e97);
+  color: var(--bt-text-brand-default, #0d4e97);
+}
+
+/* ── State: Focus (tüm fill modes) ── */
+.bt-tab:focus-visible {
+  box-shadow: 0 0 0 3px rgba(212, 212, 212, 0.5);   /* proje standardı nötr focus ring */
+  border-radius: var(--bt-radius-sm, 4px);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── State: Disabled ── */
+.bt-tab--disabled {
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Add Tab — track'in sonundaki buton (Figma: Button 2xs / Flat / Base,
+   plus ikon + "Add Tab"). Gerçek .bt-btn reuse edilir. ── */
+.bt-tab-list__add {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: var(--bt-space-xs, 4px);
+}
+.bt-tab-list--vertical .bt-tab-list__add {
+  align-self: stretch;
+  justify-content: flex-start;
+  margin-left: 0;
+  margin-top: var(--bt-space-xs, 4px);
+}
+/* Segmented track içinde de dikey ortalı dursun (track'in 2px padding'i yeterli) */
+.bt-tab-list--segmented .bt-tab-list__add { margin-left: var(--bt-space-2xs, 2px); }
 
 /* Collapsible — borderless header collapse trigger */
 /* Collapsible header trigger artık sadece icon button — header'ın kendisi tıklanabilir değil */

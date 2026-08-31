@@ -139,36 +139,48 @@ Bir component sayfasındaki **her `<h2>` ve `<h3>` bölümü** — Header/Body/F
 - `<table class="token-table" style="margin-top:12px">` — token/anatomy/states tablosu; `tk(v)` helper'ı ile token adları `<code>` formatında, token karşılığı olmayanlar için Token sütununa `—`
 - `.example-viewer` — statik görsel örnek
 
-## Statik Demo Gösterimi — "Example Viewer" Pattern
+## Statik Demo Gösterimi — "Example Viewer" Pattern — ZORUNLU
 
-Bir sayfada **playground olmadan** (interaktif prop/variant yok) bir şeyi sadece görsel olarak göstermek gerektiğinde, kullanıcı **"example viewer kullan"** veya **"example viewer'a koy"** diyebilir. Bu, `registerPlayground` yerine şu statik HTML yapısını kullanmak demektir:
+Bir bölümün demosu `registerPlayground` DEĞİLSE (statik/interaktif-props'suz bir önizleme), o önizleme **her zaman `.example-viewer` içine** sarılır — çıplak bir `<div style="padding:…">` sarmalayıcı kabul edilmez ("İçerik → bare HTML kabul edilmez" kuralının bir parçası). `token-table` (states/anatomy/token listesi) bu kuraldan muaftır; kural, "bir veya birkaç canlı component örneğini göstermek" için olan serbest önizlemeler içindir (Counter rozeti, Add Tab butonu, tek bir fill mode örneği vb.). Yapı `registerPlayground` yerine:
 
+**A) Küçük component örneği (varsayılan) — alana yatay + dikey ORTALI:**
 ```html
-<!-- Önizleme alanı (playground preview ile aynı görünüm) -->
+<div class="example-viewer">
+  <div class="example-viewer-preview" style="align-items:center;">
+    <div style="display:flex;flex-direction:column;gap:20px;align-items:center;">
+      <!-- bir veya birkaç canlı örnek — alt alta, ortalı -->
+    </div>
+  </div>
+</div>
+```
+`.example-viewer-preview` zaten `display:flex; justify-content:center` taşır; `align-items:center` inline'ı dikey ortalamayı ekler. İç flex-column `align-items:center` her örneği yatayda ortalar. Örnekler **sola/üste yaslı bırakılmaz** — 460px'lik alanın ortasında durur.
+
+**B) Tam-genişlik / geniş içerik (grid, tablo, cihaz çerçevesi) — frame nesting'i:**
+```html
 <div class="example-viewer">
   <div class="example-viewer-preview">
     <div class="pgd-preview-inner">
       <div class="pgd-viewport-frame" style="width:100%">
-        <!-- Gösterilecek içerik buraya -->
+        <div style="padding:32px;overflow-x:auto;"><!-- geniş içerik --></div>
       </div>
     </div>
   </div>
 </div>
+```
+Yalnızca içerik önizleme alanının tam genişliğini kullanmalıysa (Data Table `bt-grid-container` gibi) bu nesting kullanılır.
 
-<!-- Kod gösterimi (playground Code tab ile aynı görünüm) -->
+**Kod gösterimi** (opsiyonel, playground Code tab ile aynı görünüm):
+```html
 <div class="example-viewer">
-  <div class="example-viewer-code">
-    <pre><!-- HTML/CSS kodu buraya --></pre>
-  </div>
+  <div class="example-viewer-code"><pre><!-- escaped HTML/CSS --></pre></div>
 </div>
 ```
 
 **Kurallar:**
 - `.example-viewer` → kenarlı, rounded wrapper (`border: 1px solid var(--bt-border-muted); border-radius: 10px`)
-- `.example-viewer-preview` → açık arka planlı önizleme alanı (`min-height/max-height: 460px`)
+- `.example-viewer-preview` → açık arka planlı önizleme alanı (`min-height/max-height: 460px`, `justify-content:center`)
 - `.example-viewer-code` → kod alanı (`border-top` ile preview'dan ayrılır); yalnız kullanılabilir
 - İkisi **aynı** `.example-viewer` içinde art arda veya **ayrı** `.example-viewer` blokları olarak kullanılabilir
-- Preview içindeki içerik genellikle `padding:32px` ve `overflow-x:auto` alır
 - **`registerPlayground` kullanılmaz** — bu pattern tamamen statik/interaktif değil
 
 **Kod renklendirme (syntax highlighting + satır numaraları) — ZORUNLU:**
@@ -239,6 +251,55 @@ toc: ['Section1', 'Section2', 'Variant A', 'Variant B', 'Variant C'],
 
 **Sub-sayfalar:** Eski sub-sayfa `PAGES_WEB[...]` tanımları silinmek zorunda değil — sidebar'dan kaldırılmaları yeterli. Ancak yeni component eklenirken sub-sayfa hiç oluşturulmaz.
 
+## Çok Eksenli (Multi-Axis) Component Dokümantasyonu — ZORUNLU
+
+Bir component'in yapılandırma yüzeyi = **eksenler** kümesi (Fill Mode, Content Type, Size, State, Orientation, Closable, Counter…). Yukarıdaki "Varyant Dokümantasyonu" davranışsal varyantları (Card: Default/Clickable/…) kapsar; **bu kural ise dik/ortogonal yapılandırma eksenlerini** kapsar (Tab, Segmented Control, Button). Her ekseni aşağıdaki **5 türden** birine sok; her türün sabit bir muamelesi var — yeni component eklerken önce eksenleri sınıflandır.
+
+| # | Tür | Nasıl anlaşılır | Playground prop | Bölüm(ler) | TOC'ta? |
+|---|---|---|---|---|---|
+| 1 | **Core** | Her component'te var | ✓ | `Sizes` / `States` / `Themes` `<h2>` — sabit sıra (bkz. "TOC sıralaması") | **✓** |
+| 2 | **Primary** | Görsel kimliği **en çok** değiştiren **tek** eksen (Tab→Fill Mode, Button→Fill Mode) | ✓ | (a) tek `<h2 id="{Eksen çoğul}">` **karşılaştırma** (statik `token-table`, satır/değer) **+** (b) **her değer için ayrı `<h2 id="{değer}">` bölüm** (Line, Bordered, Segmented…) | (a) ve (b)**nin hepsi ✓** |
+| 3 | **Content** | İç içeriğin **kutu geometrisini/padding'ini** değiştirdiği eksen (Segmented Control→Content Type: Icon Only kutuyu kareler). İkon sadece görünüp kayboluyorsa (padding sabit) bu bir Content ekseni DEĞİL, **Feature toggle** — Tab böyle. | ✓ | Primary ekseni varsa: her Primary değer bölümünün **içinde `<h3>` alt-bölüm** (Label / Icon & Label / Closable…). Primary eksen yoksa: Primary gibi kendi `<h2 id="{değer}">`'leri | Primary'nin içindeyse `<h3>` → **✗**; bağımsızsa `<h2>` → **✓** |
+| 4 | **Layout** | Orientation (Horizontal/Vertical) vb. | ✓ | yalnız **varsayılan-olmayan** değer için `<h2 id="Vertical">` — Primary eksen boyunca preview | **✓** |
+| 5 | **Feature toggle** | Opsiyonel, bağımsız eklenen parça (Counter, Add Tab, Separator, Show Icon…) | ✓ `On`/`Off` — `TBX_BOOL_OPTS` reuse | Primary değer bölümlerine özgü toggle (Closable gibi) → o bölümlerin içinde `<h3>`. Kesişen/genel toggle (Counter, Add Tab) → bağımsız `<h2 id="{Özellik}">` | `<h3>` → **✗**; bağımsız `<h2>` → **✓** |
+
+### Sayfa iskeleti (Primary ekseni olan component — örn. Tab)
+
+**Overview sekmesi** (bu sırayla):
+1. **Master playground** — TEK `registerPlayground` (`pgd-{comp}-overview`), `props` TÜM eksenleri şu sırada: primary → orientation → size → content → count/selected → feature toggle'lar. `css` callback scoped kuralları yazar.
+2. `<h2 id="Anatomy">` + `<h2 id="Sizes">` + `<h2 id="States">` (state matrisi Primary değer başına bir `<div>`-etiketli alt-tablo — `<h3>` değil) + `<h2 id="{Primary çoğul}">` (statik karşılaştırma tablosu).
+3. **Her Primary değer için `<h2 id="{değer}">`** (Line → Bordered → Segmented):
+   - `<p class="page-desc">` (3-katmanlı) + o değere **kilitli** `registerPlayground` (`pgd-{comp}-{değer}-sec`; primary sabit, orientation/size/count/selected/toggle'lar açık)
+   - içinde **`<h3>` alt-bölümler**: `Label` → `Icon & Label` → `Closable` (Content ekseni + o eksene özgü toggle'lar). **Her `<h3>` kendi `registerPlayground`'una sahip** (`pgd-{comp}-{değer}-{alt}-sec`; hem primary hem content sabit, size/count/selected açık) + `<p class="page-desc">`.
+
+**Examples sekmesi:** Overview'daki `<h2 id>` bölümlerinin **aynısı** (Line/Bordered/Segmented + Vertical + Counter + Add Tab), ama playground yerine **interaktif preview tabloları** (Segmented Control Examples deseni — satırlar: Label / Icon & Label / Closable / With Counter). Bağımsız `<h2>`'ler (Vertical, Counter, Add Tab) yalnız Examples'ta olabilir.
+
+**TOC (düz dizi) — sayfadaki HER `<h2>` bölümü, doküman sırasında:**
+```javascript
+toc: ['Anatomy', 'Sizes', 'States', 'Themes'?,      // core
+      'Fill Modes',                                   // primary karşılaştırma
+      'Line', 'Bordered', 'Segmented',                // her primary değer
+      'Vertical', 'Counter', 'Add Tab']               // bağımsız layout/toggle
+```
+`<h3>` alt-bölümler (Label / Icon & Label / Closable) TOC'ta değildir. Overview ve Examples aynı `id`'leri paylaşır (farklı sekmelerde, aynı anda DOM'da değil) — `renderToc` hangi sekmedeysen o `id`'yi bulur.
+
+**Playground ID çakışması:** `pgd-{comp}-overview` · `pgd-{comp}-{değer}-sec` · `pgd-{comp}-{değer}-{alt}-sec` · Examples tarafında `-ex` son eki.
+
+**Statik demolar → `.example-viewer`:** Bir bağımsız `<h2>` bölümü (Counter, Add Tab gibi) playground yerine sadece canlı örnek gösteriyorsa, önizleme **`.example-viewer` içine sarılır** (bkz. "Statik Demo Gösterimi — ZORUNLU"). Çıplak `<div>` sarmalayıcı veya salt `token-table` yerine değil, bunlara ek olarak — birden çok örnek `.example-viewer-preview` içindeki flex-column'da alt alta dizilir.
+
+**İnteraktif davranış:** bir toggle gerçek runtime davranışı taşıyorsa (close siler, Add Tab klonlar) → `window.btXxx(el)` global (`btSegSelect`/`btTabSelect`/`btTabClose`/`btTabAdd` deseni), markup helper'ında `onclick`, ilgili `<h3>`/`<h2>` description'ında kalın **"Çalışır:"** + handler adı.
+
+**Referanslar:** `components/segmented-control` (Content ekseni bağımsız `<h2>`'ler — Primary eksen yok), `components/tab` (Primary = Fill Mode, Content `<h3>` olarak Fill Mode değerlerinin içinde) ve `components/avatar` (Primary = Type / Initials·Icon, Core = Theme + Size, State yok) bu standardın kanonik örnekleridir.
+
+### Tablo dışı bir eksen türüyle karşılaşınca
+
+Bu 5 tür tekrar eden desenleri kapsar; farklı bir eksen türü çıkarsa:
+
+1. **Önce mevcut bir türe *ihtiyaca göre* eşle** (isme göre değil): görsel kimliği değiştiriyor → Primary · iç kutu geometrisi/padding → Content · istifleme yönü → Layout · opsiyonel bir parça ekliyor/çıkarıyor → Feature toggle · her component'te evrensel → Core. Eksen component'in **ne yaptığını** değiştiriyorsa (görünüşünü değil — single/multi select, editable/readonly gibi) bu tablo değil, **"Varyant Dokümantasyonu — Tek Sayfa Standardı"** (Card modeli) geçerlidir.
+2. **Gerçekten hiçbirine uymuyorsa:** varsayılan olarak **Primary/Content gibi ele al** (karşılaştırma `<h2>` + per-değer `<h2 id>` bölümleri + kilitli playground) — bu en açık/kapsamlı muamele, asla eksik-dokümante etmez. **Ama sessizce 6. kategori uydurma:** ekseni tarif et, en yakın türü + gerekçeni söyle, kullanıcıdan onay ya da yeni tür adı iste.
+3. **Yeni tür doğrulanırsa:** hemen bu tabloya **Tür 6** olarak, sabit muamelesiyle (playground prop mu · hangi bölüm(ler) · TOC'ta mı) ekle — bir sonraki tekrar deterministik olsun.
+4. **Eskalasyon eşiği:** aynı "uymayan" eksen **ikinci kez** çıkarsa artık zorunlu olarak yazılı bir tür olur (projede bu desen zaten var — Data Table'ın per-kolon config'i "Properties Tutarlılığı" kuralını, Card varyantları ayrı bir standardı doğurdu).
+
 ## Data Table Örneklerinde Properties Tutarlılığı — ZORUNLU
 
 Data Table'ın TÜM örnek sayfaları (`components/data-table*` — Data Table, Toolbar, Actions, Frozen Column First/Last, Inline Editing, InCell Editing, ve gelecekte eklenecek her yeni Data Table örneği, örn. Sorting/Filter Menu) **aynı temel Properties setine** sahip olmalı (kullanıcı isteğiyle, 2026-08-24, bkz. HISTORY.md). Bu otomatik/koddan gelen bir davranış DEĞİL — yeni bir Data Table sayfası eklerken/mevcut birini değiştirirken elle uygulanması gereken bir kontrol listesi:
@@ -254,6 +315,14 @@ Yeni bir Data Table örneği eklerken bu dört maddeyi kontrol et — kullanıc�
 
 `docs/js/app.js`'teki `renderToc()`, `page.toc` dizisi olan HER sayfanın "On this page" panelinin en üstüne otomatik olarak sayfanın başına (`#page-title`) atlayan bir **"Overview"** linki ekler. Bu **merkezi/otomatik** bir davranış — yeni bir component sayfası eklerken `toc` dizisine manuel `'Overview'` eklemeye gerek YOK, `renderToc()` bunu kendisi prepend ediyor. `page.toc` boşsa (`toc: []`) TOC paneli hiç gösterilmiyor, bu davranış değişmedi.
 
+### TOC bölüm adlandırması ve sıralaması — STANDART
+
+- **Adlandırma:** Boyut bölümü her zaman **`Sizes`** (çoğul) — `Size` değil. Tema bölümü her zaman **`Themes`** (çoğul) — `Theme` değil. (2026-08-31: `components/button-group`'ta `Size`/`Theme` → `Sizes`/`Themes` düzeltildi.)
+- **Sıralama:** `toc` dizisi şu sabit blokla başlar (mevcut olanlar, bu sırada): **Anatomy → Sizes → States → Themes**. "Overview" `renderToc()` tarafından zaten en üste otomatik ekleniyor, diziye yazılmaz. Themes'in altındaki per-tema girdileri (`Base`, `Primary`, …) bu bloğun hemen ardından gelir.
+- **Component-özel bölümler** (Types, Fill Mode, Label Position, Content Position, Content Types, varyant bölümleri vb.) sabit bloktan **sonra**, yani **Themes'den (ve per-tema girdilerinden) sonra** listelenir; kendi aralarındaki mevcut göreli sıraları korunur.
+- `toc` dizisindeki sıra ile sayfa gövdesindeki `<h2>`/`<h3>` sırası **birebir aynı olmalı** — bir bölümü toc'ta yukarı/aşağı alırken karşılık gelen render bloğu da taşınır (aksi halde toc linkine tıklayınca sayfa geriye zıplar). Bu bir "içerik taşıma"dır; [İçerik Kaldırma Yasağı] gereği yalnızca kullanıcı sıralama değişikliği istediğinde yapılır.
+- **Uygulama durumu:** 2026-08-31 itibarıyla yalnızca Buttons grubunda uygulandı — `Button`, `Button Group`, `Split Button` ve `Icon Button` (bu sonuncusu `pages-web.js`'te sıfırdan yazıldı, Button helper'larını `content:'icon'` kilitli reuse ediyor) web docs'ta tam standartta (description + TOC adlandırma/sıralama). `pages-mobile.js`'teki eski `components/icon-button` sayfası dokunulmadı (mobil docs hâlâ onu kullanıyor). Diğer component grupları sonraki oturumlarda bu standarda getirilecek.
+
 ## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
 
 Bu projede oluşturulan component'ler (markup + CSS + JS davranışı) **bundan sonraki
@@ -268,6 +337,8 @@ Bu yüzden bir component eklendiğinde/değiştirildiğinde:
 Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ayrıca hatırlatmasın.
 
 ## Son Tamamlanan Component
+
+**Tab** — 2026-08-31 (`components/tab`, Layout grubu). Fill Mode: Line / Bordered / Segmented; yatay+dikey; Size Sm/Md/Lg; State Default/Hover/Selected/Focus/Disabled; opsiyonel ikon, sayı rozeti (`Show Counter`), kapatma butonu (Type=Closable, gerçek `.bt-btn` reuse). `.bt-tab-list` + `.bt-tab` class'ları, `window.btTabSelect`. Figma "Bentas DS" › "Tabs" (Base Tab 1040:6309 + Tab 1045:22304). design.md §19. Nav'daki eski `tab-menu-horizontal`/`tab-menu-vertical` placeholder'ları kaldırıldı.
 
 **Data Table (Grid)** — 2026-08-12 (HeaderCell + GridCell + No Record Available + Frozen Column varyasyonu, bkz. design.md §17), en son 2026-08-24'te Inline Editing + InCell Editing sayfalarıyla (design.md §17.5), 7 sayfanın tamamında tutarlı Table-level Sort/Filter (gerçek sıralama, hover-only sort ikonları, 3 tıklık asc→desc→reset döngüsü), **Sorting** ve **Filtering** sayfalarıyla (design.md §17.6) ve GERÇEK çalışan Filter overlay'iyle (Ara/Tümünü Seç/kolon-verisinden-türeyen checkbox listesi/Temizle-Uygula, satırları fiilen filtreler, aktif buton state'i — TÜM Data Table sayfalarında paylaşılan tek kod yolu) genişletildi (design.md §17.7).
 Detaylı oturum geçmişi: `HISTORY.md`
