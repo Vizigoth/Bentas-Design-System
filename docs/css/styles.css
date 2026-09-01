@@ -1736,6 +1736,69 @@ pre.code-block.line-numbers {
 .pgd-menu-item-meta { color: var(--bt-text-muted); font-size: 11px; font-family: var(--mono); }
 .pgd-menu-check { display: inline-block; width: 14px; flex-shrink: 0; color: var(--bt-blue-700); }
 
+/* Background picker — Figma node 1076:123710 */
+.pgd-bg-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--bt-space-xs, 4px);
+  background: var(--bt-base-default, #ffffff);
+  border-radius: var(--bt-radius-md, 6px);
+  box-shadow: 0 4px 6px rgba(16,24,40,.03), 0 12px 16px rgba(16,24,40,.08);
+  min-width: 200px;
+  white-space: nowrap;
+}
+.pgd-bg-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  border-radius: var(--bt-radius-sm, 4px);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.pgd-bg-item:hover,
+.pgd-bg-item.is-active { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.pgd-bg-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--bt-radius-sm, 4px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  flex-shrink: 0;
+}
+.pgd-bg-label {
+  font-size: 13px;
+  line-height: var(--bt-text-xs-lh, 16px);
+  color: var(--bt-text-default, #111827);
+  font-family: var(--font);
+  font-weight: 400;
+}
+/* Viewport menüsündeki boyut bilgisi (ör. 360×780) */
+.pgd-vp-meta {
+  margin-left: auto;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--bt-text-muted);
+}
+
+/* Toolbar'daki küçük renk göstergesi */
+.pgd-bg-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--bt-radius-xs, 2px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
 /* Properties drawer — Figma node 799:4657 ("Properties" panel, Bentas-DS) */
 .pgd-viewer-split { display: flex; align-items: stretch; }
 .pgd-viewer-split > :first-child { flex: 1; min-width: 0; }
@@ -1891,6 +1954,13 @@ pre.code-block.line-numbers {
   flex-shrink: 0;
 }
 .pgd-measure-box { position: absolute; inset: 0; pointer-events: none; z-index: 30; display: none; }
+.pgd-mb-mar {
+  position: absolute;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(249,182,117,.45);
+}
 .pgd-mb-pad {
   position: absolute;
   display: none;
@@ -1917,6 +1987,7 @@ pre.code-block.line-numbers {
   line-height: 1.7;
   white-space: nowrap;
 }
+.pgd-mb-mar > .pgd-mb-label { background: rgba(200,100,20,.95); color: #fff; }
 .pgd-mb-content > .pgd-mb-label { background: rgba(28,64,112,.95); color: #fff; }
 
 .pgd-trigger-btn {
@@ -2333,6 +2404,97 @@ pre.code-block.line-numbers {
    without this it sits flush left (default justify-content: flex-start)
    instead of centered in the 32px-wide collapsed row. */
 .stb-shell.is-collapsed .stb-item-inner { justify-content: center; }
+
+/* ── Page Layout frame (playground / isolation mode) ─────────── */
+/* Used by PAGES_WEB['patterns/page-layouts']. The frame stretches to fill
+   the playground preview area; in isolation mode it fills the viewport.
+   Reuses existing component classes: .sbx-rail, .bt-btn, .bt-searchbox,
+   .bt-tab-list--bordered — no custom icon/button styles needed here. */
+.bt-pl-frame {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+}
+/* Playground: remove padding + stretch intermediate wrappers so the frame
+   fills the full 460px preview area flush to the edges (no white border). */
+.example-viewer-preview:has(.bt-pl-frame) {
+  padding: 0;
+}
+.example-viewer-preview:has(.bt-pl-frame) .pgd-preview-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.example-viewer-preview:has(.bt-pl-frame) .pgd-viewport-frame {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+/* Isolation mode: frame fills full viewport height */
+.iso-shell--app .bt-pl-frame { height: 100vh; flex: 1; }
+
+.bt-pl-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+.bt-pl-header {
+  height: 36px;
+  padding: 0 var(--bt-space-2xl, 16px);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  background: var(--bt-base-default, #fff);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.bt-pl-header-title {
+  font: var(--bt-text-lg-semibold, 600 18px/24px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-pl-toolbar {
+  height: 40px;
+  padding: 0 var(--bt-space-2xl, 16px);
+  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  background: var(--bt-base-default, #fff);
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-sm, 6px);
+  flex-shrink: 0;
+}
+/* SearchBox inside page-layout toolbars is always pushed to the right */
+.bt-pl-toolbar .bt-searchbox,
+.bt-pl-content-toolbar .bt-searchbox { margin-left: auto; width: 180px; }
+.bt-pl-body {
+  flex: 1;
+  overflow: hidden;
+  padding: var(--bt-space-2xl, 16px);
+  background: var(--bt-surface-primary-light, #fafafa);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.bt-pl-content-toolbar {
+  height: 44px;
+  padding: 0 var(--bt-space-2xl, 16px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-bottom: none;
+  background: var(--bt-base-default, #fff);
+  border-radius: var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-sm, 6px);
+  flex-shrink: 0;
+}
+/* Tab list inside page layout — prevent it from being compressed */
+.bt-pl-main .bt-tab-list { flex-shrink: 0; }
+/* Real bt-grid-container inside the body fills remaining space */
+.bt-pl-body .bt-grid-container { border-radius: var(--bt-radius-sm, 4px); }
+/* When preceded by a content toolbar, remove top radius (toolbar has it) */
+.bt-pl-content-toolbar + .bt-grid-container { border-radius: 0 0 var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px); }
 
 /* ── TOC Column (right panel, aligned to tab bar top) ───────── */
 .toc-col {
@@ -5431,14 +5593,13 @@ pre.code-block.line-numbers {
    Right Control hiyerarşisiyle birebir. ────────────────────────────────────────
    .bt-segment            = Figma "Segment"      — STATE katmanı: fill/border/radius
                                                    + CONTENT'e göre yatay padding
-   .bt-segment__base      = Figma "Base Segment" — iç flex satırı, ikon↔label gap
-   .bt-segment__left      = Figma "Left Control" — 28×28 sabit ikon taşıyıcısı
+   .bt-segment__base      = Figma "Base Segment" — iç flex satırı, slot'lar arası gap yok
+   .bt-segment__left-ctrl      = Figma "Left Control" — 28×28 sabit ikon taşıyıcısı
    .bt-segment__icon      = Figma "Icon Control" — 24×24, ikonu ortalar (doldurmaz)
    .bt-segment__label-wrap= Figma "Label" frame
    .bt-segment__label     = Figma "Segment Label" text
-   .bt-segment__right     = Figma "Right Control" — 28×28 sayaç rozeti slotu;
-                            Figma'da "Show Right Control" = false, bu yüzden
-                            ŞU AN RENDER EDİLMİYOR (ileride counter için ayrıldı).
+   .bt-segment__right-ctrl     = Figma "Right Control" — 28×28 sayaç rozeti slotu;
+                            içinde .bt-segment__counter pill'i taşır, opsiyonel.
    VARSAYILAN BOYUT = Md (32px) — modifiersiz; Sm/Lg için --sm/--lg. */
 .bt-segment {
   position: relative;   /* opsiyonel separator pseudo-element'i için */
@@ -5467,17 +5628,17 @@ pre.code-block.line-numbers {
   padding: var(--bt-space-none, 0);
   width: 32px;   /* Md = varsayılan */
 }
-/* Base Segment — iç flex satırı; ikon↔label boşluğu (gap) BURADA yaşar
-   (Figma "Base Segment" itemSpacing): Md/Lg = 4px, Sm = 0 (--sm override) */
+/* Base Segment — iç flex satırı; Left Control / Label / Right Control arasında gap YOK
+   (Figma "Base Segment" itemSpacing = 0 — slot'lar kendi sabit boyutlarıyla bitişik durur) */
 .bt-segment__base {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--bt-space-xs, 4px);
+  gap: var(--bt-space-none, 0);
 }
 /* Left Control — 28×28 sabit ikon taşıyıcı */
-.bt-segment__left {
+.bt-segment__left-ctrl {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -5506,6 +5667,34 @@ pre.code-block.line-numbers {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+/* Right Control — 28×28 sayaç rozeti slotu (Figma "Right Control") */
+.bt-segment__right-ctrl {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+/* Right Control varsa sağ padding kaldırılır (sol padding = Left Control varsa 0) */
+.bt-segment:has(.bt-segment__right-ctrl) { padding-right: var(--bt-space-none, 0); }
+/* Counter rozeti */
+.bt-segment__counter {
+  flex-shrink: 0;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 var(--bt-space-2xs, 2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--bt-surface-brand-default, #0d4e97);
+  color: var(--bt-text-primary-inverted, #ffffff);
+  font: 400 var(--bt-text-2xs-size, 10px)/var(--bt-text-2xs-lh, 12px) var(--font);
+}
+.bt-segment--selected .bt-segment__counter {
+  background: var(--bt-icon-brand-default, #0d4e97);
 }
 /* Selected / Active — Figma'da bu iki state görsel olarak birebir aynı */
 .bt-segment--selected {
@@ -5541,7 +5730,6 @@ pre.code-block.line-numbers {
 /* Sm (28px) — daha yoğun arayüzler */
 .bt-seg-ctrl--sm .bt-segment             { height: 28px; }
 .bt-seg-ctrl--sm .bt-segment--icon       { width: 28px; }
-.bt-seg-ctrl--sm .bt-segment__base       { gap: var(--bt-space-none, 0); }
 /* Lg (36px) */
 .bt-seg-ctrl--lg .bt-segment             { height: 36px; }
 .bt-seg-ctrl--lg .bt-segment--icon       { width: 36px; }
@@ -5650,7 +5838,7 @@ pre.code-block.line-numbers {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--bt-space-xs, 4px);                  /* Md/Lg: 4px · Sm: 0 */
+  gap: var(--bt-space-none, 0);                  /* Left/Right Control + Label arası gap YOK */
   height: var(--tab-h);
   padding: 0 var(--bt-space-xl, 12px);
   border: none;
@@ -5664,9 +5852,28 @@ pre.code-block.line-numbers {
   border-radius: 0;
   transition: color 120ms, background 120ms, border-color 120ms, box-shadow 120ms;
 }
-.bt-tab--sm { --tab-h: 28px; gap: 0; }
-.bt-tab--md { --tab-h: 32px; gap: var(--bt-space-xs, 4px); }   /* = varsayılan */
-.bt-tab--lg { --tab-h: 36px; gap: var(--bt-space-xs, 4px); }
+.bt-tab--sm { --tab-h: 28px; }
+.bt-tab--md { --tab-h: 32px; }   /* gap zaten 0 — varsayılan */
+.bt-tab--lg { --tab-h: 36px; }
+
+/* Left Control (icon slot) — Figma: "Left Control" 28×28 wrapper */
+/* Right Control (counter or close slot) — Figma: "Right Control" 28×28 wrapper */
+/* Both are optional; width equals the tab height (--tab-h) so the visual
+   weight matches the fixed-size slots in Figma's Base Tab atomic structure. */
+.bt-tab__left-ctrl,
+.bt-tab__right-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tab-h);
+  height: var(--tab-h);
+  flex-shrink: 0;
+}
+/* When a control occupies a side, the tab's own padding on that side is removed —
+   the fixed-size control provides the visual weight (Figma: Base Tab p-0 when
+   Left/Right Control slots are occupied, px-xl only when Label-only). */
+.bt-tab:has(.bt-tab__left-ctrl)  { padding-left:  0; }
+.bt-tab:has(.bt-tab__right-ctrl) { padding-right: 0; }
 
 .bt-tab__icon {
   flex-shrink: 0;
@@ -5679,14 +5886,13 @@ pre.code-block.line-numbers {
 }
 .bt-tab__icon svg { width: 18px; height: 18px; display: block; }
 
-.bt-tab__label { display: inline-block; }
+.bt-tab__label { display: inline-block; padding: 0 var(--bt-space-2xs, 2px); }
 
-/* Counter badge (Show Counter) */
+/* Counter badge (Show Counter) — inside .bt-tab__right-ctrl, centered */
 .bt-tab__counter {
   flex-shrink: 0;
   min-width: 14px;
   height: 14px;
-  margin-left: var(--bt-space-xs, 4px);
   padding: 0 var(--bt-space-2xs, 2px);
   display: inline-flex;
   align-items: center;
@@ -5697,37 +5903,67 @@ pre.code-block.line-numbers {
   font: 400 10px/12px var(--font);
 }
 
-/* Close (Type=Closable) — gerçek bt-btn reuse edilir:
-   <button class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon"> */
-.bt-tab__close {
-  margin-left: var(--bt-space-xs, 4px);
-  flex-shrink: 0;
-}
+/* Close (Type=Closable) — inside .bt-tab__right-ctrl, gerçek bt-btn reuse:
+   <span class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon"> */
+.bt-tab__close { flex-shrink: 0; }
 
 /* ── Line ── */
 .bt-tab-list--line .bt-tab {
   border-bottom: 1px solid transparent;   /* seçim değişince layout shift yok */
+  border-radius: var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0 0;  /* hover bg için üst köşeler yuvarlı */
   margin-bottom: -1px;                    /* track çizgisine biner */
 }
 .bt-tab-list--line .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  background: var(--bt-base-subtle, #f5f5f5);
   border-bottom-color: var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-tab-list--line .bt-tab:active:not(.bt-tab--disabled) {
+  border-bottom-color: var(--bt-border-brand-default, #0d4e97);
+  color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
 }
 .bt-tab-list--line .bt-tab--selected {
   border-bottom-color: var(--bt-border-brand-default, #0d4e97);
   color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-tab-list--line .bt-tab:active:not(.bt-tab--disabled) .bt-tab__icon,
+.bt-tab-list--line .bt-tab--selected .bt-tab__icon {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+.bt-tab-list--line .bt-tab:active:not(.bt-tab--disabled) .bt-tab__close,
+.bt-tab-list--line .bt-tab--selected .bt-tab__close {
+  color: var(--bt-icon-brand-default, #0d4e97);
 }
 .bt-tab-list--line.bt-tab-list--vertical .bt-tab {
   border-bottom: none;
   border-right: 1px solid transparent;
+  border-radius: var(--bt-radius-sm, 4px) 0 0 var(--bt-radius-sm, 4px);
   margin-bottom: 0;
   margin-right: -1px;
   justify-content: flex-start;
 }
 .bt-tab-list--line.bt-tab-list--vertical .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  background: var(--bt-base-subtle, #f5f5f5);
   border-right-color: var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab:active:not(.bt-tab--disabled) {
+  border-right-color: var(--bt-border-brand-default, #0d4e97);
+  color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
 }
 .bt-tab-list--line.bt-tab-list--vertical .bt-tab--selected {
   border-right-color: var(--bt-border-brand-default, #0d4e97);
+  color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab:active:not(.bt-tab--disabled) .bt-tab__icon,
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab--selected .bt-tab__icon {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab:active:not(.bt-tab--disabled) .bt-tab__close,
+.bt-tab-list--line.bt-tab-list--vertical .bt-tab--selected .bt-tab__close {
+  color: var(--bt-icon-brand-default, #0d4e97);
 }
 
 /* ── Bordered ── */
@@ -5736,10 +5972,24 @@ pre.code-block.line-numbers {
   border-radius: var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0 0;
   margin-bottom: -1px;
 }
+.bt-tab-list--bordered .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  background: var(--bt-base-subtle, #f5f5f5);
+}
+.bt-tab-list--bordered .bt-tab:active:not(.bt-tab--disabled),
 .bt-tab-list--bordered .bt-tab--selected {
   border-color: var(--bt-border-primary-default, #d4d4d4);
   border-bottom-color: var(--bt-base-default, #ffffff);   /* beyaz kesik → panele bağlanır */
   background: var(--bt-base-default, #ffffff);
+  color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-tab-list--bordered .bt-tab:active:not(.bt-tab--disabled) .bt-tab__icon,
+.bt-tab-list--bordered .bt-tab--selected .bt-tab__icon {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+.bt-tab-list--bordered .bt-tab:active:not(.bt-tab--disabled) .bt-tab__close,
+.bt-tab-list--bordered .bt-tab--selected .bt-tab__close {
+  color: var(--bt-icon-brand-default, #0d4e97);
 }
 .bt-tab-list--bordered.bt-tab-list--vertical .bt-tab {
   /* non-selected: varsayılan üst-köşe radius'u zaten şeffaf border ile görünmez */
@@ -5747,12 +5997,25 @@ pre.code-block.line-numbers {
   margin-left: -1px;                       /* container'ın sol çizgisine biner */
   justify-content: flex-start;
 }
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  background: var(--bt-base-subtle, #f5f5f5);
+}
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab:active:not(.bt-tab--disabled),
 .bt-tab-list--bordered.bt-tab-list--vertical .bt-tab--selected {
-  /* Figma: grey top+right, beyaz bottom (seam), sol açık; sağ köşeler yuvarlı */
+  /* Figma: grey top+bottom+right, sol açık (panel sola bağlanır); sağ köşeler yuvarlı */
   border-color: var(--bt-border-primary-default, #d4d4d4);
   border-left-color: transparent;
-  border-bottom-color: var(--bt-base-default, #ffffff);
   border-radius: 0 var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0;
+  color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab:active:not(.bt-tab--disabled) .bt-tab__icon,
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab--selected .bt-tab__icon {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab:active:not(.bt-tab--disabled) .bt-tab__close,
+.bt-tab-list--bordered.bt-tab-list--vertical .bt-tab--selected .bt-tab__close {
+  color: var(--bt-icon-brand-default, #0d4e97);
 }
 
 /* ── Segmented ── */
@@ -5760,10 +6023,24 @@ pre.code-block.line-numbers {
   border: 1px solid transparent;
   border-radius: var(--bt-radius-sm, 4px);
 }
+.bt-tab-list--segmented .bt-tab:hover:not(.bt-tab--disabled):not(.bt-tab--selected) {
+  background: var(--bt-base-subtle, #f5f5f5);
+  border-color: var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-tab-list--segmented .bt-tab:active:not(.bt-tab--disabled),
 .bt-tab-list--segmented .bt-tab--selected {
   background: var(--bt-primary-subtle, #e2edfc);
   border-color: var(--bt-border-brand-default, #0d4e97);
   color: var(--bt-text-brand-default, #0d4e97);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+}
+.bt-tab-list--segmented .bt-tab:active:not(.bt-tab--disabled) .bt-tab__icon,
+.bt-tab-list--segmented .bt-tab--selected .bt-tab__icon {
+  color: var(--bt-icon-brand-default, #0d4e97);
+}
+.bt-tab-list--segmented .bt-tab:active:not(.bt-tab--disabled) .bt-tab__close,
+.bt-tab-list--segmented .bt-tab--selected .bt-tab__close {
+  color: var(--bt-icon-brand-default, #0d4e97);
 }
 
 /* ── State: Focus (tüm fill modes) ── */
@@ -6526,6 +6803,58 @@ pre.code-block.line-numbers {
 .bt-grid__menu-item--danger { color: var(--bt-text-error-default, #b31d38); }
 .bt-grid__menu-item--danger:hover { background: var(--bt-surface-error-subtle, #fde6e6); }
 .bt-grid__menu-item--danger .bt-grid__menu-item-icon { color: var(--bt-text-error-default, #b31d38); }
+
+/* ── Overflow Menu — bağımsız component (bt-grid__menu-* ile görsel benzerlik
+   kasıtlı, class paylaşımı yok — bkz. bt-grid__menu yorumu). ───────────────
+   Trigger: gerçek bt-btn bt-btn--icon reuse eder.
+   Liste: position:fixed + document.body portal — grid menüyle aynı yöntem. */
+.bt-ovf-menu {
+  position: relative;
+  display: inline-flex;
+}
+.bt-ovf-menu__list {
+  display: none;
+  position: fixed;
+  z-index: 200;
+  min-width: 140px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background: var(--bt-surface-primary-default, #ffffff);
+  border-radius: var(--bt-radius-sm, 4px);
+  overflow: hidden;
+  box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
+  box-sizing: border-box;
+}
+.bt-ovf-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-xs, 4px);
+  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
+  cursor: pointer;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+  user-select: none;
+}
+.bt-ovf-menu__item:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.bt-ovf-menu__item-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-icon-primary-strong, #535353);
+}
+.bt-ovf-menu__item--danger { color: var(--bt-text-error-default, #b31d38); }
+.bt-ovf-menu__item--danger:hover { background: var(--bt-surface-error-subtle, #fde6e6); }
+.bt-ovf-menu__item--danger .bt-ovf-menu__item-icon { color: var(--bt-text-error-default, #b31d38); }
+.bt-ovf-menu__divider {
+  height: 1px;
+  background: var(--bt-border-primary-default, #d4d4d4);
+  margin: var(--bt-space-2xs, 2px) 0;
+}
 
 /* — Filter Overlay — kullanıcının verdiği referans görsele göre: Ara input'u
    + Tümünü Seç + kolon verisinden türetilen checkbox listesi + Temizle/

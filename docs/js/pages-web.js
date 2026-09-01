@@ -65,9 +65,10 @@ const NAV_WEB = [
       },
       {
         label: 'Overlays', children: [
-          { label: 'Alert Dialog', id: 'components/alert-dialog' },
-          { label: 'Dialog',       id: 'components/dialog' },
-          { label: 'Drawer',       id: 'components/nav-drawer' },
+          { label: 'Alert Dialog',   id: 'components/alert-dialog' },
+          { label: 'Dialog',         id: 'components/dialog' },
+          { label: 'Drawer',         id: 'components/nav-drawer' },
+          { label: 'Overflow Menu',  id: 'components/overflow-menu' },
         ]
       },
     ]
@@ -78,6 +79,7 @@ const NAV_WEB = [
       { label: 'Error States',  id: 'patterns/error-states' },
       { label: 'Forms',         id: 'patterns/forms' },
       { label: 'Onboarding',    id: 'patterns/onboarding' },
+      { label: 'Page Layouts',  id: 'patterns/page-layouts' },
     ]
   },
   {
@@ -10577,6 +10579,45 @@ document.addEventListener('scroll', function() {
   document.querySelectorAll('.bt-grid__menu-list[data-bt-grid-portal="1"]').forEach(btGridMenuHide);
 }, true);
 
+// ── Overflow Menu — standalone component handlers ─────────────────────────
+// bt-grid__menu ile aynı portal deseni: açılınca liste document.body'ye
+// taşınır, kapanınca .bt-ovf-menu'ya geri döner.
+function btOvfMenuHide(list) {
+  list.style.display = 'none';
+  list.removeAttribute('data-bt-ovf-portal');
+  if (list._btOvfHome) list._btOvfHome.appendChild(list);
+}
+window.btOvfMenuToggle = function(event, btn) {
+  event.stopPropagation();
+  const menu = btn.closest('.bt-ovf-menu');
+  if (!menu) return;
+  const list = menu.querySelector('.bt-ovf-menu__list') || document.querySelector('.bt-ovf-menu__list[data-bt-ovf-portal="1"]');
+  const wasOpen = list && list.style.display === 'block';
+  document.querySelectorAll('.bt-ovf-menu__list[data-bt-ovf-portal="1"]').forEach(btOvfMenuHide);
+  if (!wasOpen && list) {
+    const r = btn.getBoundingClientRect();
+    list.style.top   = (r.bottom + 2) + 'px';
+    list.style.right = (window.innerWidth - r.right) + 'px';
+    list.style.display = 'block';
+    list.setAttribute('data-bt-ovf-portal', '1');
+    list._btOvfHome = menu;
+    document.body.appendChild(list);
+  }
+};
+window.btOvfMenuClose = function(event, item) {
+  event.stopPropagation();
+  const list = item.closest('.bt-ovf-menu__list');
+  if (list) btOvfMenuHide(list);
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.bt-ovf-menu') && !e.target.closest('.bt-ovf-menu__list')) {
+    document.querySelectorAll('.bt-ovf-menu__list[data-bt-ovf-portal="1"]').forEach(btOvfMenuHide);
+  }
+});
+document.addEventListener('scroll', function() {
+  document.querySelectorAll('.bt-ovf-menu__list[data-bt-ovf-portal="1"]').forEach(btOvfMenuHide);
+}, true);
+
 function gridHeaderCellHtml(opts) {
   const o = opts || {};
   const position = o.position || 'left';
@@ -12474,28 +12515,38 @@ const SEG_ORIENT_OPTS = [
 const _segIconWrap = p => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const _segIcons = [
   _segIconWrap('<line x1="12" x2="12" y1="2" y2="6"/><line x1="12" x2="12" y1="18" y2="22"/><line x1="4.93" x2="7.76" y1="4.93" y2="7.76"/><line x1="16.24" x2="19.07" y1="16.24" y2="19.07"/><line x1="2" x2="6" y1="12" y2="12"/><line x1="18" x2="22" y1="12" y2="12"/><line x1="4.93" x2="7.76" y1="19.07" y2="16.24"/><line x1="16.24" x2="19.07" y1="7.76" y2="4.93"/>'), // loader
-  _segIconWrap('<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>'), // sparkles
-  _segIconWrap('<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'), // sun
+  _segIconWrap('<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>'), // settings-2
+  _segIconWrap('<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>'), // archive
   _segIconWrap('<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'), // user-round
   _segIconWrap('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'), // flame
-  _segIconWrap('<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'), // map-pin
+  _segIconWrap('<path d="M15.6 2.7a10 10 0 1 0 5.7 5.7"/><circle cx="12" cy="12" r="2"/><path d="M13.4 10.6 19 5"/>'), // circle-gauge
 ];
 const _segIcon = _segIcons[0];   // geri uyumluluk (tek-ikon isteyen yerler)
 
-// Tek segment markup'ı — Figma "Segment" › "Base Segment" › Left Control / Label
-// (Right Control = counter slotu, Figma'da Show Right Control=false → render edilmez).
-function segItemHtml({ label = '', content = 'label', sel = false, dis = false, extraAttr = '', iconIndex = 0 } = {}) {
+// Tek segment markup'ı — Figma "Segment" › "Base Segment" › Left Control / Label / Right Control
+// Atomic yapı (Figma "Segment" node):
+//   bt-segment
+//     └─ bt-segment__base
+//          ├─ bt-segment__left-ctrl    (opsiyonel — icon varsa)
+//          │    └─ bt-segment__icon
+//          ├─ bt-segment__label-wrap  (opsiyonel — label varsa)
+//          │    └─ bt-segment__label
+//          └─ bt-segment__right-ctrl   (opsiyonel — counter varsa)
+//               └─ bt-segment__counter
+function segItemHtml({ label = '', content = 'label', sel = false, dis = false, extraAttr = '', iconIndex = 0, counter = false } = {}) {
   const selCls     = sel ? ' bt-segment--selected' : '';
   const contentCls = content === 'icon' ? ' bt-segment--icon'
                    : content === 'icon-label' ? ' bt-segment--icon-label' : '';
   const disAttr    = dis ? ' disabled' : '';
   const icon  = _segIcons[((iconIndex % _segIcons.length) + _segIcons.length) % _segIcons.length];
   const left  = (content === 'icon' || content === 'icon-label')
-    ? `<span class="bt-segment__left"><span class="bt-segment__icon">${icon}</span></span>` : '';
+    ? `<span class="bt-segment__left-ctrl"><span class="bt-segment__icon">${icon}</span></span>` : '';
   const lab   = (content === 'label' || content === 'icon-label')
     ? `<span class="bt-segment__label-wrap"><span class="bt-segment__label">${label}</span></span>` : '';
+  const right = counter
+    ? `<span class="bt-segment__right-ctrl"><span class="bt-segment__counter">1</span></span>` : '';
   return `<button class="bt-segment${selCls}${contentCls}"${disAttr}${extraAttr}>`
-       + `<span class="bt-segment__base">${left}${lab}</span>`
+       + `<span class="bt-segment__base">${left}${lab}${right}</span>`
        + `</button>`;
 }
 
@@ -12511,8 +12562,9 @@ function segCtrlHtml(p) {
   const sepCls     = p.separator === 'on' ? ' bt-seg-ctrl--separated' : '';
   const labels     = ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5', 'Label 6'];
 
+  const showCounter = p.showCounter === 'on';
   const segs = Array.from({ length: count }, (_, i) =>
-    segItemHtml({ label: labels[i], content, sel: i === selIdx, dis: i === disIdx, iconIndex: i, extraAttr: ' onclick="btSegSelect(this)"' })
+    segItemHtml({ label: labels[i], content, sel: i === selIdx, dis: i === disIdx, iconIndex: i, counter: showCounter, extraAttr: ' onclick="btSegSelect(this)"' })
   ).join('');
   return `<div class="bt-seg-ctrl${sizeClass}${orientCls}${sepCls}">${segs}</div>`;
 }
@@ -12529,10 +12581,8 @@ function segCtrlCss(v, p) {
   const padComment = content === 'icon'       ? 'var(--bt-space-none)  /* 0 — kare, genişlik = yükseklik */'
                    : content === 'icon-label' ? 'var(--bt-space-none) var(--bt-space-xl) var(--bt-space-none) var(--bt-space-none)  /* sağ 12px · sol 0 (ikon sola yaslı) */'
                    :                            'var(--bt-space-none) var(--bt-space-xl)  /* 0 / 12px */';
-  // Base Segment ikon↔label boşluğu: Sm = 0, Md/Lg = space-xs (4px)
-  const gapVal = (size === 'sm')
-    ? 'var(--bt-space-none)  /* 0 — Sm */'
-    : 'var(--bt-space-xs)  /* 4px — Md/Lg (varsayılan dahil) */';
+  // Base Segment gap = 0 — Left/Right Control slot'ları ile Label arası gap yok
+  const gapVal = 'var(--bt-space-none)  /* 0 */';
   const segMod = content === 'icon' ? '.bt-segment--icon' : content === 'icon-label' ? '.bt-segment--icon-label' : '';
   const vertical = p.orientation === 'vertical';
   const lines = [
@@ -12571,7 +12621,7 @@ function segCtrlCss(v, p) {
     ln('color',           'var(--bt-text-primary-default)  /* #1a1a1a */'),
     ln('transition',      'background-color .18s ease, border-color .18s ease, color .18s ease  /* segment geçişi yumuşak */'),
     '}', '',
-    `/* Figma "Base Segment" — iç flex satırı, ikon↔label gap */`,
+    `/* Figma "Base Segment" — iç flex satırı, slot'lar arası gap yok */`,
     `${sizeSel}.bt-segment__base {`,
     ln('flex',            '1'),
     ln('display',         'flex'),
@@ -12581,7 +12631,7 @@ function segCtrlCss(v, p) {
     '}', '',
     ...((content === 'icon' || content === 'icon-label') ? [
       `/* Figma "Left Control" 28×28 › "Icon Control" 24×24 › ikon 18×18 */`,
-      '.bt-segment__left {',
+      '.bt-segment__left-ctrl {',
       ln('width',  '28px'),
       ln('height', '28px'),
       ln('display', 'flex'),
@@ -12702,7 +12752,7 @@ PAGES_WEB['components/segmented-control'] = {
           <tr><td>Segment · Selected / Active</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px</td></tr>
           <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3 · zemin değişmez</td></tr>
           <tr><td>Segment · Focus</td><td>Box Shadow</td><td>${tk('--bt-border-primary-default')} @ 50%</td><td>0 0 0 3px rgba(212,212,212,.5) · nötr</td></tr>
-          <tr><td>Left Control (${tk('.bt-segment__left')})</td><td>Size</td><td>—</td><td>28×28px · tüm boyutlarda sabit</td></tr>
+          <tr><td>Left Control (${tk('.bt-segment__left-ctrl')})</td><td>Size</td><td>—</td><td>28×28px · tüm boyutlarda sabit</td></tr>
           <tr><td>Icon Control (${tk('.bt-segment__icon')})</td><td>Size</td><td>—</td><td>24×24px · ikonu ortalar</td></tr>
           <tr><td>Icon</td><td>Size</td><td>—</td><td>18×18px inline SVG</td></tr>
           <tr><td>Icon · Default</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
@@ -12821,7 +12871,8 @@ PAGES_WEB['components/segmented-control'] = {
           { key: 'count',       label: 'Segments',    options: SEG_COUNT_OPTS,    default: '3' },
           { key: 'selected',    label: 'Selected',    options: SEG_SELECTED_OPTS, default: '0' },
           { key: 'disabled',    label: 'Disabled',    options: SEG_DISABLED_OPTS, default: 'none' },
-          { key: 'separator',   label: 'Separator',   options: TBX_BOOL_OPTS,     default: 'on' },
+          { key: 'separator',   label: 'Separator',    options: TBX_BOOL_OPTS,     default: 'on' },
+          { key: 'showCounter', label: 'Show Counter', options: TBX_BOOL_OPTS,     default: 'off' },
         ],
         preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:24px;">${segCtrlHtml(p)}</div>`,
         code:    (v, p) => segCtrlHtml(p),
@@ -12843,16 +12894,16 @@ PAGES_WEB['components/segmented-control'] = {
         </tbody>
       </table>
       <h3>Anatomy</h3>
-      <p class="page-desc">Taşıyıcı hiyerarşisi Figma'nın <em>Segment › Base Segment › Left Control / Label / Right Control</em> yapısıyla birebir. <strong>Container</strong> (${tk('.bt-seg-ctrl')}) track'i çizer; segmentler bitişik, divider yok. <strong>Segment</strong> (${tk('.bt-segment')}) = Figma "Segment" — STATE katmanı (fill/border/radius) + Content'e göre yatay padding. İçinde tek çocuk <strong>Base Segment</strong> (${tk('.bt-segment__base')}) = iç flex satırı, ikon↔label boşluğu (gap) burada. Base Segment'in üç bölümü: <strong>Left Control</strong> (${tk('.bt-segment__left')}, 28×28) ikonu taşır → içinde <strong>Icon Control</strong> (${tk('.bt-segment__icon')}, 24×24) → ikon 18×18 (slotu doldurmaz); <strong>Label</strong> (${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')}); <strong>Right Control</strong> (${tk('.bt-segment__right')}, 28×28) sayaç rozeti için ayrılmış slot — Figma'da <em>Show Right Control = false</em>, bu yüzden şu an render edilmiyor.</p>
+      <p class="page-desc">Taşıyıcı hiyerarşisi Figma'nın <em>Segment › Base Segment › Left Control / Label / Right Control</em> yapısıyla birebir. <strong>Container</strong> (${tk('.bt-seg-ctrl')}) track'i çizer; segmentler bitişik, divider yok. <strong>Segment</strong> (${tk('.bt-segment')}) = Figma "Segment" — STATE katmanı (fill/border/radius) + Content'e göre yatay padding. İçinde tek çocuk <strong>Base Segment</strong> (${tk('.bt-segment__base')}) = iç flex satırı, slot'lar arası gap yok. Base Segment'in üç bölümü: <strong>Left Control</strong> (${tk('.bt-segment__left-ctrl')}, 28×28) ikonu taşır → içinde <strong>Icon Control</strong> (${tk('.bt-segment__icon')}, 24×24) → ikon 18×18 (slotu doldurmaz); <strong>Label</strong> (${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')}); <strong>Right Control</strong> (${tk('.bt-segment__right-ctrl')}, 28×28) counter rozeti (${tk('.bt-segment__counter')}) taşır — opsiyonel, playground'da "Show Counter" ile açılır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Figma layer</th><th>Class</th><th>Boyut / Rol</th></tr></thead>
         <tbody>
           <tr><td>Segment</td><td>${tk('.bt-segment')}</td><td>STATE katmanı · Content'e göre yatay padding · radius-sm</td></tr>
-          <tr><td>Base Segment</td><td>${tk('.bt-segment__base')}</td><td>iç flex satırı · ikon↔label gap (Md/Lg 4px, Sm 0)</td></tr>
-          <tr><td>Left Control</td><td>${tk('.bt-segment__left')}</td><td>28×28 · ikon taşıyıcı · Content = Icon / Icon &amp; Label'da görünür</td></tr>
+          <tr><td>Base Segment</td><td>${tk('.bt-segment__base')}</td><td>iç flex satırı · slot'lar arası gap yok</td></tr>
+          <tr><td>Left Control</td><td>${tk('.bt-segment__left-ctrl')}</td><td>28×28 · ikon taşıyıcı · Content = Icon / Icon &amp; Label'da görünür</td></tr>
           <tr><td>Icon Control</td><td>${tk('.bt-segment__icon')}</td><td>24×24 · ikonu ortalar (doldurmaz) · ikon 18×18</td></tr>
           <tr><td>Label</td><td>${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')}</td><td>hug · Content = Label / Icon &amp; Label'da görünür</td></tr>
-          <tr><td>Right Control</td><td>${tk('.bt-segment__right')}</td><td>28×28 · counter slotu · <strong>şu an render edilmez</strong> (Show Right Control = false)</td></tr>
+          <tr><td>Right Control</td><td>${tk('.bt-segment__right-ctrl')}</td><td>28×28 · counter rozeti slotu · ${tk('.bt-segment__counter')} içerir · opsiyonel</td></tr>
         </tbody>
       </table>
       <table class="token-table" style="margin-top:12px">
@@ -12875,7 +12926,7 @@ PAGES_WEB['components/segmented-control'] = {
           <tr><td>Segment · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
           <tr><td>Segment · Focus</td><td>Box Shadow</td><td>${tk('--bt-border-primary-default')} @ 50%</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
           <tr><td>Base Segment (${tk('.bt-segment__base')})</td><td>Gap (icon ↔ label)</td><td>${tk('--bt-space-xs')} / ${tk('--bt-space-none')}</td><td>Md/Lg 4px · Sm 0</td></tr>
-          <tr><td>Left Control (${tk('.bt-segment__left')})</td><td>Size</td><td>—</td><td>28×28 · sabit</td></tr>
+          <tr><td>Left Control (${tk('.bt-segment__left-ctrl')})</td><td>Size</td><td>—</td><td>28×28 · sabit</td></tr>
           <tr><td>Icon Control (${tk('.bt-segment__icon')})</td><td>Size</td><td>—</td><td>24×24 · ikon 18×18</td></tr>
           <tr><td>Icon · Default / Selected / Disabled</td><td>Color</td><td>${tk('--bt-icon-primary-strong')} / ${tk('--bt-icon-brand-default')} / ${tk('--bt-icon-primary-muted')}</td><td>#535353 / #0d4e97 / #a3a3a3</td></tr>
           <tr><td>Segment · Motion</td><td>Transition</td><td>—</td><td>background-color · border-color · color · box-shadow, 0.18s ease</td></tr>
@@ -12976,7 +13027,7 @@ PAGES_WEB['components/segmented-control'] = {
       </table>
 
       <h2 id="Icon Only">Icon Only</h2>
-      <p class="page-desc">Yalnız ikon taşıyan segment — dar toolbar'larda veya evrensel anlamı olan simgelerde (liste/ızgara görünümü, metin hizası vb.) kullanılır. ${tk('.bt-segment--icon')} modifier'ı yatay padding'i sıfırlar ve segmenti kareye kilitler: genişlik boyut yüksekliğine eşitlenir (Sm 28 · Md 32 · Lg 36). İkon <strong>Left Control</strong> (${tk('.bt-segment__left')}, 28×28) › <strong>Icon Control</strong> (${tk('.bt-segment__icon')}, 24×24) içinde 18×18 render edilir — slotu doldurmaz, ortalanır; rengi resting'de ${tk('--bt-icon-primary-strong')}, seçilince ${tk('--bt-icon-brand-default')}. Erişilebilirlik için her segmente ${tk('aria-label')} veya tooltip eklenmelidir. Demolarda her pozisyon <strong>ayrı bir ikon</strong> alır (loader · sparkles · sun · user-round · flame · map-pin — Lucide seti, 2–6 segment için); gerçek kullanımda her segmente kendi anlamlı ikonu verilir.</p>
+      <p class="page-desc">Yalnız ikon taşıyan segment — dar toolbar'larda veya evrensel anlamı olan simgelerde (liste/ızgara görünümü, metin hizası vb.) kullanılır. ${tk('.bt-segment--icon')} modifier'ı yatay padding'i sıfırlar ve segmenti kareye kilitler: genişlik boyut yüksekliğine eşitlenir (Sm 28 · Md 32 · Lg 36). İkon <strong>Left Control</strong> (${tk('.bt-segment__left-ctrl')}, 28×28) › <strong>Icon Control</strong> (${tk('.bt-segment__icon')}, 24×24) içinde 18×18 render edilir — slotu doldurmaz, ortalanır; rengi resting'de ${tk('--bt-icon-primary-strong')}, seçilince ${tk('--bt-icon-brand-default')}. Erişilebilirlik için her segmente ${tk('aria-label')} veya tooltip eklenmelidir. Demolarda her pozisyon <strong>ayrı bir ikon</strong> alır (loader · sparkles · sun · user-round · flame · map-pin — Lucide seti, 2–6 segment için); gerçek kullanımda her segmente kendi anlamlı ikonu verilir.</p>
       ${registerPlayground({
         id: 'pgd-seg-ctrl-icon-sec',
         variants: [{ key: 'default', label: 'Icon Only' }],
@@ -13000,13 +13051,13 @@ PAGES_WEB['components/segmented-control'] = {
         </tbody>
       </table>
       <h3>Anatomy</h3>
-      <p class="page-desc">${tk('.bt-segment.bt-segment--icon')} › ${tk('.bt-segment__base')} › ${tk('.bt-segment__left')} (28×28) › ${tk('.bt-segment__icon')} (24×24) › inline ${tk('&lt;svg&gt;')} 18×18. Label render edilmez; segment kare olduğu için genişlik boyut yüksekliğiyle birlikte değişen tek ölçüdür. Left/Icon Control ve ikon boyutu boyutla ölçeklenmez.</p>
+      <p class="page-desc">${tk('.bt-segment.bt-segment--icon')} › ${tk('.bt-segment__base')} › ${tk('.bt-segment__left-ctrl')} (28×28) › ${tk('.bt-segment__icon')} (24×24) › inline ${tk('&lt;svg&gt;')} 18×18. Label render edilmez; segment kare olduğu için genişlik boyut yüksekliğiyle birlikte değişen tek ölçüdür. Left/Icon Control ve ikon boyutu boyutla ölçeklenmez.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Segment · Padding L / R</td><td>${tk('--bt-space-none')}</td><td>0 / 0</td></tr>
           <tr><td>Segment · Genişlik = Yükseklik</td><td>—</td><td>28 / 32 / 36px · token yok (component ölçüsü)</td></tr>
-          <tr><td>Left Control (${tk('.bt-segment__left')})</td><td>—</td><td>28×28px · token yok</td></tr>
+          <tr><td>Left Control (${tk('.bt-segment__left-ctrl')})</td><td>—</td><td>28×28px · token yok</td></tr>
           <tr><td>Icon Control (${tk('.bt-segment__icon')})</td><td>—</td><td>24×24px · token yok</td></tr>
           <tr><td>Icon</td><td>—</td><td>18×18px inline SVG · token yok</td></tr>
           <tr><td>Icon color (resting / seçili / disabled)</td><td>${tk('--bt-icon-primary-strong')} / ${tk('--bt-icon-brand-default')} / ${tk('--bt-icon-primary-muted')}</td><td>#535353 / #0d4e97 / #a3a3a3</td></tr>
@@ -13038,7 +13089,7 @@ PAGES_WEB['components/segmented-control'] = {
         </tbody>
       </table>
       <h3>Anatomy</h3>
-      <p class="page-desc">${tk('.bt-segment.bt-segment--icon-label')} › ${tk('.bt-segment__base')} › [ ${tk('.bt-segment__left')} (28×28 › ${tk('.bt-segment__icon')} 24×24 › 18×18 SVG) + ${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')} ]. Sol padding 0 olduğu için ikon kenara yaslıdır; sağ padding 12px label'ı dengeler. Gap (Base Segment) yalnız Md/Lg'de devreye girer — Sm'de ikon ve metin bitişiktir.</p>
+      <p class="page-desc">${tk('.bt-segment.bt-segment--icon-label')} › ${tk('.bt-segment__base')} › [ ${tk('.bt-segment__left-ctrl')} (28×28 › ${tk('.bt-segment__icon')} 24×24 › 18×18 SVG) + ${tk('.bt-segment__label-wrap')} › ${tk('.bt-segment__label')} ]. Sol padding 0 olduğu için ikon kenara yaslıdır; sağ padding 12px label'ı dengeler. Gap (Base Segment) yalnız Md/Lg'de devreye girer — Sm'de ikon ve metin bitişiktir.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -13163,17 +13214,35 @@ function _tabCls(size, opts = {}) {
 }
 
 // tek tab — static (state tabloları için) veya interaktif (idx verilirse onclick)
+// Atomic yapı (Figma node 1084:129753):
+//   bt-tab
+//     ├─ bt-tab__left-ctrl   (opsiyonel — icon varsa)
+//     │    └─ bt-tab__icon
+//     ├─ bt-tab__label
+//     └─ bt-tab__right-ctrl  (opsiyonel — counter VEYA close varsa)
+//          └─ bt-tab__counter  │  bt-tab__close bt-btn ...
 function tabItemHtml(o = {}) {
   const { label = 'Tab Label', size = 'md', content = 'label', counter = false, closable = false,
           selected = false, disabled = false, focus = false, idx, iconIndex = 0 } = o;
-  const icon    = content === 'icon-label' ? `<span class="bt-tab__icon">${_tabIconAt(iconIndex)}</span>` : '';
-  const badge   = counter ? `<span class="bt-tab__counter">1</span>` : '';
+
+  // Left Control — icon slotu
+  const leftCtrl = content === 'icon-label'
+    ? `<span class="bt-tab__left-ctrl"><span class="bt-tab__icon">${_tabIconAt(iconIndex)}</span></span>`
+    : '';
+
+  // Right Control — Counter Control veya Button Control (close), ikisi aynı anda değil
   // Close, iç içe <button> geçersiz olduğu için <span> — .bt-btn class'ları
   // yine de tam stil verir (inline-flex). role/tabindex ile erişilebilir.
-  const close   = closable ? `<span class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon" role="button" aria-label="Close tab" tabindex="0" onclick="event.stopPropagation();btTabClose(this)">${_tabCloseX}</span>` : '';
+  const rightContent = closable
+    ? `<span class="bt-tab__close bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon" role="button" aria-label="Close tab" tabindex="0" onclick="event.stopPropagation();btTabClose(this)">${_tabCloseX}</span>`
+    : counter
+    ? `<span class="bt-tab__counter">1</span>`
+    : '';
+  const rightCtrl = rightContent ? `<span class="bt-tab__right-ctrl">${rightContent}</span>` : '';
+
   const style   = focus ? ' style="box-shadow:0 0 0 3px rgba(212,212,212,.5);border-radius:var(--bt-radius-sm,4px);position:relative;z-index:1"' : '';
   const onclick = (idx != null && !disabled) ? ` onclick="btTabSelect(this)"` : '';
-  return `<button type="button" class="${_tabCls(size, { selected, disabled })}"${onclick}${style}>${icon}<span class="bt-tab__label">${label}</span>${badge}${close}</button>`;
+  return `<button type="button" class="${_tabCls(size, { selected, disabled })}"${onclick}${style}>${leftCtrl}<span class="bt-tab__label">${label}</span>${rightCtrl}</button>`;
 }
 
 function tabListHtml(p = {}) {
@@ -13184,7 +13253,7 @@ function tabListHtml(p = {}) {
   const cls = ['bt-tab-list', `bt-tab-list--${fill}`];
   if (orientation === 'vertical') cls.push('bt-tab-list--vertical');
   const items = Array.from({ length: n }, (_, i) => tabItemHtml({
-    label: `Tab ${i + 1}`, size, content, iconIndex: i,
+    label: `Tab Label ${i + 1}`, size, content, iconIndex: i,
     counter: counter === 'on',
     closable: closable === 'on',
     selected: i === sel,
@@ -13302,7 +13371,7 @@ window.btTabAdd = function (el) {
   const clone = tmpl.cloneNode(true);
   clone.classList.remove('bt-tab--selected', 'bt-tab--disabled');
   const label = clone.querySelector('.bt-tab__label');
-  if (label) label.textContent = 'Tab ' + (list.querySelectorAll('.bt-tab').length + 1);
+  if (label) label.textContent = 'Tab Label ' + (list.querySelectorAll('.bt-tab').length + 1);
   list.insertBefore(clone, el);
 };
 
@@ -13342,6 +13411,7 @@ PAGES_WEB['components/tab'] = {
     // shared playground prop atoms
     const P_ORIENT   = { key: 'orientation', label: 'Orientation', options: TAB_ORIENT_OPTS,   default: 'horizontal' };
     const P_SIZE     = { key: 'size',        label: 'Size',        options: TAB_SIZE_OPTS,     default: 'md' };
+    const P_CONTENT  = { key: 'content',     label: 'Content',     options: TAB_CONTENT_OPTS,  default: 'label' };
     const P_COUNT    = { key: 'count',       label: 'Tabs',        options: TAB_COUNT_OPTS,    default: '3' };
     const P_SELECTED = { key: 'selected',    label: 'Selected',    options: TAB_SELECTED_OPTS, default: '0' };
     const P_CLOSABLE = { key: 'closable',    label: 'Closable',    options: TBX_BOOL_OPTS,     default: 'off' };
@@ -13355,15 +13425,15 @@ PAGES_WEB['components/tab'] = {
       ${registerPlayground({
         id: `pgd-tab-${f.key}-sec`,
         variants: [{ key: 'default', label: f.label }],
-        props: [P_ORIENT, P_SIZE, P_COUNT, P_SELECTED, P_CLOSABLE, P_COUNTER, P_ADDTAB],
+        props: [P_ORIENT, P_SIZE, P_CONTENT, P_COUNT, P_SELECTED, P_CLOSABLE, P_COUNTER, P_ADDTAB],
         preview: (v, p) => wrap(tabListHtml({ ...p, fill: f.key })),
         code:    (v, p) => tabListHtml({ ...p, fill: f.key }),
         css:     (v, p) => tabListCss(v, { ...p, fill: f.key }),
       })}
       ${[
-        { key: 'label',      label: 'Label',        lock: { content: 'label',      closable: 'off' }, props: [P_SIZE, P_COUNT, P_SELECTED] },
-        { key: 'icon-label', label: 'Icon & Label', lock: { content: 'icon-label', closable: 'off' }, props: [P_SIZE, P_COUNT, P_SELECTED] },
-        { key: 'closable',   label: 'Closable',     lock: { content: 'label',      closable: 'on'  }, props: [P_SIZE, P_COUNT, P_SELECTED, P_ADDTAB] },
+        { key: 'label',      label: 'Label',        lock: { content: 'label',      closable: 'off' }, props: [P_ORIENT, P_SIZE, P_COUNT, P_SELECTED, P_COUNTER] },
+        { key: 'icon-label', label: 'Icon & Label', lock: { content: 'icon-label', closable: 'off' }, props: [P_ORIENT, P_SIZE, P_COUNT, P_SELECTED, P_COUNTER] },
+        { key: 'closable',   label: 'Closable',     lock: { content: 'label',      closable: 'on'  }, props: [P_ORIENT, P_SIZE, P_COUNT, P_SELECTED, P_COUNTER, P_ADDTAB] },
       ].map(c => `
       <h3>${c.label}</h3>
       <p class="page-desc">${_TAB_SUB_DESC[c.key](tk, f.label)}</p>
@@ -13530,9 +13600,9 @@ PAGES_WEB['components/tab'] = {
           ${TAB_STATE_OPTS.map(s => {
             const opts = { selected: s.key === 'selected', disabled: s.key === 'disabled', focus: s.key === 'focus' };
             const row = `<div class="bt-tab-list bt-tab-list--${f.key}">`
-              + tabItemHtml({ label: 'Tab 1', size: 'md', ...opts })
-              + tabItemHtml({ label: 'Tab 2', size: 'md' })
-              + tabItemHtml({ label: 'Tab 3', size: 'md' })
+              + tabItemHtml({ label: 'Tab Label 1', size: 'md', ...opts })
+              + tabItemHtml({ label: 'Tab Label 2', size: 'md' })
+              + tabItemHtml({ label: 'Tab Label 3', size: 'md' })
               + `</div>`;
             return `<tr><td><span class="token-name">${s.label}</span></td><td>${row}</td></tr>`;
           }).join('')}
@@ -13559,7 +13629,7 @@ PAGES_WEB['components/tab'] = {
       ${registerPlayground({
         id: 'pgd-tab-vertical-sec',
         variants: [{ key: 'default', label: 'Vertical' }],
-        props: [{ key: 'fill', label: 'Fill Mode', options: TAB_FILL_OPTS, default: 'line' }, P_SIZE, P_COUNT, P_SELECTED],
+        props: [{ key: 'fill', label: 'Fill Mode', options: TAB_FILL_OPTS, default: 'line' }, P_SIZE, P_COUNT, P_SELECTED, P_CLOSABLE, P_COUNTER],
         preview: (v, p) => wrap(tabListHtml({ ...p, orientation: 'vertical' })),
         code:    (v, p) => tabListHtml({ ...p, orientation: 'vertical' }),
         css:     (v, p) => tabListCss(v, { ...p, orientation: 'vertical' }),
@@ -14251,6 +14321,210 @@ PAGES_WEB['components/nav-drawer'] = {
   },
 };
 
+// ─── Overflow Menu ────────────────────────────────────────────────────────────
+const _ovfIconMore = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`;
+const _ovfIconEdit = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>`;
+const _ovfIconCopy = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+const _ovfIconShare = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>`;
+const _ovfIconTrash = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+
+function ovfMenuHtml(p = {}) {
+  const size      = p.size      || 'sm';
+  const showIcons = p.showIcons !== 'off';
+  const showDanger  = p.showDanger  === 'on';
+  const showDivider = p.showDivider === 'on';
+  const open      = p.open      === true;   // önizleme için açık göster
+
+  const btnCls  = `bt-btn bt-btn--${size} bt-btn--base-flat bt-btn--icon`;
+  const listStyle = open ? ' style="display:block;position:relative;top:auto;right:auto;"' : '';
+
+  const item = (label, icon, danger = false) => {
+    const cls   = `bt-ovf-menu__item${danger ? ' bt-ovf-menu__item--danger' : ''}`;
+    const ico   = showIcons ? `<span class="bt-ovf-menu__item-icon">${icon}</span>` : '';
+    return `<li class="${cls}" role="menuitem" onclick="btOvfMenuClose(event,this)">${ico}${label}</li>`;
+  };
+
+  const divider = (showDivider && showDanger) ? `<li class="bt-ovf-menu__divider" role="separator"></li>` : '';
+  const danger  = showDanger ? item('Delete', _ovfIconTrash, true) : '';
+
+  return `<div class="bt-ovf-menu">
+  <button type="button" class="${btnCls}" aria-haspopup="true" onclick="btOvfMenuToggle(event,this)">${_ovfIconMore}</button>
+  <ul class="bt-ovf-menu__list" role="menu"${listStyle}>
+    ${item('Edit',  _ovfIconEdit)}
+    ${item('Copy',  _ovfIconCopy)}
+    ${item('Share', _ovfIconShare)}
+    ${divider}${danger}
+  </ul>
+</div>`;
+}
+
+PAGES_WEB['components/overflow-menu'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'States', 'Items'],
+  render(tab) {
+    const title = 'Overflow Menu';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    const OVF_SIZE_OPTS = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md' }];
+
+    if (tab === 'CSS Properties') { return { title, html: `
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>List</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>List</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>List</td><td>Box-shadow</td><td>${tk('--bt-shadow-lg')}</td><td>0 4px 6px rgba(16,24,40,.031), 0 12px 16px rgba(16,24,40,.078)</td></tr>
+          <tr><td>Item</td><td>Padding</td><td>${tk('--bt-space-sm')} / ${tk('--bt-space-md')}</td><td>6px / 8px</td></tr>
+          <tr><td>Item</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Item</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 12px/16px</td></tr>
+          <tr><td>Item</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Item Hover</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Item Icon</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Item Danger</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Item Danger Hover</td><td>Background</td><td>${tk('--bt-surface-error-subtle')}</td><td>#fde6e6</td></tr>
+          <tr><td>Divider</td><td>Background</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+        </tbody>
+      </table>
+    `}; }
+
+    if (tab === 'Usage') { return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Her zaman bir icon button (more-horizontal) ile tetikle — metin etiketli tetikleyici kullanma</li>
+        <li>Öğe sayısını 3–6 arasında tut; daha fazlası için grupla veya modal kullan</li>
+        <li>Tehlikeli aksiyonları (Delete, Remove) ${tk('.bt-ovf-menu__item--danger')} ile işaretle ve listeye en sona koy</li>
+        <li>Tehlikeli eylemden önce ${tk('.bt-ovf-menu__divider')} ile görsel ayrım sağla</li>
+        <li>Her öğe tıklandığında menüyü otomatik kapat</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>İki satıra taşan uzun etiket yazma — ${tk('white-space:nowrap')} kural gereği liste yatayda genişler</li>
+        <li>İç içe (nested) overflow menu açma — hiyerarşik aksiyonlar için ayrı bir modal/dialog kullan</li>
+        <li>Menüyü birincil aksiyon için kullanma — sık kullanılan aksiyonlar doğrudan görünür bir buton olmalı</li>
+      </ul>
+    `}; }
+
+    if (tab === 'Examples') { return { title, html: `
+      <h2 id="Items">Items</h2>
+      <p class="page-desc">Overflow Menu üç item varyasyonunu destekler: ikon + label (varsayılan), yalnız label ve danger. Danger item her zaman listenin sonuna konur; öncesinde opsiyonel bir ${tk('.bt-ovf-menu__divider')} görsel ayrım sağlar. Aşağıdaki tablo tüm kombinasyonları yan yana gösterir — tıklanabilir, gerçek ${tk('btOvfMenuToggle')} ile çalışır.</p>
+      <table class="token-table">
+        <thead><tr><th>Kombinasyon</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Label Only</td><td>${ovfMenuHtml({ open: true, showIcons: 'off' })}</td></tr>
+          <tr><td>Icon + Label</td><td>${ovfMenuHtml({ open: true })}</td></tr>
+          <tr><td>With Danger</td><td>${ovfMenuHtml({ open: true, showDanger: 'on' })}</td></tr>
+          <tr><td>With Divider + Danger</td><td>${ovfMenuHtml({ open: true, showDanger: 'on', showDivider: 'on' })}</td></tr>
+        </tbody>
+      </table>
+    `}; }
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-ovf-menu-overview',
+        variants: [{ key: 'default', label: 'Overflow Menu' }],
+        props: [
+          { key: 'size',        label: 'Size',        options: OVF_SIZE_OPTS,  default: 'sm' },
+          { key: 'showIcons',   label: 'Show Icons',  options: TBX_BOOL_OPTS,  default: 'on' },
+          { key: 'showDanger',  label: 'Danger Item', options: TBX_BOOL_OPTS,  default: 'on' },
+          { key: 'showDivider', label: 'Divider',     options: TBX_BOOL_OPTS,  default: 'on' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:32px;gap:120px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <span style="font:400 11px/16px var(--font);color:var(--bt-text-muted);">Closed</span>
+            ${ovfMenuHtml({ ...p })}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <span style="font:400 11px/16px var(--font);color:var(--bt-text-muted);">Open</span>
+            ${ovfMenuHtml({ ...p, open: true })}
+          </div>
+        </div>`,
+        code: (v, p) => ovfMenuHtml({ ...p }),
+        css: (v, p) => {
+          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const ln  = (k, val) => `  ${k}: ${val};`;
+          const lines = [
+            '.bt-ovf-menu {',
+            ln('position', 'relative'),
+            ln('display',  'inline-flex'),
+            '}', '',
+            '.bt-ovf-menu__list {',
+            ln('display',        'none  /* açılınca JS: display:block */'),
+            ln('position',       'fixed  /* portal — document.body\'ye taşınır */'),
+            ln('z-index',        '200'),
+            ln('min-width',      '140px'),
+            ln('background',     'var(--bt-surface-primary-default)  /* #ffffff */'),
+            ln('border-radius',  'var(--bt-radius-sm)  /* 4px */'),
+            ln('box-shadow',     'var(--bt-shadow-lg)'),
+            '}', '',
+            '.bt-ovf-menu__item {',
+            ln('display',     'flex'),
+            ln('align-items', 'center'),
+            ln('gap',         'var(--bt-space-xs)  /* 4px */'),
+            ln('padding',     'var(--bt-space-sm) var(--bt-space-md)  /* 6px 8px */'),
+            ln('font',        'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
+            ln('color',       'var(--bt-text-primary-default)  /* #1a1a1a */'),
+            '}',
+            '.bt-ovf-menu__item:hover {',
+            ln('background', 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'),
+            '}', '',
+            ...(p.showIcons !== 'off' ? [
+              '.bt-ovf-menu__item-icon {',
+              ln('width',   '16px'),
+              ln('height',  '16px'),
+              ln('color',   'var(--bt-icon-primary-strong)  /* #535353 */'),
+              '}', '',
+            ] : []),
+            ...(p.showDanger === 'on' ? [
+              '.bt-ovf-menu__item--danger { color: var(--bt-text-error-default)  /* #b31d38 */; }',
+              '.bt-ovf-menu__item--danger:hover { background: var(--bt-surface-error-subtle)  /* #fde6e6 */; }',
+              '',
+            ] : []),
+            ...(p.showDivider === 'on' && p.showDanger === 'on' ? [
+              '.bt-ovf-menu__divider {',
+              ln('height',     '1px'),
+              ln('background', 'var(--bt-border-primary-default)  /* #d4d4d4 */'),
+              ln('margin',     'var(--bt-space-2xs) 0  /* 2px */'),
+              '}',
+            ] : []),
+          ];
+          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+        },
+      })}
+
+      <p class="page-desc">Overflow Menu, sınırlı alanda çok sayıda aksiyonu gizleyen bir overlay bileşenidir. Tetikleyici olarak her zaman ${tk('bt-btn--icon')} (more-horizontal) kullanılır; tıklandığında ${tk('.bt-ovf-menu__list')} ${tk('position:fixed')} ile viewport'ta doğru konuma yerleşir ve ${tk('document.body')}'ye portal'lanır (ata elementlerdeki ${tk('overflow:hidden')} veya ${tk('transform')} kurallarından bağımsız). Liste açıkken dışarıya tıklamak veya scroll kapatır; her öğe tıklandığında menü otomatik kapanır. Playground'da Closed/Open iki durumu yan yana gösterilir — Open durumunu görmek için sağ tarafı kullan.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">${tk('.bt-ovf-menu')} ${tk('position:relative')} sarmalayıcıdır; doğrudan çocukları trigger (${tk('.bt-btn--icon')}) ve liste (${tk('.bt-ovf-menu__list')}). Liste açılınca JS portal'ı ile ${tk('document.body')}'ye taşınır, kapanınca geri döner. Her ${tk('.bt-ovf-menu__item')} icon slot (${tk('.bt-ovf-menu__item-icon')}, 16×16) + metin label içerir; opsiyonel ${tk('.bt-ovf-menu__divider')} ince yatay çizgiyle gruplar ayırır; ${tk('.bt-ovf-menu__item--danger')} red renk paleti uygular.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Class</th><th>Rol</th></tr></thead>
+        <tbody>
+          <tr><td>${tk('.bt-ovf-menu')}</td><td>Sarmalayıcı — ${tk('position:relative; display:inline-flex')}</td></tr>
+          <tr><td>${tk('.bt-btn.bt-btn--icon')}</td><td>Trigger — gerçek Button component reuse</td></tr>
+          <tr><td>${tk('.bt-ovf-menu__list')}</td><td>Açılır liste — portal'd, ${tk('position:fixed')}, z-index 200</td></tr>
+          <tr><td>${tk('.bt-ovf-menu__item')}</td><td>Liste öğesi — ikon + label, hover state</td></tr>
+          <tr><td>${tk('.bt-ovf-menu__item-icon')}</td><td>16×16 ikon slotu — opsiyonel</td></tr>
+          <tr><td>${tk('.bt-ovf-menu__item--danger')}</td><td>Tehlikeli aksiyon — red renk paleti</td></tr>
+          <tr><td>${tk('.bt-ovf-menu__divider')}</td><td>Yatay ayırıcı — opsiyonel, 1px ${tk('--bt-border-primary-default')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Overflow Menu'nun iki temel state'i vardır: trigger'ın hover/focus state'leri ${tk('bt-btn')} bileşeninden kalıtılır, ekstra tanıma gerek yoktur. Liste öğelerinin state'leri ise bileşene özeldir: Default (şeffaf arka plan) → Hover (${tk('--bt-surface-primary-subtle')}) → Danger Default (${tk('--bt-text-error-default')} renk) → Danger Hover (${tk('--bt-surface-error-subtle')} arka plan). Danger item en sona konur ve rengiyle sinyaller ki bu geri alınamaz bir işlemdir.</p>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Item — Default</td><td>${ovfMenuHtml({ open: true, showDanger: 'off', showIcons: 'off' })}</td></tr>
+          <tr><td>Item — Danger</td><td>${ovfMenuHtml({ open: true, showDanger: 'on', showDivider: 'on' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Items">Items</h2>
+      <p class="page-desc">Liste öğelerinin iki yapılandırması vardır: yalnız metin ve ikon + metin. İkon slotu (${tk('.bt-ovf-menu__item-icon')}) sabit 16×16 boyutundadır; ikon kullanılmıyorsa slot tamamen çıkarılır (padding'i sıfırlayan ayrı bir class yok — slot çıkınca boşluk kaybolur). Tüm öğelerin aynı yapıda (hepsi ikonlu ya da hiçbiri ikonlu) olması görsel hizalamayı korur. Farklı aksiyonları mantıksal gruplamak için ${tk('.bt-ovf-menu__divider')} kullanılabilir.</p>
+    `};
+  },
+};
+
 // ─── Page Layout ──────────────────────────────────────────────────────────────
 PAGES_WEB['layout/page-layout'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
@@ -14410,6 +14684,232 @@ PAGES_WEB['layout/page-layout'] = {
           <tr><td>${badge(4)}</td><td>Content</td><td>—</td><td>Padding: 16px (tüm yönler)</td></tr>
           <tr><td>${badge(5)}</td><td>Toolbar</td><td>${tk('Data Table Toolbar')}</td><td>h: 52px · butonlar sol · SearchBox sağ (320px)</td></tr>
           <tr><td>${badge(6)}</td><td>Data Table</td><td>${tk('Data Table')}</td><td>Toolbar altından başlar, kalan alanı doldurur</td></tr>
+        </tbody>
+      </table>
+    `};
+  },
+};
+
+// ─────────────────────────────────────────────────────────────
+// PATTERNS / PAGE LAYOUTS
+// Figma: "Main Page Layout 1" (1081:124394) + "Main Page Layout 2" (1081:125036)
+// Real components used: .sbx-rail, .bt-btn, .bt-searchbox, .bt-tab-list--bordered
+// Frame CSS: .bt-pl-frame + .bt-pl-main + .bt-pl-header + .bt-pl-toolbar etc.
+// ─────────────────────────────────────────────────────────────
+PAGES_WEB['patterns/page-layouts'] = {
+  tabs: ['Overview', 'CSS Properties'],
+  toc: ['Anatomy', 'List Layout', 'Tabbed Layout'],
+  render(tab) {
+    const title = 'Page Layouts';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    // ── Rail (reuses existing .sbx-rail + .sbx-btn from sidebar component) ──
+    const plRail = `
+      <div class="sbx-rail">
+        <div class="sbx-logo"></div>
+        <div class="sbx-center">
+          ${sbxRailButton()}
+          <div class="sbx-collapse"></div>
+          ${sbxRailButton()}
+          ${sbxRailButton()}
+          ${sbxRailButton()}
+        </div>
+        <div class="sbx-bottom">
+          ${sbxRailButton()}
+          ${sbxRailButton()}
+        </div>
+      </div>`;
+
+    // ── Toolbar content (reuses .bt-btn and .bt-searchbox) ─────────────────
+    const plToolbarContent = `
+      <button class="bt-btn bt-btn--sm bt-btn--primary">Add Item</button>
+      <button class="bt-btn bt-btn--sm bt-btn--base-outline">Edit</button>
+      <button class="bt-btn bt-btn--sm bt-btn--base-outline">Delete</button>
+      <div class="bt-searchbox bt-searchbox--sm">
+        <div class="bt-searchbox__control"><span class="bt-searchbox__icon">${sbxIconSearch}</span></div>
+        <div class="bt-searchbox__field"><input class="bt-searchbox__text" type="text" placeholder="Search..." /></div>
+      </div>`;
+
+    // ── DataTable (gerçek bt-grid-container + gridTableHtml()) ────────────────
+    const plGrid = gridTableHtml({ rowCount: '7', nameContent: 'avatar', roleContent: 'dot', statusContent: 'badge' });
+
+    // Self-contained tab click handler (no external dependency — works in isolation mode)
+    const plTabClick = "(function(t){var p=t.closest('.bt-tab-list');if(!p)return;p.querySelectorAll('.bt-tab').forEach(function(x){x.classList.remove('bt-tab--selected');});t.classList.add('bt-tab--selected');})(this)";
+
+    // ── Layout 1: List Layout ───────────────────────────────────────────────
+    // Rail · Header · Page Toolbar · Body > DataTable
+    const listLayout = `
+      <div class="bt-pl-frame">
+        ${plRail}
+        <div class="bt-pl-main">
+          <div class="bt-pl-header">
+            <span class="bt-pl-header-title">Page Title</span>
+          </div>
+          <div class="bt-pl-toolbar">
+            ${plToolbarContent}
+          </div>
+          <div class="bt-pl-body">
+            <div class="bt-grid-container">${plGrid}</div>
+          </div>
+        </div>
+      </div>`;
+
+    // ── Layout 2: Tabbed Layout ─────────────────────────────────────────────
+    // Rail · Header · Tab Strip (bt-tab-list--bordered) · Body > Content Toolbar + DataTable
+    const tabbedLayout = `
+      <div class="bt-pl-frame">
+        ${plRail}
+        <div class="bt-pl-main">
+          <div class="bt-pl-header">
+            <span class="bt-pl-header-title">Page Title</span>
+          </div>
+          <nav class="bt-tab-list bt-tab-list--bordered" style="padding:0 var(--bt-space-2xl,16px);">
+            <button class="bt-tab bt-tab--md bt-tab--selected" onclick="${plTabClick}"><span class="bt-tab__label">Active</span></button>
+            <button class="bt-tab bt-tab--md" onclick="${plTabClick}"><span class="bt-tab__label">Archived</span></button>
+            <button class="bt-tab bt-tab--md" onclick="${plTabClick}"><span class="bt-tab__label">Draft</span></button>
+          </nav>
+          <div class="bt-pl-body">
+            <div class="bt-pl-content-toolbar">
+              ${plToolbarContent}
+            </div>
+            <div class="bt-grid-container">${plGrid}</div>
+          </div>
+        </div>
+      </div>`;
+
+    const layoutHtml = p => p.layout === 'tabbed' ? tabbedLayout : listLayout;
+
+    const layoutCss = p => {
+      const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const isTabbed = p.layout === 'tabbed';
+      const lines = [
+        `/* ${isTabbed ? 'Tabbed Layout' : 'List Layout'} — page shell */`,
+        `.page-shell {`,
+        `  display: flex;`,
+        `  height: 100vh;`,
+        `}`,
+        `.page-shell__sidebar { width: 48px; flex-shrink: 0; }   /* .sbx-rail */`,
+        `.page-shell__main {`,
+        `  flex: 1;`,
+        `  display: flex;`,
+        `  flex-direction: column;`,
+        `  overflow: hidden;`,
+        `}`,
+        `.page-header {`,
+        `  height: 36px;`,
+        `  padding: 0 var(--bt-space-2xl, 16px);`,
+        `  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);`,
+        `  background: var(--bt-base-default, #fff);`,
+        `  display: flex;`,
+        `  align-items: center;`,
+        `}`,
+        ...(isTabbed ? [
+        `/* Tab strip: use .bt-tab-list.bt-tab-list--bordered with px-2xl */`,
+        `/* padding: 0 var(--bt-space-2xl, 16px) on the nav element */`,
+        ] : [
+        `.page-toolbar {`,
+        `  height: 40px;`,
+        `  padding: 0 var(--bt-space-2xl, 16px);`,
+        `  border-bottom: 1px solid var(--bt-border-primary-default, #d4d4d4);`,
+        `  background: var(--bt-base-default, #fff);`,
+        `  display: flex;`,
+        `  align-items: center;`,
+        `  gap: var(--bt-space-sm, 6px);`,
+        `}`,
+        ]),
+        `.page-body {`,
+        `  flex: 1;`,
+        `  overflow: hidden;`,
+        `  padding: var(--bt-space-2xl, 16px);`,
+        `  background: var(--bt-surface-primary-light, #fafafa);`,
+        `  display: flex;`,
+        `  flex-direction: column;`,
+        `}`,
+        ...(isTabbed ? [
+        `.page-content-toolbar {`,
+        `  height: 44px;`,
+        `  padding: 0 var(--bt-space-2xl, 16px);`,
+        `  border: 1px solid var(--bt-border-primary-default, #d4d4d4);`,
+        `  border-bottom: none;`,
+        `  background: var(--bt-base-default, #fff);`,
+        `  border-radius: var(--bt-radius-sm, 4px) var(--bt-radius-sm, 4px) 0 0;`,
+        `  display: flex;`,
+        `  align-items: center;`,
+        `  gap: var(--bt-space-sm, 6px);`,
+        `}`,
+        ] : []),
+      ];
+      return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+    };
+
+    // ── Props ────────────────────────────────────────────────────────────────
+    const P_LAYOUT = { key: 'layout', label: 'Layout', options: [{ key: 'list', label: 'List Layout' }, { key: 'tabbed', label: 'Tabbed Layout' }], default: 'list' };
+
+    if (tab === 'Overview') return { title, html: `
+      <p class="page-desc">Bentas uygulamalarında iki temel sayfa layout'u kullanılır. <strong>List Layout</strong> — tek bir içerik görünümü sunar; page-level Toolbar (butonlar + SearchBox) header'ın hemen altına yerleşir ve DataTable'ı doğrudan yönetir. <strong>Tabbed Layout</strong> — aynı sayfada birden fazla bağlamı Tab strip ile ayırır; Toolbar tab'ın kendi paneli içine girerek yalnızca o tab'ın içeriğini yönetir. Her iki layout da solda <strong>Hub Sidebar</strong> rail'i (48px, ${tk('.sbx-rail')}), üstte <strong>Header</strong> (36px) ve body'de ${tk('padding: 16px')} kullanan ortak bir shell paylaşır. Playground'daki layout gerçek bileşenlerle çalışır — tab'lara tıklanabilir, butonlar etkileşimli.</p>
+
+      ${registerPlayground({
+        id: 'pgd-pl-overview',
+        variants: [{ key: 'default', label: 'Page Layout' }],
+        props: [P_LAYOUT],
+        preview: (v, p) => layoutHtml(p),
+        code:    (v, p) => layoutHtml(p),
+        css:     (v, p) => layoutCss(p),
+      })}
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Her iki layout ortak bir shell üzerine inşa edilir: <strong>Rail</strong> (${tk('.sbx-rail')}, 48px genişlik, platform navigasyonu), <strong>Header</strong> (${tk('.bt-pl-header')}, 36px, sayfa başlığı), <strong>Body</strong> (${tk('.bt-pl-body')}, kalan alan, ${tk('padding:16px')}, açık arka plan). Layouts bu shell'in içini farklı doldurur — List Layout Toolbar'ı page-level'a (${tk('.bt-pl-toolbar')}) koyarken Tabbed Layout'ta Toolbar tab paneline iner (${tk('.bt-pl-content-toolbar')}) ve Header'ın altına ${tk('.bt-tab-list--bordered')} eklenir.</p>
+      <table class="token-table" style="margin-top:12px;">
+        <thead><tr><th>Zone</th><th>List Layout</th><th>Tabbed Layout</th><th>Yükseklik</th></tr></thead>
+        <tbody>
+          <tr><td>Sidebar Rail</td><td colspan="2">${tk('.sbx-rail')} (Hub Sidebar collapsed)</td><td>100vh · 48px genişlik</td></tr>
+          <tr><td>Header</td><td colspan="2">${tk('.bt-pl-header')} — sayfa başlığı</td><td>36px</td></tr>
+          <tr><td>Tab Strip</td><td style="color:var(--bt-text-muted)">—</td><td>${tk('.bt-tab-list--bordered')} — Active / Archived / Draft</td><td>~40px</td></tr>
+          <tr><td>Page Toolbar</td><td>${tk('.bt-pl-toolbar')} — butonlar + SearchBox</td><td style="color:var(--bt-text-muted)">—</td><td>40px</td></tr>
+          <tr><td>Body</td><td colspan="2">${tk('.bt-pl-body')} · ${tk('padding: 16px')} · ${tk('--bt-surface-primary-light')}</td><td>flex: 1</td></tr>
+          <tr><td>Content Toolbar</td><td style="color:var(--bt-text-muted)">—</td><td>${tk('.bt-pl-content-toolbar')} — butonlar + SearchBox</td><td>44px</td></tr>
+          <tr><td>DataTable</td><td colspan="2">${tk('.bt-grid-container')} · flex: 1</td><td>kalan alan</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="List Layout">List Layout</h2>
+      <p class="page-desc">Tek bir içerik görünümü yöneten sayfalarda kullanılır (listeleme, arama, toplu işlem). Toolbar — butonlar + SearchBox — doğrudan Header'ın altına, Body'nin dışına yerleşir; böylece kaydırılabilir içerikten bağımsız kalır ve her zaman görünürde olur. Body içindeki DataTable kalan tüm yüksekliği doldurur; toolbar'da maksimum 5 aksiyon butonu + 1 SearchBox önerilir. Isolation mode'da açıldığında tam viewport yüksekliğinde, sola dayalı gerçek uygulama olarak render edilir.</p>
+      ${registerPlayground({
+        id: 'pgd-pl-list-sec',
+        variants: [{ key: 'default', label: 'List Layout' }],
+        props: [],
+        preview: (v, p) => listLayout,
+        code:    (v, p) => listLayout,
+        css:     (v, p) => layoutCss({ layout: 'list' }),
+      })}
+
+      <h2 id="Tabbed Layout">Tabbed Layout</h2>
+      <p class="page-desc">Aynı varlık veya bağlamın birden fazla görünümünü (örn. Aktif / Arşiv / Taslak) tek sayfada yönetmek için kullanılır. Header'ın altına Bordered fill mode'da Tab Strip (${tk('.bt-tab-list--bordered')}) eklenir; her tab kendi içerik panelini taşır. Toolbar, page-level'da değil her tab'ın kendi paneli içinde yer alır; böylece farklı tab'lar farklı aksiyon setleri sunabilir. Tab'lara tıklanarak aktif sekme değiştirilebilir — inline handler ${tk('closest(.bt-tab-list)')} ile çalışır.</p>
+      ${registerPlayground({
+        id: 'pgd-pl-tabbed-sec',
+        variants: [{ key: 'default', label: 'Tabbed Layout' }],
+        props: [],
+        preview: (v, p) => tabbedLayout,
+        code:    (v, p) => tabbedLayout,
+        css:     (v, p) => layoutCss({ layout: 'tabbed' }),
+      })}
+    `};
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Page Layout shell'inin tasarım token–CSS değişken eşleşmeleri. Sidebar rail'inin kendi token'ları için bkz. ${tk('components/sidebar')}; DataTable için ${tk('components/data-table')}; Tab Strip için ${tk('components/tab')}.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Değer</th></tr></thead>
+        <tbody>
+          <tr><td>Sidebar Rail</td><td>width (collapsed)</td><td>—</td><td>48px</td></tr>
+          <tr><td>Header</td><td>height</td><td>—</td><td>36px</td></tr>
+          <tr><td>Header · Title</td><td>font</td><td>—</td><td>${tk('--bt-text-lg-semibold')} · 600 18px/24px</td></tr>
+          <tr><td>Header, Toolbar</td><td>border-bottom</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4</td></tr>
+          <tr><td>Page Toolbar</td><td>height</td><td>—</td><td>40px</td></tr>
+          <tr><td>Page Toolbar, Body</td><td>padding (yatay)</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Tab Strip</td><td>padding (yatay)</td><td>${tk('--bt-space-2xl')}</td><td>16px</td></tr>
+          <tr><td>Body</td><td>background</td><td>${tk('--bt-surface-primary-light')}</td><td>Gray/50 · #fafafa</td></tr>
+          <tr><td>Content Toolbar</td><td>height</td><td>—</td><td>44px</td></tr>
+          <tr><td>Content Toolbar</td><td>border-radius (üst)</td><td>${tk('--bt-radius-sm')}</td><td>4px 4px 0 0</td></tr>
         </tbody>
       </table>
     `};

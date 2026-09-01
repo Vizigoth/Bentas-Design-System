@@ -108,6 +108,9 @@
           ? variant
           : (cfg.variants ? cfg.variants[0].key : variant);
         root.innerHTML = cfg.preview(resolvedVariant, resolvedProps);
+        // Page Layout frames use .bt-pl-frame — treat them like app-level shells
+        // so the iso-root gets the same flush/full-viewport treatment as sidebar.
+        if (root.querySelector('.bt-pl-frame')) root.classList.add('iso-shell--app');
         document.title = 'Isolation Mode · Bentas Design System';
       } else {
         root.innerHTML = '<p class="iso-empty">Component not found.</p>';

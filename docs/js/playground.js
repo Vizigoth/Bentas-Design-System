@@ -12,6 +12,17 @@ const PGD_VIEWPORTS = [
   { key: 'desktop',      label: 'Desktop',       width: null, height: null },
 ];
 
+const PGD_BG_OPTIONS = [
+  { key: 'surface-primary-default',  label: 'Surface Default',       cssVar: '--bt-surface-primary-default'  },
+  { key: 'surface-primary-light',    label: 'Surface Light',         cssVar: '--bt-surface-primary-light'    },
+  { key: 'surface-primary-subtle',   label: 'Surface Subtle',        cssVar: '--bt-surface-primary-subtle'   },
+  { key: 'surface-primary-muted',    label: 'Surface Muted',         cssVar: '--bt-surface-primary-muted'    },
+  { key: 'surface-primary-emphasis', label: 'Surface Emphasis',      cssVar: '--bt-surface-primary-emphasis' },
+  { key: 'surface-primary-intense',  label: 'Surface Intense',       cssVar: '--bt-surface-primary-intense'  },
+  { key: 'surface-brand-light',      label: 'Surface Brand Light',   cssVar: '--bt-surface-brand-light'      },
+  { key: 'surface-brand-default',    label: 'Surface Brand Default', cssVar: '--bt-surface-brand-default'    },
+];
+
 // Exact paths from Lucide (lucide-static), matching the icons used in the
 // Figma source (node 375:27788 — Icon/chevrons-up-down, Icon/ruler-dimension-line,
 // Icon/proportions, Icon/square-arrow-out-up-right).
@@ -22,6 +33,7 @@ const _pgdIconIsolate   = `<svg width="14" height="14" viewBox="0 0 24 24" fill=
 const _pgdIconSwap      = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>`;
 const _pgdIconClick     = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>`;
 const _pgdIconProps     = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>`;
+const _pgdIconBg        = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/><rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/></svg>`;
 
 const _pgdState   = {};   // id -> { variant, props, measure, viewport, dimW, dimH, openMenu }
 const _pgdConfigs = {};   // id -> config, kept so re-renders (state changes) can rebuild the block
@@ -64,7 +76,8 @@ function _pgdEnsureState(id, config) {
       viewport: 'desktop',
       dimW: null,
       dimH: null,
-      openMenu: null, // 'variant' | 'viewport' | a props[].key | null
+      openMenu: null, // 'variant' | 'viewport' | 'bg' | a props[].key | null
+      bg: 'surface-primary-light',
       propsOpen: false,
       propsEntering: false,
       propsClosing: false,
@@ -184,8 +197,22 @@ function renderPlayground(config) {
         ${_pgdIconViewport}<span>${vp.label}</span>
       </button>
       ${st.openMenu === 'viewport' ? `
-      <div class="pgd-menu pgd-menu-right">
-        ${PGD_VIEWPORTS.map(v => `<button class="pgd-menu-item ${v.key===st.viewport?'active':''}" onclick="_pgdSetViewport('${config.id}','${v.key}')"><span>${v.label}</span>${v.width ? `<span class="pgd-menu-item-meta">${v.width} × ${v.height}</span>` : ''}</button>`).join('')}
+      <div class="pgd-bg-menu">
+        ${PGD_VIEWPORTS.map(v => `<button class="pgd-bg-item ${v.key===st.viewport?'is-active':''}" onclick="_pgdSetViewport('${config.id}','${v.key}')"><span class="pgd-bg-label">${v.label}</span>${v.width ? `<span class="pgd-vp-meta">${v.width}×${v.height}</span>` : ''}</button>`).join('')}
+      </div>` : ''}
+    </div>`;
+
+  const bgOpt = PGD_BG_OPTIONS.find(o => o.key === st.bg) || PGD_BG_OPTIONS[0];
+  const bgInlineStyle = `background:var(${bgOpt.cssVar});`;
+
+  const bgControl = `
+    <div class="pgd-dropdown">
+      <button class="pgd-icon-btn pgd-icon-btn--labeled" title="Background" onclick="_pgdToggleMenu('${config.id}','bg',event)">
+        ${_pgdIconBg}<span>Background</span><span class="pgd-bg-indicator" style="background:var(${bgOpt.cssVar});"></span>
+      </button>
+      ${st.openMenu === 'bg' ? `
+      <div class="pgd-bg-menu">
+        ${PGD_BG_OPTIONS.map(o => `<button class="pgd-bg-item ${o.key === st.bg ? 'is-active' : ''}" onclick="_pgdSetBg('${config.id}','${o.key}')"><span class="pgd-bg-swatch" style="background:var(${o.cssVar});"></span><span class="pgd-bg-label">${o.label}</span></button>`).join('')}
       </div>` : ''}
     </div>`;
 
@@ -224,12 +251,16 @@ function renderPlayground(config) {
     </div>`;
 
   const previewBlock = `
-      <div class="example-viewer-preview">
+      <div class="example-viewer-preview" style="${bgInlineStyle}">
         <div class="${innerClass}">
           ${dimBar}
           <div class="${frameClass}" id="${config.id}-frame" style="${frameStyle}" onmousemove="_pgdMeasureMove(event,'${config.id}')" onmouseleave="_pgdMeasureLeave('${config.id}')">
             ${config.preview(st.variant, st.props)}
             <div class="pgd-measure-box" id="${config.id}-measure-box">
+              <div class="pgd-mb-mar" id="${config.id}-mar-top"><span class="pgd-mb-label"></span></div>
+              <div class="pgd-mb-mar" id="${config.id}-mar-bottom"><span class="pgd-mb-label"></span></div>
+              <div class="pgd-mb-mar" id="${config.id}-mar-left"><span class="pgd-mb-label"></span></div>
+              <div class="pgd-mb-mar" id="${config.id}-mar-right"><span class="pgd-mb-label"></span></div>
               <div class="pgd-mb-pad" id="${config.id}-pad-top"><span class="pgd-mb-label"></span></div>
               <div class="pgd-mb-pad" id="${config.id}-pad-bottom"><span class="pgd-mb-label"></span></div>
               <div class="pgd-mb-pad" id="${config.id}-pad-left"><span class="pgd-mb-label"></span></div>
@@ -266,6 +297,7 @@ function renderPlayground(config) {
         <div class="pgd-toolbar">
           ${propsBtn}
           <button class="pgd-icon-btn pgd-icon-btn--labeled ${st.measure?'is-active':''}" title="Measure" onclick="_pgdToggleMeasure('${config.id}')">${_pgdIconRuler}<span>Measure</span></button>
+          ${bgControl}
           ${viewportControl}
           ${isolateControl}
           ${triggerControl}
@@ -407,6 +439,13 @@ window._pgdSetViewport = function(id, key) {
   _pgdRerender(id);
 };
 
+window._pgdSetBg = function(id, key) {
+  const st = _pgdState[id];
+  st.bg = key;
+  st.openMenu = null;
+  _pgdRerender(id);
+};
+
 window._pgdSetDim = function(id, axis, value) {
   const st = _pgdState[id];
   const num = Math.max(1, parseInt(value, 10) || 1);
@@ -435,9 +474,8 @@ window._pgdToggleMeasure = function(id) {
 // its stroke — e.g. Grid's Header Cell 36px/Grid Cell 32px) rather than the
 // content-only size — content-box was 1-2px short of the Figma spec value
 // whenever the element has its own border, which read as a measurement bug
-// (bkz. HISTORY.md). Padding is still shown as green strips on each side,
-// unaffected, with the px value centered
-// in that strip (a side's strip is hidden when its padding is 0).
+// (bkz. HISTORY.md). Padding is shown as green strips, margin as orange
+// strips on each side; a strip is hidden when its value is 0.
 window._pgdMeasureMove = function(e, id) {
   const st = _pgdState[id];
   if (!st || !st.measure) return;
@@ -456,10 +494,16 @@ window._pgdMeasureMove = function(e, id) {
   const bb = parseFloat(cs.borderBottomWidth) || 0, bl = parseFloat(cs.borderLeftWidth)   || 0;
   const pt = parseFloat(cs.paddingTop) || 0, pr = parseFloat(cs.paddingRight)  || 0;
   const pb = parseFloat(cs.paddingBottom) || 0, pl = parseFloat(cs.paddingLeft) || 0;
+  const mt = parseFloat(cs.marginTop) || 0, mr = parseFloat(cs.marginRight)  || 0;
+  const mb = parseFloat(cs.marginBottom) || 0, ml = parseFloat(cs.marginLeft) || 0;
+
+  // frame-relative origin of the border-box
+  const bLeft = b.left - frameRect.left;
+  const bTop  = b.top  - frameRect.top;
 
   const padBox = {
-    left: b.left - frameRect.left + bl,
-    top:  b.top  - frameRect.top  + bt,
+    left: bLeft + bl,
+    top:  bTop  + bt,
     width:  b.width  - bl - br,
     height: b.height - bt - bb,
   };
@@ -468,6 +512,13 @@ window._pgdMeasureMove = function(e, id) {
     top:  padBox.top  + pt,
     width:  Math.max(padBox.width  - pl - pr, 0),
     height: Math.max(padBox.height - pt - pb, 0),
+  };
+  // margin box extends outside the border-box
+  const marBox = {
+    left:   bLeft - ml,
+    top:    bTop  - mt,
+    width:  b.width  + ml + mr,
+    height: b.height + mt + mb,
   };
 
   const setRect = (elm, rect) => {
@@ -484,6 +535,17 @@ window._pgdMeasureMove = function(e, id) {
 
   box.style.display = 'block';
 
+  // margin strips (orange)
+  setStrip(document.getElementById(id + '-mar-top'),
+    { left: marBox.left, top: marBox.top, width: marBox.width, height: mt }, mt);
+  setStrip(document.getElementById(id + '-mar-bottom'),
+    { left: marBox.left, top: bTop + b.height, width: marBox.width, height: mb }, mb);
+  setStrip(document.getElementById(id + '-mar-left'),
+    { left: marBox.left, top: bTop, width: ml, height: b.height }, ml);
+  setStrip(document.getElementById(id + '-mar-right'),
+    { left: bLeft + b.width, top: bTop, width: mr, height: b.height }, mr);
+
+  // padding strips (green)
   setStrip(document.getElementById(id + '-pad-top'),
     { left: padBox.left, top: padBox.top, width: padBox.width, height: pt }, pt);
   setStrip(document.getElementById(id + '-pad-bottom'),
