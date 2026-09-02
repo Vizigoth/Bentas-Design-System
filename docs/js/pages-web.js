@@ -14322,67 +14322,293 @@ PAGES_WEB['components/nav-drawer'] = {
 };
 
 // ─── Overflow Menu ────────────────────────────────────────────────────────────
+// Figma "Bentas DS" › "Overflow Menu" (1089:133016). Atomik yapı:
+//   List (1113:134237) → Section (spacing-xs pad) → [Group Label] + Item
+//   Item (1112:131632)     = Type(default/danger) × Content(label / +left / +right) × State
+//   Base Row (1090:133293) = [Left Control 32] + [Label flex-1] + [Right Control 32]
+//   Controls (1111:130992) = 32×32 slot → GERÇEK DS kontrolü (Icon/Checkbox/Radio/
+//     Switch/Avatar/Kbd/Palette/Button/Blank) — özel stil yok, class'lar reuse.
+// Portal davranışı window.btOvfMenuToggle/Close/Hide'da (dosya başları) — DEĞİŞMEDİ.
 const _ovfIconMore = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`;
-const _ovfIconEdit = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>`;
-const _ovfIconCopy = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
-const _ovfIconShare = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>`;
-const _ovfIconTrash = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+// 24×24 slot ikonları (Lucide, birebir) — consuming projede gerçek ikonla değiştirilir
+const _ovfSvg = p => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const _ovfIconMore24  = _ovfSvg('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>');
+const _ovfIconEdit    = _ovfSvg('<path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>');
+const _ovfIconCopy    = _ovfSvg('<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>');
+const _ovfIconUpload  = _ovfSvg('<path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>');
+const _ovfIconDownload= _ovfSvg('<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>');
+const _ovfIconBell    = _ovfSvg('<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>');
+const _ovfIconShare   = _ovfSvg('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/>');
+const _ovfIconTrash   = _ovfSvg('<path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>');
 
-function ovfMenuHtml(p = {}) {
-  const size      = p.size      || 'sm';
-  const showIcons = p.showIcons !== 'off';
-  const showDanger  = p.showDanger  === 'on';
-  const showDivider = p.showDivider === 'on';
-  const open      = p.open      === true;   // önizleme için açık göster
+// Kontrol tipi seçenekleri (Figma "Overflow Menu Item Controls" — Type)
+const OVF_LEFT_OPTS = [
+  { key: 'none',     label: 'None' },
+  { key: 'icon',     label: 'Icon' },
+  { key: 'checkbox', label: 'Checkbox' },
+  { key: 'radio',    label: 'Radio' },
+  { key: 'switch',   label: 'Switch' },
+  { key: 'avatar',   label: 'Avatar' },
+  { key: 'kbd',      label: 'Kbd' },
+  { key: 'palette',  label: 'Palette' },
+  { key: 'button',   label: 'Button' },
+  { key: 'blank',    label: 'Blank' },
+];
+const OVF_RIGHT_OPTS = OVF_LEFT_OPTS.filter(o => o.key !== 'avatar');
+const OVF_STATE_OPTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'active',   label: 'Active' },
+  { key: 'selected', label: 'Selected' },
+  { key: 'focus',    label: 'Focus' },
+  { key: 'disabled', label: 'Disabled' },
+];
+const OVF_TRIGGER_OPTS  = [{ key: 'labeled', label: 'Labeled ("Open Menu")' }, { key: 'icon', label: 'Icon (⋯)' }];
+const OVF_SECTIONS_OPTS = [{ key: '1', label: '1 (flat)' }, { key: '2', label: '2 (grouped)' }];
 
-  const btnCls  = `bt-btn bt-btn--${size} bt-btn--base-flat bt-btn--icon`;
-  const listStyle = open ? ' style="display:block;position:relative;top:auto;right:auto;"' : '';
+// 32×32 control slot — içine GERÇEK DS component class'ı konur, ekstra stil yok
+function ovfCtrlHtml(type, opt = {}) {
+  if (!type || type === 'none') return '';
+  let inner = '';
+  switch (type) {
+    case 'icon':     inner = `<span class="bt-ovf-menu__ctrl-icon">${opt.icon || _ovfIconMore24}</span>`; break;
+    case 'checkbox': inner = `<span class="${_chkBoxCls('default', opt.on || 'on', 'md')}">${_chkCheck}</span>`; break;
+    case 'radio':    inner = `<span class="${_rdDotCls('default', opt.on || 'on', 'md')}"></span>`; break;
+    case 'switch':   inner = `<div class="${_swTrackCls('default', opt.on || 'on', 'sm')}"><div class="bt-switch__thumb"></div></div>`; break;
+    case 'avatar':   inner = `<span class="bt-avatar bt-avatar--xs"><span class="bt-avatar__initials">EG</span></span>`; break;
+    case 'kbd':      inner = `<kbd class="bt-kbd">${opt.kbd || 'Tab'}</kbd>`; break;
+    case 'palette':  inner = `<span class="bt-ovf-menu__ctrl-palette" style="background:${opt.color || '#7c3aed'}"></span>`; break;
+    case 'button':   inner = `<button type="button" class="bt-btn bt-btn--2xs bt-btn--base-flat bt-btn--icon" tabindex="-1" onclick="event.stopPropagation()">${_ovfIconMore}</button>`; break;
+    case 'blank':    inner = ''; break;
+  }
+  return `<span class="bt-ovf-menu__ctrl" aria-hidden="true">${inner}</span>`;
+}
 
-  const item = (label, icon, danger = false) => {
-    const cls   = `bt-ovf-menu__item${danger ? ' bt-ovf-menu__item--danger' : ''}`;
-    const ico   = showIcons ? `<span class="bt-ovf-menu__item-icon">${icon}</span>` : '';
-    return `<li class="${cls}" role="menuitem" onclick="btOvfMenuClose(event,this)">${ico}${label}</li>`;
-  };
+// Overflow Menu Item — Type × Content × State
+function ovfItemHtml(o = {}) {
+  const {
+    label = 'Label Text Here', type = 'default', state = 'default',
+    left = 'none', right = 'none', leftOpt = {}, rightOpt = {}, desc,
+    interactive = true,
+  } = o;
+  const cls = ['bt-ovf-menu__item'];
+  if (type === 'danger') cls.push('bt-ovf-menu__item--danger');
+  if (state !== 'default') cls.push(`bt-ovf-menu__item--${state}`);
+  const descHtml  = desc ? `<span class="bt-ovf-menu__label-desc">${desc}</span>` : '';
+  const clickAttr = (interactive && state !== 'disabled') ? ' onclick="btOvfMenuClose(event,this)"' : '';
+  const disAttr   = state === 'disabled' ? ' aria-disabled="true"' : '';
+  return `<div class="${cls.join(' ')}" role="menuitem"${disAttr}${clickAttr}>
+      <div class="bt-ovf-menu__item-row">${ovfCtrlHtml(left, leftOpt)}<span class="bt-ovf-menu__label"><span class="bt-ovf-menu__label-text">${label}</span>${descHtml}</span>${ovfCtrlHtml(right, rightOpt)}</div>
+    </div>`;
+}
 
-  const divider = (showDivider && showDanger) ? `<li class="bt-ovf-menu__divider" role="separator"></li>` : '';
-  const danger  = showDanger ? item('Delete', _ovfIconTrash, true) : '';
-
+function ovfGroupLabelHtml(text = 'Group Label Text Here') {
+  return `<div class="bt-ovf-menu__group-label">${text}</div>`;
+}
+function ovfSectionHtml(inner) {
+  return `<div class="bt-ovf-menu__section" role="group">${inner}</div>`;
+}
+function ovfTriggerHtml(kind = 'labeled') {
+  return kind === 'icon'
+    ? `<button type="button" class="bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon" aria-haspopup="true" onclick="btOvfMenuToggle(event,this)">${_ovfIconMore}</button>`
+    : `<button type="button" class="bt-btn bt-btn--sm bt-btn--base-outline" aria-haspopup="true" onclick="btOvfMenuToggle(event,this)">Open Menu</button>`;
+}
+function ovfListHtml(sectionsInner, o = {}) {
+  const listStyle = o.open === true ? ' style="display:block;position:relative;top:auto;right:auto;"' : '';
+  // o.trigger === 'none' → yalnız açık liste (State/Controls/Content tablo hücreleri için);
+  // aksi halde trigger + liste (Figma "Example" düzeni).
+  const trig = o.trigger === 'none' ? '' : ovfTriggerHtml(o.trigger === 'icon' ? 'icon' : 'labeled');
   return `<div class="bt-ovf-menu">
-  <button type="button" class="${btnCls}" aria-haspopup="true" onclick="btOvfMenuToggle(event,this)">${_ovfIconMore}</button>
-  <ul class="bt-ovf-menu__list" role="menu"${listStyle}>
-    ${item('Edit',  _ovfIconEdit)}
-    ${item('Copy',  _ovfIconCopy)}
-    ${item('Share', _ovfIconShare)}
-    ${divider}${danger}
-  </ul>
+  ${trig}
+  <div class="bt-ovf-menu__list" role="menu"${listStyle}>${sectionsInner}</div>
 </div>`;
+}
+// Trigger'sız açık liste — tablo hücrelerinde item/section demoları için
+function ovfBareListHtml(sectionsInner) {
+  return ovfListHtml(sectionsInner, { open: true, trigger: 'none' });
+}
+
+// Playground / demo menüsü — prop'lardan temsili bir menü kurar
+function ovfMenuHtml(p = {}) {
+  const left  = p.left  || 'none';
+  const right = p.right || 'none';
+  const state = p.state || 'default';
+  const desc  = (p.description === 'on') ? 'Description text' : undefined;
+  const dLast = p.destructiveLast === 'on';
+  const grp   = p.groupLabel === 'on';
+  const two   = String(p.sections || '1') === '2';
+  const L     = 'Label Text Here';
+  const first = ovfItemHtml({ label: L, left, right, desc, state });
+  const plain = () => ovfItemHtml({ label: L, left: left === 'none' ? 'none' : left, right: right === 'none' ? 'none' : right });
+  const dItem = ovfItemHtml({ label: L, type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } });
+  const gl    = grp ? ovfGroupLabelHtml() : '';
+
+  const sections = two
+    ? ovfSectionHtml(gl + first + plain() + plain()) + ovfSectionHtml(gl + plain() + (dLast ? dItem : plain()))
+    : ovfSectionHtml(gl + first + plain() + plain() + (dLast ? dItem : plain()));
+
+  return ovfListHtml(sections, { open: p.open === true, trigger: p.trigger });
+}
+
+function ovfMenuCss(p = {}) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const dLast = p.destructiveLast === 'on';
+  const grp   = p.groupLabel === 'on';
+  const lines = [
+    '/* List — portal, position:fixed (JS document.body\'ye taşır) */',
+    '.bt-ovf-menu__list {',
+    ln('min-width',     '180px'),
+    ln('background',    'var(--bt-base-default)  /* #ffffff */'),
+    ln('border',        '1px solid var(--bt-border-primary-muted)  /* #e6e6e6 */'),
+    ln('border-radius', 'var(--bt-radius-sm)  /* 4px */'),
+    ln('box-shadow',    'var(--bt-shadow-lg)'),
+    '}', '',
+    '/* Section — birden çoksa aralarına Line girer */',
+    '.bt-ovf-menu__section { display: flex; flex-direction: column; padding: var(--bt-space-xs)  /* 4px */; }',
+    '.bt-ovf-menu__section + .bt-ovf-menu__section { border-top: 1px solid var(--bt-border-primary-default)  /* #d4d4d4 */; }',
+    '',
+    ...(grp ? [
+      '/* Group Label — Geist Medium, muted */',
+      '.bt-ovf-menu__group-label {',
+      ln('padding', 'var(--bt-radius-lg) var(--bt-space-xs)  /* 8px / 4px */'),
+      ln('font',    'var(--bt-text-xs-medium)  /* 500 12px/16px */'),
+      ln('color',   'var(--bt-text-primary-emphasis)  /* #727272 */'),
+      '}', '',
+    ] : []),
+    '/* Item — Type + State katmanı */',
+    '.bt-ovf-menu__item {',
+    ln('display',        'flex'),
+    ln('flex-direction', 'column'),
+    ln('border-radius',  'var(--bt-radius-sm)  /* 4px */'),
+    ln('overflow',       'clip'),
+    ln('background',     'var(--bt-base-default)  /* #ffffff */'),
+    ln('color',          'var(--bt-text-primary-default)  /* #1a1a1a */'),
+    ln('cursor',         'pointer'),
+    '}',
+    '.bt-ovf-menu__item:hover           { background: var(--bt-base-subtle)  /* #f5f5f5 */; }',
+    '.bt-ovf-menu__item--active,',
+    '.bt-ovf-menu__item--selected       { background: var(--bt-base-muted)  /* #e6e6e6 */; }',
+    '.bt-ovf-menu__item--focus          { box-shadow: 0 0 0 3px rgba(212,212,212,.5)  /* Focus Ring/neutral */; }',
+    '.bt-ovf-menu__item--disabled       { color: var(--bt-text-primary-muted)  /* #a3a3a3 */; cursor: not-allowed; pointer-events: none; }',
+    '',
+    '/* Base Row — [Left 32] + [Label flex-1] + [Right 32] */',
+    '.bt-ovf-menu__item-row { display: flex; align-items: center; gap: 0; width: 100%; }',
+    '.bt-ovf-menu__ctrl { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: clip; color: var(--bt-icon-primary-strong)  /* #535353 */; }',
+    '.bt-ovf-menu__label { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: var(--bt-radius-lg) var(--bt-space-md)  /* 8px / 8px (kontrollü item\'da yatay 4px) */; font: var(--bt-text-xs-regular)  /* 400 12px/16px */; }',
+    '.bt-ovf-menu__label-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }',
+    '.bt-ovf-menu__label-desc { color: var(--bt-text-primary-emphasis)  /* #727272 */; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }',
+    ...(dLast ? [
+      '',
+      '/* Type=Destructive (.bt-ovf-menu__item--danger) */',
+      '.bt-ovf-menu__item--danger                 { color: var(--bt-text-error-default)  /* #b31d38 */; }',
+      '.bt-ovf-menu__item--danger .bt-ovf-menu__ctrl { color: var(--bt-icon-error-default)  /* #b31d38 */; }',
+      '.bt-ovf-menu__item--danger:hover           { background: var(--bt-error-subtle)  /* #fde6e6 */; }',
+      '.bt-ovf-menu__item--danger.bt-ovf-menu__item--active,',
+      '.bt-ovf-menu__item--danger.bt-ovf-menu__item--selected { background: var(--bt-error-muted)  /* #fbd0d2 */; }',
+    ] : []),
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
 
 PAGES_WEB['components/overflow-menu'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Anatomy', 'States', 'Items'],
+  toc:  ['Anatomy', 'States', 'Controls', 'Grouped'],
   render(tab) {
     const title = 'Overflow Menu';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
-    const OVF_SIZE_OPTS = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md' }];
+    // .example-viewer sarmalayıcı — statik menü demoları için (ortalı, yan yana)
+    const ev = inner => `<div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;"><div style="display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">${inner}</div></div></div>`;
+    // Tek sıralı örnek (bir liste, birden çok kolon değil)
+    const one = h => `<div style="display:flex;justify-content:center;padding:8px 0;">${h}</div>`;
+
+    // Figma 3 Example frame'i (1113:135641 / 135640 / 135639) — birebir
+    const exFlat = ovfListHtml(ovfSectionHtml(
+      ovfItemHtml({ label: 'Label Text Here' }) +
+      ovfItemHtml({ label: 'Label Text Here', state: 'hover' }) +
+      ovfItemHtml({ label: 'Label Text Here' }) +
+      ovfItemHtml({ label: 'Label Text Here', state: 'active' }) +
+      ovfItemHtml({ label: 'Label Text Here' }) +
+      ovfItemHtml({ label: 'Label Text Here' })
+    ), { open: true });
+    const exIcons = ovfListHtml(ovfSectionHtml(
+      ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconEdit } }) +
+      ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconCopy }, state: 'hover' }) +
+      ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconUpload } }) +
+      ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconDownload } }) +
+      ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconBell } }) +
+      ovfItemHtml({ label: 'Label Text Here', type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } })
+    ), { open: true });
+    const exGrouped = ovfListHtml(
+      ovfSectionHtml(
+        ovfGroupLabelHtml() +
+        ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconEdit } }) +
+        ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconCopy }, state: 'hover' }) +
+        ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconUpload } }) +
+        ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconDownload } })
+      ) +
+      ovfSectionHtml(
+        ovfGroupLabelHtml() +
+        ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconBell } }) +
+        ovfItemHtml({ label: 'Label Text Here', type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } })
+      ), { open: true });
+
+    // Trigger'sız açık liste demoları (tablo hücreleri) — iki satır, ilk satır hedef durumu gösterir
+    const stateRow = (state, type) => ovfBareListHtml(ovfSectionHtml(
+      ovfItemHtml({ label: state === 'default' ? 'Default' : state[0].toUpperCase() + state.slice(1), type, state, left: 'icon', leftOpt: { icon: type === 'danger' ? _ovfIconTrash : _ovfIconEdit } }) +
+      ovfItemHtml({ label: 'Label Text Here', left: 'icon', leftOpt: { icon: _ovfIconCopy } })
+    ));
+    const contentRow = (left, right, desc) => ovfBareListHtml(ovfSectionHtml(
+      ovfItemHtml({ label: 'Label Text Here', left, right, leftOpt: { icon: _ovfIconEdit }, desc: desc ? 'Description text' : undefined }) +
+      ovfItemHtml({ label: 'Label Text Here', left, right, leftOpt: { icon: _ovfIconCopy } })
+    ));
+    const ctrlRow = (side, type) => ovfBareListHtml(ovfSectionHtml(
+      ovfItemHtml(side === 'left'
+        ? { label: 'Label Text Here', left: type, right: 'none', leftOpt: { icon: _ovfIconEdit } }
+        : { label: 'Label Text Here', left: 'icon', right: type, leftOpt: { icon: _ovfIconEdit } }) +
+      ovfItemHtml(side === 'left'
+        ? { label: 'Label Text Here', left: type, right: 'none' }
+        : { label: 'Label Text Here', left: 'icon', right: type, leftOpt: { icon: _ovfIconCopy } })
+    ));
 
     if (tab === 'CSS Properties') { return { title, html: `
+      <p class="page-desc">Overflow Menu için design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>Overflow Menu</em> sayfasının (${tk('1089:133016')}) <em>List</em> / <em>Section</em> / <em>Overflow Menu Item</em> (${tk('1112:131632')}) / <em>Base Overflow Menu Item</em> (${tk('1090:133293')}) / <em>Overflow Menu Item Controls</em> (${tk('1111:130992')}) node'larından birebir doğrulanmıştır.</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>List</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>List (${tk('.bt-ovf-menu__list')})</td><td>Background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>List</td><td>Border</td><td>${tk('--bt-border-primary-muted')}</td><td>1px · #e6e6e6</td></tr>
           <tr><td>List</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
           <tr><td>List</td><td>Box-shadow</td><td>${tk('--bt-shadow-lg')}</td><td>0 4px 6px rgba(16,24,40,.031), 0 12px 16px rgba(16,24,40,.078)</td></tr>
-          <tr><td>Item</td><td>Padding</td><td>${tk('--bt-space-sm')} / ${tk('--bt-space-md')}</td><td>6px / 8px</td></tr>
-          <tr><td>Item</td><td>Gap</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
-          <tr><td>Item</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 12px/16px</td></tr>
-          <tr><td>Item</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Item Hover</td><td>Background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>Item Icon</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
-          <tr><td>Item Danger</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>Item Danger Hover</td><td>Background</td><td>${tk('--bt-surface-error-subtle')}</td><td>#fde6e6</td></tr>
-          <tr><td>Divider</td><td>Background</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>List</td><td>Min-width</td><td>—</td><td>180px</td></tr>
+          <tr><td>Section (${tk('.bt-ovf-menu__section')})</td><td>Padding</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Section + Section (Line)</td><td>Border-top</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4</td></tr>
+          <tr><td>Group Label (${tk('.bt-ovf-menu__group-label')})</td><td>Padding</td><td>${tk('--bt-radius-lg')} / ${tk('--bt-space-xs')}</td><td>8px / 4px</td></tr>
+          <tr><td>Group Label</td><td>Font</td><td>${tk('--bt-text-xs-medium')}</td><td>500 · 12px/16px · Geist Medium</td></tr>
+          <tr><td>Group Label</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Item (${tk('.bt-ovf-menu__item')})</td><td>Border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Item · Default</td><td>Background / Color</td><td>${tk('--bt-base-default')} / ${tk('--bt-text-primary-default')}</td><td>#ffffff / #1a1a1a</td></tr>
+          <tr><td>Item · Hover</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Item · Active / Selected</td><td>Background</td><td>${tk('--bt-base-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Item · Focus</td><td>Box-shadow</td><td>Focus Ring/neutral</td><td>0 0 0 3px rgba(212,212,212,.5)</td></tr>
+          <tr><td>Item · Disabled</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3 · ${tk('pointer-events:none')}</td></tr>
+          <tr><td>Item · Destructive (${tk('.bt-ovf-menu__item--danger')})</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Item · Destructive Hover</td><td>Background</td><td>${tk('--bt-error-subtle')}</td><td>#fde6e6</td></tr>
+          <tr><td>Item · Destructive Active / Selected</td><td>Background</td><td>${tk('--bt-error-muted')}</td><td>#fbd0d2</td></tr>
+          <tr><td>Item · Destructive Disabled</td><td>Color</td><td>${tk('--bt-text-error-muted')}</td><td>#fbd0d2</td></tr>
+          <tr><td>Label (${tk('.bt-ovf-menu__label')})</td><td>Padding</td><td>${tk('--bt-radius-lg')} / ${tk('--bt-space-md')}</td><td>8px / 8px · <strong>sol kontrol varsa</strong> yatay ${tk('--bt-space-xs')} (4px) — Figma: Content=Left Control &amp; Label → [8,4,8,4]</td></tr>
+          <tr><td>Label</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Label · Description satırı</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Control slot (${tk('.bt-ovf-menu__ctrl')})</td><td>Size</td><td>—</td><td>32×32 · içeriği ortalar</td></tr>
+          <tr><td>Control · Icon</td><td>Size / Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>24×24 · #535353</td></tr>
+          <tr><td>Control · Palette</td><td>Size / Border</td><td>${tk('--bt-border-primary-default')}</td><td>20×20 · 1px · ${tk('--bt-radius-sm')}</td></tr>
+          <tr><td>Control · Checkbox / Radio</td><td>—</td><td>${tk('.bt-checkbox__box')} / ${tk('.bt-radio__dot')}</td><td>16×16 · gerçek DS component reuse</td></tr>
+          <tr><td>Control · Switch</td><td>—</td><td>${tk('.bt-switch__track')}</td><td>32×20 · gerçek DS component reuse</td></tr>
+          <tr><td>Control · Avatar</td><td>—</td><td>${tk('.bt-avatar.bt-avatar--xs')}</td><td>28×28 · gerçek DS component reuse</td></tr>
+          <tr><td>Control · Kbd</td><td>—</td><td>${tk('.bt-kbd')}</td><td>gerçek DS component reuse</td></tr>
+          <tr><td>Control · Button</td><td>—</td><td>${tk('.bt-btn--2xs.bt-btn--base-flat.bt-btn--icon')}</td><td>20×20 · gerçek DS component reuse</td></tr>
+          <tr><td>Trigger</td><td>—</td><td>${tk('.bt-btn--sm')}</td><td>icon-only (⋯) veya kısa metinli ${tk('.bt-btn--base-outline')}</td></tr>
         </tbody>
       </table>
     `}; }
@@ -14390,32 +14616,68 @@ PAGES_WEB['components/overflow-menu'] = {
     if (tab === 'Usage') { return { title, html: `
       <h2>Do</h2>
       <ul>
-        <li>Her zaman bir icon button (more-horizontal) ile tetikle — metin etiketli tetikleyici kullanma</li>
-        <li>Öğe sayısını 3–6 arasında tut; daha fazlası için grupla veya modal kullan</li>
-        <li>Tehlikeli aksiyonları (Delete, Remove) ${tk('.bt-ovf-menu__item--danger')} ile işaretle ve listeye en sona koy</li>
-        <li>Tehlikeli eylemden önce ${tk('.bt-ovf-menu__divider')} ile görsel ayrım sağla</li>
+        <li>Tetikleyici bir <strong>icon button</strong> (⋯, ${tk('.bt-btn--icon')}) <strong>veya</strong> kısa metinli bir ${tk('.bt-btn--base-outline')} olabilir — Figma "Example"'da "Open Menu" metinli tetikleyici kullanılır</li>
+        <li>Öğe sayısını 3–6 arasında tut; daha fazlası için ${tk('.bt-ovf-menu__section')} ile 2–3 mantıksal gruba böl, her gruba bir ${tk('.bt-ovf-menu__group-label')} ver — bölümler arasına otomatik ${tk('Line')} (border-top) girer</li>
+        <li>Tehlikeli aksiyonları (Delete, Remove) ${tk('.bt-ovf-menu__item--danger')} ile işaretle ve listenin/son bölümün en sonuna koy</li>
+        <li>Sol ${tk('.bt-ovf-menu__ctrl')} slotu bir eylem ikonu; sağ slot durum kontrolü (checkbox/radio/switch), kısayol (${tk('.bt-kbd')}) veya renk örneği (palette) taşıyabilir — hepsi 32×32 slot içinde gerçek DS component'i</li>
         <li>Her öğe tıklandığında menüyü otomatik kapat</li>
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li>İki satıra taşan uzun etiket yazma — ${tk('white-space:nowrap')} kural gereği liste yatayda genişler</li>
+        <li>İki satıra taşan uzun etiket yazma — ${tk('.bt-ovf-menu__label-text')} ${tk('white-space:nowrap')} + ellipsis uygular, liste yatayda gereksiz genişlemez (ikinci bilgi için ${tk('.bt-ovf-menu__label-desc')} satırını kullan)</li>
         <li>İç içe (nested) overflow menu açma — hiyerarşik aksiyonlar için ayrı bir modal/dialog kullan</li>
         <li>Menüyü birincil aksiyon için kullanma — sık kullanılan aksiyonlar doğrudan görünür bir buton olmalı</li>
+        <li>Sol/sağ slot içine 32×32'yi taşıran bir kontrol koyma — slot ${tk('overflow:clip')}'tir, kontrol kendi doğal boyutunda ortalanır</li>
       </ul>
     `}; }
 
     if (tab === 'Examples') { return { title, html: `
-      <h2 id="Items">Items</h2>
-      <p class="page-desc">Overflow Menu üç item varyasyonunu destekler: ikon + label (varsayılan), yalnız label ve danger. Danger item her zaman listenin sonuna konur; öncesinde opsiyonel bir ${tk('.bt-ovf-menu__divider')} görsel ayrım sağlar. Aşağıdaki tablo tüm kombinasyonları yan yana gösterir — tıklanabilir, gerçek ${tk('btOvfMenuToggle')} ile çalışır.</p>
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Yapının tam ayrıntısı ve token tablosu <strong>Overview</strong> sekmesindedir. Kısaca: <strong>Base Overflow Menu Item</strong> (Figma ${tk('1090:133293')}) yatay bir satırdır — <strong>Left Control (32×32) + Label (flex-1) + Right Control (32×32)</strong>; menü item'ı bu satırı sarıp state + Type (Default/Destructive) katmanını ekler. Aşağıda dört <strong>Content</strong> kombinasyonu (Figma ${tk('1112:131632')}) — sol/sağ slot ${tk('none')} iken hiç render edilmez, ${tk('blank')} iken 32×32 boş hizalayıcı kalır. <strong>Sol kontrol varsa</strong> Label yatay padding'i 8→4px'e iner (Figma). Tablolar tıklanabilir, gerçek ${tk('btOvfMenuToggle')} ile çalışır.</p>
       <table class="token-table">
-        <thead><tr><th>Kombinasyon</th><th>Preview</th></tr></thead>
+        <thead><tr><th>Content</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Label Only</td><td>${ovfMenuHtml({ open: true, showIcons: 'off' })}</td></tr>
-          <tr><td>Icon + Label</td><td>${ovfMenuHtml({ open: true })}</td></tr>
-          <tr><td>With Danger</td><td>${ovfMenuHtml({ open: true, showDanger: 'on' })}</td></tr>
-          <tr><td>With Divider + Danger</td><td>${ovfMenuHtml({ open: true, showDanger: 'on', showDivider: 'on' })}</td></tr>
+          <tr><td>Label</td><td>${one(contentRow('none', 'none'))}</td></tr>
+          <tr><td>Left Control &amp; Label</td><td>${one(contentRow('icon', 'none'))}</td></tr>
+          <tr><td>Label &amp; Right Control</td><td>${one(contentRow('none', 'kbd'))}</td></tr>
+          <tr><td>Left Control &amp; Label &amp; Right Control</td><td>${one(contentRow('icon', 'switch'))}</td></tr>
+          <tr><td>+ Description (2 satır)</td><td>${one(contentRow('icon', 'none', true))}</td></tr>
         </tbody>
       </table>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Item (${tk('.bt-ovf-menu__item')}) altı state taşır; <strong>Type=Default</strong> ve <strong>Type=Destructive</strong> için ayrı paletlerdir (Figma <em>Overflow Menu Item</em> set'inden birebir). Aşağıda her state, iki satırlı küçük bir listede ilk satıra uygulanmış olarak gösterilir. Renk değerleri için Overview → States tablosuna bakın.</p>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Default</th><th>Destructive</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>${one(stateRow('default', 'default'))}</td><td>${one(stateRow('default', 'danger'))}</td></tr>
+          <tr><td>Hover</td><td>${one(stateRow('hover', 'default'))}</td><td>${one(stateRow('hover', 'danger'))}</td></tr>
+          <tr><td>Active / Selected</td><td>${one(stateRow('selected', 'default'))}</td><td>${one(stateRow('selected', 'danger'))}</td></tr>
+          <tr><td>Focus</td><td>${one(stateRow('focus', 'default'))}</td><td>${one(stateRow('focus', 'danger'))}</td></tr>
+          <tr><td>Disabled</td><td>${one(stateRow('disabled', 'default'))}</td><td>${one(stateRow('disabled', 'danger'))}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Controls">Controls</h2>
+      <p class="page-desc">Figma <em>Overflow Menu Item Controls</em> (${tk('1111:130992')}) — 32×32 bir slot; içine tasarım sisteminin <strong>gerçek</strong> bir kontrolü konur (özel stil yok). Dokuz tip: <strong>Icon</strong> (24×24 SVG), <strong>Checkbox</strong> / <strong>Radio</strong> (${tk('.bt-checkbox__box')} / ${tk('.bt-radio__dot')}), <strong>Switch</strong> (${tk('.bt-switch__track')}), <strong>Avatar</strong> (${tk('.bt-avatar--xs')}), <strong>Kbd</strong> (${tk('.bt-kbd')}), <strong>Palette</strong> (20×20 renk örneği), <strong>Button</strong> (${tk('.bt-btn--2xs')} icon-only), <strong>Blank</strong> (boş hizalayıcı). Sol slot genelde eylem ikonu, sağ slot durum/kısayol taşır — Avatar dışında her tip her iki slotta kullanılabilir.</p>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Left slot</th><th>Right slot</th></tr></thead>
+        <tbody>
+          <tr><td>Icon</td><td>${one(ctrlRow('left', 'icon'))}</td><td>${one(ctrlRow('right', 'icon'))}</td></tr>
+          <tr><td>Checkbox</td><td>${one(ctrlRow('left', 'checkbox'))}</td><td>${one(ctrlRow('right', 'checkbox'))}</td></tr>
+          <tr><td>Radio</td><td>${one(ctrlRow('left', 'radio'))}</td><td>${one(ctrlRow('right', 'radio'))}</td></tr>
+          <tr><td>Switch</td><td>${one(ctrlRow('left', 'switch'))}</td><td>${one(ctrlRow('right', 'switch'))}</td></tr>
+          <tr><td>Avatar</td><td>${one(ctrlRow('left', 'avatar'))}</td><td>—</td></tr>
+          <tr><td>Kbd</td><td>${one(ctrlRow('left', 'kbd'))}</td><td>${one(ctrlRow('right', 'kbd'))}</td></tr>
+          <tr><td>Palette</td><td>${one(ctrlRow('left', 'palette'))}</td><td>${one(ctrlRow('right', 'palette'))}</td></tr>
+          <tr><td>Button</td><td>${one(ctrlRow('left', 'button'))}</td><td>${one(ctrlRow('right', 'button'))}</td></tr>
+          <tr><td>Blank</td><td>${one(ctrlRow('left', 'blank'))}</td><td>${one(ctrlRow('right', 'blank'))}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Grouped">Grouped</h2>
+      <p class="page-desc">Figma'daki üç <em>Example</em> frame'i (${tk('1113:135641')} / ${tk('135640')} / ${tk('135639')}) — hedeflenen kullanım standardı: trigger ${tk('Button')} ("Open Menu", ${tk('.bt-btn--base-outline')}) hemen üstte, açık ${tk('.bt-ovf-menu__list')}. Soldan sağa: (1) düz 6 item, state teşhiri; (2) sol ikonlu 6 item, sonuncusu Destructive; (3) iki ${tk('.bt-ovf-menu__section')} — her birinde bir ${tk('.bt-ovf-menu__group-label')} + item'lar, aralarında otomatik ${tk('Line')}, son item Destructive.</p>
+      ${ev(exFlat + exIcons + exGrouped)}
     `}; }
 
     // Overview
@@ -14424,103 +14686,272 @@ PAGES_WEB['components/overflow-menu'] = {
         id: 'pgd-ovf-menu-overview',
         variants: [{ key: 'default', label: 'Overflow Menu' }],
         props: [
-          { key: 'size',        label: 'Size',        options: OVF_SIZE_OPTS,  default: 'sm' },
-          { key: 'showIcons',   label: 'Show Icons',  options: TBX_BOOL_OPTS,  default: 'on' },
-          { key: 'showDanger',  label: 'Danger Item', options: TBX_BOOL_OPTS,  default: 'on' },
-          { key: 'showDivider', label: 'Divider',     options: TBX_BOOL_OPTS,  default: 'on' },
+          { key: 'sections',        label: 'Sections',        options: OVF_SECTIONS_OPTS, default: '1',       group: 'Menu' },
+          { key: 'groupLabel',      label: 'Group Label',     options: TBX_BOOL_OPTS,     default: 'off',     group: 'Menu' },
+          { key: 'destructiveLast', label: 'Destructive Item',options: TBX_BOOL_OPTS,     default: 'on',      group: 'Menu' },
+          { key: 'trigger',         label: 'Trigger',         options: OVF_TRIGGER_OPTS,  default: 'labeled', group: 'Menu' },
+          { key: 'left',            label: 'Left Control',    options: OVF_LEFT_OPTS,     default: 'icon',    group: 'Item' },
+          { key: 'right',           label: 'Right Control',   options: OVF_RIGHT_OPTS,    default: 'none',    group: 'Item' },
+          { key: 'description',     label: 'Description',     options: TBX_BOOL_OPTS,     default: 'off',     group: 'Item' },
+          { key: 'state',           label: 'State (1st item)',options: OVF_STATE_OPTS,    default: 'default', group: 'Item' },
         ],
-        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:32px;gap:120px;">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <span style="font:400 11px/16px var(--font);color:var(--bt-text-muted);">Closed</span>
-            ${ovfMenuHtml({ ...p })}
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <span style="font:400 11px/16px var(--font);color:var(--bt-text-muted);">Open</span>
-            ${ovfMenuHtml({ ...p, open: true })}
-          </div>
-        </div>`,
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, open: true })}</div>`,
         code: (v, p) => ovfMenuHtml({ ...p }),
-        css: (v, p) => {
-          const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-          const ln  = (k, val) => `  ${k}: ${val};`;
-          const lines = [
-            '.bt-ovf-menu {',
-            ln('position', 'relative'),
-            ln('display',  'inline-flex'),
-            '}', '',
-            '.bt-ovf-menu__list {',
-            ln('display',        'none  /* açılınca JS: display:block */'),
-            ln('position',       'fixed  /* portal — document.body\'ye taşınır */'),
-            ln('z-index',        '200'),
-            ln('min-width',      '140px'),
-            ln('background',     'var(--bt-surface-primary-default)  /* #ffffff */'),
-            ln('border-radius',  'var(--bt-radius-sm)  /* 4px */'),
-            ln('box-shadow',     'var(--bt-shadow-lg)'),
-            '}', '',
-            '.bt-ovf-menu__item {',
-            ln('display',     'flex'),
-            ln('align-items', 'center'),
-            ln('gap',         'var(--bt-space-xs)  /* 4px */'),
-            ln('padding',     'var(--bt-space-sm) var(--bt-space-md)  /* 6px 8px */'),
-            ln('font',        'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
-            ln('color',       'var(--bt-text-primary-default)  /* #1a1a1a */'),
-            '}',
-            '.bt-ovf-menu__item:hover {',
-            ln('background', 'var(--bt-surface-primary-subtle)  /* #f5f5f5 */'),
-            '}', '',
-            ...(p.showIcons !== 'off' ? [
-              '.bt-ovf-menu__item-icon {',
-              ln('width',   '16px'),
-              ln('height',  '16px'),
-              ln('color',   'var(--bt-icon-primary-strong)  /* #535353 */'),
-              '}', '',
-            ] : []),
-            ...(p.showDanger === 'on' ? [
-              '.bt-ovf-menu__item--danger { color: var(--bt-text-error-default)  /* #b31d38 */; }',
-              '.bt-ovf-menu__item--danger:hover { background: var(--bt-surface-error-subtle)  /* #fde6e6 */; }',
-              '',
-            ] : []),
-            ...(p.showDivider === 'on' && p.showDanger === 'on' ? [
-              '.bt-ovf-menu__divider {',
-              ln('height',     '1px'),
-              ln('background', 'var(--bt-border-primary-default)  /* #d4d4d4 */'),
-              ln('margin',     'var(--bt-space-2xs) 0  /* 2px */'),
-              '}',
-            ] : []),
-          ];
-          return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
-        },
+        css:  (v, p) => ovfMenuCss(p),
       })}
 
-      <p class="page-desc">Overflow Menu, sınırlı alanda çok sayıda aksiyonu gizleyen bir overlay bileşenidir. Tetikleyici olarak her zaman ${tk('bt-btn--icon')} (more-horizontal) kullanılır; tıklandığında ${tk('.bt-ovf-menu__list')} ${tk('position:fixed')} ile viewport'ta doğru konuma yerleşir ve ${tk('document.body')}'ye portal'lanır (ata elementlerdeki ${tk('overflow:hidden')} veya ${tk('transform')} kurallarından bağımsız). Liste açıkken dışarıya tıklamak veya scroll kapatır; her öğe tıklandığında menü otomatik kapanır. Playground'da Closed/Open iki durumu yan yana gösterilir — Open durumunu görmek için sağ tarafı kullan.</p>
+      <p class="page-desc">Overflow Menu, sınırlı alanda çok sayıda aksiyonu gizleyen bir overlay bileşenidir. Tetikleyici bir ${tk('.bt-btn')} (icon-only ⋯ ya da Figma "Example"'daki gibi kısa metinli ${tk('.bt-btn--base-outline')}); tıklandığında ${tk('.bt-ovf-menu__list')} ${tk('position:fixed')} ile viewport'ta konumlanır ve ${tk('document.body')}'ye portal'lanır (ata elementlerdeki ${tk('overflow:hidden')} / ${tk('transform')}'dan bağımsız). Dışarı tıklama ve scroll menüyü kapatır; her öğe tıklandığında menü kapanır. Yapı Figma'yla birebir: <strong>List → Section → [Group Label] + Item</strong>; bir menüde birden çok ${tk('.bt-ovf-menu__section')} olabilir, aralarına otomatik bir ${tk('Line')} (border-top) girer.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
-      <p class="page-desc">${tk('.bt-ovf-menu')} ${tk('position:relative')} sarmalayıcıdır; doğrudan çocukları trigger (${tk('.bt-btn--icon')}) ve liste (${tk('.bt-ovf-menu__list')}). Liste açılınca JS portal'ı ile ${tk('document.body')}'ye taşınır, kapanınca geri döner. Her ${tk('.bt-ovf-menu__item')} icon slot (${tk('.bt-ovf-menu__item-icon')}, 16×16) + metin label içerir; opsiyonel ${tk('.bt-ovf-menu__divider')} ince yatay çizgiyle gruplar ayırır; ${tk('.bt-ovf-menu__item--danger')} red renk paleti uygular.</p>
+      <p class="page-desc"><strong>Base Overflow Menu Item</strong> (Figma ${tk('1090:133293')}) yatay bir flex satırıdır — üç bölüm: <strong>Left Control</strong> (32×32 slot) + <strong>Label</strong> (flex-1, dikey ortalı) + <strong>Right Control</strong> (32×32 slot). Menü <strong>item</strong>'ı (${tk('.bt-ovf-menu__item')}, Figma ${tk('1112:131632')}) bu satırı sarar ve state + Type (Default/Destructive) katmanını, ${tk('radius-sm')} + ${tk('overflow:clip')} ile ekler. Item'lar <strong>Section</strong> (${tk('.bt-ovf-menu__section')}, 4px padding) içinde dizilir; bir menüde birden çok section olabilir, aralarına ${tk('border-top')} (Figma "Line") girer ve her section başına opsiyonel bir <strong>Group Label</strong> (${tk('.bt-ovf-menu__group-label')}, Geist Medium, muted) konur. Hepsi <strong>List</strong> (${tk('.bt-ovf-menu__list')}) içinde — beyaz zemin, ${tk('--bt-border-primary-muted')} kenar, ${tk('--bt-shadow-lg')}, portal'lı ${tk('position:fixed')}.</p>
       <table class="token-table" style="margin-top:12px">
-        <thead><tr><th>Class</th><th>Rol</th></tr></thead>
+        <thead><tr><th>Figma layer</th><th>Class</th><th>Rol</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-ovf-menu')}</td><td>Sarmalayıcı — ${tk('position:relative; display:inline-flex')}</td></tr>
-          <tr><td>${tk('.bt-btn.bt-btn--icon')}</td><td>Trigger — gerçek Button component reuse</td></tr>
-          <tr><td>${tk('.bt-ovf-menu__list')}</td><td>Açılır liste — portal'd, ${tk('position:fixed')}, z-index 200</td></tr>
-          <tr><td>${tk('.bt-ovf-menu__item')}</td><td>Liste öğesi — ikon + label, hover state</td></tr>
-          <tr><td>${tk('.bt-ovf-menu__item-icon')}</td><td>16×16 ikon slotu — opsiyonel</td></tr>
-          <tr><td>${tk('.bt-ovf-menu__item--danger')}</td><td>Tehlikeli aksiyon — red renk paleti</td></tr>
-          <tr><td>${tk('.bt-ovf-menu__divider')}</td><td>Yatay ayırıcı — opsiyonel, 1px ${tk('--bt-border-primary-default')}</td></tr>
+          <tr><td>Trigger</td><td>${tk('.bt-btn.bt-btn--sm')}</td><td>Gerçek Button reuse — icon-only ⋯ veya ${tk('.bt-btn--base-outline')} "Open Menu"</td></tr>
+          <tr><td>Overflow Menu List</td><td>${tk('.bt-ovf-menu__list')}</td><td>Portal'lı liste — ${tk('position:fixed')}, z-index 200, ${tk('--bt-shadow-lg')}, min-width 180px</td></tr>
+          <tr><td>Section</td><td>${tk('.bt-ovf-menu__section')}</td><td>4px padding grup; ${tk('section + section')} → ${tk('border-top')} (Line)</td></tr>
+          <tr><td>Overflow Menu Item Group Label</td><td>${tk('.bt-ovf-menu__group-label')}</td><td>Bölüm başlığı — Geist Medium 12/16, ${tk('--bt-text-primary-emphasis')}, padding 8/4</td></tr>
+          <tr><td>Overflow Menu Item</td><td>${tk('.bt-ovf-menu__item')}</td><td>State + Type katmanı — ${tk('radius-sm')}, ${tk('overflow:clip')}, padding yok</td></tr>
+          <tr><td>Base Overflow Menu Item</td><td>${tk('.bt-ovf-menu__item-row')}</td><td>İç flex satırı — [Left 32] + [Label flex-1] + [Right 32], gap 0</td></tr>
+          <tr><td>Overflow Menu Item Controls</td><td>${tk('.bt-ovf-menu__ctrl')}</td><td>32×32 slot — Icon / Checkbox / Radio / Switch / Avatar / Kbd / Palette / Button / Blank</td></tr>
+          <tr><td>Label</td><td>${tk('.bt-ovf-menu__label')} › ${tk('.bt-ovf-menu__label-text')}</td><td>flex-1, dikey ortalı, ellipsis; padding 8/8 (sol kontrol varsa 8/4); opsiyonel ${tk('.bt-ovf-menu__label-desc')} 2. satır (${tk('--bt-text-primary-emphasis')})</td></tr>
+          <tr><td>Type=Destructive</td><td>${tk('.bt-ovf-menu__item--danger')}</td><td>Kırmızı renk paleti (metin/ikon + hover/active zemin)</td></tr>
         </tbody>
       </table>
 
       <h2 id="States">States</h2>
-      <p class="page-desc">Overflow Menu'nun iki temel state'i vardır: trigger'ın hover/focus state'leri ${tk('bt-btn')} bileşeninden kalıtılır, ekstra tanıma gerek yoktur. Liste öğelerinin state'leri ise bileşene özeldir: Default (şeffaf arka plan) → Hover (${tk('--bt-surface-primary-subtle')}) → Danger Default (${tk('--bt-text-error-default')} renk) → Danger Hover (${tk('--bt-surface-error-subtle')} arka plan). Danger item en sona konur ve rengiyle sinyaller ki bu geri alınamaz bir işlemdir.</p>
+      <p class="page-desc">Item altı state taşır; <strong>Type=Default</strong> ve <strong>Type=Destructive</strong> ayrı paletlerdir (Figma <em>Overflow Menu Item</em> set'inden birebir doğrulandı). <strong>Default:</strong> Hover ${tk('--bt-base-subtle')} (#f5f5f5), Active <strong>=</strong> Selected ${tk('--bt-base-muted')} (#e6e6e6), Focus beyaz zemin + nötr gri ring (${tk('0 0 0 3px rgba(212,212,212,.5)')} — brand değil, proje standardı), Disabled metin ${tk('--bt-text-primary-muted')} (#a3a3a3) + ${tk('pointer-events:none')}. <strong>Destructive:</strong> metin/ikon ${tk('--bt-text-error-default')} (#b31d38); Hover ${tk('--bt-error-subtle')} (#fde6e6), Active/Selected/Focus zemin ${tk('--bt-error-muted')}/(#fbd0d2) &amp; (#fde6e6), Disabled metin ${tk('--bt-text-error-muted')} (#fbd0d2). Description satırı hiçbir state'te renk değiştirmez (${tk('--bt-text-primary-emphasis')}). Not: Selected ile Active görsel olarak birebir aynıdır.</p>
       <table class="token-table">
-        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <thead><tr><th>State</th><th>Default</th><th>Destructive</th></tr></thead>
         <tbody>
-          <tr><td>Item — Default</td><td>${ovfMenuHtml({ open: true, showDanger: 'off', showIcons: 'off' })}</td></tr>
-          <tr><td>Item — Danger</td><td>${ovfMenuHtml({ open: true, showDanger: 'on', showDivider: 'on' })}</td></tr>
+          <tr><td>Default</td><td>${one(stateRow('default', 'default'))}</td><td>${one(stateRow('default', 'danger'))}</td></tr>
+          <tr><td>Hover</td><td>${one(stateRow('hover', 'default'))}</td><td>${one(stateRow('hover', 'danger'))}</td></tr>
+          <tr><td>Active / Selected</td><td>${one(stateRow('selected', 'default'))}</td><td>${one(stateRow('selected', 'danger'))}</td></tr>
+          <tr><td>Focus</td><td>${one(stateRow('focus', 'default'))}</td><td>${one(stateRow('focus', 'danger'))}</td></tr>
+          <tr><td>Disabled</td><td>${one(stateRow('disabled', 'default'))}</td><td>${one(stateRow('disabled', 'danger'))}</td></tr>
         </tbody>
       </table>
 
-      <h2 id="Items">Items</h2>
-      <p class="page-desc">Liste öğelerinin iki yapılandırması vardır: yalnız metin ve ikon + metin. İkon slotu (${tk('.bt-ovf-menu__item-icon')}) sabit 16×16 boyutundadır; ikon kullanılmıyorsa slot tamamen çıkarılır (padding'i sıfırlayan ayrı bir class yok — slot çıkınca boşluk kaybolur). Tüm öğelerin aynı yapıda (hepsi ikonlu ya da hiçbiri ikonlu) olması görsel hizalamayı korur. Farklı aksiyonları mantıksal gruplamak için ${tk('.bt-ovf-menu__divider')} kullanılabilir.</p>
+      <h2 id="Controls">Controls</h2>
+      <p class="page-desc">Sol veya sağ slot (${tk('.bt-ovf-menu__ctrl')}, 32×32) dokuz tipten birini alır ve her biri <strong>gerçek DS component'i</strong> reuse eder — slot yalnız kutu + ortalama sağlar, özel stil yok. Ayrıntılı önizleme için <strong>Examples → Controls</strong>.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Type</th><th>Reuse</th><th>Boyut</th></tr></thead>
+        <tbody>
+          <tr><td>Icon</td><td>24×24 inline SVG (${tk('.bt-ovf-menu__ctrl-icon')}), ${tk('--bt-icon-primary-strong')}</td><td>24 (slotu doldurmaz)</td></tr>
+          <tr><td>Checkbox</td><td>${tk('.bt-checkbox__box')} (+ ${tk('.bt-checkbox__check')})</td><td>16×16</td></tr>
+          <tr><td>Radio</td><td>${tk('.bt-radio__dot')}</td><td>16×16</td></tr>
+          <tr><td>Switch</td><td>${tk('.bt-switch__track')} + ${tk('.bt-switch__thumb')}</td><td>32×20</td></tr>
+          <tr><td>Avatar</td><td>${tk('.bt-avatar.bt-avatar--xs')} + ${tk('.bt-avatar__initials')}</td><td>28×28</td></tr>
+          <tr><td>Kbd</td><td>${tk('kbd.bt-kbd')}</td><td>hug</td></tr>
+          <tr><td>Palette</td><td>${tk('.bt-ovf-menu__ctrl-palette')} — 1px ${tk('--bt-border-primary-default')}, ${tk('--bt-radius-sm')}</td><td>20×20</td></tr>
+          <tr><td>Button</td><td>${tk('.bt-btn.bt-btn--2xs.bt-btn--base-flat.bt-btn--icon')}</td><td>20×20</td></tr>
+          <tr><td>Blank</td><td>— (boş slot)</td><td>32×32 hizalayıcı</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Grouped">Grouped</h2>
+      <p class="page-desc">Bir menüde birden çok ${tk('.bt-ovf-menu__section')} olabilir — her section 4px padding'li bağımsız bir grup, aralarına otomatik bir ${tk('border-top')} (Figma "Line", ${tk('--bt-border-primary-default')}) girer, her section başına opsiyonel bir ${tk('.bt-ovf-menu__group-label')} konur. Playground'da <strong>Sections = 2</strong> + <strong>Group Label = On</strong> ile denenebilir; üç kanonik örnek için <strong>Examples → Grouped</strong>.</p>
+      <div style="display:flex;justify-content:center;padding:16px 0;">${ovfMenuHtml({ open: true, sections: '2', groupLabel: 'on', left: 'icon', destructiveLast: 'on' })}</div>
+    `};
+  },
+};
+
+// ─── Kbd ─────────────────────────────────────────────────────────────────────
+// Figma "Bentas DS" › "Kbd" (kbd 1097:2690 · kbd combo 1098:2764).
+// Klavye kısayolu göstergesi — etkileşimsiz <kbd> elementi. Boyut/state/tema
+// ekseni yok; tek biçim ekseni "tek tuş / kombo". Helper'lar modül seviyesinde
+// (render closure'ı dışında) — isolation.html aynı fonksiyonları çağırabilsin.
+const KBD_TYPE_OPTS = [
+  { key: 'single', label: 'Single Key' },
+  { key: 'combo',  label: 'Key Combo' },
+];
+const KBD_KEY_OPTS = [
+  { key: 'Ctrl',  label: 'Ctrl' },
+  { key: 'Shift', label: 'Shift' },
+  { key: 'Alt',   label: 'Alt' },
+  { key: 'Tab',   label: 'Tab' },
+  { key: 'Esc',   label: 'Esc' },
+  { key: 'Enter', label: 'Enter' },
+  { key: '⌘',     label: '⌘  Cmd' },
+  { key: '⊞',     label: '⊞  Win' },
+  { key: '⇧',     label: '⇧  Shift' },
+  { key: '⏎',     label: '⏎  Return' },
+  { key: '↑',     label: '↑  Arrow' },
+  { key: 'K',     label: 'K' },
+];
+const KBD_COMBO_OPTS = [
+  { key: 'Ctrl+C',       label: 'Ctrl + C' },
+  { key: 'Ctrl+K',       label: 'Ctrl + K' },
+  { key: 'Ctrl+Shift+P', label: 'Ctrl + Shift + P' },
+  { key: '⊞+F',          label: '⊞ + F' },
+  { key: 'Alt+Tab',      label: 'Alt + Tab' },
+  { key: 'Ctrl+Alt+Del', label: 'Ctrl + Alt + Del' },
+];
+
+function kbdKeyHtml(label) {
+  return `<kbd class="bt-kbd">${label}</kbd>`;
+}
+function kbdComboHtml(keys) {
+  return `<span class="bt-kbd-combo">`
+    + keys.map(kbdKeyHtml).join('<span class="bt-kbd-combo__plus">+</span>')
+    + `</span>`;
+}
+function kbdHtml(p = {}) {
+  if ((p.type || 'single') === 'combo') {
+    return kbdComboHtml((p.combo || 'Ctrl+C').split('+'));
+  }
+  return kbdKeyHtml(p.key || 'Ctrl');
+}
+function kbdCss() {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ln  = (k, v) => `  ${k}: ${v};`;
+  const lines = [
+    '/* Tek tuş — key cap (Figma "kbd" 1097:2690) */',
+    '.bt-kbd {',
+    ln('display',         'inline-flex'),
+    ln('align-items',     'center'),
+    ln('justify-content', 'center'),
+    ln('min-width',       '20px  /* tek karakterli tuşlar kare */'),
+    ln('padding',         'var(--bt-space-2xs)  /* 2px — dört kenar */'),
+    ln('border-radius',   'var(--bt-radius-sm)  /* 4px */'),
+    ln('background',      'var(--bt-base-subtle)  /* #f5f5f5 */'),
+    ln('font',            'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
+    ln('font-family',     'var(--mono)  /* Geist Mono — key cap monospace */'),
+    ln('color',           'var(--bt-text-primary-emphasis)  /* #727272 */'),
+    ln('white-space',     'nowrap'),
+    '}', '',
+    '/* Kbd Combo — key cap + "+" ayırıcı + key cap (Figma "kbd combo" 1098:2764) */',
+    '.bt-kbd-combo {',
+    ln('display',     'inline-flex'),
+    ln('align-items', 'center'),
+    ln('gap',         'var(--bt-space-2xs)  /* 2px */'),
+    '}',
+    '.bt-kbd-combo__plus {',
+    ln('font',        'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
+    ln('font-family', 'var(--mono)'),
+    ln('color',       'var(--bt-text-primary-emphasis)  /* #727272 */'),
+    ln('user-select', 'none  /* kopyalanan metinde "+" görünmesin */'),
+    '}',
+  ];
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/kbd'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc:  ['Anatomy', 'Single Key', 'Key Combo', 'Key Types'],
+  render(tab) {
+    const title = 'Kbd';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Kbd bileşeninin design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>Kbd</em> sayfasının <em>kbd</em> (${tk('1097:2690')}) master sembolünden ve <em>kbd combo</em> (${tk('1098:2764')}) sembolünden birebir doğrulanmıştır. Bileşende boyut, state veya tema ekseni yoktur — tüm tuşlar aynı token setini kullanır, bu yüzden tek bir tablo tüm görünümü kapsar.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Key cap (${tk('.bt-kbd')})</td><td>Min width</td><td>—</td><td>20px · tek karakter kare</td></tr>
+          <tr><td>Key cap</td><td>Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px · dört kenar</td></tr>
+          <tr><td>Key cap</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Key cap</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Key cap</td><td>Font</td><td>${tk('--bt-text-xs-regular')} + ${tk('--mono')}</td><td>400 · 12px/16px · Geist Mono</td></tr>
+          <tr><td>Key cap</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Combo (${tk('.bt-kbd-combo')})</td><td>Gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Combo separator (${tk('.bt-kbd-combo__plus')})</td><td>Font / Color</td><td>${tk('--bt-text-xs-regular')} · ${tk('--bt-text-primary-emphasis')}</td><td>"+" · #727272 · ${tk('user-select:none')}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <h2>Do</h2>
+      <ul>
+        <li>Menü öğesi, tooltip veya yardım metninde bir klavye kısayolunu göstermek için kullan</li>
+        <li>Tuş adlarını platform diline uydur — Windows'ta ${tk('Ctrl')}, macOS'ta ${tk('⌘')}</li>
+        <li>Çok tuşlu kısayolları ${tk('.bt-kbd-combo')} ile sar; her tuş ayrı bir ${tk('&lt;kbd&gt;')} olur, aralarına "+" ayırıcı girer</li>
+        <li>Sembol tuşlarında (${tk('⇧ ⌘ ⏎ ↑')}) tek glyph kullan — kombolarda sözcük adından daha kompakt ve taşınabilir</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Tıklanabilir bir kontrol gibi kullanma — Kbd etkileşimsiz bir göstergedir, buton değildir</li>
+        <li>İçine cümle veya birden çok kelime yazma — tek tuş adı ya da kısa sembol</li>
+        <li>Kendi ${tk('font-size')} / renk değerini verme — token seti sabittir, boyut/tema varyantı yoktur</li>
+        <li>Combo içinde "+" karakterini elle ${tk('&lt;kbd&gt;')} olarak koyma — ayırıcı ${tk('.bt-kbd-combo__plus')} span'idir</li>
+      </ul>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <h2 id="Single Key">Single Key</h2>
+      <p class="page-desc">Tek bir ${tk('&lt;kbd class="bt-kbd"&gt;')} elementi bir tuşu temsil eder. Tek karakterli tuşlar ${tk('min-width:20px')} ile kare görünür; "Ctrl", "Enter" gibi uzun etiketler içeriğe göre genişler. Yükseklik her zaman 20px (2px padding + 16px satır yüksekliği), zemin ${tk('--bt-base-subtle')}, yazı Geist Mono ${tk('--bt-text-primary-emphasis')} — state veya boyut varyantı yoktur.</p>
+      <table class="token-table">
+        <thead><tr><th>Grup</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Sözcük tuşları</td><td>${['Ctrl', 'Alt', 'Shift', 'Tab', 'Esc', 'Enter'].map(kbdKeyHtml).join(' ')}</td></tr>
+          <tr><td>Harf / rakam (kare)</td><td>${['A', 'K', '1', '5', '?', '/'].map(kbdKeyHtml).join(' ')}</td></tr>
+          <tr><td>Sembol (tek glyph)</td><td>${['⇧', '⌘', '⏎', '↑'].map(kbdKeyHtml).join(' ')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Key Combo">Key Combo</h2>
+      <p class="page-desc">${tk('.bt-kbd-combo')} birden çok tuşu yatay dizer; her tuş ayrı bir ${tk('.bt-kbd')}, aralarına ${tk('--bt-space-2xs')} (2px) boşluklu bir "+" ayırıcı (${tk('.bt-kbd-combo__plus')}) girer. İki, üç veya daha fazla tuş desteklenir; ayırıcı ${tk('user-select:none')} taşıdığından kopyalanan metin temiz kalır.</p>
+      <table class="token-table">
+        <thead><tr><th>Kombo</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>2 tuş — sözcük</td><td>${kbdComboHtml(['Ctrl', 'C'])}</td></tr>
+          <tr><td>2 tuş — sembol</td><td>${kbdComboHtml(['⊞', 'F'])}</td></tr>
+          <tr><td>3 tuş</td><td>${kbdComboHtml(['Ctrl', 'Shift', 'P'])}</td></tr>
+          <tr><td>3 tuş — sözcük</td><td>${kbdComboHtml(['Ctrl', 'Alt', 'Del'])}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Key Types">Key Types</h2>
+      <p class="page-desc">Etiket serbest metindir — üç tipik kategori: sözcük tuşları (Ctrl, Tab, Esc), tek harf/rakam (A, K, 5) ve tek-glyph sembol tuşları (${tk('⇧ ⌘ ⌥ ⌃ ⏎ ⌫ ↑ ↓ ← →')}). Kbd bunların hiçbirini dönüştürmez; ne yazılırsa onu gösterir — platforma göre doğru glyph'i seçmek tüketen tarafın işidir.</p>
+      <table class="token-table">
+        <thead><tr><th>Tip</th><th>Örnekler</th></tr></thead>
+        <tbody>
+          <tr><td>Sözcük tuşu</td><td>${['Ctrl', 'Shift', 'Alt', 'Tab', 'Esc', 'Enter', 'Space', 'Del'].map(kbdKeyHtml).join(' ')}</td></tr>
+          <tr><td>Harf / rakam</td><td>${['A', 'B', 'K', '0', '5', '9'].map(kbdKeyHtml).join(' ')}</td></tr>
+          <tr><td>Sembol (tek glyph)</td><td>${['⇧', '⌘', '⌥', '⌃', '⏎', '⌫', '↑', '↓', '←', '→'].map(kbdKeyHtml).join(' ')}</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-kbd-overview',
+        variants: [{ key: 'default', label: 'Kbd' }],
+        props: [
+          { key: 'type',  label: 'Type',  options: KBD_TYPE_OPTS,  default: 'single' },
+          { key: 'key',   label: 'Key',   options: KBD_KEY_OPTS,   default: 'Ctrl' },
+          { key: 'combo', label: 'Combo', options: KBD_COMBO_OPTS, default: 'Ctrl+C' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:center;justify-content:center;padding:16px;">${kbdHtml(p)}</div>`,
+        code:    (v, p) => kbdHtml(p),
+        css:     (v, p) => kbdCss(),
+      })}
+
+      <p class="page-desc">Kbd, metin içinde bir klavye tuşunu veya kısayol kombinasyonunu görsel olarak işaretler — menü öğelerinde, tooltip'lerde ve yardım metinlerinde "hangi tuşa basılır" bilgisini verir. Etkileşimsiz bir göstergedir (${tk('&lt;kbd&gt;')} semantik elementi), buton değildir; tıklama/hover/focus state'i yoktur. Bileşende <strong>boyut, state veya tema ekseni bulunmaz</strong> — tüm tuşlar aynı token setini kullanır: ${tk('--bt-base-subtle')} zemin, ${tk('--bt-radius-sm')} köşe, Geist Mono ${tk('--bt-text-xs-regular')}, ${tk('--bt-text-primary-emphasis')} yazı. Tek biçim ekseni "tek tuş mu, kombo mu": çok tuşlu kısayollar ${tk('.bt-kbd-combo')} ile sarılır ve tuşlar arasına "+" ayırıcı girer. Figma kaynağı: "Bentas DS" › "Kbd" sayfası (${tk('kbd')} ${tk('1097:2690')} + ${tk('kbd combo')} ${tk('1098:2764')}).</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">İki yapı taşı vardır. <strong>Key cap</strong> (${tk('.bt-kbd')}) tek bir ${tk('&lt;kbd&gt;')}: inline-flex ortalı kutu, ${tk('--bt-space-2xs')} (2px) dört-kenar padding, ${tk('min-width:20px')} ile tek karakter kare kalır, uzun etiketler hug eder. <strong>Combo</strong> (${tk('.bt-kbd-combo')}) birden çok key cap'i ${tk('--bt-space-2xs')} boşlukla dizer ve aralarına seçilemez bir "+" ayırıcı (${tk('.bt-kbd-combo__plus')}) koyar. Yazı tipi her ikisinde de ${tk('--mono')} (Geist Mono) — key cap'lerin monospace görünmesi tuş genişliklerini tutarlı kılar. Blazor tarafında Kbd salt-sunum bir parçadır; markup doğrudan gömülür, davranış/JS gerekmez.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Figma layer</th><th>Class</th><th>Rol</th></tr></thead>
+        <tbody>
+          <tr><td>kbd</td><td>${tk('.bt-kbd')}</td><td>Tek tuş kutusu — ${tk('&lt;kbd&gt;')}, inline-flex, 2px padding, min-width 20px, radius-sm</td></tr>
+          <tr><td>kbd combo</td><td>${tk('.bt-kbd-combo')}</td><td>Yatay sarmalayıcı — key cap'ler + "+" ayırıcı, gap 2px</td></tr>
+          <tr><td>"+" (text)</td><td>${tk('.bt-kbd-combo__plus')}</td><td>Ayırıcı — aynı font/renk, ${tk('user-select:none')}</td></tr>
+        </tbody>
+      </table>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Key cap</td><td>Padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Key cap</td><td>Min width</td><td>—</td><td>20px</td></tr>
+          <tr><td>Key cap</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Key cap</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Key cap</td><td>Font</td><td>${tk('--bt-text-xs-regular')} + ${tk('--mono')}</td><td>400 12px/16px Geist Mono</td></tr>
+          <tr><td>Key cap</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Combo</td><td>Gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+        </tbody>
+      </table>
     `};
   },
 };

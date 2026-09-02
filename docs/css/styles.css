@@ -6804,10 +6804,19 @@ pre.code-block.line-numbers {
 .bt-grid__menu-item--danger:hover { background: var(--bt-surface-error-subtle, #fde6e6); }
 .bt-grid__menu-item--danger .bt-grid__menu-item-icon { color: var(--bt-text-error-default, #b31d38); }
 
-/* ── Overflow Menu — bağımsız component (bt-grid__menu-* ile görsel benzerlik
-   kasıtlı, class paylaşımı yok — bkz. bt-grid__menu yorumu). ───────────────
-   Trigger: gerçek bt-btn bt-btn--icon reuse eder.
-   Liste: position:fixed + document.body portal — grid menüyle aynı yöntem. */
+/* ── Overflow Menu — bağımsız component ────────────────────────────────────────
+   Figma "Bentas DS" › "Overflow Menu" (1089:133016):
+     Overflow Menu List (beyaz zemin, border-primary-muted, Shadow/lg, radius-sm)
+       → Section (spacing-xs padding) → [Group Label] + Overflow Menu Item
+     Overflow Menu Item (1112:131632) = Type(Default/Destructive)
+        × Content(Label / +Left Control / +Right Control / both)
+        × State(Default/Hover/Active/Selected/Focus/Disabled)
+     Base Overflow Menu Item (1090:133293) = [Left Control 32] + [Label flex-1] + [Right Control 32]
+     Overflow Menu Item Controls (1111:130992) = 32×32 slot; içine GERÇEK DS kontrolü
+       (Icon / .bt-checkbox__box / .bt-radio__dot / .bt-switch__track / .bt-avatar /
+        kbd.bt-kbd / palette swatch / .bt-btn--2xs--icon / Blank) konur — ekstra stil yok.
+   Trigger: gerçek bt-btn reuse (ikon-only ⋯ veya kısa metinli base-outline).
+   Liste: position:fixed + document.body portal — bt-grid__menu ile aynı yöntem. */
 .bt-ovf-menu {
   position: relative;
   display: inline-flex;
@@ -6816,28 +6825,142 @@ pre.code-block.line-numbers {
   display: none;
   position: fixed;
   z-index: 200;
-  min-width: 140px;
+  min-width: 180px;
   padding: 0;
   margin: 0;
   list-style: none;
-  background: var(--bt-surface-primary-default, #ffffff);
+  background: var(--bt-base-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-muted, #e6e6e6);
   border-radius: var(--bt-radius-sm, 4px);
   overflow: hidden;
   box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
   box-sizing: border-box;
 }
-.bt-ovf-menu__item {
+
+/* Section — Figma "Section"; birden çoksa aralarına Line (border-top) girer */
+.bt-ovf-menu__section {
   display: flex;
-  align-items: center;
-  gap: var(--bt-space-xs, 4px);
-  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
-  cursor: pointer;
-  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
-  color: var(--bt-text-primary-default, #1a1a1a);
+  flex-direction: column;
+  padding: var(--bt-space-xs, 4px);
+}
+.bt-ovf-menu__section + .bt-ovf-menu__section {
+  border-top: 1px solid var(--bt-border-primary-default, #d4d4d4);
+}
+
+/* Group Label — Figma "Overflow Menu Item Group Label" (1112:132370) */
+.bt-ovf-menu__group-label {
+  padding: var(--bt-radius-lg, 8px) var(--bt-space-xs, 4px);
+  font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
+  color: var(--bt-text-primary-emphasis, #727272);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   user-select: none;
 }
-.bt-ovf-menu__item:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+
+/* Item wrapper — Figma "Overflow Menu Item" (state + type katmanı) */
+.bt-ovf-menu__item {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--bt-radius-sm, 4px);
+  overflow: clip;
+  background: var(--bt-base-default, #ffffff);
+  color: var(--bt-text-primary-default, #1a1a1a);
+  cursor: pointer;
+  user-select: none;
+}
+/* Base Overflow Menu Item — iç flex satırı (1090:133293) */
+.bt-ovf-menu__item-row {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-none, 0);
+  width: 100%;
+}
+/* Controls slot — 32×32, içeriği ortalar (1111:130992) */
+.bt-ovf-menu__ctrl {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: clip;
+  color: var(--bt-icon-primary-strong, #535353);
+}
+/* Label — flex-1, dikey ortalı, tek/çift satır ellipsis (Figma "Label" FRAME) */
+.bt-ovf-menu__label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--bt-radius-lg, 8px) var(--bt-space-md, 8px);   /* label-only: 8px / 8px */
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+}
+/* Sol kontrol slotu VARSA label yatay padding'i her iki yanda 4px'e düşer
+   (Figma: Content=Left Control & Label → Label pad [8,4,8,4]; sağ slot tek başına 8px'i değiştirmez) */
+.bt-ovf-menu__ctrl + .bt-ovf-menu__label {
+  padding-left: var(--bt-space-xs, 4px);
+  padding-right: var(--bt-space-xs, 4px);
+}
+.bt-ovf-menu__label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bt-ovf-menu__label-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--bt-text-primary-emphasis, #727272);
+}
+
+/* State — Type=Default */
+.bt-ovf-menu__item:hover,
+.bt-ovf-menu__item--hover                  { background: var(--bt-base-subtle, #f5f5f5); }
+.bt-ovf-menu__item:active,
+.bt-ovf-menu__item--active,
+.bt-ovf-menu__item--selected               { background: var(--bt-base-muted, #e6e6e6); }
+.bt-ovf-menu__item--focus,
+.bt-ovf-menu__item:focus-visible           { box-shadow: 0 0 0 3px rgba(212, 212, 212, .5); }
+.bt-ovf-menu__item--disabled {
+  color: var(--bt-text-primary-muted, #a3a3a3);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.bt-ovf-menu__item--disabled .bt-ovf-menu__ctrl { color: var(--bt-icon-primary-muted, #a3a3a3); }
+
+/* Type=Destructive — .bt-ovf-menu__item--danger (Figma property adı "Destructive") */
+.bt-ovf-menu__item--danger                      { color: var(--bt-text-error-default, #b31d38); }
+.bt-ovf-menu__item--danger .bt-ovf-menu__ctrl   { color: var(--bt-icon-error-default, #b31d38); }
+.bt-ovf-menu__item--danger:hover,
+.bt-ovf-menu__item--danger.bt-ovf-menu__item--hover     { background: var(--bt-error-subtle, #fde6e6); }
+.bt-ovf-menu__item--danger:active,
+.bt-ovf-menu__item--danger.bt-ovf-menu__item--active,
+.bt-ovf-menu__item--danger.bt-ovf-menu__item--selected  { background: var(--bt-error-muted, #fbd0d2); }
+.bt-ovf-menu__item--danger.bt-ovf-menu__item--focus     { background: var(--bt-error-subtle, #fde6e6); }  /* Figma: Destructive Focus zemin = error-subtle */
+.bt-ovf-menu__item--danger.bt-ovf-menu__item--disabled  { color: var(--bt-text-error-muted, #fbd0d2); }
+.bt-ovf-menu__item--danger.bt-ovf-menu__item--disabled .bt-ovf-menu__ctrl { color: var(--bt-icon-error-muted, #fbd0d2); }
+
+/* Control slot içerikleri (Icon / Palette dışındakiler gerçek DS class'ları) */
+.bt-ovf-menu__ctrl-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bt-ovf-menu__ctrl-icon svg { width: 24px; height: 24px; display: block; }
+.bt-ovf-menu__ctrl-palette {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-base-default, #ffffff);
+}
+
+/* ── eski API (geriye dönük — kaldırılmadı) ── */
 .bt-ovf-menu__item-icon {
   width: 16px;
   height: 16px;
@@ -6847,9 +6970,6 @@ pre.code-block.line-numbers {
   justify-content: center;
   color: var(--bt-icon-primary-strong, #535353);
 }
-.bt-ovf-menu__item--danger { color: var(--bt-text-error-default, #b31d38); }
-.bt-ovf-menu__item--danger:hover { background: var(--bt-surface-error-subtle, #fde6e6); }
-.bt-ovf-menu__item--danger .bt-ovf-menu__item-icon { color: var(--bt-text-error-default, #b31d38); }
 .bt-ovf-menu__divider {
   height: 1px;
   background: var(--bt-border-primary-default, #d4d4d4);
@@ -6981,4 +7101,38 @@ pre.code-block.line-numbers {
 .bt-grid__no-record-text {
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-emphasis, #727272);
+}
+
+/* ============================================================
+   Kbd — Figma "Bentas DS" › "Kbd" (kbd 1097:2690 · kbd combo 1098:2764)
+   Klavye kısayolu göstergesi — etkileşimsiz görsel işaret (<kbd> semantik
+   elementi). Boyut / state / tema ekseni YOK: tüm tuşlar aynı token setini
+   kullanır. Yalnız iki biçim: tek tuş (.bt-kbd) ve tuş kombosu
+   (.bt-kbd-combo → key cap + "+" ayırıcı + key cap).
+   ============================================================ */
+.bt-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;                                   /* tek karakterli tuşlar kare (~20×20) */
+  padding: var(--bt-space-2xs, 2px);                 /* Figma "kbd" master: dört kenar 2px */
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-base-subtle, #f5f5f5);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--mono));
+  font-family: var(--mono);                          /* key cap'ler monospace — Geist Mono */
+  color: var(--bt-text-primary-emphasis, #727272);
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+/* Kbd Combo — birden çok key cap + aralarında "+" ayırıcı (Figma "kbd combo") */
+.bt-kbd-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bt-space-2xs, 2px);
+}
+.bt-kbd-combo__plus {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--mono));
+  font-family: var(--mono);
+  color: var(--bt-text-primary-emphasis, #727272);
+  user-select: none;
 }

@@ -3921,3 +3921,144 @@ Close `<span>`: `onclick="event.stopPropagation();btTabClose(this)"` — tab se�
 5. **Dikeyde indicator/kesik kenarı döner** — Line: alt-border → sağ-border. Bordered: yatayda üst-köşe radius + alt-kesik; dikeyde **sağ-köşe radius + sol kenar açık + alt-seam** (panel solda).
 6. **Close butonu bespoke değil** — gerçek `bt-btn bt-btn--xs bt-btn--base-flat bt-btn--icon` (24×24). İç içe `<button>` sorunundan kaçınmak için `<span role="button">` olarak render edilir.
 7. **Counter Base Tab'da default açık** ama Tab component'inde ayrı bir varyant değil — `Show Counter` boolean'ı; docs playground'da `Counter` (On/Off) toggle'ıyla kontrol edilir.
+
+
+## 20. Kbd
+
+Figma kaynağı: "Bentas DS" dosyası, "Kbd" sayfası — **kbd** (`1097:2690`, tek key cap master sembolü) + **kbd combo** (`1098:2764`, key cap + "+" ayırıcı + key cap) + "kbd examples" (`1098:2835`, örnek dizisi).
+
+Kbd, metin içinde bir klavye tuşunu veya kısayol kombinasyonunu görsel olarak işaretler (menü öğesi, tooltip, yardım metni). **Etkileşimsiz** bir göstergedir — semantik `<kbd>` elementi, buton değil; hover/focus/disabled state'i, boyut ekseni, tema ekseni **yoktur**. Tek biçim ekseni: tek tuş mu, kombo mu. `components/kbd` tek sayfa (4-tab standardı: Overview / Examples / CSS Properties / Usage).
+
+### 20.1 Yapı
+
+**Key cap** (`.bt-kbd`) — tek bir `<kbd>`:
+
+- `display: inline-flex`, içerik yatay+dikey ortalı
+- `min-width: 20px` → tek karakterli tuşlar ("A", "5", "⇧") kare (~20×20 px) görünür; "Ctrl", "Enter" gibi uzun etiketler içeriğe göre genişler (hug)
+- `padding: Space/spacing-2xs` (2px) — **dört kenar** (Figma `kbd` master'ı böyle; örnek dizisindeki bazı instance'lar `spacing-xs`/`spacing-sm` yatay padding kullanıyor ama bu dosya içi tutarsızlık, master referans alındı)
+- `border-radius: Radius/radius-sm` (4px)
+- `background: Color/Base/--bt-base-subtle` (#f5f5f5)
+- yazı: **Geist Mono** Regular, `Font/Size/text-xs` (12px) / `Font/Line-Height/text-lh-xs` (16px) — key cap'lerin monospace görünmesi tuş genişliklerini tutarlı kılar
+- `color: Text/Primary/--bt-text-primary-emphasis` (#727272)
+- `white-space: nowrap`
+
+**Combo** (`.bt-kbd-combo`) — birden çok key cap:
+
+- `display: inline-flex`, `align-items: center`, `gap: Space/spacing-2xs` (2px)
+- her tuş ayrı bir `.bt-kbd`; aralarına bir **"+" ayırıcı** girer: `.bt-kbd-combo__plus` — aynı font/renk, `user-select: none` (kopyalanan metinde "+" görünmesin)
+- iki, üç veya daha fazla tuş desteklenir
+
+Docs implementasyonu — markup:
+```html
+<!-- tek tuş -->
+<kbd class="bt-kbd">Ctrl</kbd>
+
+<!-- kombo -->
+<span class="bt-kbd-combo">
+  <kbd class="bt-kbd">Ctrl</kbd>
+  <span class="bt-kbd-combo__plus">+</span>
+  <kbd class="bt-kbd">Shift</kbd>
+  <span class="bt-kbd-combo__plus">+</span>
+  <kbd class="bt-kbd">P</kbd>
+</span>
+```
+
+CSS:
+```css
+.bt-kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px;
+  padding: var(--bt-space-2xs, 2px);
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-base-subtle, #f5f5f5);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--mono));
+  font-family: var(--mono);              /* Geist Mono */
+  color: var(--bt-text-primary-emphasis, #727272);
+  white-space: nowrap; box-sizing: border-box;
+}
+.bt-kbd-combo { display: inline-flex; align-items: center; gap: var(--bt-space-2xs, 2px); }
+.bt-kbd-combo__plus {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--mono));
+  font-family: var(--mono);
+  color: var(--bt-text-primary-emphasis, #727272);
+  user-select: none;
+}
+```
+
+### 20.2 Tuş tipleri
+
+Etiket serbest metindir — üç tipik kategori: sözcük tuşları (Ctrl, Tab, Esc, Enter, Space, Del), tek harf/rakam (A, K, 5 — kare görünür) ve tek-glyph sembol tuşları (⇧ ⌘ ⌥ ⌃ ⏎ ⌫ ↑ ↓ ← →). Sembol tuşları kombolarda sözcük adlarından daha kompakt ve platformlar arası daha taşınabilirdir. Kbd hiçbir dönüşüm yapmaz; ne yazılırsa onu gösterir — platforma göre doğru glyph'i seçmek (Windows `Ctrl`, macOS `⌘`) tüketen tarafın işidir.
+
+### 20.3 JS davranışı
+
+**Yok.** Kbd salt-sunum bir parçadır; markup doğrudan gömülür, `window.bt*` global'i veya event handler'ı gerektirmez.
+
+
+## 21. Overflow Menu
+
+Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`). Alt yapı taşları:
+
+- **Base Overflow Menu Item** (`1090:133293`) = `[Left Control 32×32] + [Label flex-1] + [Right Control 32×32]`, satır flex, `align-items:center`, gap 0.
+- **Overflow Menu Item Controls** (`1111:130992`) — ayrı bir component set: `Content` (Left Control / Right Control) × `Type` (Icon, Checkbox, Radio, Switch, Avatar, Kbd, Palette, Button, Blank). 32×32 bir slot; içine tasarım sisteminin **gerçek** kontrolü konur, slot yalnız kutu + ortalama sağlar.
+- **Overflow Menu Item** (`1112:131632`) — `Type` (Default / Destructive) × `Content` (Label / Left Control & Label / Label & Right Control / Left Control & Label & Right Control) × `State` (Default / Hover / Active / Selected / Focus / Disabled).
+- **Overflow Menu Item Group Label** (`1112:132370`) — bölüm başlığı; Geist **Medium** 12/16, `text/primary/emphasis` (#727272), padding `radius-lg` (8px) / `spacing-xs` (4px).
+- **Overflow Menu List** — beyaz zemin, `border/primary/muted` (#e6e6e6) 1px kenar, `Shadow/lg`, `radius-sm`. İçinde bir veya daha çok **Section** (padding `spacing-xs` = 4px); iki Section arasına `border/primary/default` (#d4d4d4) bir **Line** girer.
+- **Trigger** — `Base Button` Sm / Outline / Base ("Open Menu" metni) **veya** icon-only bir `bt-btn--icon` (⋯).
+
+### 21.1 Docs implementasyonu — markup
+
+```html
+<div class="bt-ovf-menu">
+  <button class="bt-btn bt-btn--sm bt-btn--base-outline" onclick="btOvfMenuToggle(event,this)">Open Menu</button>
+  <div class="bt-ovf-menu__list" role="menu">
+    <div class="bt-ovf-menu__section" role="group">
+      <div class="bt-ovf-menu__group-label">Group Label</div>           <!-- opsiyonel -->
+      <div class="bt-ovf-menu__item[ bt-ovf-menu__item--danger][ bt-ovf-menu__item--{state}]" role="menuitem" onclick="btOvfMenuClose(event,this)">
+        <div class="bt-ovf-menu__item-row">
+          <span class="bt-ovf-menu__ctrl">…gerçek DS kontrolü…</span>   <!-- opsiyonel sol slot -->
+          <span class="bt-ovf-menu__label">
+            <span class="bt-ovf-menu__label-text">Label</span>
+            <span class="bt-ovf-menu__label-desc">Description</span>     <!-- opsiyonel 2. satır -->
+          </span>
+          <span class="bt-ovf-menu__ctrl">…</span>                      <!-- opsiyonel sağ slot -->
+        </div>
+      </div>
+    </div>
+    <!-- section + section → aralarına otomatik border-top (Line) -->
+  </div>
+</div>
+```
+
+### 21.2 Control slot (9 tip) — gerçek component reuse
+
+`.bt-ovf-menu__ctrl` 32×32, `overflow:clip`, içeriği ortalar. İçine konan:
+
+| Type | İçerik | Reuse |
+|---|---|---|
+| Icon | 24×24 inline SVG (`.bt-ovf-menu__ctrl-icon`), renk `icon/primary/strong` | — |
+| Checkbox | `.bt-checkbox__box` (16×16) + `.bt-checkbox__check` | Checkbox |
+| Radio | `.bt-radio__dot` (16×16) | Radio |
+| Switch | `.bt-switch__track` + `.bt-switch__thumb` (32×20) | Switch |
+| Avatar | `.bt-avatar.bt-avatar--xs` + `.bt-avatar__initials` (28×28) | Avatar |
+| Kbd | `<kbd class="bt-kbd">` | Kbd |
+| Palette | `.bt-ovf-menu__ctrl-palette` — 20×20, 1px `border/primary/default`, `radius-sm`, renk örneği | — |
+| Button | `.bt-btn.bt-btn--2xs.bt-btn--base-flat.bt-btn--icon` | Button |
+| Blank | boş 32×32 hizalayıcı (bazı satırda kontrol var bazıda yokken hizayı korur) | — |
+
+`.bt-ovf-menu__label` (Figma "Label" FRAME) padding'i varsayılan **8/8** (`radius-lg` / `spacing-md`); **sol kontrol varsa** her iki yanda **8/4**'e iner (`.bt-ovf-menu__ctrl + .bt-ovf-menu__label` → `padding-inline: spacing-xs`). Sağ kontrol tek başına 8/8'i değiştirmez. Figma set'inden doğrulandı: `Content=Label` → [8,8,8,8], `Content=Left Control & Label` → [8,4,8,4], `Content=Label & Right Control` → [8,8,8,8].
+
+### 21.3 State paletleri (item wrapper üzerinde)
+
+**Type=Default:** Hover `base/subtle` (#f5f5f5) · Active = Selected `base/muted` (#e6e6e6) · Focus **beyaz zemin** + nötr gri ring `0 0 0 3px rgba(212,212,212,.5)` (Figma effect `Focus Ring/neutral`, brand değil — proje standardı) · Disabled metin `text/primary/muted` (#a3a3a3) + `pointer-events:none`, slot ikonu `icon/primary/muted`. Description satırı (`.bt-ovf-menu__label-desc`) hiçbir state'te renk değiştirmez — daima `text/primary/emphasis` (#727272).
+
+**Type=Destructive** (`.bt-ovf-menu__item--danger`): metin/ikon `text|icon/error/default` (#b31d38) · Hover `error/subtle` (#fde6e6) · Active/Selected `error/muted` (#fbd0d2) · Focus `error/subtle` (#fde6e6) zemin + ring (Default'un beyaz zemininden farklı) · Disabled `text/error/muted` (#fbd0d2).
+
+Selected ile Active görsel olarak birebir aynıdır (Selected = kalıcı vurgu, Active = anlık basış).
+
+### 21.4 JS davranışı
+
+`window.btOvfMenuToggle(event, btn)` / `btOvfMenuClose(event, item)` / `btOvfMenuHide(list)` — **değişmedi**. Liste açılınca `.bt-ovf-menu__list` `document.body`'ye portal'lanır ve `position:fixed` + `btn.getBoundingClientRect()`'ten hesaplanan `top`/`right` ile konumlanır (ata elementlerin `overflow:hidden`/`transform` kurallarından bağımsız — `.bt-grid__menu` ile aynı desen). Dışarı tıklama ve scroll (capture) menüyü kapatır; her item tıklandığında `btOvfMenuClose` menüyü kapatır. `<div role="menu">` / `<div role="menuitem">` — eski `<ul>/<li>` yapısı bırakıldı, portal JS class adlarıyla (`.bt-ovf-menu__list`) çalıştığı için etkilenmedi.
+
+### 21.5 Not — eski API korundu
+
+`.bt-ovf-menu__item-icon` (16×16 eski ikon slotu) ve `.bt-ovf-menu__divider` (`<li>` tam-genişlik çizgi) CSS'te bırakıldı ama yeni implementasyon bunları kullanmıyor — grup ayrımı artık `.bt-ovf-menu__section + .bt-ovf-menu__section` border'ıyla yapılıyor.
