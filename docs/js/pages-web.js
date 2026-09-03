@@ -14385,6 +14385,7 @@ const OVF_VARIANT_OPTS = [
   { key: 'destructive', label: 'Destructive' },
 ];
 const OVF_ITEMS_OPTS = ['1','2','3','4','5','6'].map(n => ({ key: n, label: n }));
+const _OVF_LABELS = ['Edit File','Copy File','Import File','Export File','Add Reminder','Delete File'];
 
 // 32×32 control slot — içine GERÇEK DS component class'ı konur, ekstra stil yok
 function ovfCtrlHtml(type, opt = {}) {
@@ -14457,7 +14458,6 @@ function ovfMenuHtml(p = {}) {
   const desc     = p.description === 'on' ? 'Description text' : undefined;
   const dLast    = p.destructiveLast === 'on';
   const grp      = p.groupLabel === 'on';
-  const L        = 'Label Text Here';
 
   // Effective control types — variant can lock left/right
   let left  = p.left  || 'none';
@@ -14479,11 +14479,11 @@ function ovfMenuHtml(p = {}) {
     return {};
   };
 
-  const dItem = () => ovfItemHtml({ label: L, type: 'danger', left: left === 'icon' ? 'icon' : 'none', leftOpt: mkLeft(), right: 'none' });
+  const dItem = () => ovfItemHtml({ label: 'Delete File', type: 'danger', left: left === 'icon' ? 'icon' : 'none', leftOpt: mkLeft(), right: 'none' });
   const mkItem = (i) => {
     const isFirst = i === 0;
     return ovfItemHtml({
-      label: L,
+      label: _OVF_LABELS[i % _OVF_LABELS.length],
       type:     variant === 'destructive' ? 'danger' : 'default',
       left,
       right,
@@ -14631,6 +14631,21 @@ PAGES_WEB['components/overflow-menu'] = {
         : { label: 'Label Text Here', left: 'icon', right: type, leftOpt: { icon: _ovfIconCopy } })
     ));
 
+    // Per-variant state item helpers (used in Overview variant h3 States sections)
+    const stateIconItem = (st, tp = 'default') => `<div style="min-width:180px;">${ovfItemHtml({ label: 'Edit File', type: tp, state: st, left: 'icon', leftOpt: { icon: _ovfIconEdit } })}</div>`;
+    const stateSubItem  = (st, tp = 'default') => `<div style="min-width:180px;">${ovfItemHtml({ label: 'Edit File', type: tp, state: st, right: 'icon', rightOpt: { icon: _ovfIconChevronRight } })}</div>`;
+    const stateKbdItem  = (st, tp = 'default') => `<div style="min-width:180px;">${ovfItemHtml({ label: 'Edit File', type: tp, state: st, right: 'kbd', rightOpt: { shortcut: 'Tab' } })}</div>`;
+    const stateDngItem  = (st)                  => `<div style="min-width:180px;">${ovfItemHtml({ label: 'Delete File', type: 'danger', state: st, left: 'icon', leftOpt: { icon: _ovfIconTrash } })}</div>`;
+    const STATE_ROWS    = [['default','Default'],['hover','Hover'],['selected','Active / Selected'],['focus','Focus'],['disabled','Disabled']];
+    const stateMatrix2  = (dfn, dan) => {
+      const rows = STATE_ROWS.map(([k,l]) => `<tr><td>${l}</td><td>${one(dfn(k))}</td><td>${one(dan(k))}</td></tr>`).join('');
+      return `<table class="token-table"><thead><tr><th>State</th><th>Default type</th><th>Destructive type</th></tr></thead><tbody>${rows}</tbody></table>`;
+    };
+    const stateMatrix1  = (fn, col = 'Preview') => {
+      const rows = STATE_ROWS.map(([k,l]) => `<tr><td>${l}</td><td>${one(fn(k))}</td></tr>`).join('');
+      return `<table class="token-table"><thead><tr><th>State</th><th>${col}</th></tr></thead><tbody>${rows}</tbody></table>`;
+    };
+
     if (tab === 'CSS Properties') { return { title, html: `
       <p class="page-desc">Overflow Menu için design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>Overflow Menu</em> sayfasının (${tk('1089:133016')}) <em>List</em> / <em>Section</em> / <em>Overflow Menu Item</em> (${tk('1112:131632')}) / <em>Base Overflow Menu Item</em> (${tk('1090:133293')}) / <em>Overflow Menu Item Controls</em> (${tk('1111:130992')}) node'larından birebir doğrulanmıştır.</p>
       <table class="token-table">
@@ -14691,50 +14706,48 @@ PAGES_WEB['components/overflow-menu'] = {
     `}; }
 
     if (tab === 'Examples') { return { title, html: `
-      <h2 id="Anatomy">Anatomy</h2>
-      <p class="page-desc">Yapının tam ayrıntısı ve token tablosu <strong>Overview</strong> sekmesindedir. Kısaca: <strong>Base Overflow Menu Item</strong> (Figma ${tk('1090:133293')}) yatay bir satırdır — <strong>Left Control (32×32) + Label (flex-1) + Right Control (32×32)</strong>; menü item'ı bu satırı sarıp state + Type (Default/Destructive) katmanını ekler. Aşağıda dört <strong>Content</strong> kombinasyonu (Figma ${tk('1112:131632')}) — sol/sağ slot ${tk('none')} iken hiç render edilmez, ${tk('blank')} iken 32×32 boş hizalayıcı kalır. <strong>Sol kontrol varsa</strong> Label yatay padding'i 8→4px'e iner (Figma). Tablolar tıklanabilir, gerçek ${tk('btOvfMenuToggle')} ile çalışır.</p>
+      <p class="page-desc">Overflow Menu'nun altı varyantı aşağıdaki tabloda karşılaştırmalı olarak özetlenmektedir. Her satır, ilgili varyantın en temsili halini tetikleyici buton olmadan (açık liste) göstermektedir. Varyantların tam interaktif playground, States ve Anatomy dokümantasyonu için <strong>Overview</strong> sekmesindeki ilgili bölümleri inceleyin.</p>
       <table class="token-table">
-        <thead><tr><th>Content</th><th>Preview</th></tr></thead>
+        <thead><tr><th>Variant</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Label</td><td>${one(contentRow('none', 'none'))}</td></tr>
-          <tr><td>Left Control &amp; Label</td><td>${one(contentRow('icon', 'none'))}</td></tr>
-          <tr><td>Label &amp; Right Control</td><td>${one(contentRow('none', 'kbd'))}</td></tr>
-          <tr><td>Left Control &amp; Label &amp; Right Control</td><td>${one(contentRow('icon', 'switch'))}</td></tr>
-          <tr><td>+ Description (2 satır)</td><td>${one(contentRow('icon', 'none', true))}</td></tr>
+          <tr><td>Basic</td><td>${one(ovfBareListHtml(ovfSectionHtml(
+            _OVF_LABELS.map(l => ovfItemHtml({ label: l })).join('')
+          )))}</td></tr>
+          <tr><td>Submenu</td><td>${one(ovfBareListHtml(ovfSectionHtml(
+            ovfItemHtml({ label: 'Edit File' }) +
+            ovfItemHtml({ label: 'Copy File' }) +
+            ovfItemHtml({ label: 'Import File', right: 'icon', rightOpt: { icon: _ovfIconChevronRight } }) +
+            ovfItemHtml({ label: 'Export File' }) +
+            ovfItemHtml({ label: 'Add Reminder', right: 'icon', rightOpt: { icon: _ovfIconChevronRight } }) +
+            ovfItemHtml({ label: 'Delete File' })
+          )))}</td></tr>
+          <tr><td>Icons</td><td>${one(ovfBareListHtml(ovfSectionHtml(
+            [['Edit File',_ovfIconEdit],['Copy File',_ovfIconCopy],['Import File',_ovfIconUpload],
+             ['Export File',_ovfIconDownload],['Add Reminder',_ovfIconBell],['Delete File',_ovfIconTrash]]
+            .map(([l,ic]) => ovfItemHtml({ label: l, left: 'icon', leftOpt: { icon: ic } })).join('')
+          )))}</td></tr>
+          <tr><td>Shortcuts</td><td>${one(ovfBareListHtml(ovfSectionHtml(
+            [['Edit File','Tab'],['Copy File','Ctrl'],['Import File','Enter'],
+             ['Export File','Ctrl + B'],['Add Reminder','Shift + K'],['Delete File','Windows + Shift + K']]
+            .map(([l,sc]) => ovfItemHtml({ label: l, right: 'kbd', rightOpt: { shortcut: sc } })).join('')
+          )))}</td></tr>
+          <tr><td>Sections</td><td>${one(ovfBareListHtml(
+            ovfSectionHtml(ovfGroupLabelHtml('File') + ovfItemHtml({ label: 'Edit File' }) + ovfItemHtml({ label: 'Copy File' })) +
+            ovfSectionHtml(ovfGroupLabelHtml('Actions') + ovfItemHtml({ label: 'Import File' }) + ovfItemHtml({ label: 'Export File' }) + ovfItemHtml({ label: 'Add Reminder' })) +
+            ovfSectionHtml(ovfItemHtml({ label: 'Delete File', type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } }))
+          ))}</td></tr>
+          <tr><td>Destructive</td><td>${one(ovfBareListHtml(
+            ovfSectionHtml(
+              ovfItemHtml({ label: 'Edit File',    type: 'danger' }) +
+              ovfItemHtml({ label: 'Copy File',    type: 'danger' }) +
+              ovfItemHtml({ label: 'Import File',  type: 'danger' }) +
+              ovfItemHtml({ label: 'Export File',  type: 'danger' }) +
+              ovfItemHtml({ label: 'Add Reminder', type: 'danger' })
+            ) +
+            ovfSectionHtml(ovfItemHtml({ label: 'Delete File', type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } }))
+          ))}</td></tr>
         </tbody>
       </table>
-
-      <h2 id="States">States</h2>
-      <p class="page-desc">Item (${tk('.bt-ovf-menu__item')}) altı state taşır; <strong>Type=Default</strong> ve <strong>Type=Destructive</strong> için ayrı paletlerdir (Figma <em>Overflow Menu Item</em> set'inden birebir). Aşağıda her state, iki satırlı küçük bir listede ilk satıra uygulanmış olarak gösterilir. Renk değerleri için Overview → States tablosuna bakın.</p>
-      <table class="token-table">
-        <thead><tr><th>State</th><th>Default</th><th>Destructive</th></tr></thead>
-        <tbody>
-          <tr><td>Default</td><td>${one(stateItem('default', 'default'))}</td><td>${one(stateItem('default', 'danger'))}</td></tr>
-          <tr><td>Hover</td><td>${one(stateItem('hover', 'default'))}</td><td>${one(stateItem('hover', 'danger'))}</td></tr>
-          <tr><td>Active / Selected</td><td>${one(stateItem('selected', 'default'))}</td><td>${one(stateItem('selected', 'danger'))}</td></tr>
-          <tr><td>Focus</td><td>${one(stateItem('focus', 'default'))}</td><td>${one(stateItem('focus', 'danger'))}</td></tr>
-          <tr><td>Disabled</td><td>${one(stateItem('disabled', 'default'))}</td><td>${one(stateItem('disabled', 'danger'))}</td></tr>
-        </tbody>
-      </table>
-
-      <h2 id="Controls">Controls</h2>
-      <p class="page-desc">Figma <em>Overflow Menu Item Controls</em> (${tk('1111:130992')}) — 32×32 bir slot; içine tasarım sisteminin <strong>gerçek</strong> bir kontrolü konur (özel stil yok). Dokuz tip: <strong>Icon</strong> (24×24 SVG), <strong>Checkbox</strong> / <strong>Radio</strong> (${tk('.bt-checkbox__box')} / ${tk('.bt-radio__dot')}), <strong>Switch</strong> (${tk('.bt-switch__track')}), <strong>Avatar</strong> (${tk('.bt-avatar--xs')}), <strong>Kbd</strong> (${tk('.bt-kbd')}), <strong>Palette</strong> (20×20 renk örneği), <strong>Button</strong> (${tk('.bt-btn--2xs')} icon-only), <strong>Blank</strong> (boş hizalayıcı). Sol slot genelde eylem ikonu, sağ slot durum/kısayol taşır — Avatar dışında her tip her iki slotta kullanılabilir.</p>
-      <table class="token-table">
-        <thead><tr><th>Type</th><th>Left slot</th><th>Right slot</th></tr></thead>
-        <tbody>
-          <tr><td>Icon</td><td>${one(ctrlRow('left', 'icon'))}</td><td>${one(ctrlRow('right', 'icon'))}</td></tr>
-          <tr><td>Checkbox</td><td>${one(ctrlRow('left', 'checkbox'))}</td><td>${one(ctrlRow('right', 'checkbox'))}</td></tr>
-          <tr><td>Radio</td><td>${one(ctrlRow('left', 'radio'))}</td><td>${one(ctrlRow('right', 'radio'))}</td></tr>
-          <tr><td>Switch</td><td>${one(ctrlRow('left', 'switch'))}</td><td>${one(ctrlRow('right', 'switch'))}</td></tr>
-          <tr><td>Avatar</td><td>${one(ctrlRow('left', 'avatar'))}</td><td>—</td></tr>
-          <tr><td>Kbd</td><td>${one(ctrlRow('left', 'kbd'))}</td><td>${one(ctrlRow('right', 'kbd'))}</td></tr>
-          <tr><td>Palette</td><td>${one(ctrlRow('left', 'palette'))}</td><td>${one(ctrlRow('right', 'palette'))}</td></tr>
-          <tr><td>Button</td><td>${one(ctrlRow('left', 'button'))}</td><td>${one(ctrlRow('right', 'button'))}</td></tr>
-          <tr><td>Blank</td><td>${one(ctrlRow('left', 'blank'))}</td><td>${one(ctrlRow('right', 'blank'))}</td></tr>
-        </tbody>
-      </table>
-
-      ${ev(exFlat + exIcons + exGrouped)}
     `}; }
 
     // Overview
@@ -14809,94 +14822,213 @@ PAGES_WEB['components/overflow-menu'] = {
 
       <h2 id="Basic">Basic</h2>
       <p class="page-desc">Basic varyant, menünün en sade halidir: sol/sağ kontrol slotu boş, item içeriği yalnızca label metninden oluşur. Tüm Overflow Menu kullanım durumlarının temel referansıdır; aksiyon adı listesi kısa ve ikon gerektirmiyorsa tercih edilir. Markup açısından ${tk('.bt-ovf-menu__item-row')} yalnızca ${tk('.bt-ovf-menu__label')} barındırır, ${tk('.bt-ovf-menu__ctrl')} slot'ları render edilmez.</p>
-      <div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;">${
-        ovfBareListHtml(ovfSectionHtml(
-          ['Edit File','Copy File','Import File','Export File','Add Reminder','Delete File'].map(l => ovfItemHtml({ label: l })).join('')
-        ))
-      }</div></div>
+      ${registerPlayground({
+        id: 'pgd-ovf-basic-sec',
+        variants: [{ key: 'default', label: 'Basic' }],
+        props: [
+          { key: 'triggerType',     label: 'Button Type',      options: OVF_TRIGGER_TYPE_OPTS, default: 'labeled', group: 'Trigger'   },
+          { key: 'groupLabel',      label: 'Group Label',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu'      },
+          { key: 'destructiveLast', label: 'Destructive Item', options: TBX_BOOL_OPTS,         default: 'on',      group: 'Menu'      },
+          { key: 'items',           label: 'Items',            options: OVF_ITEMS_OPTS,        default: '4',       group: 'Menu Item' },
+          { key: 'left',            label: 'Left Control',     options: OVF_LEFT_OPTS,         default: 'none',    group: 'Menu Item' },
+          { key: 'right',           label: 'Right Control',    options: OVF_RIGHT_OPTS,        default: 'none',    group: 'Menu Item' },
+          { key: 'description',     label: 'Description',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu Item' },
+          { key: 'state',           label: 'State',            options: OVF_STATE_OPTS,        default: 'default', group: 'Menu Item' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, variant: 'basic' })}</div>`,
+        code:    (v, p) => ovfMenuHtml({ ...p, variant: 'basic' }),
+        css:     (v, p) => ovfMenuCss({ ...p, variant: 'basic' }),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Label-only Basic item (sol/sağ ctrl yok) için Default ve Destructive type altında beş state. Playground'da <em>State</em> dropdown'ıyla seçilebilir; yalnızca ilk item etkilenir. Renk tokenları için genel <strong>States</strong> bölümüne bakın.</p>
+      ${stateMatrix2(st => stateItem(st, 'default'), st => stateItem(st, 'danger'))}
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Basic item minimal yapıdadır: ${tk('.bt-ovf-menu__item')} wrapper'ı sadece ${tk('.bt-ovf-menu__item-row')} barındırır, sol/sağ ${tk('.bt-ovf-menu__ctrl')} slot'ları render edilmez. Label yatay padding 8px sabit kalır — sol ctrl yoktur, Figma 8→4px küçülmesi gerçekleşmez. Menü list + section sarması tüm variantlarda ortaktır ve genel Anatomy bölümünde belgelenmiştir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Class</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Item</td><td>${tk('.bt-ovf-menu__item')}</td><td>State + Type katmanı — ${tk('radius-sm')}, ${tk('overflow:clip')}, padding yok</td></tr>
+          <tr><td>Item row</td><td>${tk('.bt-ovf-menu__item-row')}</td><td>flex — yalnız Label (ctrl yok)</td></tr>
+          <tr><td>Label</td><td>${tk('.bt-ovf-menu__label')}</td><td>flex-1 · padding ${tk('--bt-radius-lg')}/${tk('--bt-space-md')} (8/8) · ${tk('--bt-text-xs-regular')}</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Submenu">Submenu</h2>
-      <p class="page-desc">Submenu varyant, bir veya daha fazla item'ın alt menüye açıldığını ${tk('chevron-right')} ikonuyla gösterir; ikon sağ 32×32 slota yerleşir ve ${tk('.bt-icon')} class'ı ile render edilir. Alt menü tetikleyicisi olan item hover/active alır; sub-menü panel'i parent menünün sağına, item hizasına konumlanır — bu konumlama JS ile yönetilir. Playground'da <strong>Variant = Submenu</strong> seçildiğinde tüm itemlar chevron alır; gerçek implementasyonda yalnızca sub-menü olan itemlara eklenir.</p>
-      <div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;">${
-        ovfBareListHtml(ovfSectionHtml(
-          ovfItemHtml({ label: 'Edit File' }) +
-          ovfItemHtml({ label: 'Copy File' }) +
-          ovfItemHtml({ label: 'Import File' }) +
-          ovfItemHtml({ label: 'Export File' }) +
-          ovfItemHtml({ label: 'Add Reminder', right: 'icon', rightOpt: { icon: _ovfIconChevronRight } }) +
-          ovfItemHtml({ label: 'Delete File' })
-        ))
-      }</div></div>
+      <p class="page-desc">Submenu varyant, bir veya daha fazla item'ın alt menüye açıldığını ${tk('chevron-right')} ikonuyla gösterir; ikon sağ 32×32 slota ${tk('.bt-icon')} wrapper'ı ile yerleşir. Playground'da tüm item'lar chevron alır (gerçek implementasyonda yalnızca alt menüsü olan item'lara eklenir). Sol slot isteğe göre eylem ikonu veya boş bırakılabilir.</p>
+      ${registerPlayground({
+        id: 'pgd-ovf-submenu-sec',
+        variants: [{ key: 'default', label: 'Submenu' }],
+        props: [
+          { key: 'triggerType',     label: 'Button Type',      options: OVF_TRIGGER_TYPE_OPTS, default: 'labeled', group: 'Trigger'   },
+          { key: 'groupLabel',      label: 'Group Label',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu'      },
+          { key: 'destructiveLast', label: 'Destructive Item', options: TBX_BOOL_OPTS,         default: 'on',      group: 'Menu'      },
+          { key: 'items',           label: 'Items',            options: OVF_ITEMS_OPTS,        default: '4',       group: 'Menu Item' },
+          { key: 'left',            label: 'Left Control',     options: OVF_LEFT_OPTS,         default: 'none',    group: 'Menu Item' },
+          { key: 'description',     label: 'Description',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu Item' },
+          { key: 'state',           label: 'State',            options: OVF_STATE_OPTS,        default: 'default', group: 'Menu Item' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, variant: 'submenu' })}</div>`,
+        code:    (v, p) => ovfMenuHtml({ ...p, variant: 'submenu' }),
+        css:     (v, p) => ovfMenuCss({ ...p, variant: 'submenu' }),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Submenu item — sağ slotta ${tk('chevron-right')} ikon — için beş state. İkon rengi item text rengiyle senkronize değişir (${tk('--bt-icon-primary-strong')} → Destructive state'te ${tk('--bt-icon-error-default')}). Playground'da <em>State</em> ilk item'a uygulanır.</p>
+      ${stateMatrix2(st => stateSubItem(st, 'default'), st => stateSubItem(st, 'danger'))}
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Submenu item Basic'e ek olarak sağ ${tk('.bt-ovf-menu__ctrl')} slot'u barındırır; slot 32×32 + ${tk('.bt-icon')} + ${tk('chevron-right')} SVG. Gerçek implementasyonda sub-menü panel'i parent menünün sağına item hizasında JS ile konumlandırılır; bu demo statiktir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Class</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Item</td><td>${tk('.bt-ovf-menu__item')}</td><td>Basic'le aynı — state + type katmanı</td></tr>
+          <tr><td>Item row</td><td>${tk('.bt-ovf-menu__item-row')}</td><td>flex — Label + Right ctrl</td></tr>
+          <tr><td>Right ctrl</td><td>${tk('.bt-ovf-menu__ctrl')}</td><td>32×32 → ${tk('.bt-icon')} → ${tk('chevron-right')} SVG (${tk('--bt-icon-primary-strong')})</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Icons">Icons</h2>
-      <p class="page-desc">Icons varyant, her item'ın sol slotuna bir eylem ikonu yerleştirir; ikon, eylemin anlamını hızlıca tarar ve düşük okuryazarlık veya yoğun içerikli menülerde kullanılır. Figma'daki Overflow Menu Icons (${tk('1148:132124')}) frame'inde soldan sağa pen-line · copy · upload · download · bell · trash-2 ikonları bire bir kullanılmaktadır. Slot ${tk('.bt-ovf-menu__ctrl')} 32×32 boyutunda; ikon ${tk('.bt-icon')} wrapper'ı içinde doğal boyutunda (24×24) render edilir.</p>
-      <div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;">${
-        ovfBareListHtml(ovfSectionHtml(
-          [
-            ['Edit File',    _ovfIconEdit    ],
-            ['Copy File',    _ovfIconCopy    ],
-            ['Import File',  _ovfIconUpload  ],
-            ['Export File',  _ovfIconDownload],
-            ['Add Reminder', _ovfIconBell    ],
-            ['Delete File',  _ovfIconTrash   ],
-          ].map(([l, ic]) => ovfItemHtml({ label: l, left: 'icon', leftOpt: { icon: ic } })).join('')
-        ))
-      }</div></div>
+      <p class="page-desc">Icons varyant, her item'ın sol slotuna bir eylem ikonu yerleştirir; ikon eylemin anlamını hızlıca tarar ve yoğun içerikli menülerde kullanılır. Figma'daki Icons frame'inde soldan sağa pen-line · copy · upload · download · bell · trash-2 ikonları bire bir kullanılmaktadır. Sol ctrl varlığı Label yatay padding'ini 8→4px'e indirir (Figma [8,4,8,4] kutu modeli). Sağ slot isteğe bağlı herhangi bir kontrolü alabilir.</p>
+      ${registerPlayground({
+        id: 'pgd-ovf-icons-sec',
+        variants: [{ key: 'default', label: 'Icons' }],
+        props: [
+          { key: 'triggerType',     label: 'Button Type',      options: OVF_TRIGGER_TYPE_OPTS, default: 'labeled', group: 'Trigger'   },
+          { key: 'groupLabel',      label: 'Group Label',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu'      },
+          { key: 'destructiveLast', label: 'Destructive Item', options: TBX_BOOL_OPTS,         default: 'on',      group: 'Menu'      },
+          { key: 'items',           label: 'Items',            options: OVF_ITEMS_OPTS,        default: '4',       group: 'Menu Item' },
+          { key: 'right',           label: 'Right Control',    options: OVF_RIGHT_OPTS,        default: 'none',    group: 'Menu Item' },
+          { key: 'description',     label: 'Description',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu Item' },
+          { key: 'state',           label: 'State',            options: OVF_STATE_OPTS,        default: 'default', group: 'Menu Item' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, variant: 'icons' })}</div>`,
+        code:    (v, p) => ovfMenuHtml({ ...p, variant: 'icons' }),
+        css:     (v, p) => ovfMenuCss({ ...p, variant: 'icons' }),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Icons item — sol slotta eylem ikonu — için beş state. İkon rengi item text rengiyle senkronize değişir (${tk('--bt-icon-primary-strong')} / Destructive: ${tk('--bt-icon-error-default')}). Playground'da <em>State</em> ilk item'a uygulanır.</p>
+      ${stateMatrix2(st => stateIconItem(st, 'default'), st => stateIconItem(st, 'danger'))}
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Icons item Basic'e ek olarak sol ${tk('.bt-ovf-menu__ctrl')} slot'u barındırır; slot 32×32 + ${tk('.bt-icon')} (24×24 SVG). Sol ctrl varlığı Label yatay padding'ini 8→4px'e indirir — bu Figma tasarım kararıdır (ikon ile metin arasındaki görsel denge).</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Class</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Item</td><td>${tk('.bt-ovf-menu__item')}</td><td>Basic'le aynı</td></tr>
+          <tr><td>Item row</td><td>${tk('.bt-ovf-menu__item-row')}</td><td>flex — Left ctrl + Label [+ Right ctrl]</td></tr>
+          <tr><td>Left ctrl</td><td>${tk('.bt-ovf-menu__ctrl')}</td><td>32×32 → ${tk('.bt-icon')} → 24×24 SVG (${tk('--bt-icon-primary-strong')})</td></tr>
+          <tr><td>Label (sol ctrl varken)</td><td>${tk('.bt-ovf-menu__label')}</td><td>padding yatay ${tk('--bt-space-xs')} (4px) — Figma [8,4,8,4]</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Shortcuts">Shortcuts</h2>
-      <p class="page-desc">Shortcuts varyant, her item'ın sağ slotuna klavye kısayolunu ${tk('bt-kbd')} / ${tk('bt-kbd-combo')} ile gösterir. Figma'daki Overflow Menu Kbd Shortcuts (${tk('1151:132690')}) frame'inde kullanılan kısayollar sırasıyla: Tab · Ctrl · ⏎ · Ctrl+B · ⇧+K · ⊞+⇧+K. Tek tuş kısayolları ${tk('.bt-kbd')} ile, çoklu tuş kombinasyonları ${tk('.bt-kbd-combo')} + ${tk('.bt-kbd-combo__plus')} deseniyle render edilir; sağ slot 32×32 sabit kalır, kbd hug genişlikte büyür.</p>
-      <div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;">${
-        ovfBareListHtml(ovfSectionHtml(
-          [
-            ['Edit File',    'Tab'                  ],
-            ['Copy File',    'Ctrl'                 ],
-            ['Import File',  'Enter'                ],
-            ['Export File',  'Ctrl + B'             ],
-            ['Add Reminder', 'Shift + K'            ],
-            ['Delete File',  'Windows + Shift + K'  ],
-          ].map(([l, sc]) => ovfItemHtml({ label: l, right: 'kbd', rightOpt: { shortcut: sc } })).join('')
-        ))
-      }</div></div>
+      <p class="page-desc">Shortcuts varyant, her item'ın sağ slotuna klavye kısayolunu ${tk('.bt-kbd')} / ${tk('.bt-kbd-combo')} ile gösterir. Figma'daki Kbd Shortcuts frame'inde kullanılan kısayollar sırasıyla: Tab · Ctrl · ⏎ · Ctrl+B · ⇧+K · ⊞+⇧+K. Tek tuş kısayolları ${tk('.bt-kbd')} ile, çoklu tuş kombinasyonları ${tk('.bt-kbd-combo')} + ${tk('.bt-kbd-combo__plus')} deseniyle render edilir; sağ slot 32×32 sabit kalır, kbd hug genişlikte büyür.</p>
+      ${registerPlayground({
+        id: 'pgd-ovf-shortcuts-sec',
+        variants: [{ key: 'default', label: 'Shortcuts' }],
+        props: [
+          { key: 'triggerType',     label: 'Button Type',      options: OVF_TRIGGER_TYPE_OPTS, default: 'labeled', group: 'Trigger'   },
+          { key: 'groupLabel',      label: 'Group Label',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu'      },
+          { key: 'destructiveLast', label: 'Destructive Item', options: TBX_BOOL_OPTS,         default: 'on',      group: 'Menu'      },
+          { key: 'items',           label: 'Items',            options: OVF_ITEMS_OPTS,        default: '4',       group: 'Menu Item' },
+          { key: 'left',            label: 'Left Control',     options: OVF_LEFT_OPTS,         default: 'none',    group: 'Menu Item' },
+          { key: 'description',     label: 'Description',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu Item' },
+          { key: 'state',           label: 'State',            options: OVF_STATE_OPTS,        default: 'default', group: 'Menu Item' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, variant: 'shortcuts' })}</div>`,
+        code:    (v, p) => ovfMenuHtml({ ...p, variant: 'shortcuts' }),
+        css:     (v, p) => ovfMenuCss({ ...p, variant: 'shortcuts' }),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Shortcuts item — sağ slotta ${tk('.bt-kbd')} kısayol — için beş state. Kbd rengi Disabled state'te item text rengiyle birlikte solar (${tk('--bt-text-primary-muted')}). Playground'da <em>State</em> ilk item'a uygulanır.</p>
+      ${stateMatrix2(st => stateKbdItem(st, 'default'), st => stateKbdItem(st, 'danger'))}
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Shortcuts item Basic'e ek olarak sağ ${tk('.bt-ovf-menu__ctrl')} slot'u barındırır; slot 32×32 + ${tk('.bt-kbd')} (tek tuş) veya ${tk('.bt-kbd-combo')} + ${tk('.bt-kbd-combo__plus')} (birden fazla tuş). Kbd bileşeni gerçek DS component reuse'dur — slot 32×32 fixed, kbd hug genişlikte büyür.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Class</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Item</td><td>${tk('.bt-ovf-menu__item')}</td><td>Basic'le aynı</td></tr>
+          <tr><td>Item row</td><td>${tk('.bt-ovf-menu__item-row')}</td><td>flex — Label + Right ctrl</td></tr>
+          <tr><td>Right ctrl (tek tuş)</td><td>${tk('.bt-ovf-menu__ctrl')} → ${tk('kbd.bt-kbd')}</td><td>Mono 12px · ${tk('--bt-base-subtle')} arka plan · ${tk('--bt-text-primary-emphasis')}</td></tr>
+          <tr><td>Right ctrl (kombo)</td><td>${tk('.bt-ovf-menu__ctrl')} → ${tk('.bt-kbd-combo')}</td><td>inline-flex; her tuş ayrı ${tk('.bt-kbd')}, aralarında ${tk('.bt-kbd-combo__plus')} "+"</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Sections">Sections</h2>
-      <p class="page-desc">Sections varyant, aksiyon listesini anlamsal gruplara ayırmak için birden fazla ${tk('.bt-ovf-menu__section')} kullanır. Figma'daki Overflow Menu Sections (${tk('1151:132925')}) frame'inde üç section yer alır: "File" başlıklı section (2 item), "Actions" başlıklı section (5 item) ve en altta kendi başına bir section içinde danger item. Her section başına opsiyonel ${tk('.bt-ovf-menu__group-label')} konur; iki section arasına otomatik olarak ${tk('border-top')} (Figma "Line") girer.</p>
-      <div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;">${
-        ovfBareListHtml(
-          ovfSectionHtml(
-            ovfGroupLabelHtml('File') +
-            ovfItemHtml({ label: 'Edit File' }) +
-            ovfItemHtml({ label: 'Copy File' })
-          ) +
-          ovfSectionHtml(
-            ovfGroupLabelHtml('Actions') +
-            ovfItemHtml({ label: 'Edit File' }) +
-            ovfItemHtml({ label: 'Copy File' }) +
-            ovfItemHtml({ label: 'Import File' }) +
-            ovfItemHtml({ label: 'Export File' }) +
-            ovfItemHtml({ label: 'Add Reminder' })
-          ) +
-          ovfSectionHtml(
-            ovfItemHtml({ label: 'Delete File', type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } })
-          )
-        )
-      }</div></div>
+      <p class="page-desc">Sections varyant, aksiyon listesini anlamsal gruplara ayırmak için birden fazla ${tk('.bt-ovf-menu__section')} kullanır. Her section başına opsiyonel ${tk('.bt-ovf-menu__group-label')} konur; section'lar arasına otomatik ${tk('border-top')} (Figma "Line") girer. Playground'da <em>Group Label = On</em> ile her section başına başlık eklenir, <em>Items</em> sayısı toplam item'ı kontrol eder ve listeyi iki section'a eşit böler.</p>
+      ${registerPlayground({
+        id: 'pgd-ovf-sections-sec',
+        variants: [{ key: 'default', label: 'Sections' }],
+        props: [
+          { key: 'triggerType',     label: 'Button Type',      options: OVF_TRIGGER_TYPE_OPTS, default: 'labeled', group: 'Trigger'   },
+          { key: 'groupLabel',      label: 'Group Label',      options: TBX_BOOL_OPTS,         default: 'on',      group: 'Menu'      },
+          { key: 'destructiveLast', label: 'Destructive Item', options: TBX_BOOL_OPTS,         default: 'on',      group: 'Menu'      },
+          { key: 'items',           label: 'Items',            options: OVF_ITEMS_OPTS,        default: '4',       group: 'Menu Item' },
+          { key: 'left',            label: 'Left Control',     options: OVF_LEFT_OPTS,         default: 'none',    group: 'Menu Item' },
+          { key: 'right',           label: 'Right Control',    options: OVF_RIGHT_OPTS,        default: 'none',    group: 'Menu Item' },
+          { key: 'description',     label: 'Description',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu Item' },
+          { key: 'state',           label: 'State',            options: OVF_STATE_OPTS,        default: 'default', group: 'Menu Item' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, variant: 'sections' })}</div>`,
+        code:    (v, p) => ovfMenuHtml({ ...p, variant: 'sections' }),
+        css:     (v, p) => ovfMenuCss({ ...p, variant: 'sections' }),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Section içindeki item'lar Basic item'larla aynı state davranışını paylaşır; state yalnızca hedef item'a uygulanır, section sınırı veya group label state'ten etkilenmez. Playground'da <em>State</em> ilk item'a uygulanır.</p>
+      ${stateMatrix2(st => stateItem(st, 'default'), st => stateItem(st, 'danger'))}
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">Sections varyantı birden çok ${tk('.bt-ovf-menu__section')} barındırır — her section 4px padding + flex-column; section'lar arasına ${tk('border-top: 1px solid --bt-border-primary-default')} (Figma "Line") girer. Her section başına opsiyonel ${tk('.bt-ovf-menu__group-label')} (Geist Medium 12/16, ${tk('--bt-text-primary-emphasis')}, padding 8/4) konabilir. Item'lar herhangi bir varyantın yapısını (Basic/Icons/Shortcuts…) alabilir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Class</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Section</td><td>${tk('.bt-ovf-menu__section')}</td><td>flex-column · padding ${tk('--bt-space-xs')} (4px) · role=group</td></tr>
+          <tr><td>Section separator</td><td>${tk('.bt-ovf-menu__section + .bt-ovf-menu__section')}</td><td>${tk('border-top: 1px solid --bt-border-primary-default')} (#d4d4d4)</td></tr>
+          <tr><td>Group Label</td><td>${tk('.bt-ovf-menu__group-label')}</td><td>Geist Medium 12/16 · ${tk('--bt-text-primary-emphasis')} · padding 8/4 · opsiyonel</td></tr>
+          <tr><td>Items</td><td>${tk('.bt-ovf-menu__item')}</td><td>herhangi bir varyantın item yapısı (Basic/Icons/Shortcuts…)</td></tr>
+        </tbody>
+      </table>
 
       <h2 id="Destructive">Destructive</h2>
-      <p class="page-desc">Destructive varyant, geri alınamaz bir aksiyonu (genellikle silme) ana aksiyonlardan görsel ve fiziksel olarak ayırır. Figma'daki Overflow Menu Destructive (${tk('1152:133273')}) frame'inde normal itemlar birinci section'da, danger item ayrı bir section'da — aralarında "Line" (${tk('border-top')}) — yer alır. Danger item sol slotta trash ikonu taşır, rengi ${tk('.bt-ovf-menu__item--danger')} class'ıyla ${tk('--bt-text-error-default')} (#b31d38) olur. Playground'da <strong>Destructive Item = On</strong> ve <strong>Variant = Basic/Icons/Shortcuts</strong> ile benzer sonuç elde edilir.</p>
-      <div class="example-viewer"><div class="example-viewer-preview" style="align-items:center;">${
-        ovfBareListHtml(
-          ovfSectionHtml(
-            ovfItemHtml({ label: 'Edit File' }) +
-            ovfItemHtml({ label: 'Copy File' }) +
-            ovfItemHtml({ label: 'Import File' }) +
-            ovfItemHtml({ label: 'Export File' }) +
-            ovfItemHtml({ label: 'Add Reminder' })
-          ) +
-          ovfSectionHtml(
-            ovfItemHtml({ label: 'Delete File', type: 'danger', left: 'icon', leftOpt: { icon: _ovfIconTrash } })
-          )
-        )
-      }</div></div>
+      <p class="page-desc">Destructive varyant, tüm item'ların ${tk('.bt-ovf-menu__item--danger')} class'ı aldığı tehlike modudur; metin ${tk('--bt-text-error-default')} (#b31d38), hover/active zemin ${tk('--bt-error-subtle')}/${tk('--bt-error-muted')} olur. En yaygın senaryo tehlikeli aksiyonu (Delete) normal item'lardan ${tk('border-top')} ile ayrıştırmaktır — Destructive + Sections kombinasyonu. Playground'da <em>Left Control = Icon</em> ile trash ikonu eklenir.</p>
+      ${registerPlayground({
+        id: 'pgd-ovf-destructive-sec',
+        variants: [{ key: 'default', label: 'Destructive' }],
+        props: [
+          { key: 'triggerType',     label: 'Button Type',      options: OVF_TRIGGER_TYPE_OPTS, default: 'labeled', group: 'Trigger'   },
+          { key: 'groupLabel',      label: 'Group Label',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu'      },
+          { key: 'items',           label: 'Items',            options: OVF_ITEMS_OPTS,        default: '4',       group: 'Menu Item' },
+          { key: 'left',            label: 'Left Control',     options: OVF_LEFT_OPTS,         default: 'icon',    group: 'Menu Item' },
+          { key: 'right',           label: 'Right Control',    options: OVF_RIGHT_OPTS,        default: 'none',    group: 'Menu Item' },
+          { key: 'description',     label: 'Description',      options: TBX_BOOL_OPTS,         default: 'off',     group: 'Menu Item' },
+          { key: 'state',           label: 'State',            options: OVF_STATE_OPTS,        default: 'default', group: 'Menu Item' },
+        ],
+        preview: (v, p) => `<div style="display:flex;align-items:flex-start;justify-content:center;padding:40px 24px;">${ovfMenuHtml({ ...p, variant: 'destructive' })}</div>`,
+        code:    (v, p) => ovfMenuHtml({ ...p, variant: 'destructive' }),
+        css:     (v, p) => ovfMenuCss({ ...p, variant: 'destructive', destructiveLast: 'on' }),
+      })}
+
+      <h3>States</h3>
+      <p class="page-desc">Tüm item'lar Destructive varyantında ${tk('.bt-ovf-menu__item--danger')} class'ını aldığından tek "Danger type" kolonu yeterlidir. Sol slotta trash ikonu taşıyan Delete File item'ı gösterilmektedir. Playground'da <em>State</em> ilk item'a uygulanır.</p>
+      ${stateMatrix1(st => stateDngItem(st), 'Danger type')}
+
+      <h3>Anatomy</h3>
+      <p class="page-desc">${tk('.bt-ovf-menu__item--danger')} class'ı Basic item'ın renk paletini override eder; başka yapısal fark yoktur. Genellikle son section'a konur ve sol slota trash ikonu eklenir. Tümü-danger formatında her item'a bu class eklenir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Class</th><th>Not</th></tr></thead>
+        <tbody>
+          <tr><td>Danger item</td><td>${tk('.bt-ovf-menu__item--danger')}</td><td>text/ikon ${tk('--bt-text-error-default')} (#b31d38)</td></tr>
+          <tr><td>Danger hover</td><td>${tk('.bt-ovf-menu__item--danger:hover')}</td><td>${tk('background: --bt-error-subtle')} (#fde6e6)</td></tr>
+          <tr><td>Danger active/selected</td><td>${tk('.bt-ovf-menu__item--danger.--active')}</td><td>${tk('background: --bt-error-muted')} (#fbd0d2)</td></tr>
+          <tr><td>Danger ctrl</td><td>${tk('.bt-ovf-menu__item--danger .bt-ovf-menu__ctrl')}</td><td>${tk('color: --bt-icon-error-default')} (#b31d38)</td></tr>
+        </tbody>
+      </table>
 
     `};
   },

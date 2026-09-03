@@ -239,6 +239,80 @@ Bir component'in **State/Anatomy** gibi tab-özel içerikleri varsa (örn. Click
 
 **Bu, geriye dönük bir standart** — 2026-08-12'de siteye uygulandı (bkz. HISTORY.md), yeni eklenen HER component bu 4-tab yapısıyla gelmeli, `['Overview', 'CSS Properties', 'Usage']` (Examples'sız 3-tab) veya sadece `['Overview']` gibi eksik yapılar kabul edilmez.
 
+## Component Dokümantasyon Bütünlük Standardı — ZORUNLU
+
+Yeni bir component eklenirken veya mevcut bir component güncellenirken **bütünlük** iki tipe göre belirlenir:
+
+---
+
+### Tip A — Variant'sız Component (Button, Badge, Kbd, Separator…)
+
+**Overview sekmesi (bu sırayla):**
+1. Master playground — tüm eksenler (size, state, theme, feature toggle'lar) kontrol edilebilir
+2. `<h2 id="Anatomy">` + page-desc + anatomy tablosu
+3. `<h2 id="Sizes">` + page-desc + sizes tablosu (varsa)
+4. `<h2 id="States">` + page-desc + states matrisi (varsa)
+5. `<h2 id="Themes">` + page-desc + themes tablosu (varsa)
+6. [Diğer eksenler — bkz. "Çok Eksenli Component Dokümantasyonu"]
+
+**Examples sekmesi:** Her eksen için token-table (Segmented Control deseni — satırlar: eksen değerleri, Preview kolonu)
+
+---
+
+### Tip B — Variant'lı Component (Overflow Menu, Card, Dialog…)
+
+Variant = component'in **davranışsal kimliğini** değiştiren eksen (Overflow Menu: Basic/Submenu/Icons/Shortcuts/Sections/Destructive gibi). Variant bölümleri **Overview sekmesinde**, genel bölümlerden SONRA yer alır — Examples'ta değil.
+
+**Overview sekmesi (bu sırayla):**
+1. Master playground — variant dahil tüm props kontrol edilebilir (`pgd-{comp}-overview`)
+2. `<h2 id="Anatomy">` + page-desc + genel anatomy tablosu (tüm variant'larda ortak katmanlar)
+3. `<h2 id="States">` + page-desc + genel states matrisi (varsa)
+4. [Diğer genel eksenler: Sizes, Themes, vb. — varsa]
+5. **Her variant için ayrı `<h2>` bölümü** (genel bölümlerden sonra, bu sırayla):
+   - `<p class="page-desc">` — 3 katman: tasarım kararı + görsel mekanik + implementasyon referansı
+   - `${registerPlayground({ id: 'pgd-{comp}-{variant}-sec' })}` — **o variant kilitli**, diğer tüm props (state, size, items, controls, feature toggle'lar…) özgür ve kontrol edilebilir
+   - `<h3>States</h3>` + page-desc + o varyanta özgü states tablosu
+   - `<h3>Anatomy</h3>` + page-desc + o varyanta özgü anatomy tablosu (token listesi)
+
+**Examples sekmesi:** Tüm variant'ları tek bir token-table'da karşılaştırır:
+```
+<table class="token-table">
+  <thead><tr><th>Variant</th><th>Preview</th></tr></thead>
+  <tbody>
+    <tr><td>Basic</td><td>${ovfBareListHtml(...)}</td></tr>
+    <tr><td>Submenu</td><td>${ovfBareListHtml(...)}</td></tr>
+    ...
+  </tbody>
+</table>
+```
+Her variant satırı, o variant'ın en temsili halini gösterir (gereksiz trigger/overlay olmadan).
+
+**TOC:**
+```javascript
+toc: [
+  'Anatomy', 'States',           // genel (Sizes/Themes varsa eklenir)
+  'Variant A', 'Variant B', ...  // her variant adı — h3 sub-bölümler TOC'ta YER ALMAZ
+]
+```
+
+---
+
+### Tamamlama Kontrol Listesi (her component için)
+
+Bir component'i tamamlamadan önce şunların tümü sağlanmış olmalı:
+
+- [ ] **4 tab var**: Overview / Examples / CSS Properties / Usage
+- [ ] **Overview**: Master playground tüm eksen ve props'ları kapsiyor
+- [ ] **Her h2/h3**: `<p class="page-desc">` var, 3–5 cümle, 3 katman (karar/mekanik/implementasyon)
+- [ ] **Her playground**: `css` callback var
+- [ ] **Variant'lı ise**: Her variant için kendi `pgd-{comp}-{variant}-sec` playground'u var; variant kilitli, diğer tüm props özgür
+- [ ] **Variant'lı ise**: Her variant bölümünde `<h3>States</h3>` + `<h3>Anatomy</h3>` sub-bölümleri var
+- [ ] **Variant'lı ise**: Variant bölümleri Overview'da (genel bölümlerden sonra), Examples'ta değil
+- [ ] **Variant'lı ise**: Examples tab → tek karşılaştırma token-table'ı (her variant bir satır)
+- [ ] **TOC**: Sayfadaki tüm `<h2>` bölümlerini, doküman sırasıyla kapsiyor
+- [ ] **CSS Properties tab**: Tüm component token'ları eksiksiz tablo
+- [ ] **Usage tab**: Do/Don't içeriği var, component'e özgü yanlış kullanım senaryoları
+
 ## Varyant Dokümantasyonu — Tek Sayfa Standardı — ZORUNLU
 
 Bir component'in birden fazla davranışsal varyantı varsa (örn. Card → Default/Clickable/Selectable/Collapsible/Scrollable), **bu varyantlar ayrı sidebar sayfaları olarak değil, ana component sayfasında TOC bölümleri olarak** dokümante edilir. Bu kural 2026-08-27'de Card component'i üzerinde uygulanmış ve tüm component'ler için genel standard olarak kabul edilmiştir.
