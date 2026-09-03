@@ -4,6 +4,23 @@
 
 Mevcut bir sayfada herhangi bir içerik (tablo, bölüm, tab içeriği, playground vb.) kaldırılacaksa ya da başka bir yere taşınacaksa **kullanıcıya önceden bildir ve onay al.** Kullanıcı açıkça "kaldır", "sil" veya "taşı" demediği sürece hiçbir mevcut içerik silinmez veya yerinden oynatılmaz. Kural uygulamak (description eklemek, 4-tab standardı, anatomy başlıkları vb.) bu yasağı geçersiz kılmaz — içerik eklenir, mevcut içerik korunur.
 
+## İkon Wrapper Standardı — ZORUNLU
+
+Component içinde Lucide SVG ikon kullanılacaksa **her zaman** `<span class="bt-icon">` wrapper'ı kullanılır — component'e özel bir icon slot class'ı (`bt-xxx__icon` gibi) **asla** tanımlanmaz.
+
+```html
+<span class="bt-icon">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Lucide path -->
+  </svg>
+</span>
+```
+
+- `.bt-icon` → 24×24px, `inline-flex`, centered (`styles.css`'te global tanımlı)
+- `.bt-icon svg` → 16×16px, CSS tarafından zorlanır — SVG'ye `width`/`height` attribute'u **yazılmaz**
+- `viewBox="0 0 24 24"` her zaman kalır (Lucide koordinat sistemi)
+- Farklı boyut gerekiyorsa (örn. 20×20 wrapper) — önce Figma'dan doğrula, sonra component'e özel override yaz (global class'ı değiştirme)
+
 ## CSS Değişkenleri (Design Tokens) — ZORUNLU
 
 `docs/css/styles.css` kapsamlı bir `--bt-*` design token seti tanımlıyor: spacing, radius, renk/surface, tipografi (font-size + line-height dahil). Yeni bir component eklerken veya mevcut bir component'i değiştirirken **her görsel değer** ilgili token'dan gelmeli — hardcoded px/hex yazılmamalı.
