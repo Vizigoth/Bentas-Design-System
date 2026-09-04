@@ -151,14 +151,18 @@ Bir component sayfasındaki **her `<h2>` ve `<h3>` bölümü** — Header/Body/F
 - Anatomy bölümleri dahil — 2–3 cümle, yapısal katmanları + token/class adlarını + Blazor karşılığını kısaca belirtmeli
 - **Kabul edilmez:** "Aşağıda örnekler:", "Playground'da dene.", tek cümlelik geçiş metinleri
 
-**3. İçerik** — description'dan hemen sonra gelir, bare HTML kabul edilmez
-- `registerPlayground(...)` — interaktif demo
+**3. İçerik** — description'dan hemen sonra gelir, bare HTML kabul edilmez. Bölümün **canlı demosu** şu ikisinden **yalnızca biridir** (ikisi aynı bölümde birlikte değil):
+- `registerPlayground(...)` — interaktif demo (props panelli). Tip B varyant bölümleri ve master bölüm her zaman bunu kullanır.
+- `.example-viewer` — statik görsel örnek. Yalnızca playground'u OLMAYAN bölümler için (bkz. "Statik Demo Gösterimi").
+
+Buna ek olarak (demoyla birlikte veya tek başına) bir **tablo** konabilir:
 - `<table class="token-table" style="margin-top:12px">` — token/anatomy/states tablosu; `tk(v)` helper'ı ile token adları `<code>` formatında, token karşılığı olmayanlar için Token sütununa `—`
-- `.example-viewer` — statik görsel örnek
 
 ## Statik Demo Gösterimi — "Example Viewer" Pattern — ZORUNLU
 
 Bir bölümün demosu `registerPlayground` DEĞİLSE (statik/interaktif-props'suz bir önizleme), o önizleme **her zaman `.example-viewer` içine** sarılır — çıplak bir `<div style="padding:…">` sarmalayıcı kabul edilmez ("İçerik → bare HTML kabul edilmez" kuralının bir parçası). `token-table` (states/anatomy/token listesi) bu kuraldan muaftır; kural, "bir veya birkaç canlı component örneğini göstermek" için olan serbest önizlemeler içindir (Counter rozeti, Add Tab butonu, tek bir fill mode örneği vb.). Yapı `registerPlayground` yerine:
+
+> **`.example-viewer` ile playground BİRLİKTE kullanılmaz — biri VEYA öteki.** Bir `<h2>`/`<h3>` bölümünün demosu ya bir `registerPlayground` çağrısıdır ya da bir `.example-viewer`'dır; ikisi aynı bölümde art arda konmaz. Özellikle **Tip B varyant bölümlerinde** (`<h2 id="{Variant}">` → page-desc → `pgd-{comp}-{variant}-sec` → `<h3>States</h3>` → `<h3>Anatomy</h3>`) demo **her zaman kilitli playground'dur**; varyantın "açık/özel bir hâlini" göstermek için araya `.example-viewer` eklenmez — playground'un default prop'ları o hâli zaten üretmelidir. `.example-viewer` yalnızca playground'u OLMAYAN bağımsız bölümler (Counter, Add Tab, statik örnek matrisleri) içindir. Aynı şekilde bir varyant bölümüne ikinci bir `<p class="page-desc">` de eklenmez — bölüm başına tek page-desc.
 
 **A) Küçük component örneği (varsayılan) — alana yatay + dikey ORTALI:**
 ```html
@@ -303,9 +307,10 @@ Bir component'i tamamlamadan önce şunların tümü sağlanmış olmalı:
 
 - [ ] **4 tab var**: Overview / Examples / CSS Properties / Usage
 - [ ] **Overview**: Master playground tüm eksen ve props'ları kapsiyor
-- [ ] **Her h2/h3**: `<p class="page-desc">` var, 3–5 cümle, 3 katman (karar/mekanik/implementasyon)
+- [ ] **Her h2/h3**: `<p class="page-desc">` var (bölüm başına **tek** tane), 3–5 cümle, 3 katman (karar/mekanik/implementasyon)
 - [ ] **Her playground**: `css` callback var
 - [ ] **Variant'lı ise**: Her variant için kendi `pgd-{comp}-{variant}-sec` playground'u var; variant kilitli, diğer tüm props özgür
+- [ ] **Variant'lı ise**: Variant bölümünde `.example-viewer` YOK — demo yalnızca kilitli playground'dur (bkz. "Statik Demo Gösterimi": ikisi aynı bölümde birlikte kullanılmaz)
 - [ ] **Variant'lı ise**: Her variant bölümünde `<h3>States</h3>` + `<h3>Anatomy</h3>` sub-bölümleri var
 - [ ] **Variant'lı ise**: Variant bölümleri Overview'da (genel bölümlerden sonra), Examples'ta değil
 - [ ] **Variant'lı ise**: Examples tab → tek karşılaştırma token-table'ı (her variant bir satır)

@@ -154,8 +154,25 @@ function renderSidebar() {
   }
 
   el.innerHTML = getCurrentNav().map(item => renderItem(item, 0)).join('');
-  requestAnimationFrame(updateNavIndicators);
+  requestAnimationFrame(() => { updateNavIndicators(); scrollActiveNavIntoView(); });
 }
+
+// Sayfa refresh'i / derin bir sayfaya link sonrası: aktif nav öğesi sidebar'ın
+// görünür alanının dışında kalıyorsa onu görünür alana getir (instant — refresh'te
+// sayfa "bulunduğu yerde" açılsın, kullanıcı aşağı kaydırmak zorunda kalmasın).
+// Zaten görünüyorsa hiçbir şey yapmaz (normal tıklama navigasyonunda no-op).
+function scrollActiveNavIntoView() {
+  const nav = document.getElementById('sidebar-nav');
+  if (!nav) return;
+  const active = nav.querySelector('.nav-item.active, .nav-child.active, .nav-grandchild.active, .nav-great-grandchild.active');
+  if (!active) return;
+  const navR = nav.getBoundingClientRect();
+  const aR   = active.getBoundingClientRect();
+  if (aR.top >= navR.top + 4 && aR.bottom <= navR.bottom - 4) return;   // zaten görünür
+  const target = nav.scrollTop + (aR.top - navR.top) - (nav.clientHeight - aR.height) / 2;
+  nav.scrollTop = Math.max(0, target);
+}
+window.scrollActiveNavIntoView = scrollActiveNavIntoView;
 
 // Her grup kendi .nav-group-indicator'ına sahip — sadece aktif öğeyi
 // barındıran grubunki görünür/hizalı olur, diğerleri opacity:0 kalır.

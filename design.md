@@ -3925,7 +3925,7 @@ Close `<span>`: `onclick="event.stopPropagation();btTabClose(this)"` — tab se�
 
 ## 20. Kbd
 
-Figma kaynağı: "Bentas DS" dosyası, "Kbd" sayfası — **kbd** (`1097:2690`, tek key cap master sembolü) + **kbd combo** (`1098:2764`, key cap + "+" ayırıcı + key cap) + "kbd examples" (`1098:2835`, örnek dizisi).
+Figma kaynağı: "Bentas DS" dosyası, "Kbd" sayfası — tek bir component set: **kbd** (`1148:132414`), `Type` (Single / Combo) × `Shortcut` (15 varyant). `Type=Single` tek bir key cap, `Type=Combo` key cap + "+" ayırıcı + key cap dizisidir.
 
 Kbd, metin içinde bir klavye tuşunu veya kısayol kombinasyonunu görsel olarak işaretler (menü öğesi, tooltip, yardım metni). **Etkileşimsiz** bir göstergedir — semantik `<kbd>` elementi, buton değil; hover/focus/disabled state'i, boyut ekseni, tema ekseni **yoktur**. Tek biçim ekseni: tek tuş mu, kombo mu. `components/kbd` tek sayfa (4-tab standardı: Overview / Examples / CSS Properties / Usage).
 
@@ -3935,10 +3935,10 @@ Kbd, metin içinde bir klavye tuşunu veya kısayol kombinasyonunu görsel olara
 
 - `display: inline-flex`, içerik yatay+dikey ortalı
 - `min-width: 20px` → tek karakterli tuşlar ("A", "5", "⇧") kare (~20×20 px) görünür; "Ctrl", "Enter" gibi uzun etiketler içeriğe göre genişler (hug)
-- `padding: Space/spacing-2xs` (2px) — **dört kenar** (Figma `kbd` master'ı böyle; örnek dizisindeki bazı instance'lar `spacing-xs`/`spacing-sm` yatay padding kullanıyor ama bu dosya içi tutarsızlık, master referans alındı)
+- `padding: Space/spacing-2xs` (2px) — **dört kenar** (component set'in tüm varyantlarında bu değer bağlı; `Type=Combo` içindeki dar tek-glyph key cap'ler `layoutSizingHorizontal: FIXED` 20px ile kare tutulur)
 - `border-radius: Radius/radius-sm` (4px)
 - `background: Color/Base/--bt-base-subtle` (#f5f5f5)
-- yazı: **Geist Mono** Regular, `Font/Size/text-xs` (12px) / `Font/Line-Height/text-lh-xs` (16px) — key cap'lerin monospace görünmesi tuş genişliklerini tutarlı kılar
+- yazı: **Geist Mono** Regular, `--bt-text-xs-regular` (400 · 12px/16px) — key cap'lerin monospace görünmesi tuş genişliklerini tutarlı kılar
 - `color: Text/Primary/--bt-text-primary-emphasis` (#727272)
 - `white-space: nowrap`
 
@@ -4001,8 +4001,8 @@ Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`).
 - **Base Overflow Menu Item** (`1090:133293`) = `[Left Control 32×32] + [Label flex-1] + [Right Control 32×32]`, satır flex, `align-items:center`, gap 0.
 - **Overflow Menu Item Controls** (`1111:130992`) — ayrı bir component set: `Content` (Left Control / Right Control) × `Type` (Icon, Checkbox, Radio, Switch, Avatar, Kbd, Palette, Button, Blank). 32×32 bir slot; içine tasarım sisteminin **gerçek** kontrolü konur, slot yalnız kutu + ortalama sağlar.
 - **Overflow Menu Item** (`1112:131632`) — `Type` (Default / Destructive) × `Content` (Label / Left Control & Label / Label & Right Control / Left Control & Label & Right Control) × `State` (Default / Hover / Active / Selected / Focus / Disabled).
-- **Overflow Menu Item Group Label** (`1112:132370`) — bölüm başlığı; Geist **Medium** 12/16, `text/primary/emphasis` (#727272), padding `radius-lg` (8px) / `spacing-xs` (4px).
-- **Overflow Menu List** — beyaz zemin, `border/primary/muted` (#e6e6e6) 1px kenar, `Shadow/lg`, `radius-sm`. İçinde bir veya daha çok **Section** (padding `spacing-xs` = 4px); iki Section arasına `border/primary/default` (#d4d4d4) bir **Line** girer.
+- **Overflow Menu Item Group Label** (`1112:132370`) — bölüm başlığı; Geist **Medium** 12/16, `text/primary/emphasis` (#727272). İç "Label" frame padding `[4,8,4,8]` → **4px dikey / 8px yatay** (`spacing-xs` / `spacing-md`). Toplam yükseklik 24px.
+- **Overflow Menu List** — beyaz zemin, `border/primary/muted` (#e6e6e6) 1px kenar, `Shadow/sm` (`--bt-shadow-sm`), `radius-sm`. İçinde bir veya daha çok **Section** (padding `spacing-xs` = 4px). İki Section arasına Figma bir **Seperator** component'i (`Mode=Light`; `Line`, 1px, `border/primary/default` #d4d4d4, tam genişlik) koyar — docs'ta bu `.bt-ovf-menu__section + .bt-ovf-menu__section { border-top }` ile üretilir (aynı görünüm). "Overflow Menu Sections" frame'i 3 section gösterir: File (2 item) · Actions (5 item) · ayrı Delete section'ı (`Type=Destructive`, sol ikon `trash-2`, group label'sız).
 - **Trigger** — `Base Button` Sm / Outline / Base ("Open Menu" metni) **veya** icon-only bir `bt-btn--icon` (⋯).
 
 ### 21.1 Docs implementasyonu — markup
@@ -4040,10 +4040,12 @@ Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`).
 | Radio | `.bt-radio__dot` (16×16) | Radio |
 | Switch | `.bt-switch__track` + `.bt-switch__thumb` (32×20) | Switch |
 | Avatar | `.bt-avatar.bt-avatar--xs` + `.bt-avatar__initials` (28×28) | Avatar |
-| Kbd | `<kbd class="bt-kbd">` | Kbd |
+| Kbd | `<kbd class="bt-kbd">` / `.bt-kbd-combo` — slot **`.bt-ovf-menu__ctrl--hug`** alır | Kbd |
 | Palette | `.bt-ovf-menu__ctrl-palette` — 20×20, 1px `border/primary/default`, `radius-sm`, renk örneği | — |
 | Button | `.bt-btn.bt-btn--2xs.bt-btn--base-flat.bt-btn--icon` | Button |
 | Blank | boş 32×32 hizalayıcı (bazı satırda kontrol var bazıda yokken hizayı korur) | — |
+
+**Kbd slotu — genişlik istisnası:** Figma'da `Content=Right/Left Control, Type=Kdb` varyantı `layoutSizingHorizontal: HUG`'dır (26px tek tuş … 82px 3'lü kombo). Bir klavye kısayolu 32px'e sığmayabildiği için Kbd taşıyan slot `.bt-ovf-menu__ctrl--hug` alır: `width:auto; min-width:32px; overflow:visible` — kbd hiç klipslenmez, hizayı korumak için min 32px kalır; yerine `.bt-ovf-menu__label` (`flex:1; min-width:0`) daralıp ellipsis yapar. **Menü List genişliği** `min-width:180px`'tir, aksi halde `position:fixed` shrink-to-fit ile en geniş item satırına göre büyür — Figma bu frame'i sabit 226px çizer, docs adaptif.
 
 `.bt-ovf-menu__label` (Figma "Label" FRAME) padding'i varsayılan **8/8** (`radius-lg` / `spacing-md`); **sol kontrol varsa** her iki yanda **8/4**'e iner (`.bt-ovf-menu__ctrl + .bt-ovf-menu__label` → `padding-inline: spacing-xs`). Sağ kontrol tek başına 8/8'i değiştirmez. Figma set'inden doğrulandı: `Content=Label` → [8,8,8,8], `Content=Left Control & Label` → [8,4,8,4], `Content=Label & Right Control` → [8,8,8,8].
 
@@ -4055,10 +4057,102 @@ Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`).
 
 Selected ile Active görsel olarak birebir aynıdır (Selected = kalıcı vurgu, Active = anlık basış).
 
-### 21.4 JS davranışı
+**Kullanım deseni — Destructive item'lar:** `--danger` bir *item* modifier'ıdır, menü modu değil. Bir menü yıkıcı bir aksiyon barındırıyorsa (Delete, Remove…) yalnızca o item `--danger` alır ve **ayrı bir son `Section`'a** konur (`section + section` → `border-top` = Figma "Line"); sol kontrol ikon ise `trash-2`. Normal item'lar Default kalır — tüm menü kırmızıya boyanmaz. Figma "Overflow Menu Desctuctive" frame'i bu deseni gösterir (birkaç normal aksiyon + Line + Delete).
 
-`window.btOvfMenuToggle(event, btn)` / `btOvfMenuClose(event, item)` / `btOvfMenuHide(list)` — **değişmedi**. Liste açılınca `.bt-ovf-menu__list` `document.body`'ye portal'lanır ve `position:fixed` + `btn.getBoundingClientRect()`'ten hesaplanan `top`/`right` ile konumlanır (ata elementlerin `overflow:hidden`/`transform` kurallarından bağımsız — `.bt-grid__menu` ile aynı desen). Dışarı tıklama ve scroll (capture) menüyü kapatır; her item tıklandığında `btOvfMenuClose` menüyü kapatır. `<div role="menu">` / `<div role="menuitem">` — eski `<ul>/<li>` yapısı bırakıldı, portal JS class adlarıyla (`.bt-ovf-menu__list`) çalıştığı için etkilenmedi.
+### 21.4 Submenu — iç içe menü listesi (Figma "Overflow Menu Submenu" `1164:4836`)
 
-### 21.5 Not — eski API korundu
+Bir menü item'ı, kendi **sağına ikinci bir menü listesi** açabilir. Figma frame'i iki `Overflow Menu List`'i yan yana gösterir: parent (226px, 6 item) ve child (189px, 3 item); child, parent'ın **sağ kenarına yaslı** ve tetikleyici item'ın **üst hizasında** durur (frame'de child `x = 226 = parent genişliği`, `y = 132 ≈ 5. item'ın üstü`). Tetikleyici item **Active** state'te (alt menü açık) ve sağ 32×32 slotunda `Icon/chevron-right` taşır.
+
+**Markup:** submenu parent item'ı `.bt-ovf-menu__item--has-sub` alır; sağ slotu chevron-right'a kilitlenir; `.bt-ovf-menu__item-row`'un hemen ardına, kapalıyken `display:none` olan gömülü bir alt liste konur:
+
+```html
+<div class="bt-ovf-menu__item bt-ovf-menu__item--has-sub" role="menuitem"
+     aria-haspopup="menu" aria-expanded="false"
+     onclick="btOvfSubToggle(event,this)"
+     onmouseenter="btOvfSubHover(this,true)" onmouseleave="btOvfSubHover(this,false)">
+  <div class="bt-ovf-menu__item-row">
+    <span class="bt-ovf-menu__label"><span class="bt-ovf-menu__label-text">Add Reminder</span></span>
+    <span class="bt-ovf-menu__ctrl">…chevron-right…</span>
+  </div>
+  <div class="bt-ovf-menu__list bt-ovf-menu__list--sub" role="menu"
+       onmouseenter="btOvfSubHover(this,true)" onmouseleave="btOvfSubHover(this,false)">
+    <div class="bt-ovf-menu__section" role="group">…child item'ları…</div>
+  </div>
+</div>
+```
+
+Alt liste bir kök menü listesiyle **birebir aynı** yapıdadır (kendi Section + item'ları; child item'lar da `--has-sub` olabilir → **recursive**).
+
+**CSS:** `.bt-ovf-menu__item--has-sub { position: relative }` · `.bt-ovf-menu__list--sub { z-index: 201 }` (parent list `z-index:200` üstünde). Alt menü açıkken parent item'a `.bt-ovf-menu__item--selected` eklenir (Active zemin `base/muted` #e6e6e6).
+
+### 21.5 Toggle varyantları — Checkboxes / Radios / Switches [+ Icons]
+
+Sağ 32×32 slotta gerçek DS bir toggle kontrolü taşıyan, **tıklamanın menüyü KAPATMADIĞI** varyant ailesi (ayar menüsü deseni). Her item `Content = Label & Right Control`; item `role="menuitemcheckbox"` (radio → `menuitemradio`) + `aria-checked` taşır.
+
+| Varyant | Sağ kontrol | Seçim | Handler | Selected class | Figma |
+|---|---|---|---|---|---|
+| **Checkboxes** | `.bt-checkbox__box` (Md 16×16) | çoklu (bağımsız) | `btOvfToggle` | `--checked` | "Overflow Menu Checkboxes" `1178:22447` |
+| **Radios** | `.bt-radio__dot` (16×16) | **tekli** (liste = 1 grup) | `btOvfRadioPick` | `--selected` | "Overflow Menu Radios" `1180:132375` |
+| **Switches** | `.bt-switch__track` (32×20) | çoklu (bağımsız) | `btOvfToggle` | `--on` | "Overflow Menu Switches" |
+
+- `btOvfToggle(event,item)` — `stopPropagation`, item Disabled değilse satırın **son** `.bt-checkbox__box`/`.bt-switch__track`'ine ilgili `--checked`/`--on` class'ını toggle eder, `aria-checked` eşler. `_btOvfCloseAll`/`btOvfMenuClose` **çağırmaz**.
+- `btOvfRadioPick(event,item)` — aynı `.bt-ovf-menu__list` içindeki tüm `[role="menuitemradio"]`'ları gezer, yalnız tıklanan item'ın `.bt-radio__dot--selected`'ini bırakır, `aria-checked`'i eşler. Menü açık kalır.
+- `ovfItemHtml`'de `o.toggle = 'checkbox'|'radio'|'switch'` + `o.toggleOn = 'on'|'off'` verildiğinde bu yol tetiklenir; `interactive:false` → statik (onclick yok).
+
+**… Icons türevleri** (Checkboxes Icons `1179:22517` + Radios Icons + Switches Icons) — aynısı + her item'ın sol slotunda etiketiyle eşleşen bir Lucide ikonu. `ovfMenuHtml` bu varyantlarda `left='icon'` kilitler ve sol ikon dizisi olarak `_checkLeftIcons` = `[bell, circle-alert, copy-check, mail, message-square-dot, circle-check]` (etiketlerle pozisyonel) kullanır. Sol kontrol olduğu için Label yatay padding 8→4px.
+
+```html
+<div class="bt-ovf-menu__item" role="menuitemcheckbox" aria-checked="true"
+     onclick="btOvfToggle(event,this)">
+  <div class="bt-ovf-menu__item-row">
+    <span class="bt-ovf-menu__label"><span class="bt-ovf-menu__label-text">Email notifications</span></span>
+    <span class="bt-ovf-menu__ctrl"><span class="bt-checkbox__box bt-checkbox__box--checked">…check svg…</span></span>
+  </div>
+</div>
+```
+
+Toggle'ın seçili durumu item state'inden (Default/Hover/Active/…) bağımsızdır.
+
+### 21.5b Avatar — hesap / kullanıcı menüsü (Figma "Overflow Menu Avatar" `1182:132948`)
+
+Bir tetikleyici avatarın altında açılan hesap menüsü. **Ayrı bir builder DEĞİL** — diğer tüm varyantlarla AYNI `Group`/`Items`/`Item N` motorundan (`mkItem`/`ov()`/chunk mantığı) geçer; yalnız **pozisyona göre varsayılan** değişir:
+
+- **İlk item** (`i === 0`) → kimlik: `ovfCtrlHtml('avatar', { initials:'EG' })` → `.bt-avatar.bt-avatar--xs` (28×28) + ad "Emre Göcer" + e-posta açıklaması (2 satır), `interactive:false` (tıklanamaz).
+- **Son item** (`i === nItems - 1`) → Log Out: sol `log-out` ikonu, sağ `.bt-kbd` kısayolu ("Ctrl + Q"), versiyon açıklaması (2 satır).
+- **Aradaki item'lar** → aksiyon listesi, sırasıyla Profile→`user` · Developer Mode→`code` (+ örnek olsun diye sağda bir `.bt-switch__track`) · Settings→`settings` · User List→`users` · Language→`languages` (ikonlar Figma'daki `Icon/placeholder` yerine anlamsal Lucide seti).
+
+Varsayılan `Group=3` / `Items=6` ile bölünüş **[1, 4, 1]** (kimlik / 4 aksiyon / Log Out — Language varsayılanda sığmaz, `Items` artırılınca girer). `Group` prop'u avatar'da yalnız **bölüm boyutu kuralını** değiştirir: `Group ≥ 3` iken ilk/son grup her zaman 1 item alır, ortadaki grup(lar) kalan item'ları alır; `Group ≤ 2` iken diğer varyantlardaki gibi yakın-eşit bölünür.
+
+**Her pozisyonun varsayılan Left/Right Control + Description'ı, aynı `Item N` override panelinden geçersiz kılınabilir** — `ov(i+1)` her zaman önceliklidir (`o.left/right/desc/state != null` ise pozisyonel varsayılan yerine kullanıcı değeri geçerli olur; opt de buna göre yeniden hesaplanır, eski pozisyonel `leftOpt`/`rightOpt`'ta kalınmaz). Bu, **kullanıcı feedback'ine** yanıttır: önceki sürümde Avatar tamamen ayrı bir builder'dı (Group/Items'ı hiç okumuyordu) ve "Item 1" görsel olarak 2. section'ın 1. item'ı ("Profile") gibi yanlış bir item'ı hedefliyordu, üstelik playground `Group`/`Group Label`/`Destructive Item` satırlarını gizleyip `Items`→`Actions`/`Item`→`Action N` şeklinde yeniden adlandırıyordu. Artık **hiçbir prop gizlenmiyor/yeniden adlandırılmıyor** — `ovfSecProps` avatar için de tamamen generic (`{ left:false, right:false, groupsDefault:'3' }` — Icons/Submenu/Shortcuts'ta olduğu gibi yalnız kilitli ortak Left/Right satırı gizleniyor, `Sections`'taki `groupsDefault:'2'` ile aynı mekanizma); `Item 1` = menünün gerçek 1. item'ı (kimlik), son `Item N` = gerçek son item'ı (Log Out).
+
+### 21.6 JS davranışı
+
+**Kök menü** — `window.btOvfMenuToggle(event, btn)` / `btOvfMenuClose(event, item)` / `btOvfMenuHide(list)`. Liste açılınca `.bt-ovf-menu__list` `document.body`'ye portal'lanır ve `position:fixed` + `btn.getBoundingClientRect()`'ten hesaplanan `top`/`right` ile konumlanır (ata elementlerin `overflow:hidden`/`transform` kurallarından bağımsız — `.bt-grid__menu` ile aynı desen). `<div role="menu">` / `<div role="menuitem">` — eski `<ul>/<li>` bırakıldı.
+
+**Submenu** — `window.btOvfSubToggle(event, item)` (click) ve `window.btOvfSubHover(elOrSub, entering)` (hover, aç 110ms / kapat 260ms). Açılışta iç `btOvfSubOpen(item)`:
+
+1. Gömülü `.bt-ovf-menu__list--sub`'ı `document.body`'ye taşır (parent'ın `overflow:clip`'inden kurtulur), `position:fixed` yapar.
+2. `left = item.right − 1` (parent'ın sağ kenarına yaslı); `left + w > innerWidth − 4` ise **sola flip** (`left = item.left − w + 1`).
+3. `top = item.top − 5` (list border + section pad ≈ 5px → 1. child item tetikleyiciyle hizalı); alta taşarsa yukarı kaydırır.
+4. Parent item'a `.bt-ovf-menu__item--selected` + `aria-expanded="true"` ekler; aynı seviyedeki diğer açık submenu'leri kapatır.
+
+Kapanışta `btOvfSubHide(sub)` önce torun submenu'leri (recursive), sonra kendini gizleyip item'ın içine geri koyar, parent'ın `--selected`'ını kaldırır. **Dışarı tıklama / scroll (capture) / bir yaprak item tıklama** → `_btOvfCloseAll()` tüm zinciri (kök + submenu'ler) toplar. `btOvfMenuClose` artık `_btOvfCloseAll`'a delege eder.
+
+**Toggle varyantları** — `window.btOvfToggle(event, item)` (Checkboxes/Switches: satırın son `.bt-checkbox__box`/`.bt-switch__track`'ine `--checked`/`--on` toggle) ve `window.btOvfRadioPick(event, item)` (Radios: aynı liste içindeki tek radio grubu — yalnız tıklanan `--selected`). İkisi de `event.stopPropagation()`, `aria-checked` eşler, `_btOvfCloseAll`/`btOvfMenuClose` **çağırmaz** — menü açık kalır. Ayrıntı: §21.5.
+
+### 21.7 Docs playground properties (Figma "Properties" spec + docs eklentileri)
+
+**Master (`pgd-ovf-menu-overview`) ve 13 per-variant (`pgd-ovf-{basic|submenu|icons|shortcuts|checkboxes|checkboxes-icons|radios|radios-icons|switches|switches-icons|avatar|sections|destructive}-sec`) playground'un hepsi** aynı `props` yapısını `ovfSecProps(opts)` fonksiyonundan alır:
+
+- **Trigger** — Button Type (Label / More).
+- **Menu** (menü geneli) — [Variant — yalnız master] · **Group** (1–3: body item'ları kaç `Section`'a bölünür; sections playground'unda default 2) · **Divider** (On/Off — Off = `.bt-ovf-menu__list--no-divider`, section'lar arası `border-top` kaldırılır) · Group Label (On/Off; sections'ta default On) · Destructive Item (On/Off — Delete ayrı son section'a; Destructive playground'unda yok, intrinsic).
+- **Menu Item** (tüm item'lar için paylaşılan varsayılan) — Items (1–6) · Left Control · Right Control · Description · State. Variant left/right'ı kilitliyorsa o paylaşılan satır gizlenir (Icons → Left yok; Submenu/Shortcuts/Checkboxes/Radios/Switches → Right yok; **… Icons toggle türevleri (Checkboxes/Radios/Switches Icons) → hem Left hem Right yok**).
+- **Item** (per-item override, `props` fonksiyonu Items sayısına göre 1–N için 4'er satır üretir) — her item için `Item N · Left/Right Control · Description · State`; ilk seçenek her zaman **Inherit** olarak listede kalır (kullanıcı istediğinde geri dönebilsin diye) ama **satırın `default`'ı artık `Inherit` DEĞİL** — `ovfSecProps`'a **sabit bir `variant`** verilen (master hariç TÜM per-variant `-sec` playground'lar) her satırda `default`, `ovfItemAutoCtrl(variant, i, nItems, sharedLeft, sharedRight)` ile o pozisyonda **GERÇEKTEN render edilen** kontrol tipine eşitlenir (Left/Right Control için — Description/State satırları `Inherit` kalır, bkz. altta). Örnek: Icons sec'te `Item 1 · Left Control` açılışta "Icon" gelir (Inherit değil); Checkboxes sec'te `Item 1 · Right Control` "Checkbox" gelir; Submenu sec'te submenu-parent olan item'ların (idx 2 & 4) `Right Control`'ü "Icon" (chevron) gelir; Avatar sec'te `Item 1 · Left Control` "Avatar", son `Item N · Left/Right Control` "Icon"/"Kbd" gelir. **Master'da** (`pgd-ovf-menu-overview`, `Variant` dropdown'ı canlı değişebilir) bu satırlar bilinçli olarak **`Inherit` kalır** — aksi halde Variant değiştirildiğinde eski (başka variant'a ait) somut değerler item'ların yeni variant'a göre otomatik yeniden çözülmesini engellerdi. Kullanıcı geri bildirimi (2026-09-04): *"variantları oluşturan properties properties'de seçili değil"* — panel artık item'ın gerçekten neyle render edildiğini saklamıyor; her satır yine de serbestçe farklı bir değere override edilebilir.
+- **Description satırı neden hâlâ `Inherit`:** `Inherit` (`o.desc==null`) → `mkItem` içindeki pozisyonel `defDesc`'e (Avatar'ın kimlik/Log Out satırlarındaki özel e-posta/versiyon metni gibi) düşer; somut `on` ise HER ZAMAN jenerik `"Description text"` üretir ve pozisyona özel metni ezer — bu yüzden Description kasıtlı olarak baked-default mekanizmasının dışında tutuldu (State de aynı sebeple: "Inherit" zaten üstteki paylaşılan `State` prop'unu şeffaf şekilde yansıtıyor, gizli bir değer yok).
+- **`eLeftOpt`/`eRightOpt` seçim kuralı** (`ovfMenuHtml` → `mkItem`): pozisyonel opt (ör. Avatar'ın `{initials:'EG'}`, `{icon:_ovfIconLogOut}`, `{shortcut:'Ctrl + Q'}`) yalnızca **çözülen değer (`eLeft`/`eRight`) hâlâ o pozisyonun doğal kontrol tipiyle (`defLeft`/`defRight`) aynıysa** kullanılır — `o.left==null` kontrolü DEĞİL. Bu, hem eski "Inherit" akışını hem yeni "properties paneli varsayılanı somut değer" akışını aynı anda doğru sonuçlandırır; kullanıcı tipi gerçekten değiştirirse (`eLeft !== defLeft`) genel `optFor()` ikon/kısayol rotasyonuna düşer.
+
+`Group` ve `Divider` Figma "Properties" text node'unda henüz yok — docs'a kullanıcı isteğiyle eklendi (2026-09-04). `ovfMenuHtml(p)` bunları `p.groups` / `p.divider` / `p.i{N}{left|right|desc|state}` olarak okur. CSS'te ayrı bir "divider" element/class'ı yoktur — çizgi `.bt-ovf-menu__section + .bt-ovf-menu__section { border-top }`'tur; `Divider=Off` bunu `.bt-ovf-menu__list--no-divider` modifier'ıyla iptal eder.
+
+### 21.8 Not — eski API korundu
 
 `.bt-ovf-menu__item-icon` (16×16 eski ikon slotu) ve `.bt-ovf-menu__divider` (`<li>` tam-genişlik çizgi) CSS'te bırakıldı ama yeni implementasyon bunları kullanmıyor — grup ayrımı artık `.bt-ovf-menu__section + .bt-ovf-menu__section` border'ıyla yapılıyor.

@@ -6825,7 +6825,7 @@ pre.code-block.line-numbers {
 
 /* ── Overflow Menu — bağımsız component ────────────────────────────────────────
    Figma "Bentas DS" › "Overflow Menu" (1089:133016):
-     Overflow Menu List (beyaz zemin, border-primary-muted, Shadow/lg, radius-sm)
+     Overflow Menu List (beyaz zemin, border-primary-muted, Shadow/sm, radius-sm)
        → Section (spacing-xs padding) → [Group Label] + Overflow Menu Item
      Overflow Menu Item (1112:131632) = Type(Default/Destructive)
         × Content(Label / +Left Control / +Right Control / both)
@@ -6852,7 +6852,7 @@ pre.code-block.line-numbers {
   border: 1px solid var(--bt-border-primary-muted, #e6e6e6);
   border-radius: var(--bt-radius-sm, 4px);
   overflow: hidden;
-  box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
+  box-shadow: var(--bt-shadow-sm, 0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10));
   box-sizing: border-box;
 }
 
@@ -6865,10 +6865,18 @@ pre.code-block.line-numbers {
 .bt-ovf-menu__section + .bt-ovf-menu__section {
   border-top: 1px solid var(--bt-border-primary-default, #d4d4d4);
 }
+/* Divider = Off → section'lar arası çizgi kaldırılır (playground "Divider" prop'u) */
+.bt-ovf-menu__list--no-divider .bt-ovf-menu__section + .bt-ovf-menu__section {
+  border-top: none;
+}
+/* Avatar varyantı — ad/e-posta/versiyon satırları diğer varyantlardan uzun,
+   180px taban dar kalıyordu; daha geniş bir taban + içerik yine gerekirse büyür. */
+.bt-ovf-menu__list--wide { min-width: 260px; }
 
-/* Group Label — Figma "Overflow Menu Item Group Label" (1112:132370) */
+/* Group Label — Figma "Overflow Menu Item Group Label" (1112:132370)
+   İç "Label" frame padding [4,8,4,8] → 4px dikey / 8px yatay */
 .bt-ovf-menu__group-label {
-  padding: var(--bt-radius-lg, 8px) var(--bt-space-xs, 4px);
+  padding: var(--bt-space-xs, 4px) var(--bt-space-md, 8px);
   font: var(--bt-text-xs-medium, 500 12px/16px var(--font));
   color: var(--bt-text-primary-emphasis, #727272);
   white-space: nowrap;
@@ -6905,6 +6913,14 @@ pre.code-block.line-numbers {
   justify-content: center;
   overflow: clip;
   color: var(--bt-icon-primary-strong, #535353);
+}
+/* Kbd kısayolu tek 32px slota sığmaz — Figma "Content=Right Control, Type=Kdb"
+   slotu layoutSizingHorizontal=HUG'dır (26px tek tuş … 82px 3'lü kombo). Slot
+   içeriğe göre genişler, klips YOK; min 32px hizayı korur, Label daralır. */
+.bt-ovf-menu__ctrl--hug {
+  width: auto;
+  min-width: 32px;
+  overflow: visible;
 }
 /* Label — flex-1, dikey ortalı, tek/çift satır ellipsis (Figma "Label" FRAME) */
 .bt-ovf-menu__label {
@@ -6960,6 +6976,15 @@ pre.code-block.line-numbers {
 .bt-ovf-menu__item--danger.bt-ovf-menu__item--focus     { background: var(--bt-error-subtle, #fde6e6); }  /* Figma: Destructive Focus zemin = error-subtle */
 .bt-ovf-menu__item--danger.bt-ovf-menu__item--disabled  { color: var(--bt-text-error-muted, #fbd0d2); }
 .bt-ovf-menu__item--danger.bt-ovf-menu__item--disabled .bt-ovf-menu__ctrl { color: var(--bt-icon-error-muted, #fbd0d2); }
+
+/* Submenu — nested list (Figma "Overflow Menu Submenu" 1164:4836).
+   Bir "has-sub" item'ın içinde gizli bir .bt-ovf-menu__list--sub durur;
+   hover/click'te JS onu document.body'ye portal'lar ve parent'ın SAĞ
+   kenarına, tetikleyici item hizasında position:fixed konumlandırır
+   (sığmıyorsa sola / yukarı flip eder). Kapalıyken .bt-ovf-menu__list
+   zaten display:none. Parent item, alt menü açıkken --selected (Active). */
+.bt-ovf-menu__item--has-sub { position: relative; }
+.bt-ovf-menu__list--sub { z-index: 201; }   /* portal'lı; parent list z-index:200 üstünde */
 
 /* Control slot içerikleri (Icon / Palette dışındakiler gerçek DS class'ları) */
 /* .bt-icon global class'ı kullanılır — component-özel CSS yok */
@@ -7116,7 +7141,8 @@ pre.code-block.line-numbers {
 }
 
 /* ============================================================
-   Kbd — Figma "Bentas DS" › "Kbd" (kbd 1097:2690 · kbd combo 1098:2764)
+   Kbd — Figma "Bentas DS" › "Kbd" (kbd component set 1148:132414 —
+   Type=Single / Type=Combo × Shortcut)
    Klavye kısayolu göstergesi — etkileşimsiz görsel işaret (<kbd> semantik
    elementi). Boyut / state / tema ekseni YOK: tüm tuşlar aynı token setini
    kullanır. Yalnız iki biçim: tek tuş (.bt-kbd) ve tuş kombosu
@@ -7130,15 +7156,13 @@ pre.code-block.line-numbers {
   padding: var(--bt-space-2xs, 2px);
   border-radius: var(--bt-radius-sm, 4px);
   background: var(--bt-base-subtle, #f5f5f5);
-  font-family: var(--mono);
-  font-size: var(--bt-text-xs-size, 12px);
-  line-height: var(--bt-text-xs-lh, 16px);
-  font-weight: 400;
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  font-family: var(--mono);            /* Geist Mono — key cap monospace */
   color: var(--bt-text-primary-emphasis, #727272);
   white-space: nowrap;
   box-sizing: border-box;
 }
-/* Kbd Combo — birden çok key cap + aralarında "+" ayırıcı (Figma "kbd combo") */
+/* Kbd Combo — birden çok key cap + aralarında "+" ayırıcı (Figma kbd · Type=Combo) */
 .bt-kbd-combo {
   display: inline-flex;
   align-items: center;
