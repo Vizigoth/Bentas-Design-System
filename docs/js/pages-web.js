@@ -7545,6 +7545,18 @@ function alertCss(p) {
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
 
+// .bt-alert her zaman width:100% taşır (gerçek kullanımda kapsayıcısını
+// doldurması gerekiyor) — bir <td> içine çıplak basılırsa kolonun TAMAMINI
+// kaplar (kullanıcı bunu fark etti: "tablolar içerisindeki previewlerde alert
+// width'i kolonu kaplayacak şekilde ayarlamışsın"). Playground preview'ları
+// zaten `max-width:440px;width:100%;margin:0 auto;` sarmalayıcısını taşıyor
+// (bkz. `pgd-alert-overview`/`alertLockedPg`) — bu proje genelindeki "Form /
+// full-width bileşenler" standardı (add-component skill), Alert'e özel bir
+// değer değil. Tablo hücreleri de AYNI 440px'i kullanmalı; farklı bir sayı
+// (örn. 360px) icat etmenin bir gerekçesi yok — playground'daki gerçek
+// versiyonla tutarsızlık yaratır.
+const alertPreviewCell = html => `<div style="max-width:440px;width:100%;">${html}</div>`;
+
 PAGES_WEB['components/alert'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
   toc: ['Anatomy', 'Themes', 'Types', 'Information', 'Success', 'Warning', 'Error'],
@@ -7580,7 +7592,7 @@ PAGES_WEB['components/alert'] = {
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Theme Color</th><th>Preview</th></tr></thead>
         <tbody>
-          ${ALERT_THEME_OPTS.map(th => `<tr><td><span class="token-name">${th.label}</span></td><td>${alertHtml({ type, theme: th.key })}</td></tr>`).join('')}
+          ${ALERT_THEME_OPTS.map(th => `<tr><td><span class="token-name">${th.label}</span></td><td>${alertPreviewCell(alertHtml({ type, theme: th.key }))}</td></tr>`).join('')}
         </tbody>
       </table>`;
 
@@ -7593,8 +7605,8 @@ PAGES_WEB['components/alert'] = {
           ${ALERT_THEME_OPTS.map(th => `
           <tr>
             <td><span class="token-name">${th.label}</span></td>
-            <td>${alertHtml({ type, theme: th.key, close: 'off' })}</td>
-            <td>${alertHtml({ type, theme: th.key, close: 'on' })}</td>
+            <td>${alertPreviewCell(alertHtml({ type, theme: th.key, close: 'off' }))}</td>
+            <td>${alertPreviewCell(alertHtml({ type, theme: th.key, close: 'on' }))}</td>
           </tr>`).join('')}
         </tbody>
       </table>`;
@@ -7658,7 +7670,7 @@ PAGES_WEB['components/alert'] = {
       <table class="token-table">
         <thead><tr><th>Theme Color</th><th>Preview (Information)</th></tr></thead>
         <tbody>
-          ${ALERT_THEME_OPTS.map(th => `<tr><td><span class="token-name">${th.label}</span></td><td>${alertHtml({ type: 'information', theme: th.key })}</td></tr>`).join('')}
+          ${ALERT_THEME_OPTS.map(th => `<tr><td><span class="token-name">${th.label}</span></td><td>${alertPreviewCell(alertHtml({ type: 'information', theme: th.key }))}</td></tr>`).join('')}
         </tbody>
       </table>
 
@@ -7667,10 +7679,10 @@ PAGES_WEB['components/alert'] = {
       <table class="token-table">
         <thead><tr><th>Type</th><th>Preview</th><th>Icon</th><th>Kullanım</th></tr></thead>
         <tbody>
-          <tr><td><span class="token-name">Information</span></td><td>${alertHtml({ type: 'information' })}</td><td>info</td><td>Nötr bilgilendirme veya bağlam açıklaması.</td></tr>
-          <tr><td><span class="token-name">Success</span></td><td>${alertHtml({ type: 'success' })}</td><td>circle-check</td><td>Başarıyla tamamlanan bir eylemin teyidi.</td></tr>
-          <tr><td><span class="token-name">Warning</span></td><td>${alertHtml({ type: 'warning' })}</td><td>circle-alert</td><td>Dikkat gerektiren, henüz kritik olmayan durum.</td></tr>
-          <tr><td><span class="token-name">Error</span></td><td>${alertHtml({ type: 'error' })}</td><td>circle-alert</td><td>Kritik hata veya engelleyici durum.</td></tr>
+          <tr><td><span class="token-name">Information</span></td><td>${alertPreviewCell(alertHtml({ type: 'information' }))}</td><td>info</td><td>Nötr bilgilendirme veya bağlam açıklaması.</td></tr>
+          <tr><td><span class="token-name">Success</span></td><td>${alertPreviewCell(alertHtml({ type: 'success' }))}</td><td>circle-check</td><td>Başarıyla tamamlanan bir eylemin teyidi.</td></tr>
+          <tr><td><span class="token-name">Warning</span></td><td>${alertPreviewCell(alertHtml({ type: 'warning' }))}</td><td>circle-alert</td><td>Dikkat gerektiren, henüz kritik olmayan durum.</td></tr>
+          <tr><td><span class="token-name">Error</span></td><td>${alertPreviewCell(alertHtml({ type: 'error' }))}</td><td>circle-alert</td><td>Kritik hata veya engelleyici durum.</td></tr>
         </tbody>
       </table>
 
@@ -7729,9 +7741,9 @@ PAGES_WEB['components/alert'] = {
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Theme Color</th><th>Zemin</th><th>Kenarlık</th><th>Metin/İkon</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td><span class="token-name">Stroke</span></td><td>${tk('--bt-surface-primary-default')}</td><td>${tk('--bt-border-primary-default')}</td><td>${tk('--bt-text-primary-default')}</td><td>${alertHtml({ type: 'information', theme: 'stroke' })}</td></tr>
-          <tr><td><span class="token-name">Light</span></td><td>${tk('--bt-surface-{type}-light')}</td><td>${tk('--bt-border-{type}-default')}</td><td>${tk('--bt-text-primary-default')}</td><td>${alertHtml({ type: 'information', theme: 'light' })}</td></tr>
-          <tr><td><span class="token-name">Filled</span></td><td>${tk('--bt-surface-{type}-default')}</td><td>—</td><td>${tk('--bt-text-primary-inverted')}</td><td>${alertHtml({ type: 'information', theme: 'filled' })}</td></tr>
+          <tr><td><span class="token-name">Stroke</span></td><td>${tk('--bt-surface-primary-default')}</td><td>${tk('--bt-border-primary-default')}</td><td>${tk('--bt-text-primary-default')}</td><td>${alertPreviewCell(alertHtml({ type: 'information', theme: 'stroke' }))}</td></tr>
+          <tr><td><span class="token-name">Light</span></td><td>${tk('--bt-surface-{type}-light')}</td><td>${tk('--bt-border-{type}-default')}</td><td>${tk('--bt-text-primary-default')}</td><td>${alertPreviewCell(alertHtml({ type: 'information', theme: 'light' }))}</td></tr>
+          <tr><td><span class="token-name">Filled</span></td><td>${tk('--bt-surface-{type}-default')}</td><td>—</td><td>${tk('--bt-text-primary-inverted')}</td><td>${alertPreviewCell(alertHtml({ type: 'information', theme: 'filled' }))}</td></tr>
         </tbody>
       </table>
 
@@ -7740,7 +7752,7 @@ PAGES_WEB['components/alert'] = {
       <table class="token-table" style="margin-bottom:12px">
         <thead><tr><th>Type</th><th>Icon</th><th>Preview (Stroke)</th></tr></thead>
         <tbody>
-          ${ALERT_TYPE_OPTS.map(t => `<tr><td><span class="token-name">${t.label}</span></td><td>${_alertTypeIconName[t.key]}</td><td>${alertHtml({ type: t.key })}</td></tr>`).join('')}
+          ${ALERT_TYPE_OPTS.map(t => `<tr><td><span class="token-name">${t.label}</span></td><td>${_alertTypeIconName[t.key]}</td><td>${alertPreviewCell(alertHtml({ type: t.key }))}</td></tr>`).join('')}
         </tbody>
       </table>
       <h3>Anatomy</h3>
