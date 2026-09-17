@@ -441,12 +441,12 @@ function sidebarMarkupA(variant) {
           </div>
           <div class="sbx-drawer${collapsedCls}" id="sbxDrawer">
             <div class="sbx-drawer-top">
-              <div class="bt-input bt-searchbox bt-input--sm">
+              <div class="bt-input__box bt-searchbox bt-input__box--sm">
                 <div class="bt-input__control">
                   <span class="bt-icon">${sbxIconSearch}</span>
                 </div>
                 <div class="bt-input__field">
-                  <input class="bt-input__text" type="text" placeholder="Placeholder Text" oninput="sbxInput(this)" />
+                  <input class="bt-input__value" type="text" placeholder="Placeholder Text" oninput="sbxInput(this)" />
                 </div>
                 <div class="sbx-searchbox-kbd">Tab</div>
               </div>
@@ -490,12 +490,12 @@ function sidebarCodeSnippetA(variant) {
   </div>
   <div class="sbx-drawer${variant === 'collapsed' ? ' is-collapsed' : ''}">
     <div class="sbx-drawer-top">
-      <div class="bt-input bt-searchbox bt-input--sm">
+      <div class="bt-input__box bt-searchbox bt-input__box--sm">
         <div class="bt-input__control">
           <span class="bt-icon"><!-- search icon --></span>
         </div>
         <div class="bt-input__field">
-          <input class="bt-input__text" type="text" placeholder="Placeholder Text" />
+          <input class="bt-input__value" type="text" placeholder="Placeholder Text" />
         </div>
         <div class="sbx-searchbox-kbd">Tab</div>
       </div>
@@ -564,12 +564,12 @@ function standartSidebarMarkup(state) {
           </div>
           <div class="stb-body">
             <div class="stb-search-wrap">
-              <div class="bt-input bt-searchbox bt-input--md">
+              <div class="bt-input__box bt-searchbox bt-input__box--md">
                 <div class="bt-input__control">
                   <span class="bt-icon">${sbxIconSearch}</span>
                 </div>
                 <div class="bt-input__field">
-                  <input class="bt-input__text" type="text" placeholder="Search" oninput="sbxInput(this)" />
+                  <input class="bt-input__value" type="text" placeholder="Search" oninput="sbxInput(this)" />
                 </div>
                 <div class="stb-searchbox-kbd">Tab</div>
               </div>
@@ -606,12 +606,12 @@ function standartSidebarCodeSnippet(state) {
   </div>
   <div class="stb-body">
     <div class="stb-search-wrap">
-      <div class="bt-input bt-searchbox bt-input--md">
+      <div class="bt-input__box bt-searchbox bt-input__box--md">
         <div class="bt-input__control">
           <span class="bt-icon"><!-- search icon --></span>
         </div>
         <div class="bt-input__field">
-          <input class="bt-input__text" type="text" placeholder="Search" />
+          <input class="bt-input__value" type="text" placeholder="Search" />
         </div>
         <div class="stb-searchbox-kbd">Tab</div>
       </div>
@@ -2701,7 +2701,7 @@ PAGES_WEB['components/switch'] = {
 
 // ── Searchbox ────────────────────────────────────────────────────
 // Figma "Inputs NEW" › SearchBox (node 1304:138807 Basic, 1306:139744
-// Advanced Filtered) — .bt-input çekirdeğinin (Base Input) üzerine
+// Advanced Filtered) — .bt-input__box çekirdeğinin (Base Input) üzerine
 // kurulu, bkz. styles.css "BASE INPUT" bloğu.
 const sbxIconClear = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
 
@@ -2725,16 +2725,16 @@ const SBX_STATE_VARIANTS = [
 
 // Gerçek bir input gibi çalışsın diye: yazınca Clear butonu CANLI DOM'a eklenir,
 // silince kaldırılır — sadece bir CSS class toggle'ı değil (o zaman görsel
-// hiçbir şey değişmezdi, çünkü .bt-input--filled'ın kendi CSS kuralı yok, gerçek
+// hiçbir şey değişmezdi, çünkü .bt-input__box--filled'ın kendi CSS kuralı yok, gerçek
 // "filled" görünümü zaten native <input> metninin kendisi). Projelerde kopyala-
 // yapıştır edildiğinde de aynen bu şekilde çalışması beklenen STANDART davranış.
 function _sbxClearBtnHtml() {
   return `<div class="bt-input__control bt-input__control--fixed bt-input__control--clear bt-input__control--clickable" onclick="sbxClear(this)"><span class="bt-icon">${sbxIconClear}</span></div>`;
 }
 function sbxInput(el) {
-  const box = el.closest('.bt-input');
+  const box = el.closest('.bt-input__box');
   const hasValue = el.value.length > 0;
-  box.classList.toggle('bt-input--filled', hasValue);
+  box.classList.toggle('bt-input__box--filled', hasValue);
   let clearBtn = box.querySelector('.bt-input__control--clear');
   if (hasValue && !clearBtn) {
     const wrap = document.createElement('div');
@@ -2746,10 +2746,10 @@ function sbxInput(el) {
   }
 }
 function sbxClear(el) {
-  const box = el.closest('.bt-input');
-  const input = box.querySelector('.bt-input__text');
+  const box = el.closest('.bt-input__box');
+  const input = box.querySelector('.bt-input__value');
   input.value = '';
-  box.classList.remove('bt-input--filled');
+  box.classList.remove('bt-input__box--filled');
   el.remove();
   input.focus();
 }
@@ -2757,12 +2757,12 @@ function sbxClear(el) {
 // gerçek bir filtre paneli entegrasyonu ileride eklenecek, şimdilik yalnızca
 // bir açık/kapalı class'ı toggle'lıyor.
 function sbxFilterToggle(el) {
-  el.closest('.bt-input').classList.toggle('bt-input--filter-open');
+  el.closest('.bt-input__box').classList.toggle('bt-input__box--filter-open');
 }
 
 function _sbxCls(state, size) {
-  const parts = ['bt-input', 'bt-searchbox', `bt-input--${size}`];
-  if (state !== 'default') parts.push(`bt-input--${state}`);
+  const parts = ['bt-input__box', 'bt-searchbox', `bt-input__box--${size}`];
+  if (state !== 'default') parts.push(`bt-input__box--${state}`);
   return parts.join(' ');
 }
 
@@ -2784,8 +2784,8 @@ function sbxPreview(state, props = {}) {
   // görseli manuel taklit etmiyoruz (native caret zaten focus'ta ücretsiz
   // geliyor) — sadece bu statik önizlemede Figma'ya sadık kalıyoruz.
   const fieldHtml = active ? `
-          <span class="bt-input__text" style="display:inline-flex;flex:0 1 auto;width:auto;white-space:nowrap;">Placeholder Text<span style="display:inline-block;width:1px;height:16px;background:var(--bt-base-intense,#404040);flex-shrink:0;"></span></span>` : `
-          <input class="bt-input__text" type="text" placeholder="Placeholder Text"${filled ? ' value="Placeholder Text"' : ''}${disabled ? ' disabled' : ''} oninput="sbxInput(this)" />`;
+          <span class="bt-input__value" style="display:inline-flex;flex:0 1 auto;width:auto;white-space:nowrap;">Placeholder Text<span style="display:inline-block;width:1px;height:16px;background:var(--bt-base-intense,#404040);flex-shrink:0;"></span></span>` : `
+          <input class="bt-input__value" type="text" placeholder="Placeholder Text"${filled ? ' value="Placeholder Text"' : ''}${disabled ? ' disabled' : ''} oninput="sbxInput(this)" />`;
   return `
     <div style="display:flex;align-items:center;justify-content:center;padding:16px;">
       <div class="${cls}" style="max-width:420px;">
@@ -2811,7 +2811,7 @@ function sbxCode(state, props = {}) {
     <!-- search icon (Lucide search) -->
   </div>
   <div class="bt-input__field">
-    <input class="bt-input__text" type="text" placeholder="Placeholder Text"${filled ? ' value="Placeholder Text"' : ''}${disabled ? ' disabled' : ''} />
+    <input class="bt-input__value" type="text" placeholder="Placeholder Text"${filled ? ' value="Placeholder Text"' : ''}${disabled ? ' disabled' : ''} />
   </div>${clearBlock}${filterBlock}
 </div>`;
   const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2825,10 +2825,10 @@ function sbxCss(state, props = {}) {
   const lines = [];
   const p = (k, v) => `  ${k}: ${v};`;
 
-  lines.push(`/* SearchBox (.bt-input çekirdeği) · ${state.charAt(0).toUpperCase()+state.slice(1)}${size !== 'sm' ? ` · ${size.charAt(0).toUpperCase()+size.slice(1)}` : ''} */`);
+  lines.push(`/* SearchBox (.bt-input__box çekirdeği) · ${state.charAt(0).toUpperCase()+state.slice(1)}${size !== 'sm' ? ` · ${size.charAt(0).toUpperCase()+size.slice(1)}` : ''} */`);
   lines.push('');
 
-  lines.push('.bt-input {');
+  lines.push('.bt-input__box {');
   const h = size === 'md' ? '32px' : size === 'lg' ? '36px' : '28px';
   lines.push(p('height', h));
   lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
@@ -2858,7 +2858,7 @@ function sbxCss(state, props = {}) {
   lines.push('}');
 
   lines.push('');
-  lines.push('.bt-input__text {');
+  lines.push('.bt-input__value {');
   lines.push(p('color', state === 'filled' ? 'var(--bt-text-primary-default)  /* #1a1a1a */' : 'var(--bt-text-primary-muted)  /* #a3a3a3 (placeholder) */'));
   lines.push('}');
 
@@ -2902,7 +2902,7 @@ PAGES_WEB['components/searchbox'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">SearchBox için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell (border/bg/radius/height) ${tk('.bt-input')} çekirdek class'ında tanımlıdır — SearchBox onu aynı elementte kompoze eder, kendi başına ek shell CSS'i taşımaz.</p>
+      <p class="page-desc">SearchBox için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ında tanımlıdır — SearchBox onu aynı elementte kompoze eder, kendi başına ek shell CSS'i taşımaz.</p>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Control padding</th><th>Field padding</th></tr></thead>
@@ -2943,17 +2943,17 @@ PAGES_WEB['components/searchbox'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-input')}</td><td>Çekirdek wrapper</td><td>Base Input shell'i — flex row, border+radius+bg+height+state renkleri burada (bkz. styles.css "BASE INPUT")</td></tr>
-          <tr><td>${tk('.bt-searchbox')}</td><td>Wrapper</td><td>SearchBox kimliği — aynı elementte ${tk('.bt-input')} ile birlikte kullanılır, kendi görsel CSS'i yok</td></tr>
-          <tr><td>${tk('.bt-input--sm/--md/--lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding'leri belirler</td></tr>
-          <tr><td>${tk('.bt-input--hover/--active/--disabled')}</td><td>Wrapper</td><td>State'i zorlamak için (docs amaçlı) — gerçek kullanımda :hover/:focus-within otomatik çalışır</td></tr>
+          <tr><td>${tk('.bt-input__box')}</td><td>Çekirdek wrapper</td><td>Base Input shell'i — flex row, border+radius+bg+height+state renkleri burada (bkz. styles.css "BASE INPUT")</td></tr>
+          <tr><td>${tk('.bt-searchbox')}</td><td>Wrapper</td><td>SearchBox kimliği — aynı elementte ${tk('.bt-input__box')} ile birlikte kullanılır, kendi görsel CSS'i yok</td></tr>
+          <tr><td>${tk('.bt-input__box--sm/--md/--lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding'leri belirler</td></tr>
+          <tr><td>${tk('.bt-input__box--hover/--active/--disabled')}</td><td>Wrapper</td><td>State'i zorlamak için (docs amaçlı) — gerçek kullanımda :hover/:focus-within otomatik çalışır</td></tr>
           <tr><td>${tk('.bt-input__control')}</td><td>İkon kutusu (leading)</td><td>Boyuta göre padding alır, içine her zaman ${tk('.bt-icon')} konur</td></tr>
           <tr><td>${tk('.bt-input__control--fixed')}</td><td>İkon kutusu (trailing)</td><td>Clear/Filter — boyuttan bağımsız sabit padding</td></tr>
           <tr><td>${tk('.bt-input__control--clear')} / ${tk('--filter')}</td><td>İkon kutusu (trailing)</td><td>Saf kimlik class'ı, kendi CSS'i yok — sırasıyla Figma "Input Clear Button" / "Input Advanced Filter Button" component'ine karşılık gelir</td></tr>
           <tr><td>${tk('.bt-input__control--clickable')}</td><td>İkon kutusu</td><td>cursor:pointer — Clear ve Filter butonlarında</td></tr>
           <tr><td>${tk('.bt-icon')}</td><td>İkon</td><td>Global 24×24 ikon sarmalayıcı, içindeki svg 16×16'ya zorlanır</td></tr>
           <tr><td>${tk('.bt-input__field')}</td><td>Input sarmalayıcı</td><td>flex:1, size'a göre padding — Figma "Text Content" katmanı (TextBox'taki ${tk('.bt-tbx__field')} ile aynı isimlendirme)</td></tr>
-          <tr><td>${tk('.bt-input__text')}</td><td>Input</td><td>Gerçek <code style="font-family:var(--mono)">&lt;input type="text"&gt;</code>, border/outline sıfırlanmış</td></tr>
+          <tr><td>${tk('.bt-input__value')}</td><td>Input</td><td>Gerçek <code style="font-family:var(--mono)">&lt;input type="text"&gt;</code>, border/outline sıfırlanmış</td></tr>
         </tbody>
       </table>
     `};
@@ -2992,14 +2992,14 @@ PAGES_WEB['components/searchbox'] = {
         css:     (type, p) => sbxCss(p.state, { ...p, type }),
       })}
 
-      <p class="page-desc">Arama/filtreleme için kullanılan input alanı, Base Input çekirdeğinin (${tk('.bt-input')}) üzerine kurulur. İki tip (Basic / Advanced Filtered), üç boyut (Sm / Md / Lg, varsayılan Sm) ve altı state (Default / Hover / Focused / Active / Filled / Disabled) destekler. Sol tarafta sabit arama ikonu, değer girildiğinde sağda temizleme (X) aksiyonu belirir.</p>
+      <p class="page-desc">Arama/filtreleme için kullanılan input alanı, Base Input çekirdeğinin (${tk('.bt-input__box')}) üzerine kurulur. İki tip (Basic / Advanced Filtered), üç boyut (Sm / Md / Lg, varsayılan Sm) ve altı state (Default / Hover / Focused / Active / Filled / Disabled) destekler. Sol tarafta sabit arama ikonu, değer girildiğinde sağda temizleme (X) aksiyonu belirir.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
-      <p class="page-desc">SearchBox'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input')} çekirdek class'ından gelir — SearchBox aynı elemente sadece kendi kimliğini (${tk('.bt-searchbox')}) ve ikon/kontrol içeriğini ekler. Default state ${tk('--bt-border-primary-default')} griyle başlar; hover'da ${tk('--bt-border-brand-default')} maviye döner. Focused ve Active konteyner düzeyinde birebir aynıdır (mavi border + focus ring, ${tk('.bt-input--focused')}/${tk('.bt-input--active')} aynı CSS kuralını paylaşır — TextBox'taki ${tk('.bt-tbx--focused')}/${tk('.bt-tbx--active')} ile aynı desen), ama Figma'da Text Content katmanı Active'de ayrıca değişir: metin rengi ${tk('--bt-text-primary-muted')}'tan ${tk('--bt-text-primary-default')}'a (#1a1a1a) döner ve metnin hemen bitişiğine (0 gap) ${tk('--bt-base-intense')} (#404040) renginde, tam 1×16px'lik bir Cursor dikdörtgeni eklenir — "yazılıyor" anının statik bir mockup'ı. Bu, gerçek bir CSS state'i değil (native ${tk('<input>')} focus'tayken kendi imlecini zaten ücretsiz gösterir) — sadece bu dokümantasyon önizlemesinde Figma'ya sadık kalmak için statik metin + Cursor span'ı olarak taklit edilir. Metin ${tk('--bt-text-xs-regular')} fontuyla, placeholder ${tk('--bt-text-primary-muted')} rengiyle gösterilir. Blazor/Telerik'te ${tk('TelerikTextBox')} bileşenine ${tk('.bt-sbx')} CSS sınıfları uygulanır.</p>
+      <p class="page-desc">SearchBox'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ından gelir — SearchBox aynı elemente sadece kendi kimliğini (${tk('.bt-searchbox')}) ve ikon/kontrol içeriğini ekler. Default state ${tk('--bt-border-primary-default')} griyle başlar; hover'da ${tk('--bt-border-brand-default')} maviye döner. Focused ve Active konteyner düzeyinde birebir aynıdır (mavi border + focus ring, ${tk('.bt-input__box--focused')}/${tk('.bt-input__box--active')} aynı CSS kuralını paylaşır — TextBox'ın kendi kutusu da aynı ${tk('.bt-input__box')} çekirdeğini kullandığından bu class'ları birebir paylaşır), ama Figma'da Text Content katmanı Active'de ayrıca değişir: metin rengi ${tk('--bt-text-primary-muted')}'tan ${tk('--bt-text-primary-default')}'a (#1a1a1a) döner ve metnin hemen bitişiğine (0 gap) ${tk('--bt-base-intense')} (#404040) renginde, tam 1×16px'lik bir Cursor dikdörtgeni eklenir — "yazılıyor" anının statik bir mockup'ı. Bu, gerçek bir CSS state'i değil (native ${tk('<input>')} focus'tayken kendi imlecini zaten ücretsiz gösterir) — sadece bu dokümantasyon önizlemesinde Figma'ya sadık kalmak için statik metin + Cursor span'ı olarak taklit edilir. Metin ${tk('--bt-text-xs-regular')} fontuyla, placeholder ${tk('--bt-text-primary-muted')} rengiyle gösterilir. Blazor/Telerik'te ${tk('TelerikTextBox')} bileşenine ${tk('.bt-sbx')} CSS sınıfları uygulanır.</p>
       <table class="token-table" style="margin-top:12px">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Container (${tk('.bt-input')}) · Default</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Container (${tk('.bt-input__box')}) · Default</td><td>Border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
           <tr><td>Container · Hover / Focused / Active</td><td>Border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>Container · Focused / Active</td><td>Focus ring</td><td>—</td><td>0 0 0 3px rgba(13,78,151,.25)</td></tr>
           <tr><td>Container · Disabled</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
@@ -3034,7 +3034,7 @@ PAGES_WEB['components/searchbox'] = {
       </table>
 
       <h2 id="Types">Types</h2>
-      <p class="page-desc">SearchBox iki tip destekler — ikisi de aynı ${tk('.bt-input')} çekirdeğini ve boyutları kullanır, yalnızca sağdaki trailing kontrol farklıdır. ${tk('Basic')}: yalnızca sol arama ikonu, değer girildiğinde sağda Clear (X) belirir. ${tk('Advanced Filtered')}: Basic'in üstüne, state'ten bağımsız her zaman görünen bir Filter (sliders-horizontal) butonu eklenir; Filled state'te Clear ve Filter yan yana (Clear önce) görünür. Aşağıda her tip kendi bölümünde tüm state'leriyle ele alınır.</p>
+      <p class="page-desc">SearchBox iki tip destekler — ikisi de aynı ${tk('.bt-input__box')} çekirdeğini ve boyutları kullanır, yalnızca sağdaki trailing kontrol farklıdır. ${tk('Basic')}: yalnızca sol arama ikonu, değer girildiğinde sağda Clear (X) belirir. ${tk('Advanced Filtered')}: Basic'in üstüne, state'ten bağımsız her zaman görünen bir Filter (sliders-horizontal) butonu eklenir; Filled state'te Clear ve Filter yan yana (Clear önce) görünür. Aşağıda her tip kendi bölümünde tüm state'leriyle ele alınır.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Type</th><th>Trailing kontrol</th><th>Preview (Default / Filled)</th></tr></thead>
         <tbody>
@@ -4036,11 +4036,11 @@ const TBX_STATE_VARIANTS = [
 const TBX_SIZE_OPTS  = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md (Default)' }, { key: 'lg', label: 'Lg' }];
 
 function _tbxCls(state, size) {
-  const parts = ['bt-tbx', `bt-tbx--${size}`];
+  const parts = ['bt-input', `bt-input--${size}`];
   if (state === 'error-focused') {
-    parts.push('bt-tbx--error', 'bt-tbx--error-focused');
+    parts.push('bt-input--error', 'bt-input--error-focused');
   } else if (state !== 'default' && state !== 'filled') {
-    parts.push(`bt-tbx--${state}`);
+    parts.push(`bt-input--${state}`);
   }
   return parts.join(' ');
 }
@@ -4058,10 +4058,10 @@ function _tbxInputInner(state) {
 
 function tbxPreview(state, props = {}) {
   const { size = 'sm', label = 'on', required = 'on', helper = 'on' } = props;
-  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml  = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
+  const metaHtml  = (label === 'on' || required === 'on') ? `<div class="bt-input__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint">Helper Text</span>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
@@ -4081,12 +4081,12 @@ function tbxCode(state, props = {}) {
   const isReadOnly = state === 'readonly';
 
   const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-input__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-info icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint">Helper Text</span>` : '';
   const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="bt-tbx__input">
@@ -4138,8 +4138,8 @@ function tbxCss(state, props = {}) {
 
   if (isError) {
     lines.push('');
-    lines.push('.bt-tbx__label,');
-    lines.push('.bt-tbx__required {');
+    lines.push('.bt-input__label,');
+    lines.push('.bt-input__required {');
     lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
     lines.push('}');
   }
@@ -4149,7 +4149,7 @@ function tbxCss(state, props = {}) {
 }
 
 // ── TextBox (Base Input) ─────────────────────────────────────────
-// SearchBox'ın .bt-input çekirdeğinin üzerine kurulu — sadece TextBox'ın
+// SearchBox'ın .bt-input__box çekirdeğinin üzerine kurulu — sadece TextBox'ın
 // KENDİ sayfası bunu kullanır. _tbxCls/_tbxInputInner/tbxCss (yukarıda)
 // Select LookUp/Dropdown/MultiSelect/Date Picker/Textarea/Data Table
 // Inline-Editing/Accordion/Dialog tarafından reuse edildiği için
@@ -4161,11 +4161,11 @@ const tbxBaseIconValidation = `<svg viewBox="0 0 24 24" fill="none" stroke="curr
 const TBX_BASE_SIZE_OPTS = [{ key: 'sm', label: 'Sm (Default)' }, { key: 'md', label: 'Md' }, { key: 'lg', label: 'Lg' }];
 
 function _tbxBaseCls(state, size) {
-  const parts = ['bt-input', 'bt-tbx__box', `bt-input--${size}`];
+  const parts = ['bt-input__box', `bt-input__box--${size}`];
   if (state === 'error-focused') {
-    parts.push('bt-input--error', 'bt-input--error-focused');
+    parts.push('bt-input__box--error', 'bt-input__box--error-focused');
   } else if (state !== 'default' && state !== 'filled') {
-    parts.push(`bt-input--${state}`);
+    parts.push(`bt-input__box--${state}`);
   }
   return parts.join(' ');
 }
@@ -4177,9 +4177,9 @@ function _tbxBaseClearBtnHtml() {
   return `<div class="bt-input__control bt-input__control--fixed bt-input__control--clear bt-input__control--clickable" onclick="tbxBaseClear(this)"><span class="bt-icon">${sbxIconClear}</span></div>`;
 }
 function tbxBaseInput(el) {
-  const box = el.closest('.bt-input');
+  const box = el.closest('.bt-input__box');
   const hasValue = el.value.length > 0;
-  box.classList.toggle('bt-input--filled', hasValue);
+  box.classList.toggle('bt-input__box--filled', hasValue);
   let clearBtn = box.querySelector('.bt-input__control--clear');
   if (hasValue && !clearBtn) {
     const wrap = document.createElement('div');
@@ -4190,10 +4190,10 @@ function tbxBaseInput(el) {
   }
 }
 function tbxBaseClear(el) {
-  const box = el.closest('.bt-input');
-  const input = box.querySelector('.bt-input__text');
+  const box = el.closest('.bt-input__box');
+  const input = box.querySelector('.bt-input__value');
   input.value = '';
-  box.classList.remove('bt-input--filled');
+  box.classList.remove('bt-input__box--filled');
   el.remove();
   input.focus();
 }
@@ -4210,8 +4210,8 @@ function _tbxBaseInner(state) {
   // Active: SearchBox'taki aynı statik cursor mockup'ı (bkz. sbxPreview) — gerçek
   // bir CSS state değil, sadece Figma'nın "yazılıyor" demosunu yansıtır.
   const fieldHtml = isActive
-    ? `<span class="bt-input__text" style="display:inline-flex;flex:0 1 auto;width:auto;white-space:nowrap;">Placeholder Text<span style="display:inline-block;width:1px;height:16px;background:var(--bt-base-intense,#404040);flex-shrink:0;"></span></span>`
-    : `<input class="bt-input__text" type="text" placeholder="Placeholder Text"${inputAttrs} oninput="tbxBaseInput(this)" />`;
+    ? `<span class="bt-input__value" style="display:inline-flex;flex:0 1 auto;width:auto;white-space:nowrap;">Placeholder Text<span style="display:inline-block;width:1px;height:16px;background:var(--bt-base-intense,#404040);flex-shrink:0;"></span></span>`
+    : `<input class="bt-input__value" type="text" placeholder="Placeholder Text"${inputAttrs} oninput="tbxBaseInput(this)" />`;
   return `<div class="bt-input__field">${fieldHtml}</div>${validationHtml}${clearHtml}`;
 }
 
@@ -4228,13 +4228,13 @@ function _tbxEsc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function tbxBasePreview(state, props = {}) {
   const { size = 'sm', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
   const isError   = state === 'error' || state === 'error-focused';
-  const metaHtml  = label === 'on' ? `<div class="bt-tbx__meta"><span class="bt-tbx__label">${_tbxEsc(labelValue)}</span></div>` : '';
-  const hintHtml  = hint  === 'on' ? `<span class="bt-tbx__helper">${_tbxEsc(hintValue)}</span>` : '';
-  const errorHtml = error === 'on' ? `<span class="bt-tbx__helper bt-tbx__helper--error">${_tbxEsc(errorValue)}</span>` : '';
+  const metaHtml  = label === 'on' ? `<div class="bt-input__meta"><span class="bt-input__label">${_tbxEsc(labelValue)}</span></div>` : '';
+  const hintHtml  = hint  === 'on' ? `<span class="bt-input__hint">${_tbxEsc(hintValue)}</span>` : '';
+  const errorHtml = error === 'on' ? `<span class="bt-input__hint bt-input__hint--error">${_tbxEsc(errorValue)}</span>` : '';
   // .bt-textbox kimlik class'ı — kullanıcı isteğiyle eklendi (2026-09-17):
-  // .bt-tbx paylaşılan Label/Hint/Error sarmalayıcısı tek başına hangi
+  // .bt-input paylaşılan Label/Hint/Error sarmalayıcısı tek başına hangi
   // component olduğunu söylemiyordu (Dropdown'la birebir aynı görünüyordu).
-  const outerCls  = `bt-tbx bt-textbox bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  const outerCls  = `bt-input bt-textbox bt-input--${size}${isError ? ' bt-input--error' : ''}`;
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${outerCls}">
@@ -4251,19 +4251,19 @@ function tbxBaseCode(state, props = {}) {
   const isFilled   = state === 'filled';
   const isDisabled = state === 'disabled';
   const isReadOnly = state === 'readonly';
-  const outerCls   = `bt-tbx bt-textbox bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  const outerCls   = `bt-input bt-textbox bt-input--${size}${isError ? ' bt-input--error' : ''}`;
   const boxCls     = _tbxBaseCls(state, size);
 
-  const metaBlock  = label === 'on' ? `<div class="bt-tbx__meta">\n  <span class="bt-tbx__label">${labelValue}</span>\n</div>\n` : '';
+  const metaBlock  = label === 'on' ? `<div class="bt-input__meta">\n  <span class="bt-input__label">${labelValue}</span>\n</div>\n` : '';
   const valBlock   = isError  ? `\n  <div class="bt-input__control bt-input__control--validation">\n    <!-- Lucide circle-alert -->\n  </div>` : '';
   const clearBlock = isFilled ? `\n  <div class="bt-input__control bt-input__control--fixed bt-input__control--clear bt-input__control--clickable">\n    <!-- Input Clear Button — Lucide x -->\n  </div>` : '';
-  const hintBlock  = hint  === 'on' ? `\n<span class="bt-tbx__helper">${hintValue}</span>` : '';
-  const errorBlock = error === 'on' ? `\n<span class="bt-tbx__helper bt-tbx__helper--error">${errorValue}</span>` : '';
+  const hintBlock  = hint  === 'on' ? `\n<span class="bt-input__hint">${hintValue}</span>` : '';
+  const errorBlock = error === 'on' ? `\n<span class="bt-input__hint bt-input__hint--error">${errorValue}</span>` : '';
   const inputAttrs = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="${boxCls}">
   <div class="bt-input__field">
-    <input class="bt-input__text" type="text" placeholder="Placeholder Text"${inputAttrs} />
+    <input class="bt-input__value" type="text" placeholder="Placeholder Text"${inputAttrs} />
   </div>${valBlock}${clearBlock}
 </div>${hintBlock}${errorBlock}`;
 
@@ -4278,9 +4278,9 @@ function tbxBaseCss(state, props = {}) {
   const isFocused = state === 'focused' || state === 'active' || state === 'error-focused';
   const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
 
-  lines.push(`/* TextBox (.bt-input çekirdeği) · ${label}${size !== 'sm' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push(`/* TextBox (.bt-input__box çekirdeği) · ${label}${size !== 'sm' ? ' · ' + size.toUpperCase() : ''} */`);
   lines.push('');
-  lines.push('.bt-input {');
+  lines.push('.bt-input__box {');
   lines.push(p('height', size === 'lg' ? '36px' : size === 'md' ? '32px' : '28px'));
   lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
   lines.push(p('background',
@@ -4299,7 +4299,7 @@ function tbxBaseCss(state, props = {}) {
   lines.push('}');
 
   lines.push('');
-  lines.push(`.bt-tbx__box.bt-input--${size} .bt-input__field {`);
+  lines.push(`.bt-textbox .bt-input__box--${size} .bt-input__field {`);
   lines.push(p('padding', size === 'lg'
     ? 'var(--bt-space-lg) var(--bt-space-xs) var(--bt-space-lg) var(--bt-space-md)  /* 10px 4px 10px 8px */'
     : size === 'md'
@@ -4309,7 +4309,7 @@ function tbxBaseCss(state, props = {}) {
 
   if (isError) {
     lines.push('');
-    lines.push('.bt-tbx__label {');
+    lines.push('.bt-input__label {');
     lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
     lines.push('}');
   }
@@ -4353,7 +4353,7 @@ PAGES_WEB['components/textbox'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">TextBox için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell (border/bg/radius/height) ${tk('.bt-input')} çekirdek class'ında tanımlıdır — TextBox onu ${tk('.bt-tbx__box')} kimlik class'ıyla aynı elementte kompoze eder (bkz. SearchBox).</p>
+      <p class="page-desc">TextBox için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ında tanımlıdır — TextBox onu aynı elementte taşır; field padding override'ı dış sarmalayıcıdaki ${tk('.bt-textbox')} kimlik class'ı üzerinden ata seçiciyle uygulanır (bkz. SearchBox).</p>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Field padding (dikey)</th><th>Field padding (sol / sağ)</th></tr></thead>
@@ -4404,21 +4404,21 @@ PAGES_WEB['components/textbox'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-tbx')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı dikey diziyor (paylaşılan, Select LookUp/Dropdown/MultiSelect/Date Picker/Textarea ile ortak)</td></tr>
-          <tr><td>${tk('.bt-textbox')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-tbx')} ile AYNI elementte — "bu bir TextBox" kimliği (kullanıcı isteğiyle eklendi, 2026-09-17: paylaşılan ${tk('.bt-tbx')} tek başına Dropdown'dan ayırt edilemiyordu)</td></tr>
-          <tr><td>${tk('.bt-input')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i — border/radius/bg/height/state renkleri burada (bkz. styles.css "BASE INPUT")</td></tr>
-          <tr><td>${tk('.bt-tbx__box')}</td><td>Input kutusu</td><td>TextBox kimliği — aynı elementte ${tk('.bt-input')} ile birlikte kullanılır; field padding override'ı burada scoped</td></tr>
-          <tr><td>${tk('.bt-input--sm/md/lg')}</td><td>Input kutusu</td><td>Yükseklik belirler</td></tr>
-          <tr><td>${tk('.bt-input--readonly')} / ${tk('--error')} / ${tk('--error-focused')}</td><td>Input kutusu</td><td>TextBox ile eklenen genel .bt-input state'leri — ileride başka component'ler de kullanabilir</td></tr>
-          <tr><td>${tk('.bt-tbx__meta')}</td><td>Label satırı</td><td>flex row, gap 4px</td></tr>
-          <tr><td>${tk('.bt-tbx__label')}</td><td>Label metni</td><td>color: --bt-text-primary-default (error: --bt-text-error-default, .bt-tbx--error üzerinden — Figma'nın showLabelText/labelValue property'sine karşılık gelir)</td></tr>
-          <tr><td>${tk('.bt-input__field')}</td><td>Metin bölgesi</td><td>flex:1 — padding ${tk('.bt-tbx__box')} scope'unda override edilir (sol sabit 8px)</td></tr>
-          <tr><td>${tk('.bt-input__text')}</td><td>&lt;input&gt;</td><td>Gerçek HTML input elemanı</td></tr>
+          <tr><td>${tk('.bt-input')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı dikey diziyor (paylaşılan, Select LookUp/Dropdown/MultiSelect/Date Picker/Textarea ile ortak)</td></tr>
+          <tr><td>${tk('.bt-textbox')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-input')} ile AYNI elementte — "bu bir TextBox" kimliği (kullanıcı isteğiyle eklendi, 2026-09-17: paylaşılan ${tk('.bt-input')} tek başına Dropdown'dan ayırt edilemiyordu)</td></tr>
+          <tr><td>${tk('.bt-input__box')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i — border/radius/bg/height/state renkleri burada (bkz. styles.css "BASE INPUT")</td></tr>
+          <tr><td>${tk('.bt-textbox .bt-input__box--{size} .bt-input__field')}</td><td>Ata seçici</td><td>Field padding override'ı dış sarmalayıcıdaki ${tk('.bt-textbox')} kimliği üzerinden scoped (ayrı bir kutu-kimlik class'ı yok)</td></tr>
+          <tr><td>${tk('.bt-input__box--sm/md/lg')}</td><td>Input kutusu</td><td>Yükseklik belirler</td></tr>
+          <tr><td>${tk('.bt-input__box--readonly')} / ${tk('--error')} / ${tk('--error-focused')}</td><td>Input kutusu</td><td>TextBox ile eklenen genel .bt-input__box state'leri — ileride başka component'ler de kullanabilir</td></tr>
+          <tr><td>${tk('.bt-input__meta')}</td><td>Label satırı</td><td>flex row, gap 4px</td></tr>
+          <tr><td>${tk('.bt-input__label')}</td><td>Label metni</td><td>color: --bt-text-primary-default (error: --bt-text-error-default, .bt-input--error üzerinden — Figma'nın showLabelText/labelValue property'sine karşılık gelir)</td></tr>
+          <tr><td>${tk('.bt-input__field')}</td><td>Metin bölgesi</td><td>flex:1 — padding ${tk('.bt-textbox')} ata seçicisi scope'unda override edilir (sol sabit 8px)</td></tr>
+          <tr><td>${tk('.bt-input__value')}</td><td>&lt;input&gt;</td><td>Gerçek HTML input elemanı</td></tr>
           <tr><td>${tk('.bt-input__control--validation')}</td><td>İkon sarmalayıcı</td><td>Error/Error Focused'da circle-alert ikonu — padding yok, sabit 24×24</td></tr>
           <tr><td>${tk('.bt-input__control--fixed.bt-input__control--clear')}</td><td>İkon sarmalayıcı</td><td>Filled'da × ikonu — SearchBox'la AYNI class'lar (Figma'da da aynı "Input Clear Button" component'i reuse ediliyor)</td></tr>
           <tr><td>${tk('.bt-icon')}</td><td>İkon</td><td>Global 24×24 ikon sarmalayıcı</td></tr>
-          <tr><td>${tk('.bt-tbx__helper')}</td><td>Hint metni</td><td>color: --bt-text-primary-emphasis — Figma'nın showHintText/hintValue property'sine karşılık gelir, State'ten BAĞIMSIZ</td></tr>
-          <tr><td>${tk('.bt-tbx__helper--error')}</td><td>Error metni</td><td>color: --bt-text-error-default — Figma'nın showErrorText/errorValue property'sine karşılık gelir, Hint ile birlikte de gösterilebilir (Figma'da ikisi de bağımsız boolean)</td></tr>
+          <tr><td>${tk('.bt-input__hint')}</td><td>Hint metni</td><td>color: --bt-text-primary-emphasis — Figma'nın showHintText/hintValue property'sine karşılık gelir, State'ten BAĞIMSIZ</td></tr>
+          <tr><td>${tk('.bt-input__hint--error')}</td><td>Error metni</td><td>color: --bt-text-error-default — Figma'nın showErrorText/errorValue property'sine karşılık gelir, Hint ile birlikte de gösterilebilir (Figma'da ikisi de bağımsız boolean)</td></tr>
         </tbody>
       </table>
     `};
@@ -4488,10 +4488,10 @@ PAGES_WEB['components/textbox'] = {
             <td><span class="token-name">${sz.label}</span></td>
             <td style="padding:6px 0;">
               <div style="max-width:280px;">
-                <div class="bt-tbx bt-tbx--${sz.key}">
-                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                <div class="bt-input bt-input--${sz.key}">
+                  <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
                   <div class="${_tbxBaseCls('default', sz.key)}">${_tbxBaseInner('default')}</div>
-                  <span class="bt-tbx__helper">Hint Text</span>
+                  <span class="bt-input__hint">Hint Text</span>
                 </div>
               </div>
             </td>
@@ -4510,10 +4510,10 @@ PAGES_WEB['components/textbox'] = {
             <td><span class="token-name">${s.label}</span></td>
             <td style="padding:6px 0;">
               <div style="max-width:280px;">
-                <div class="bt-tbx bt-tbx--sm${isError ? ' bt-tbx--error' : ''}">
-                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                <div class="bt-input bt-input--sm${isError ? ' bt-input--error' : ''}">
+                  <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
                   <div class="${_tbxBaseCls(s.key, 'sm')}">${_tbxBaseInner(s.key)}</div>
-                  <span class="bt-tbx__helper${isError ? ' bt-tbx__helper--error' : ''}">${isError ? 'Error Text' : 'Hint Text'}</span>
+                  <span class="bt-input__hint${isError ? ' bt-input__hint--error' : ''}">${isError ? 'Error Text' : 'Hint Text'}</span>
                 </div>
               </div>
             </td>
@@ -4525,7 +4525,7 @@ PAGES_WEB['components/textbox'] = {
 };
 
 // ── Select LookUp ───────────────────────────────────────────────
-// Reuses bt-tbx CSS entirely — adds a left control (search/select icon).
+// Reuses bt-input CSS entirely — adds a left control (search/select icon).
 const _slkIconPlus = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
 
 function _slkInputInner(state) {
@@ -4545,10 +4545,10 @@ function _slkInputInner(state) {
 
 function slkPreview(state, props = {}) {
   const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
-  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-input__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint">Helper Text</span>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
@@ -4568,12 +4568,12 @@ function slkCode(state, props = {}) {
   const isReadOnly = state === 'readonly';
 
   const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-input__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError        ? `\n  <div class="bt-tbx__control">\n    <!-- validation icon 15×15 -->\n  </div>` : '';
   const clearBlock  = state === 'filled' ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint">Helper Text</span>` : '';
   const inputAttrs  = (isFilled ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
 
   const code = `${metaBlock}<div class="bt-tbx__input">
@@ -4616,7 +4616,7 @@ PAGES_WEB['components/select-lookup'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Select LookUp, <code style="font-family:var(--mono)">bt-tbx</code> CSS sınıflarını tamamen miras alır — ek token yoktur.</p>
+      <p class="page-desc">Select LookUp, <code style="font-family:var(--mono)">bt-input</code> CSS sınıflarını tamamen miras alır — ek token yoktur.</p>
       <h2>State Tokens</h2>
       <table class="token-table">
         <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
@@ -4637,8 +4637,8 @@ PAGES_WEB['components/select-lookup'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-tbx')}</td><td>Wrapper</td><td>TextBox ile aynı CSS — state modifier'ları buraya</td></tr>
-          <tr><td>${tk('.bt-tbx--sm/md/lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding</td></tr>
+          <tr><td>${tk('.bt-input')}</td><td>Wrapper</td><td>TextBox ile aynı CSS — state modifier'ları buraya</td></tr>
+          <tr><td>${tk('.bt-input--sm/md/lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding</td></tr>
           <tr><td>${tk('.bt-tbx__control')}</td><td>Sol ikon sarmalayıcı</td><td>Field'dan önce konumlanır — search/select ikonu</td></tr>
           <tr><td>${tk('.bt-tbx__icon')}</td><td>24×24 ikon alanı</td><td>Sol ikon ve sağ validation ikonu için ortak</td></tr>
           <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>Sol ikon solda olduğu için sol padding azalabilir</td></tr>
@@ -4679,7 +4679,7 @@ PAGES_WEB['components/select-lookup'] = {
         css:     (state, p) => tbxCss(state, p),
       })}
 
-      <p class="page-desc">Sol arama ikonu ve seçim alanından oluşan lookup bileşeni. <code style="font-family:var(--mono)">bt-tbx</code> CSS'ini miras alır; 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
+      <p class="page-desc">Sol arama ikonu ve seçim alanından oluşan lookup bileşeni. <code style="font-family:var(--mono)">bt-input</code> CSS'ini miras alır; 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
       <table class="token-table" style="margin-bottom:40px;">
@@ -4706,9 +4706,9 @@ PAGES_WEB['components/select-lookup'] = {
             <td><span class="token-name">${s.label}</span></td>
             <td style="padding:6px 0;">
               <div class="${_tbxCls(s.key, 'md')}">
-                <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span><span class="bt-tbx__required">Required Field</span></div>
+                <div class="bt-input__meta"><span class="bt-input__label">Label Text</span><span class="bt-input__required">Required Field</span></div>
                 <div class="bt-tbx__input">${_slkInputInner(s.key)}</div>
-                <span class="bt-tbx__helper">Helper Text</span>
+                <span class="bt-input__hint">Helper Text</span>
               </div>
             </td>
           </tr>`).join('')}
@@ -4723,13 +4723,13 @@ PAGES_WEB['components/select-lookup'] = {
           <tr>
             <td><span class="token-name">${sz.label}</span></td>
             <td style="padding:6px 0;">
-              <div class="bt-tbx bt-tbx--${sz.key}">
-                <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+              <div class="bt-input bt-input--${sz.key}">
+                <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
                 <div class="bt-tbx__input">
                   <div class="bt-tbx__control bt-tbx__control--left"><span class="bt-tbx__icon">${_slkIconPlus}</span></div>
                   <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text" /></div>
                 </div>
-                <span class="bt-tbx__helper">Helper Text</span>
+                <span class="bt-input__hint">Helper Text</span>
               </div>
             </td>
           </tr>`).join('')}
@@ -4790,8 +4790,8 @@ const _ddOptionsHtml = `
 
 // Global toggle for interactive default-state dropdown in playground
 window.btDdToggle = function(inputEl) {
-  const root   = inputEl.closest('.bt-tbx');
-  const isOpen = root.classList.toggle('bt-tbx--active');
+  const root   = inputEl.closest('.bt-input');
+  const isOpen = root.classList.toggle('bt-input--active');
   const opts   = root.querySelector('.bt-dropdown-list');
   if (opts) opts.style.display = isOpen ? '' : 'none';
   const icon = inputEl.querySelector('.bt-tbx__control--right .bt-tbx__icon');
@@ -4806,11 +4806,11 @@ function ddPreview(state, props = {}) {
   const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const isActive  = state === 'active';
   const isDefault = state === 'default';
-  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
-  // Options panel: always inside bt-tbx__anchor (positioned absolute below input). Hidden initially for default (interactive), visible for active.
+  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-input__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint">Helper Text</span>` : '';
+  // Options panel: always inside bt-input__anchor (positioned absolute below input). Hidden initially for default (interactive), visible for active.
   const optionsHtml = (isActive || isDefault) ? `<div class="bt-dropdown-list"${isDefault ? ' style="display:none;"' : ''}>${_ddOptionsHtml}</div>` : '';
   // Interactive click only for default state
   const inputAttrs  = isDefault ? ` onclick="btDdToggle(this)" style="cursor:pointer;"` : '';
@@ -4818,7 +4818,7 @@ function ddPreview(state, props = {}) {
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_tbxCls(state, size)}">
         ${metaHtml}
-        <div class="bt-tbx__anchor">
+        <div class="bt-input__anchor">
           <div class="bt-tbx__input"${inputAttrs}>${_ddInputInner(state)}</div>
           ${optionsHtml}
         </div>
@@ -4834,10 +4834,10 @@ function ddCode(state, props = {}) {
   const isFilled = state === 'filled';
   const isActive = state === 'active';
   const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-input__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint">Helper Text</span>` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
   const optionsBlock = isActive ? `\n<div class="bt-dropdown-list">\n  <div class="bt-dropdown-list-item bt-dropdown-list-item--selected">\n    <span class="bt-dropdown-list-item__text">Option 1</span>\n  </div>\n  <div class="bt-dropdown-list-item">\n    <span class="bt-dropdown-list-item__text">Option 2</span>\n  </div>\n  <div class="bt-dropdown-list-item">\n    <span class="bt-dropdown-list-item__text">Option 3</span>\n  </div>\n</div>` : '';
@@ -4854,7 +4854,7 @@ function ddCode(state, props = {}) {
 }
 
 // ── Dropdown (Base Input) ────────────────────────────────────────
-// SearchBox/TextBox'ın .bt-input çekirdeğinin üzerine kurulu — sadece
+// SearchBox/TextBox'ın .bt-input__box çekirdeğinin üzerine kurulu — sadece
 // Dropdown'ın KENDİ sayfası bunu kullanır. _ddInputInner/_ddIconChevron*/
 // btDdToggle/_ddOptionsHtml/_tbxCls (yukarıda) Dialog örneği ve Data Table
 // Grid inline dropdown hücresi tarafından reuse edildiği için DOKUNULMADI.
@@ -4862,11 +4862,11 @@ const ddBaseIconChevronDown = `<svg viewBox="0 0 24 24" fill="none" stroke="curr
 const ddBaseIconChevronUp   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
 
 function _ddBaseCls(state, size) {
-  const parts = ['bt-input', 'bt-dropdown__box', `bt-input--${size}`];
+  const parts = ['bt-input__box', `bt-input__box--${size}`];
   if (state === 'error-focused') {
-    parts.push('bt-input--error', 'bt-input--error-focused');
+    parts.push('bt-input__box--error', 'bt-input__box--error-focused');
   } else if (state !== 'default' && state !== 'filled') {
-    parts.push(`bt-input--${state}`);
+    parts.push(`bt-input__box--${state}`);
   }
   return parts.join(' ');
 }
@@ -4885,17 +4885,17 @@ function _ddBaseInner(state, opts = {}) {
   const clearHtml       = isFilled ? `<div class="bt-input__control bt-input__control--fixed bt-input__control--clear bt-input__control--clickable" onclick="ddBaseClear(this)"><span class="bt-icon">${sbxIconClear}</span></div>` : '';
   const chevronIcon = opts.open ? ddBaseIconChevronUp : ddBaseIconChevronDown;
   return `
-        <div class="bt-input__field"><span class="bt-input__text" style="color:${textColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</span>${cursorHtml}</div>${validationHtml}${clearHtml}
+        <div class="bt-input__field"><span class="bt-input__value" style="color:${textColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</span>${cursorHtml}</div>${validationHtml}${clearHtml}
         <div class="bt-input__control bt-input__control--button"><span class="bt-icon">${chevronIcon}</span></div>`;
 }
 
 // Default state'in canlı tıkla-aç/kapa davranışı — btDdToggle'ın YENİ Base
 // Input mimarisine uyarlanmış kopyası (eskisi diğer reuse noktaları için
-// dokunulmadan kalıyor). .bt-input--active zaten .bt-input çekirdeğinde
+// dokunulmadan kalıyor). .bt-input__box--active zaten .bt-input__box çekirdeğinde
 // gerçek border+ring kuralına sahip — ayrı bir "açık" class'ı icat etmiyoruz.
 window.ddBaseToggle = function(boxEl) {
-  const anchor = boxEl.closest('.bt-tbx__anchor');
-  const isOpen = boxEl.classList.toggle('bt-input--active');
+  const anchor = boxEl.closest('.bt-input__anchor');
+  const isOpen = boxEl.classList.toggle('bt-input__box--active');
   const opts = anchor ? anchor.querySelector('.bt-dropdown-list') : null;
   if (opts) opts.style.display = isOpen ? '' : 'none';
   const iconSpan = boxEl.querySelector('.bt-input__control:last-child .bt-icon');
@@ -4905,8 +4905,8 @@ window.ddBaseToggle = function(boxEl) {
 // değeri gerçekten temizler, kendini kaldırır. Value bir <span> olduğu için
 // "temizlemek" placeholder görünümüne (muted renk) dönmek anlamına gelir.
 function ddBaseClear(el) {
-  const box = el.closest('.bt-input');
-  const valueSpan = box.querySelector('.bt-input__text');
+  const box = el.closest('.bt-input__box');
+  const valueSpan = box.querySelector('.bt-input__value');
   if (valueSpan) {
     valueSpan.textContent = 'Placeholder Text';
     valueSpan.style.color = 'var(--bt-text-primary-muted,#a3a3a3)';
@@ -4918,13 +4918,13 @@ function ddBasePreview(state, props = {}) {
   const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
   const isError   = state === 'error' || state === 'error-focused';
   const isDefault = state === 'default';
-  const metaHtml  = label === 'on' ? `<div class="bt-tbx__meta"><span class="bt-tbx__label">${_tbxEsc(labelValue)}</span></div>` : '';
-  const hintHtml  = hint  === 'on' ? `<span class="bt-tbx__helper">${_tbxEsc(hintValue)}</span>` : '';
-  const errorHtml = error === 'on' ? `<span class="bt-tbx__helper bt-tbx__helper--error">${_tbxEsc(errorValue)}</span>` : '';
+  const metaHtml  = label === 'on' ? `<div class="bt-input__meta"><span class="bt-input__label">${_tbxEsc(labelValue)}</span></div>` : '';
+  const hintHtml  = hint  === 'on' ? `<span class="bt-input__hint">${_tbxEsc(hintValue)}</span>` : '';
+  const errorHtml = error === 'on' ? `<span class="bt-input__hint bt-input__hint--error">${_tbxEsc(errorValue)}</span>` : '';
   // .bt-dropdown kimlik class'ı — kullanıcı isteğiyle eklendi (2026-09-17):
-  // .bt-tbx paylaşılan Label/Hint/Error sarmalayıcısı tek başına TextBox'la
+  // .bt-input paylaşılan Label/Hint/Error sarmalayıcısı tek başına TextBox'la
   // birebir aynı görünüyordu, hangi component olduğunu ayırt etmiyordu.
-  const outerCls  = `bt-tbx bt-dropdown bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  const outerCls  = `bt-input bt-dropdown bt-input--${size}${isError ? ' bt-input--error' : ''}`;
   // Options paneli sadece Default'ta gerçekten tıklanabilir (kapalı başlar).
   const optionsHtml = isDefault ? `<div class="bt-dropdown-list" style="display:none;">${_ddOptionsHtml}</div>` : '';
   const boxAttrs = isDefault ? ` onclick="ddBaseToggle(this)" style="cursor:pointer;"` : '';
@@ -4932,7 +4932,7 @@ function ddBasePreview(state, props = {}) {
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${outerCls}">
         ${metaHtml}
-        <div class="bt-tbx__anchor">
+        <div class="bt-input__anchor">
           <div class="${_ddBaseCls(state, size)}"${boxAttrs}>${_ddBaseInner(state)}</div>
           ${optionsHtml}
         </div>
@@ -4946,19 +4946,19 @@ function ddBaseCode(state, props = {}) {
   const isError  = state === 'error' || state === 'error-focused';
   const isFilled = state === 'filled';
   const isActive = state === 'active';
-  const outerCls = `bt-tbx bt-dropdown bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  const outerCls = `bt-input bt-dropdown bt-input--${size}${isError ? ' bt-input--error' : ''}`;
   const boxCls   = _ddBaseCls(state, size);
 
-  const metaBlock    = label === 'on' ? `<div class="bt-tbx__meta">\n  <span class="bt-tbx__label">${labelValue}</span>\n</div>\n` : '';
+  const metaBlock    = label === 'on' ? `<div class="bt-input__meta">\n  <span class="bt-input__label">${labelValue}</span>\n</div>\n` : '';
   const valBlock     = isError  ? `\n  <div class="bt-input__control bt-input__control--validation">\n    <!-- Lucide circle-alert -->\n  </div>` : '';
   const clearBlock   = isFilled ? `\n  <div class="bt-input__control bt-input__control--fixed bt-input__control--clear bt-input__control--clickable">\n    <!-- Input Clear Button — Lucide x -->\n  </div>` : '';
   const optionsBlock = isActive ? `\n<div class="bt-dropdown-list">\n  <div class="bt-dropdown-list-item bt-dropdown-list-item--selected">\n    <span class="bt-dropdown-list-item__text">Option 1</span>\n  </div>\n  <div class="bt-dropdown-list-item">\n    <span class="bt-dropdown-list-item__text">Option 2</span>\n  </div>\n</div>` : '';
-  const hintBlock    = hint  === 'on' ? `\n<span class="bt-tbx__helper">${hintValue}</span>` : '';
-  const errorBlock   = error === 'on' ? `\n<span class="bt-tbx__helper bt-tbx__helper--error">${errorValue}</span>` : '';
+  const hintBlock    = hint  === 'on' ? `\n<span class="bt-input__hint">${hintValue}</span>` : '';
+  const errorBlock   = error === 'on' ? `\n<span class="bt-input__hint bt-input__hint--error">${errorValue}</span>` : '';
 
   const code = `${metaBlock}<div class="${boxCls}">
   <div class="bt-input__field">
-    <span class="bt-input__text">Placeholder Text</span>
+    <span class="bt-input__value">Placeholder Text</span>
   </div>${valBlock}${clearBlock}
   <div class="bt-input__control bt-input__control--button">
     <!-- Lucide ${isActive ? 'chevron-up' : 'chevron-down'} -->
@@ -4976,9 +4976,9 @@ function ddBaseCss(state, props = {}) {
   const isFocused = state === 'focused' || state === 'active' || state === 'error-focused';
   const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
 
-  lines.push(`/* Dropdown (.bt-input çekirdeği) · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push(`/* Dropdown (.bt-input__box çekirdeği) · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
   lines.push('');
-  lines.push('.bt-input {');
+  lines.push('.bt-input__box {');
   lines.push(p('height', size === 'lg' ? '36px' : size === 'sm' ? '28px' : '32px'));
   lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
   lines.push(p('background',
@@ -4997,7 +4997,7 @@ function ddBaseCss(state, props = {}) {
   lines.push('}');
 
   lines.push('');
-  lines.push(`.bt-dropdown__box.bt-input--${size} .bt-input__field {`);
+  lines.push(`.bt-dropdown .bt-input__box--${size} .bt-input__field {`);
   lines.push(p('padding', size === 'lg'
     ? 'var(--bt-space-lg) var(--bt-space-xs) var(--bt-space-lg) var(--bt-space-md)  /* 10px 4px 10px 8px */'
     : size === 'sm'
@@ -5007,7 +5007,7 @@ function ddBaseCss(state, props = {}) {
 
   if (isError) {
     lines.push('');
-    lines.push('.bt-tbx__label {');
+    lines.push('.bt-input__label {');
     lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
     lines.push('}');
   }
@@ -5050,7 +5050,7 @@ PAGES_WEB['components/dropdown'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Dropdown için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell ${tk('.bt-input')} çekirdek class'ında tanımlıdır — Dropdown onu ${tk('.bt-dropdown__box')} kimlik class'ıyla aynı elementte kompoze eder (bkz. SearchBox/TextBox).</p>
+      <p class="page-desc">Dropdown için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell ${tk('.bt-input__box')} çekirdek class'ında tanımlıdır — Dropdown onu aynı elementte taşır; field padding override'ı dış sarmalayıcıdaki ${tk('.bt-dropdown')} kimlik class'ı üzerinden ata seçiciyle uygulanır (bkz. SearchBox/TextBox).</p>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Field padding (dikey)</th><th>Chevron control padding</th></tr></thead>
@@ -5103,17 +5103,17 @@ PAGES_WEB['components/dropdown'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-tbx')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı diziyor (paylaşılan, SearchBox/TextBox/Dropdown/Date Picker hepsi kullanır)</td></tr>
-          <tr><td>${tk('.bt-dropdown')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-tbx')} ile AYNI elementte — "bu bir Dropdown" kimliği (kullanıcı isteğiyle eklendi, 2026-09-17: ${tk('.bt-tbx')} tek başına TextBox'la ayırt edilemiyordu)</td></tr>
-          <tr><td>${tk('.bt-input')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i — border/radius/bg/height/state renkleri (bkz. styles.css "BASE INPUT")</td></tr>
-          <tr><td>${tk('.bt-dropdown__box')}</td><td>Input kutusu</td><td>Dropdown kimliği — aynı elementte ${tk('.bt-input')} ile birlikte; field padding override'ı burada scoped</td></tr>
-          <tr><td>${tk('.bt-tbx__anchor')}</td><td>Konum sarmalayıcı</td><td>position:relative — ${tk('.bt-dropdown-list')} panelinin absolute konumlandığı yer (paylaşılan)</td></tr>
+          <tr><td>${tk('.bt-input')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı diziyor (paylaşılan, SearchBox/TextBox/Dropdown/Date Picker hepsi kullanır)</td></tr>
+          <tr><td>${tk('.bt-dropdown')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-input')} ile AYNI elementte — "bu bir Dropdown" kimliği (kullanıcı isteğiyle eklendi, 2026-09-17: ${tk('.bt-input')} tek başına TextBox'la ayırt edilemiyordu)</td></tr>
+          <tr><td>${tk('.bt-input__box')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i — border/radius/bg/height/state renkleri (bkz. styles.css "BASE INPUT")</td></tr>
+          <tr><td>${tk('.bt-dropdown .bt-input__box--{size} .bt-input__field')}</td><td>Ata seçici</td><td>Field padding override'ı dış sarmalayıcıdaki ${tk('.bt-dropdown')} kimliği üzerinden scoped (ayrı bir kutu-kimlik class'ı yok)</td></tr>
+          <tr><td>${tk('.bt-input__anchor')}</td><td>Konum sarmalayıcı</td><td>position:relative — ${tk('.bt-dropdown-list')} panelinin absolute konumlandığı yer (paylaşılan)</td></tr>
           <tr><td>${tk('.bt-input__field')}</td><td>Metin bölgesi</td><td>Seçili değer veya placeholder ${tk('&lt;span&gt;')}'ını içerir (Dropdown gerçek ${tk('&lt;input&gt;')} kullanmaz)</td></tr>
           <tr><td>${tk('.bt-input__control--validation')}</td><td>İkon sarmalayıcı</td><td>Error/Error Focused'da circle-alert — padding yok, sabit 24×24</td></tr>
           <tr><td>${tk('.bt-input__control--fixed.bt-input__control--clear')}</td><td>İkon sarmalayıcı</td><td>Filled'da × ikonu — SearchBox/TextBox'la AYNI class'lar</td></tr>
           <tr><td>${tk('.bt-input__control--button')}</td><td>Chevron sarmalayıcı</td><td>Content=Button (Figma "Input Button") — hover/focus/active'te ${tk('--bt-base-subtle')} arka plan dolgusu alır; Content=Icon'dan (SearchBox'ın arama ikonu gibi) farkı budur</td></tr>
-          <tr><td>${tk('.bt-tbx__helper')}</td><td>Hint metni</td><td>color: --bt-text-primary-emphasis</td></tr>
-          <tr><td>${tk('.bt-tbx__helper--error')}</td><td>Error metni</td><td>color: --bt-text-error-default — Hint ile birlikte de gösterilebilir</td></tr>
+          <tr><td>${tk('.bt-input__hint')}</td><td>Hint metni</td><td>color: --bt-text-primary-emphasis</td></tr>
+          <tr><td>${tk('.bt-input__hint--error')}</td><td>Error metni</td><td>color: --bt-text-error-default — Hint ile birlikte de gösterilebilir</td></tr>
         </tbody>
       </table>
     `};
@@ -5152,10 +5152,10 @@ PAGES_WEB['components/dropdown'] = {
         css:     (state, p) => ddBaseCss(state, p),
       })}
 
-      <p class="page-desc">Listeden tek seçim yapılan dropdown bileşeni, Base Input çekirdeğinin (${tk('.bt-input')}) üzerine kurulur. Label, Hint Text ve Error Text ile birleşik yapı — üçü de bağımsız gösterilebilir/gizlenebilir ve düzenlenebilir; 3 boyut (Sm/Md/Lg, varsayılan Md) ve 9 state sunar. Default state'te kutuya tıklayınca seçenek paneli gerçekten açılır, chevron down↔up döner.</p>
+      <p class="page-desc">Listeden tek seçim yapılan dropdown bileşeni, Base Input çekirdeğinin (${tk('.bt-input__box')}) üzerine kurulur. Label, Hint Text ve Error Text ile birleşik yapı — üçü de bağımsız gösterilebilir/gizlenebilir ve düzenlenebilir; 3 boyut (Sm/Md/Lg, varsayılan Md) ve 9 state sunar. Default state'te kutuya tıklayınca seçenek paneli gerçekten açılır, chevron down↔up döner.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
-      <p class="page-desc">Dropdown'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input')} çekirdek class'ından gelir — TextBox'la aynı, TEK fark sağda her zaman görünen chevron ${tk('.bt-input__control--button')}'ı (Figma "Input Button", hover'da arka plan dolgusu alır). Value her zaman bir ${tk('&lt;span&gt;')} — Dropdown gerçek metin girişi almıyor, seçim yapıyor.</p>
+      <p class="page-desc">Dropdown'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ından gelir — TextBox'la aynı, TEK fark sağda her zaman görünen chevron ${tk('.bt-input__control--button')}'ı (Figma "Input Button", hover'da arka plan dolgusu alır). Value her zaman bir ${tk('&lt;span&gt;')} — Dropdown gerçek metin girişi almıyor, seçim yapıyor.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5181,10 +5181,10 @@ PAGES_WEB['components/dropdown'] = {
             <td><span class="token-name">${sz.label}</span></td>
             <td style="padding:6px 0;">
               <div style="max-width:280px;">
-                <div class="bt-tbx bt-tbx--${sz.key}">
-                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                <div class="bt-input bt-input--${sz.key}">
+                  <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
                   <div class="${_ddBaseCls('default', sz.key)}">${_ddBaseInner('default')}</div>
-                  <span class="bt-tbx__helper">Hint Text</span>
+                  <span class="bt-input__hint">Hint Text</span>
                 </div>
               </div>
             </td>
@@ -5203,10 +5203,10 @@ PAGES_WEB['components/dropdown'] = {
             <td><span class="token-name">${s.label}</span></td>
             <td style="padding:6px 0;">
               <div style="max-width:280px;">
-                <div class="bt-tbx bt-tbx--md${isError ? ' bt-tbx--error' : ''}">
-                  <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+                <div class="bt-input bt-input--md${isError ? ' bt-input--error' : ''}">
+                  <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
                   <div class="${_ddBaseCls(s.key, 'md')}">${_ddBaseInner(s.key)}</div>
-                  <span class="bt-tbx__helper${isError ? ' bt-tbx__helper--error' : ''}">${isError ? 'Error Text' : 'Hint Text'}</span>
+                  <span class="bt-input__hint${isError ? ' bt-input__hint--error' : ''}">${isError ? 'Error Text' : 'Hint Text'}</span>
                 </div>
               </div>
             </td>
@@ -5365,10 +5365,10 @@ function _mslInputInner(state) {
 
 function mslPreview(state, props = {}) {
   const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
-  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-input__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint">Helper Text</span>` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_mslCls(state, size)}">
@@ -5385,12 +5385,12 @@ function mslCode(state, props = {}) {
   const isError = state === 'error' || state === 'error-focused';
   const isFilled = state === 'filled';
   const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-input__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint">Helper Text</span>` : '';
   const code = `${metaBlock}<div class="bt-tbx__input">
   <div class="bt-tbx__control bt-tbx__control--left">
     <!-- plus icon 16×16 -->
@@ -5478,7 +5478,7 @@ PAGES_WEB['components/multi-select'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-tbx.bt-msl')}</td><td>Wrapper</td><td>TextBox state sistemi + min-height override; state/size modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-input.bt-msl')}</td><td>Wrapper</td><td>TextBox state sistemi + min-height override; state/size modifier'ları buraya eklenir</td></tr>
           <tr><td>${tk('.bt-tbx__control--left')}</td><td>Plus ikon sarmalayıcı</td><td>Sol tarafta sabit; hover/focused'ta subtle bg</td></tr>
           <tr><td>${tk('.bt-msl__content')}</td><td>Chip alanı</td><td>flex-wrap, gap --bt-space-xs; boyuta göre padding</td></tr>
           <tr><td>${tk('.bt-msl__chip')}</td><td>Tekil chip</td><td>subtle bg + border + radius-sm</td></tr>
@@ -5522,7 +5522,7 @@ PAGES_WEB['components/multi-select'] = {
         css:     (state, p) => tbxCss(state, p),
       })}
       <h2>Anatomy</h2>
-      <p class="page-desc">Multi-Select bileşeni; meta satırı, sol kontrol, chip alanı, temizleme butonu ve yardım metni olmak üzere 7 yapısal öğeden oluşur. Chip'ler ${tk('.bt-msl__content')} konteyneri içinde dizilir; ${tk('.bt-tbx__control--left')} sol aksiyonu, ${tk('.bt-tbx--filled')} state modifier'ı ise temizle butonunun görünürlüğünü yönetir. Blazor/Telerik'te ${tk('TelerikMultiSelect')} bileşeniyle uygulanır.</p>
+      <p class="page-desc">Multi-Select bileşeni; meta satırı, sol kontrol, chip alanı, temizleme butonu ve yardım metni olmak üzere 7 yapısal öğeden oluşur. Chip'ler ${tk('.bt-msl__content')} konteyneri içinde dizilir; ${tk('.bt-tbx__control--left')} sol aksiyonu, ${tk('.bt-input--filled')} state modifier'ı ise temizle butonunun görünürlüğünü yönetir. Blazor/Telerik'te ${tk('TelerikMultiSelect')} bileşeniyle uygulanır.</p>
       <ol>
         <li><strong>Meta</strong> — label + required field satırı</li>
         <li><strong>Left control</strong> — plus ikonu, yeni seçim eklemek için (${tk('.bt-tbx__control--left')})</li>
@@ -5537,23 +5537,23 @@ PAGES_WEB['components/multi-select'] = {
         <thead><tr><th>State</th><th>Class modifier</th><th>Görsel fark</th></tr></thead>
         <tbody>
           <tr><td>Default</td><td>—</td><td>Gri border, chip'ler görünür</td></tr>
-          <tr><td>Hover</td><td>${tk('.bt-tbx--hover')}</td><td>Mavi border</td></tr>
-          <tr><td>Focused</td><td>${tk('.bt-tbx--focused')}</td><td>Mavi border + focus ring</td></tr>
-          <tr><td>Active</td><td>${tk('.bt-tbx--active')}</td><td>Mavi border + focus ring (panel açık)</td></tr>
-          <tr><td>Filled</td><td>${tk('.bt-tbx--filled')}</td><td>Chip'ler + sağda × (tümünü temizle)</td></tr>
-          <tr><td>Disabled</td><td>${tk('.bt-tbx--disabled')}</td><td>Subtle bg, chip'ler %60 opacity</td></tr>
-          <tr><td>Read Only</td><td>${tk('.bt-tbx--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
-          <tr><td>Error</td><td>${tk('.bt-tbx--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
-          <tr><td>Error Focused</td><td>${tk('.bt-tbx--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
+          <tr><td>Hover</td><td>${tk('.bt-input--hover')}</td><td>Mavi border</td></tr>
+          <tr><td>Focused</td><td>${tk('.bt-input--focused')}</td><td>Mavi border + focus ring</td></tr>
+          <tr><td>Active</td><td>${tk('.bt-input--active')}</td><td>Mavi border + focus ring (panel açık)</td></tr>
+          <tr><td>Filled</td><td>${tk('.bt-input--filled')}</td><td>Chip'ler + sağda × (tümünü temizle)</td></tr>
+          <tr><td>Disabled</td><td>${tk('.bt-input--disabled')}</td><td>Subtle bg, chip'ler %60 opacity</td></tr>
+          <tr><td>Read Only</td><td>${tk('.bt-input--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
+          <tr><td>Error</td><td>${tk('.bt-input--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
+          <tr><td>Error Focused</td><td>${tk('.bt-input--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
         </tbody>
       </table>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Class</th><th>Min Height</th></tr></thead>
         <tbody>
-          <tr><td>Small</td><td>${tk('.bt-tbx--sm')}</td><td>28px</td></tr>
-          <tr><td>Medium (Default)</td><td>${tk('.bt-tbx--md')}</td><td>32px</td></tr>
-          <tr><td>Large</td><td>${tk('.bt-tbx--lg')}</td><td>36px</td></tr>
+          <tr><td>Small</td><td>${tk('.bt-input--sm')}</td><td>28px</td></tr>
+          <tr><td>Medium (Default)</td><td>${tk('.bt-input--md')}</td><td>32px</td></tr>
+          <tr><td>Large</td><td>${tk('.bt-input--lg')}</td><td>36px</td></tr>
         </tbody>
       </table>
     `};
@@ -5616,8 +5616,8 @@ function _dtpCalendarHtml() {
 
 // Global toggle for interactive default-state date picker in playground
 window.btDtpToggle = function(inputEl) {
-  const root   = inputEl.closest('.bt-tbx');
-  const isOpen = root.classList.toggle('bt-tbx--active');
+  const root   = inputEl.closest('.bt-input');
+  const isOpen = root.classList.toggle('bt-input--active');
   const cal    = root.querySelector('.bt-cal');
   if (cal) cal.style.display = isOpen ? '' : 'none';
 };
@@ -5634,17 +5634,17 @@ function _dtpInputInner(state) {
 }
 
 function _dtpCls(state, size) {
-  return _tbxCls(state, size) + ' bt-tbx--icon-left';
+  return _tbxCls(state, size) + ' bt-input--icon-left';
 }
 
 function dtpPreview(state, props = {}) {
   const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
   const isActive  = state === 'active';
   const isDefault = state === 'default';
-  const labelHtml    = label    === 'on' ? `<span class="bt-tbx__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-tbx__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
+  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
+  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-input__meta">${labelHtml}${requiredHtml}</div>` : '';
+  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint">Helper Text</span>` : '';
   // Calendar: always rendered for active/default; hidden initially for default (interactive)
   const calHtml      = (isActive || isDefault) ? _dtpCalendarHtml().replace('<div class="bt-cal">', `<div class="bt-cal"${isDefault ? ' style="display:none;"' : ''}>`) : '';
   const inputAttrs   = isDefault ? ` onclick="btDtpToggle(this)" style="cursor:pointer;"` : '';
@@ -5652,7 +5652,7 @@ function dtpPreview(state, props = {}) {
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${_dtpCls(state, size)}">
         ${metaHtml}
-        <div class="bt-tbx__anchor">
+        <div class="bt-input__anchor">
           <div class="bt-tbx__input"${inputAttrs}>${_dtpInputInner(state)}</div>
           ${calHtml}
         </div>
@@ -5669,12 +5669,12 @@ function dtpCode(state, props = {}) {
   const isDisabled = state === 'disabled';
   const isReadOnly = state === 'readonly';
   const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-tbx__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-tbx__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-tbx__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
+  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
+  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
+  const metaBlock   = metaParts.length ? `<div class="bt-input__meta">\n${metaParts.join('\n')}\n</div>\n` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
+  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint">Helper Text</span>` : '';
   const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
   const code = `${metaBlock}<div class="bt-tbx__input">
   <div class="bt-tbx__control bt-tbx__control--left">
@@ -5760,7 +5760,7 @@ PAGES_WEB['components/date-picker'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-tbx.bt-tbx--icon-left')}</td><td>Wrapper</td><td>TextBox base + sol ikon variant'ı; state modifier'ları buraya eklenir</td></tr>
+          <tr><td>${tk('.bt-input.bt-input--icon-left')}</td><td>Wrapper</td><td>TextBox base + sol ikon variant'ı; state modifier'ları buraya eklenir</td></tr>
           <tr><td>${tk('.bt-tbx__control.bt-tbx__control--left')}</td><td>Calendar ikon sarmalayıcı</td><td>Sol tarafta sabit; hover/focused'ta subtle bg (--bt-surface-primary-subtle)</td></tr>
           <tr><td>${tk('.bt-tbx__icon')}</td><td>24×24 ikon alanı</td><td>color: --bt-icon-primary-strong (disabled: --bt-icon-primary-muted)</td></tr>
           <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>flex:1; padding-left --bt-space-xs (4px) — ikon nedeniyle küçültülmüş</td></tr>
@@ -5815,23 +5815,23 @@ PAGES_WEB['components/date-picker'] = {
         <thead><tr><th>State</th><th>Class modifier</th><th>Görsel fark</th></tr></thead>
         <tbody>
           <tr><td>Default</td><td>—</td><td>Gri border</td></tr>
-          <tr><td>Hover</td><td>${tk('.bt-tbx--hover')}</td><td>Mavi border</td></tr>
-          <tr><td>Focused</td><td>${tk('.bt-tbx--focused')}</td><td>Mavi border + focus ring</td></tr>
-          <tr><td>Active</td><td>${tk('.bt-tbx--active')}</td><td>Mavi border + focus ring (takvim açık)</td></tr>
-          <tr><td>Filled</td><td>${tk('.bt-tbx--filled')}</td><td>Değer dolu + × butonu</td></tr>
-          <tr><td>Disabled</td><td>${tk('.bt-tbx--disabled')}</td><td>Subtle bg, soluk metin</td></tr>
-          <tr><td>Read Only</td><td>${tk('.bt-tbx--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
-          <tr><td>Error</td><td>${tk('.bt-tbx--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
-          <tr><td>Error Focused</td><td>${tk('.bt-tbx--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
+          <tr><td>Hover</td><td>${tk('.bt-input--hover')}</td><td>Mavi border</td></tr>
+          <tr><td>Focused</td><td>${tk('.bt-input--focused')}</td><td>Mavi border + focus ring</td></tr>
+          <tr><td>Active</td><td>${tk('.bt-input--active')}</td><td>Mavi border + focus ring (takvim açık)</td></tr>
+          <tr><td>Filled</td><td>${tk('.bt-input--filled')}</td><td>Değer dolu + × butonu</td></tr>
+          <tr><td>Disabled</td><td>${tk('.bt-input--disabled')}</td><td>Subtle bg, soluk metin</td></tr>
+          <tr><td>Read Only</td><td>${tk('.bt-input--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
+          <tr><td>Error</td><td>${tk('.bt-input--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
+          <tr><td>Error Focused</td><td>${tk('.bt-input--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
         </tbody>
       </table>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Class</th><th>Height</th></tr></thead>
         <tbody>
-          <tr><td>Small</td><td>${tk('.bt-tbx--sm')}</td><td>28px</td></tr>
-          <tr><td>Medium (Default)</td><td>${tk('.bt-tbx--md')}</td><td>32px</td></tr>
-          <tr><td>Large</td><td>${tk('.bt-tbx--lg')}</td><td>36px</td></tr>
+          <tr><td>Small</td><td>${tk('.bt-input--sm')}</td><td>28px</td></tr>
+          <tr><td>Medium (Default)</td><td>${tk('.bt-input--md')}</td><td>32px</td></tr>
+          <tr><td>Large</td><td>${tk('.bt-input--lg')}</td><td>36px</td></tr>
         </tbody>
       </table>
     `};
@@ -6394,7 +6394,7 @@ const _accContentText = 'This is the content displayed when the accordion sectio
 // TextBox bileşeninin md/readonly halini yeniden kullanarak 2x2 (2 yatay x 2 dikey) grid — Accordion içeriğinde form-elemanı örneği.
 function _accTbxCell() {
   return `<div class="${_tbxCls('readonly', 'md')}">
-        <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
+        <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
         <div class="bt-tbx__input">${_tbxInputInner('readonly')}</div>
       </div>`;
 }
@@ -8440,8 +8440,8 @@ function dialogHtml(variant, props) {
   const bodyContent = `
     <p class="bt-dialog__body-text">Description for additional information displayed below the title to clarify the purpose of the section.</p>
     <div class="${_tbxCls('default', 'sm')}">
-      <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
-      <div class="bt-tbx__anchor">
+      <div class="bt-input__meta"><span class="bt-input__label">Label Text</span></div>
+      <div class="bt-input__anchor">
         <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">${_ddInputInner('default')}</div>
         <div class="bt-dropdown-list" style="display:none;">${_ddOptionsHtml}</div>
       </div>
@@ -11185,7 +11185,7 @@ function gridLeadingHtml(kind) {
 // Trailing control (metinden sonra) — Badge/Button/Switch/Inline TextBox/
 // Inline DropDown. Badge → gerçek badgeHtml() fonksiyonu (Badge component'i
 // artık class değil fonksiyon tabanlı, bkz. Badge sayfası); TextBox/DropDown
-// → gerçek .bt-tbx yapısı, Label/Helper Text hücrede gösterilmez (Figma'da
+// → gerçek .bt-input yapısı, Label/Helper Text hücrede gösterilmez (Figma'da
 // da gizli — tablo hücresinde gereksiz).
 function gridTrailingHtml(kind, opts) {
   const o = opts || {};
@@ -11229,7 +11229,7 @@ function gridTrailingHtml(kind, opts) {
     case 'textbox':
       return `<span class="bt-grid__inline" onclick="event.stopPropagation()"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__input">${_tbxInputInner('default')}</div></div></span>`;
     case 'dropdown':
-      return `<span class="bt-grid__inline" onclick="event.stopPropagation()"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-tbx__anchor"><div class="bt-tbx__input">${_ddInputInner('default')}</div></div></div></span>`;
+      return `<span class="bt-grid__inline" onclick="event.stopPropagation()"><div class="${_tbxCls('default', 'sm')}" style="gap:0;"><div class="bt-input__anchor"><div class="bt-tbx__input">${_ddInputInner('default')}</div></div></div></span>`;
     default:
       return '';
   }
@@ -11237,20 +11237,20 @@ function gridTrailingHtml(kind, opts) {
 
 // Editable-cell input'ları — Inline Editing (satır bazlı) ve InCell Editing
 // (hücre bazlı) sayfalarının ikisi de aynı bu iki fonksiyonu kullanır, gerçek
-// .bt-tbx / .bt-dropdown-list* yapısını reuse eder (bkz. design.md §15.5). Görünüm
+// .bt-input / .bt-dropdown-list* yapısını reuse eder (bkz. design.md §15.5). Görünüm
 // (view: .bt-grid__content veya Status badge'i) DOM'dan hiç kaldırılmıyor —
 // yanına bu edit markup'ı ekleniyor, hangisinin görüneceğini SADECE CSS
 // (.bt-grid__row--editing / .bt-grid__cell--editing) belirliyor, JS sadece
 // bir class toggle'lıyor.
 function _gridEditTextboxHtml(value) {
   const v = (value == null ? '' : String(value)).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-  return `<div class="bt-tbx bt-tbx--sm" style="gap:0;width:100%;"><div class="bt-tbx__input"><div class="bt-tbx__field"><input class="bt-tbx__text" type="text" value="${v}" onkeydown="btGridCellEditKeydown(event,this)" onblur="btGridCellEditBlur(event,this)" /></div></div></div>`;
+  return `<div class="bt-input bt-input--sm" style="gap:0;width:100%;"><div class="bt-tbx__input"><div class="bt-tbx__field"><input class="bt-tbx__text" type="text" value="${v}" onkeydown="btGridCellEditKeydown(event,this)" onblur="btGridCellEditBlur(event,this)" /></div></div></div>`;
 }
 function _gridEditDropdownHtml(value) {
   const v = value == null ? '' : String(value);
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  return `<div class="bt-tbx bt-tbx--sm" style="gap:0;width:100%;">
-    <div class="bt-tbx__anchor">
+  return `<div class="bt-input bt-input--sm" style="gap:0;width:100%;">
+    <div class="bt-input__anchor">
       <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">
         <div class="bt-tbx__field"><span class="bt-tbx__text" style="color:var(--bt-text-primary-default, #1a1a1a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(v)}</span></div>
         <div class="bt-tbx__control bt-tbx__control--right"><span class="bt-tbx__icon">${_ddIconChevron}</span></div>
@@ -11276,7 +11276,7 @@ window.btGridCellEditStart = function(event, el) {
   cell.classList.add('bt-grid__cell--editing');
   const input = cell.querySelector('.bt-grid__cell-edit input.bt-tbx__text');
   if (input) { input.focus(); input.select(); return; }
-  const ddInput = cell.querySelector('.bt-grid__cell-edit .bt-tbx__anchor .bt-tbx__input');
+  const ddInput = cell.querySelector('.bt-grid__cell-edit .bt-input__anchor .bt-tbx__input');
   if (ddInput) btDdToggle(ddInput);
 };
 window.btGridCellEditKeydown = function(event, input) {
@@ -11308,7 +11308,7 @@ window.btGridStatusOptionSelect = function(event, optEl) {
   event.stopPropagation();
   const cell = optEl.closest('.bt-grid__cell');
   const label = optEl.querySelector('.bt-dropdown-list-item__text').textContent;
-  const textSpan = optEl.closest('.bt-tbx__anchor').querySelector('.bt-tbx__field .bt-tbx__text');
+  const textSpan = optEl.closest('.bt-input__anchor').querySelector('.bt-tbx__field .bt-tbx__text');
   if (textSpan) textSpan.textContent = label;
   optEl.parentElement.querySelectorAll('.bt-dropdown-list-item').forEach(o => o.classList.remove('bt-dropdown-list-item--selected'));
   optEl.classList.add('bt-dropdown-list-item--selected');
@@ -11614,9 +11614,9 @@ window.btGridFilterToggle = function(event, btn) {
   panel.className = 'bt-grid__filter-panel';
   panel.innerHTML = `
     <div class="bt-grid__filter-search">
-      <div class="bt-input bt-searchbox bt-input--md" onclick="event.stopPropagation()">
+      <div class="bt-input__box bt-searchbox bt-input__box--md" onclick="event.stopPropagation()">
         <div class="bt-input__control"><span class="bt-icon">${sbxIconSearch}</span></div>
-        <div class="bt-input__field"><input class="bt-input__text" type="text" placeholder="Ara..." oninput="btGridFilterSearch(event,this)"></div>
+        <div class="bt-input__field"><input class="bt-input__value" type="text" placeholder="Ara..." oninput="btGridFilterSearch(event,this)"></div>
       </div>
     </div>
     <div class="bt-grid__filter-list">
@@ -12872,7 +12872,7 @@ function gridActionsTableCss(_, props) {
 // Satır bazlı düzenleme — Figma'da ayrı bir component YOK, kullanıcı
 // isteğiyle sıfırdan tasarlandı (bkz. HISTORY.md): Actions kolonundaki Edit
 // butonuna tıklanınca satırın Name/Role/Status/Email hücreleri AYNI ANDA
-// view'dan edit'e geçer (gerçek .bt-tbx/.bt-dropdown-list* input'ları), Actions'taki
+// view'dan edit'e geçer (gerçek .bt-input/.bt-dropdown-list* input'ları), Actions'taki
 // buton Save/Cancel çiftine döner. ID ve Checkbox salt-okunur kalır.
 // VIEW içeriği (Avatar/Badge/Dot/vb.) diğer TÜM Data Table sayfalarıyla AYNI
 // generic content-kind mekanizmasını (GRID_TABLE_CONTENT_OPTS) kullanır —
@@ -13115,7 +13115,7 @@ function gridToolbarHtml(p) {
   const editHtml   = showEdit   ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat" disabled data-grid-row-action>${_tbToolbarIconEdit} Edit</button>` : '';
   const deleteHtml = showDelete ? `<button class="bt-btn bt-btn--sm bt-btn--secondary-flat" disabled data-grid-row-action>${_tbToolbarIconDelete} Delete</button>` : '';
   const searchHtml = showSearch ? `
-    <div class="bt-tbx bt-tbx--sm bt-tbx--default bt-grid-toolbar__search">
+    <div class="bt-input bt-input--sm bt-input--default bt-grid-toolbar__search">
       <div class="bt-tbx__input">
         <div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Search" /></div>
         <div class="bt-grid-toolbar__sep"></div>
@@ -13201,7 +13201,7 @@ PAGES_WEB['components/data-table'] = {
           <tr><td>Panel gap</td><td>Toolbar → Tablo</td><td>${tk('--bt-space-xl')}</td><td>12px</td></tr>
           <tr><td>Add</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--primary-solid')}</td></tr>
           <tr><td>Edit / Delete</td><td>Component</td><td>—</td><td>${tk('bt-btn--sm bt-btn--secondary-flat')}</td></tr>
-          <tr><td>Search</td><td>Width</td><td>—</td><td>320px · ${tk('bt-tbx--sm')}</td></tr>
+          <tr><td>Search</td><td>Width</td><td>—</td><td>320px · ${tk('bt-input--sm')}</td></tr>
           <tr><td>Search separator</td><td>Width / Color</td><td>${tk('--bt-border-primary-default')}</td><td>1px / #d4d4d4</td></tr>
         </tbody>
       </table>
@@ -13229,8 +13229,8 @@ PAGES_WEB['components/data-table'] = {
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Edit · Text Field</td><td>Component</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Edit · Status Field</td><td>Component</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Edit · Text Field</td><td>Component</td><td>—</td><td>${tk('bt-input--sm bt-input--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Component</td><td>—</td><td>${tk('bt-input--sm')} + dd anchor</td></tr>
           <tr><td>Save</td><td>Component</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
           <tr><td>Cancel / Delete</td><td>Component</td><td>—</td><td>${tk('bt-btn--secondary-flat')}</td></tr>
           <tr><td>Inline Editing anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__row--editing')} (satır seviyesi)</td></tr>
@@ -13576,8 +13576,8 @@ PAGES_WEB['components/data-table'] = {
         <tbody>
           <tr><td>Actions · Button</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')}</td></tr>
           <tr><td>Actions · More</td><td>Icon Button</td><td>—</td><td>${tk('bt-btn--base-flat bt-btn--icon')}</td></tr>
-          <tr><td>Actions · TextBox</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Actions · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Actions · TextBox</td><td>Inline Input</td><td>—</td><td>${tk('bt-input--sm bt-input--default')}</td></tr>
+          <tr><td>Actions · Dropdown</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-input--sm')} + dd anchor</td></tr>
         </tbody>
       </table>
 
@@ -13694,8 +13694,8 @@ PAGES_WEB['components/data-table'] = {
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Trigger</td><td>Primary Button</td><td>—</td><td>${tk('bt-btn--primary-solid')} (Edit)</td></tr>
-          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-input--sm bt-input--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-input--sm')} + dd anchor</td></tr>
           <tr><td>Save / Cancel</td><td>Buttons</td><td>—</td><td>${tk('bt-btn--primary-solid')} / ${tk('bt-btn--secondary-flat')}</td></tr>
           <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__row--editing')} (satır seviyesi)</td></tr>
         </tbody>
@@ -13747,8 +13747,8 @@ PAGES_WEB['components/data-table'] = {
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Trigger</td><td>Double click</td><td>—</td><td>${tk('ondblclick')} on editable cell</td></tr>
-          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-tbx--sm bt-tbx--default')}</td></tr>
-          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-tbx--sm')} + dd anchor</td></tr>
+          <tr><td>Edit · Text Field</td><td>Inline Input</td><td>—</td><td>${tk('bt-input--sm bt-input--default')}</td></tr>
+          <tr><td>Edit · Status Field</td><td>Inline Dropdown</td><td>—</td><td>${tk('bt-input--sm')} + dd anchor</td></tr>
           <tr><td>Commit / İptal</td><td>Klavye</td><td>—</td><td>Enter veya blur kaydeder, Escape iptal eder</td></tr>
           <tr><td>Görünürlük anahtarı</td><td>Class</td><td>—</td><td>${tk('.bt-grid__cell--editing')} (hücre seviyesi)</td></tr>
         </tbody>
@@ -17446,9 +17446,9 @@ PAGES_WEB['patterns/page-layouts'] = {
       <button class="bt-btn bt-btn--sm bt-btn--primary">Add Item</button>
       <button class="bt-btn bt-btn--sm bt-btn--base-outline">Edit</button>
       <button class="bt-btn bt-btn--sm bt-btn--base-outline">Delete</button>
-      <div class="bt-input bt-searchbox bt-input--sm">
+      <div class="bt-input__box bt-searchbox bt-input__box--sm">
         <div class="bt-input__control"><span class="bt-icon">${sbxIconSearch}</span></div>
-        <div class="bt-input__field"><input class="bt-input__text" type="text" placeholder="Search..." /></div>
+        <div class="bt-input__field"><input class="bt-input__value" type="text" placeholder="Search..." /></div>
       </div>`;
 
     // ── DataTable (gerçek bt-grid-container + gridTableHtml()) ────────────────

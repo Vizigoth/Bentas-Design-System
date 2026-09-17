@@ -2716,14 +2716,16 @@ Figma kaynağı: "Inputs NEW" sayfası (Bentas DS) — **Base Input** artık tü
 
 **Not — TextBox henüz migrate edilmedi:** `.bt-tbx__input` (TextBox'ın kendi shell'i) bu geçişe dahil değil, kasıtlı olarak ayrı bir oturuma bırakıldı (TextBox zaten tamamlanmış/dokümante edilmiş, regresyon riskini izole etmek için). `.bt-input` bugün yalnız SearchBox tarafından kullanılıyor.
 
-### 20.1 Mimari — `.bt-input` çekirdek + SearchBox kompozisyonu
+### 20.1 Mimari — `.bt-input__box` çekirdek + SearchBox kompozisyonu
 
-`.bt-input`, Figma'nın "Base Input" component'inin kod karşılığı: border, background, border-radius, height (sm/md/lg) ve hover/focus(active)/disabled state renklerini taşıyan bağımsız bir shell class'ı (`docs/css/styles.css`, "BASE INPUT" bloğu). SearchBox bunun üzerine **ayrı bir iç wrapper olarak değil, aynı elementte iki class'ı birlikte** kullanarak kurulur — Figma'da Basic SearchBox'ın birebir bir Base Input instance'ı olmasıyla aynı mantık:
+> **Not (2026-09-17):** Bu bölüm ilk yazıldığında çekirdek bare `.bt-input` adını taşıyordu. Paylaşılan dış sarmalayıcı (Label/Hint/Error dizilimi) da sonradan `.bt-input`'a taşınınca isim çakışmasını önlemek için çekirdek `.bt-input__box`'a yeniden adlandırıldı — bkz. §22.9 için tam gerekçe/tablo. Aşağıdaki metin GÜNCEL (final) adlarla yazılmıştır.
+
+`.bt-input__box`, Figma'nın "Base Input" component'inin kod karşılığı: border, background, border-radius, height (sm/md/lg) ve hover/focus(active)/disabled state renklerini taşıyan bağımsız bir shell class'ı (`docs/css/styles.css`, "BASE INPUT" bloğu). SearchBox bunun üzerine **ayrı bir iç wrapper olarak değil, aynı elementte iki class'ı birlikte** kullanarak kurulur — Figma'da Basic SearchBox'ın birebir bir Base Input instance'ı olmasıyla aynı mantık:
 
 ```html
-<div class="bt-input bt-searchbox bt-input--sm">
+<div class="bt-input__box bt-searchbox bt-input__box--sm">
   <div class="bt-input__control"><span class="bt-icon">...search svg...</span></div>
-  <div class="bt-input__field"><input class="bt-input__text" oninput="sbxInput(this)" /></div>
+  <div class="bt-input__field"><input class="bt-input__value" oninput="sbxInput(this)" /></div>
   <!-- Filled ise: -->
   <div class="bt-input__control bt-input__control--fixed bt-input__control--clickable" onclick="sbxClear(this)"><span class="bt-icon">...x svg...</span></div>
   <!-- Type=Advanced Filtered ise: -->
@@ -2731,15 +2733,15 @@ Figma kaynağı: "Inputs NEW" sayfası (Bentas DS) — **Base Input** artık tü
 </div>
 ```
 
-`.bt-searchbox` kendi başına HİÇBİR görsel CSS taşımıyor (border/bg/radius/height tamamen `.bt-input`'ta) — yalnızca SearchBox'a özgü bir davranış eklenirse (bugün yok) oraya gidecek bir kimlik class'ı. Leading ikon kutusu (`.bt-input__control`) boyuta göre skalalanır (28/32/36, içinde her zaman sabit 24×24 `.bt-icon`); trailing kontroller (Clear/Filter, `.bt-input__control--fixed`) Figma'da boyuttan bağımsız sabit 28×28'dir.
+`.bt-searchbox` kendi başına HİÇBİR görsel CSS taşımıyor (border/bg/radius/height tamamen `.bt-input__box`'ta) — yalnızca SearchBox'a özgü bir davranış eklenirse (bugün yok) oraya gidecek bir kimlik class'ı. SearchBox'ın kendi Label/Hint dış sarmalayıcısı yok (§22.9), bu yüzden bu component tek başına kullanıldığında `.bt-input` (paylaşılan dış sarmalayıcı) devreye girmez. Leading ikon kutusu (`.bt-input__control`) boyuta göre skalalanır (28/32/36, içinde her zaman sabit 24×24 `.bt-icon`); trailing kontroller (Clear/Filter, `.bt-input__control--fixed`) Figma'da boyuttan bağımsız sabit 28×28'dir.
 
 ### 20.2 Type ekseni — Basic / Advanced Filtered
 
-İki tip, aynı `.bt-input` çekirdeğini paylaşır, yalnızca sağdaki trailing kontrol farklıdır:
+İki tip, aynı `.bt-input__box` çekirdeğini paylaşır, yalnızca sağdaki trailing kontrol farklıdır:
 - **Basic**: yalnızca sol arama ikonu; Filled state'te sağda Clear (X) belirir.
 - **Advanced Filtered**: Basic'e ek olarak, state'ten bağımsız HER ZAMAN görünen bir Filter (`sliders-horizontal`) butonu; Filled'da Clear + Filter yan yana (Clear önce, Figma sırası).
 
-Filter butonunun tıklama davranışı Figma'da tanımlı değil (yalnızca görsel) — `sbxFilterToggle(el)` şu an sadece `.bt-input--filter-open` class'ını toggle'lıyor, gerçek bir filtre paneli entegrasyonu bu component'in kapsamı dışında.
+Filter butonunun tıklama davranışı Figma'da tanımlı değil (yalnızca görsel) — `sbxFilterToggle(el)` şu an sadece `.bt-input__box--filter-open` class'ını toggle'lıyor, gerçek bir filtre paneli entegrasyonu bu component'in kapsamı dışında.
 
 ### 20.3 Düzeltilen 2 doğrulanmış bug (eski koddan)
 
@@ -2751,7 +2753,7 @@ Ayrıca CLAUDE.md "İkon Wrapper Standardı" ihlali düzeltildi: özel `.bt-sear
 
 ### 20.4 Diğer reuse noktaları
 
-`.bt-searchbox`'ı reuse eden yerler (Standart/Hub Sidebar arama kutusu, Data Table filtre paneli arama alanı, Design Examples örneği) yeni `.bt-input bt-searchbox bt-input--{sm|md}` + `.bt-input__control`/`.bt-input__field`/`.bt-input__text`/`.bt-icon` yapısına geçirildi — görsel sonuç değişmedi, yalnızca class isimleri güncellendi.
+`.bt-searchbox`'ı reuse eden yerler (Standart/Hub Sidebar arama kutusu, Data Table filtre paneli arama alanı, Design Examples örneği) `.bt-input__box bt-searchbox bt-input__box--{sm|md}` + `.bt-input__control`/`.bt-input__field`/`.bt-input__value`/`.bt-icon` yapısına geçirildi — görsel sonuç değişmedi, yalnızca class isimleri güncellendi.
 
 ### 20.5 Docs sayfası (`components/searchbox`)
 
@@ -2798,9 +2800,15 @@ incelendi.
 
 ### 21.2 Mimari — SearchBox'la aynı desen, ama kritik bir kapsam kısıtıyla
 
-TextBox'ın "Input" kutusu, SearchBox'taki gibi `.bt-input` çekirdeğini (border/bg/radius/height/
-hover/focus/active/disabled) aynı elementte yeni bir kimlik class'ıyla (`.bt-tbx__box`) kompoze
-eder — SearchBox'ın parçalarını (`.bt-input__field`, `.bt-input__text`, `.bt-input__control`,
+> **Not (2026-09-17):** Kutu-kimlik class'ı olarak ilk yazıldığında `.bt-tbx__box` kullanılıyordu; bu
+> class daha sonra tamamen KALDIRILDI (bkz. §22.9) — field padding override'ı artık ayrı bir kutu-
+> kimlik class'ı yerine dış sarmalayıcıdaki `.bt-textbox` kimliğinden ata seçiciyle uygulanıyor.
+> Aşağıdaki metin güncel adlarla yazılmıştır.
+
+TextBox'ın "Input" kutusu, SearchBox'taki gibi `.bt-input__box` çekirdeğini (border/bg/radius/height/
+hover/focus/active/disabled) aynı elementte, **başka bir kimlik class'ı eklemeden** taşır — field
+padding override'ı dış sarmalayıcıdaki `.bt-textbox` kimliği üzerinden ata seçiciyle uygulanır (bkz.
+§21.3). SearchBox'ın parçalarını (`.bt-input__field`, `.bt-input__value`, `.bt-input__control`,
 `.bt-icon`, `.bt-input__control--fixed/--clear`) doğrudan reuse eder, yeniden yazmaz.
 
 **Kritik fark:** `.bt-tbx__input`, `_tbxCls()`, `_tbxInputInner()`, `tbxCss()`
@@ -2813,28 +2821,30 @@ yerine `_tbxBaseCls`, `_tbxBaseInner`, `tbxBasePreview`, `tbxBaseCode`, `tbxBase
 da kendi doğrulanmış değerleriyle aynı yola taşınacak, sonunda hepsi `tbxBase*`'te (veya ortak bir
 isimde) birleşip eski `_tbxCls`/`_tbxInputInner` silinecek.
 
-**`.bt-input`'a genel/paylaşılan olarak eklenenler** (SearchBox'ta yoktu, TextBox'la geldi ama
-gelecekteki her `.bt-input` tüketicisi için hazır): `.bt-input--readonly`, `.bt-input--error`,
-`.bt-input--error-focused`, `.bt-input--disabled .bt-input__text` metin rengi override'ı,
+**`.bt-input__box`'a genel/paylaşılan olarak eklenenler** (SearchBox'ta yoktu, TextBox'la geldi ama
+gelecekteki her `.bt-input__box` tüketicisi için hazır): `.bt-input__box--readonly`, `.bt-input__box--error`,
+`.bt-input__box--error-focused`, `.bt-input__box--disabled .bt-input__value` metin rengi override'ı,
 `.bt-input__control--validation` (Clear/Filter'ın `--fixed`'inden farklı, padding'siz sabit 24×24).
 Bunlar SearchBox için inert (hiç kullanılmıyor) ama zararsız.
 
-**Bilinçli, onaylı bir istisna:** `.bt-tbx__helper` (Hint/Helper metni) paylaşılan bir class —
-rengini düzeltmek (`--bt-text-primary-default` → `--bt-text-primary-emphasis`) Select LookUp/
-Dropdown/Date Picker sayfalarındaki Helper Text'i de gri yaptı (Textarea etkilenmedi — o `.bt-txa`
-adında tamamen ayrı bir class ailesi kullanıyor, `.bt-tbx` değil). Kullanıcıya soruldu, kullanıcı bu
-paylaşılan düzeltmeyi bilinçli olarak onayladı (Hint text rengi tasarım sisteminde evrensel bir
-kural olduğu için) — "diğer component'ler hiç değişmemeli" kuralının tek, açıkça onaylı istisnası.
-Yeni `.bt-tbx__helper--error` modifier'ı (kırmızı) sadece TextBox'ın yeni fonksiyonları tarafından
+**Bilinçli, onaylı bir istisna:** `.bt-input__hint` (eski adıyla `.bt-tbx__helper` — bkz. §22.9,
+Hint/Helper metni) paylaşılan bir class — rengini düzeltmek (`--bt-text-primary-default` →
+`--bt-text-primary-emphasis`) Select LookUp/Dropdown/Date Picker sayfalarındaki Helper Text'i de gri
+yaptı (Textarea etkilenmedi — o `.bt-txa` adında tamamen ayrı bir class ailesi kullanıyor, paylaşılan
+`.bt-input` dış sarmalayıcısını değil). Kullanıcıya soruldu, kullanıcı bu paylaşılan düzeltmeyi
+bilinçli olarak onayladı (Hint text rengi tasarım sisteminde evrensel bir kural olduğu için) —
+"diğer component'ler hiç değişmemeli" kuralının tek, açıkça onaylı istisnası. Yeni
+`.bt-input__hint--error` modifier'ı (kırmızı) sadece TextBox'ın yeni fonksiyonları tarafından
 kullanılıyor.
 
 ### 21.3 Field padding component-özel
 
 SearchBox'ın dikey padding skalası (sm=4/md=6/lg=8) ile TextBox'ınki (sm=6/md=8/lg=10) Figma'da
-FARKLI — `.bt-input__field`'ın padding'i düz `.bt-input--sm/md/lg` kuralıyla paylaşılamıyor.
-Çözüm: `.bt-tbx__box.bt-input--{sm|md|lg} .bt-input__field` şeklinde ata-scoped override
-(`docs/css/styles.css`, "TEXTBOX (Base Input)" bloğu) — sol her zaman sabit `--bt-space-md` (8px),
-`.bt-input__field`'ın SearchBox'taki genel kuralları değişmeden kalıyor.
+FARKLI — `.bt-input__field`'ın padding'i düz `.bt-input__box--sm/md/lg` kuralıyla paylaşılamıyor.
+Çözüm: `.bt-textbox .bt-input__box--{sm|md|lg} .bt-input__field` şeklinde, dış sarmalayıcıdaki
+`.bt-textbox` kimliğinden başlayan ata-scoped override (`docs/css/styles.css`, "TEXTBOX (Base Input)"
+bloğu) — sol her zaman sabit `--bt-space-md` (8px), `.bt-input__field`'ın SearchBox'taki genel
+kuralları değişmeden kalıyor.
 
 ### 21.4 Docs sayfası
 
@@ -2880,8 +2890,12 @@ Dropdown'ı "Inputs NEW" sayfasına TextBox'la BİREBİR AYNI 9-state yapıda ek
 
 ### 22.1 Mimari — TextBox'la neredeyse birebir aynı, TEK gerçek fark: sağdaki chevron
 
-Dropdown'ın "Input" kutusu TextBox'takiyle aynı desende `.bt-input` çekirdeğini yeni bir kimlik
-class'ıyla (`.bt-dd__box`) kompoze eder. Value alanı TextBox'ın `<input>`'ından FARKLI olarak her
+> **Not (2026-09-17):** Kutu-kimlik class'ı olarak ilk `.bt-dd__box`, sonra `.bt-dropdown__box`
+> kullanıldı; bu class daha sonra tamamen KALDIRILDI (bkz. §22.9) — field padding override'ı artık
+> dış sarmalayıcıdaki `.bt-dropdown` kimliğinden ata seçiciyle uygulanıyor.
+
+Dropdown'ın "Input" kutusu TextBox'takiyle aynı desende `.bt-input__box` çekirdeğini, **başka bir
+kimlik class'ı eklemeden** aynı elementte taşır. Value alanı TextBox'ın `<input>`'ından FARKLI olarak her
 zaman bir `<span>` — Dropdown gerçek metin girişi almıyor, seçim yapıyor. Sağda HER ZAMAN görünen
 bir chevron **Input Button** var (Input Controls component'i üzerinden) — bu, Figma'da Content=
 Button ailesine ait, gerçek bir hover arka-plan-dolgusu davranışı gösteriyor (Content=Icon
@@ -2924,7 +2938,7 @@ olarak raporlanma riski oluştu — kullanıcı bunu düzeltti, ileride tekrarla
 Eski koddaki `btDdToggle` (Default state'te kutuya tıklayınca `.bt-dd-options` panelini açıp
 kapatan, chevron'u down↔up çeviren) DEĞERLİ bir davranış — Figma bunu modellemiyor (statik state
 kütüphanesi) ama üründe zaten var. Base Input mimarisine uyarlanmış yeni bir kopyası
-(`window.ddBaseToggle`) yazıldı; `.bt-input--active` zaten çekirdekte gerçek border+ring kuralına
+(`window.ddBaseToggle`) yazıldı; `.bt-input__box--active` zaten çekirdekte gerçek border+ring kuralına
 sahip olduğu için ayrı bir "açık" class'ı icat edilmedi. Filled state'in Clear butonu §20.6
 standardını izliyor (`ddBaseClear`) — tıklanınca value span'ı placeholder görünümüne döner, buton
 kendini kaldırır; canlı olarak tarayıcıda doğrulandı.
@@ -2936,8 +2950,8 @@ Dropdown'ın kendi sayfası DIŞINDA da kullanılıyor (Dialog form örneği —
 `dialogHtml()` — ve Data Table Grid'in Inline/InCell Editing hücreleri) — hiçbiri bu oturumda
 değiştirilmedi, ikisi de tarayıcıda canlı test edilip görsel/davranışsal olarak DEĞİŞMEMİŞ olduğu
 doğrulandı. Dropdown'ın kendi sayfası için TextBox'taki gibi paralel `ddBase*` fonksiyonlar yazıldı
-(`_ddBaseCls`, `_ddBaseInner`, `ddBasePreview`, `ddBaseCode`, `ddBaseCss`), `.bt-dd__box` kimlik
-class'ıyla.
+(`_ddBaseCls`, `_ddBaseInner`, `ddBasePreview`, `ddBaseCode`, `ddBaseCss`) — ayrı bir kutu-kimlik
+class'ı olmadan, doğrudan `.bt-input__box` üzerinden (bkz. §22.9).
 
 ### 22.6 Docs sayfası
 
@@ -2969,6 +2983,19 @@ Kullanıcı §22.7'deki `bt-dd-*` kısaltmasına itiraz etti ("dropdown list bun
 - `.bt-dd__box` → `.bt-dropdown__box`
 
 Ayrıca ikinci bir gerçek sorun ortaya çıktı: paylaşılan `.bt-tbx` dış sarmalayıcısı (Label/Hint/Error dizilimi — SearchBox/TextBox/Dropdown/Date Picker'ın ortak altyapısı) hiçbir component'e özel kimlik taşımıyordu — DOM'da bir Dropdown ile bir TextBox'ın dış wrapper'ı BİREBİR aynı görünüyordu (`class="bt-tbx bt-tbx--md"`). Kullanıcı üç seçenekten "her component kendi kimlik class'ını da taşısın" seçeneğini onayladı: `.bt-tbx` paylaşılan CSS olarak kalıyor, ama artık her component AYNI elementte kendi kimliğini de taşıyor: Dropdown → `class="bt-tbx bt-dropdown bt-tbx--md"`, TextBox → `class="bt-tbx bt-textbox bt-tbx--sm"` — component'in kendi input kutusundaki mevcut desenle (`.bt-input.bt-searchbox`, `.bt-input.bt-dropdown__box`) aynı prensip, sadece dış wrapper'a da uygulandı. `docs/css/styles.css`/`docs/js/pages-web.js`'de ~40 nokta güncellendi (yalnızca string rename, CSS kuralları/davranış aynı). `CLAUDE.md`'ye bu kararı kalıcı bir kural olarak kodlayan yeni bir "CSS class isimlerinde kısaltma icat etme" bölümü eklendi. **Doğrulama:** `node --check` temiz; tarayıcıda `document.querySelector('.bt-tbx').className` ile Dropdown'da `"bt-tbx bt-dropdown bt-tbx--md"`, TextBox'ta `"bt-tbx bt-textbox bt-tbx--sm"` doğrulandı; liste/item render'ı (seçili item arka planı, ikon boyutu) değişmedi; Data Table'ın InCell status dropdown'ı yeni class adlarıyla otomatik güncellendi, regresyon yok.
+
+### 22.9 `.bt-tbx` → `.bt-input` — dış sarmalayıcı da paylaşılan çekirdek isim alanına taşındı (2026-09-17, kullanıcı geri bildirimi)
+
+§22.8'de dış sarmalayıcıya kimlik class'ları eklendi (`.bt-textbox`/`.bt-dropdown`) ama sarmalayıcının kendisi hâlâ `.bt-tbx` adını taşıyordu — kullanıcı bunu da yetersiz buldu: `bt-tbx` TextBox'ı çağrıştıran, Dropdown/Select LookUp/Date Picker için yanıltıcı bir isim. Kullanıcının önerisi ve seçtiği çözüm: Label/Helper/Hint/Value gibi genel input parçaları `.bt-input` (zaten kurulu, generic "Base Input" kavramı) altında toplansın; `.bt-input__value` (input'un kendisi) tabir de kullanıcı isteğiyle `bt-input__text`'in yerini aldı.
+
+**Çakışma riski ve çözümü:** Base Input'un "kutu" çekirdeği zaten bare `.bt-input` adını taşıyordu (§20.1) — dış sarmalayıcı da aynı adı almak istiyordu. İkisi birleşirse (örn. MultiSelect/Select LookUp/Date Picker/Dialog/Data Table gibi hâlâ ESKİ "TEXTBOX" sistemini kullanan sayfalarda), dış sarmalayıcının `.bt-input--error` modifier'ı YENİ sistemin kutu-seviyesi `.bt-input--error` (border+ring) kuralıyla aynı class adını taşır ve kutunun görsel state'ini yanlışlıkla dış sarmalayıcının TAMAMINA (Label+Kutu+Hint) bindirirdi. Çözüm iki adımda uygulandı:
+
+1. **Önce** Base Input'un kutu çekirdeği ve tüm modifier'ları `__box` alt-kapsamına taşındı: bare `.bt-input` → `.bt-input__box`, `.bt-input--{sm|md|lg|hover|active|focused|disabled|readonly|error|error-focused}` → `.bt-input__box--{...}`, `.bt-input__text` → `.bt-input__value`. Yalnızca SearchBox, TextBox'ın kendi sayfası (`tbxBase*`) ve Dropdown'ın kendi sayfası (`ddBase*`) etkilendi. `.bt-tbx__box`/`.bt-dropdown__box` (§21.2/§22.1'deki kutu-kimlik class'ları) tamamen KALDIRILDI — artık gerek yok, field padding override'ı ata seçiciyle (`.bt-textbox .bt-input__box--{size} .bt-input__field`, `.bt-dropdown .bt-input__box--{size} .bt-input__field`) dış sarmalayıcıdaki kimlikten uygulanıyor.
+2. **Sonra**, artık çakışma olmadığı için, paylaşılan dış sarmalayıcı `.bt-tbx` → `.bt-input` olarak yeniden adlandırıldı — `.bt-tbx--{sm|md|lg|hover|focused|active|disabled|readonly|error|error-focused|icon-left}` → `.bt-input--{...}` (bu artık YALNIZCA Label/Hint rengini etkileyen dış-sarmalayıcı anlamı taşıyor, kutunun border/ring'iyle asla çakışmıyor), `.bt-tbx__meta`→`.bt-input__meta`, `.bt-tbx__label`→`.bt-input__label`, `.bt-tbx__required`→`.bt-input__required`, `.bt-tbx__anchor`→`.bt-input__anchor`, `.bt-tbx__helper`(+`--error`)→`.bt-input__hint`(+`--error`, kullanıcı isteği: "helper" değil "hint").
+
+**Bilinçli kapsam sınırı — eski "TEXTBOX" sisteminin içi DOKUNULMADI:** `.bt-tbx__input`/`__field`/`__text`/`__control`(+`--left`/`--right`)/`__icon`/`__clear` ve `.bt-msl__*` — bunlar MultiSelect, Select LookUp, Date Picker'ın kendi sayfalarında ve Dialog form örneği + Data Table Inline/InCell edit hücrelerinde (`_tbxInputInner`, `_mslInputInner`, `_dtpInputInner`, `_slkInputInner`, `_ddInputInner`) hâlâ kullanılıyor — bunları `.bt-input__box`'a taşımak bu 3 component'i TAM Base Input'a migrate etmek anlamına gelir (Figma karşılaştırması yapılmadı, ayrı bir oturum gerektirir, bkz. §21.2). Sonuç: bu sayfalarda dış sarmalayıcı artık `.bt-input` ama içindeki kutu hâlâ `.bt-tbx__input` adını taşıyor — görsel/davranışsal olarak HİÇBİR ŞEY değişmedi, yalnızca dış sarmalayıcının adı değişti (`_tbxCls()`/`_mslCls()`/`_dtpCls()` fonksiyonları otomatik günceller).
+
+**Doğrulama:** `node --check` temiz, CSS brace-denge kontrolü temiz. Tarayıcıda tek tek doğrulanacaklar (bu oturumun devamı): SearchBox/TextBox/Dropdown'ın kendi sayfalarında kutu class'ının `.bt-input__box`, dış sarmalayıcının (varsa) `.bt-input bt-textbox`/`.bt-input bt-dropdown` olması; MultiSelect/Select LookUp/Date Picker/Dialog örneği/Data Table InCell-Inline'da dış sarmalayıcının `.bt-input` olması AMA iç kutunun hâlâ `.bt-tbx__input` olması ve görsel olarak hiçbir şeyin değişmemiş olması; her sayfada konsol hatası olmaması.
 
 ---
 
