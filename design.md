@@ -1,6 +1,6 @@
-# Medusa Design System
+# Bentas Design System
 
-Bu dosya projedeki tüm CSS token'larını, layout yapılarını, komponent kalıplarını ve JS davranışlarını belgelemektedir. Yeni bir projede aynı tasarım sistemini sıfırdan anlatmak zorunda kalmamak için hazırlanmıştır.
+Bu dosya projedeki tüm CSS token'larını, layout yapılarını, komponent kalıplarını ve JS davranışlarını belgelemektedir. Yeni bir projede aynı tasarım sistemini sıfırdan anlatmak zorunda kalmamak için hazırlanmıştır — **yalnızca Bentas Design System'in kendi `.bt-*` bileşenlerini kapsar**; bu sistemi tüketen projelere (örn. Medusa) özgü ekran/iş-mantığı içeriği burada tutulmaz.
 
 Figma kaynak dosyası: `hRFYsry2NDU6GdgzV6oUfJ` (Akasya Web)
 
@@ -502,30 +502,6 @@ Kullanım: `font: var(--bt-title-lg-semibold, 600 18px/24px 'Geist');` — tek s
 
 ---
 
-### 3.9 Medusa'ya Özgü Ek Token'lar
-
-MobileDesignSystem'de tanımsız, yalnızca medusa projesinde kullanılıyor:
-
-```css
-/* Etkileşim durumları */
---bt-primary-hover:  #0b4485;
---bt-primary-active: #093a72;
-
-/* Tab yüzey durumları */
---bt-surface-tab-default: #f3f4f6;
---bt-surface-tab-hover:   #e8e9eb;
-
-/* Login sayfası brand paneli */
---brand-bg:       #05238b;
---btn-primary-bg: #3559c7;
-```
-
-> **Not**: Medusa projesi bu token sistemi kurulmadan önce geliştirildiğinden bazı
-> bileşenlerde bare hex değerleri veya eski `--color-gray-*` isimleri kullanılmaktadır.
-> Yeni projelerde yukarıdaki `--bt-*` sistemi kullanılmalıdır.
-
----
-
 ## 4. Reset
 
 ```css
@@ -562,16 +538,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font-text); }
 
 ## 6. Sidebar — Standart Sidebar
 
-> **2026-07-22 güncellemesi:** Bu bölüm eskiden Medusa'nın kendi bespoke sidebar'ını
-> (`.sidebar-header`, `.nav-item-btn` vb.) belgeliyordu. O yapı artık **Bentas Design
-> System'in Standart Sidebar component'ine** (`.stb-*`, Figma node `502:18421`)
-> geçirildi — Medusa'nın `dashboard.html`'i bu component'in gerçek bir tüketicisi.
+> **2026-07-22 güncellemesi:** Bu bölüm artık **Bentas Design System'in Standart
+> Sidebar component'ine** (`.stb-*`, Figma node `502:18421`) ait genel referanstır.
 > Aşağıdaki CSS, Bentas-Design-System'in `docs/css/styles.css`'teki `.stb-*` bloğu
-> ile **birebir aynı** (sadece token isimleri host projeye göre değişir — bkz. not).
-> Design system'in kendi dokümantasyonunda ayrıca bir **Hub Sidebar** (`.sbx-*`,
-> kalıcı ikon rail + ayrı toggle edilebilir drawer) varyantı da var; Medusa bunu
-> kullanmıyor, o yüzden burada belgelenmedi — gerekirse Bentas-Design-System'in
-> `components/sidebar` sayfasına bakılabilir.
+> ile **birebir aynı** (sadece token isimleri host projeye göre değişebilir — bkz.
+> not). Design system'in kendi dokümantasyonunda ayrıca bir **Hub Sidebar**
+> (`.sbx-*`, kalıcı ikon rail + ayrı toggle edilebilir drawer) varyantı da var —
+> gerekirse Bentas-Design-System'in `components/sidebar` sayfasına bakılabilir.
 
 ### Yapı
 
@@ -584,16 +557,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font-text); }
         ├── .stb-search-wrap      ← .bt-searchbox (gerçek SearchBox component'i)
         │                           (collapsed'de gizlenir)
         ├── .stb-list             ← flex:1, scroll — nav item'lar (.stb-item)
-        └── (proje-özel alt bölüm ── Medusa'da: kullanıcı satırı + overflow menü,
-             kendi class'larını korur, Standart Sidebar'ın parçası değildir)
+        └── (opsiyonel proje-özel alt bölüm — örn. kullanıcı satırı + overflow menü,
+             host projenin kendi class'larını korur, Standart Sidebar'ın parçası değildir)
 ```
 
 **Kritik prensip:** Collapsed/expanded state DOM değişmez — `.stb-shell.is-collapsed`
 class'ı eklenir, `.stb-item-label` ve arama alanı `display:none` ile gizlenir. Bu
 yüzden state geçişi CSS `transition: width` ile pürüzsüz animasyonlanır.
 
-### CSS (token isimleri Bentas-Design-System'in `--bt-*` sistemine göre; Medusa gibi
-kısaltılmış token seti kullanan projelerde `--bt-space-*`→`--space-*`,
+### CSS (token isimleri Bentas-Design-System'in `--bt-*` sistemine göre; kısaltılmış
+token seti kullanan host projelerde `--bt-space-*`→`--space-*`,
 `--bt-radius-*`→`--radius-*` şeklinde eşleştirin — **değerler aynı, sadece isim**)
 
 ```css
@@ -627,13 +600,13 @@ kısaltılmış token seti kullanan projelerde `--bt-space-*`→`--space-*`,
   color: var(--bt-text-primary-inverted);
   cursor: pointer; transition: background 100ms;
 }
-.stb-menu-btn:hover { background: var(--bt-primary-intense); } /* Medusa: --bt-primary-hover/-active kendi token'ı */
+.stb-menu-btn:hover { background: var(--bt-primary-intense); } /* Host projede farklı isim olabilir: --bt-primary-hover/-active */
 
 .stb-brand { display: flex; align-items: center; gap: var(--bt-space-sm); min-width: 0; overflow: hidden; }
 .stb-shell.is-collapsed .stb-brand { display: none; }
 
 /* Bentas'ta placeholder gradient logo; gerçek bir logo görseli varsa
-   (Medusa gibi) bu kutu sadece 36×36/radius-md container'dır, içine <img> konur */
+   bu kutu sadece 36×36/radius-md container'dır, içine <img> konur */
 .stb-logo { width: 36px; height: 36px; border-radius: var(--bt-radius-md); flex-shrink: 0; overflow: hidden; }
 .stb-title {
   font: var(--bt-title-lg-medium, 500 18px/24px var(--font-title));
@@ -709,1256 +682,9 @@ class="stb-menu-icon">`), `.stb-menu-icon { width:14px; height:14px; }` gibi bir
 class seçiciyle hedefle — Lucide bu class'ı yeni `<svg>`'ye aktarır, güvenilir
 şekilde çalışır.
 
-### Consuming proje örneği: Medusa Dashboard
-
-`medusa-demo/dashboard.html` bu component'i gerçek bir üründe kullanıyor — bkz.
-[[project_medusa_dashboard]]. Adaptasyonda dikkat edilenler:
-- İçerik (logo görseli, uygulama adı, nav item'ların ikon/etiketleri, arama
-  placeholder'ı) tamamen korundu — sadece yapı/state sistemi değişti.
-- Kullanıcı satırı + overflow menü (`.user-widget`/`.uw-*`) Standart Sidebar'ın
-  parçası **değil** — Medusa'ya özel bir alt bölüm olarak `.stb-body` içine,
-  `.stb-list`'ten sonra üçüncü çocuk olarak eklendi, kendi class'larıyla
-  dokunulmadan bırakıldı; sadece collapsed state'te `.user-info` metni gizlenecek
-  tek bir ek kural eklendi.
-- Token isimleri host projenin kendi kısaltılmış setine çevrildi (`--bt-space-lg`,
-  `--bt-text-lg-size/-lh`, `--bt-base-emphasis` gibi eksik olanlar host'un
-  `:root`'una eklendi).
-- Nav item'lar `<div role="button">` değil gerçek `<button>` olarak yazıldı —
-  klavye (Enter/Space) native çalışsın diye, orijinal Medusa markup'ı da zaten
-  `<button>` kullanıyordu.
-
 ---
 
-## 7. Page Header & Toolbar
-
-```css
-/* Sayfa başlık çubuğu */
-.page-header {
-  display: flex; align-items: center;
-  height: 36px;
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  padding: var(--space-sm) var(--space-xl);
-  flex-shrink: 0;
-  background: var(--bt-surface-primary-default);
-}
-.page-title {
-  font-family: var(--font-title); font-size: var(--text-md);
-  font-weight: 500; line-height: var(--lh-md);
-  color: var(--color-gray-900); white-space: nowrap;
-}
-
-/* Toolbar (filtreler, butonlar, arama) */
-.toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  height: 40px;
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  padding: var(--space-sm) var(--space-xl);
-  flex-shrink: 0;
-  background: var(--bt-base-default);
-}
-.toolbar-actions { display: flex; gap: 10px; align-items: center; }
-
-/* Toolbar search (280px genişlik) */
-.toolbar-search {
-  display: flex; align-items: center;
-  width: 280px; height: 28px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm);
-  background: var(--bt-surface-primary-default);
-  overflow: hidden;
-}
-.toolbar-search-input {
-  flex: 1; min-width: 0; border: none;
-  font-size: var(--text-sm); color: var(--bt-text-primary-default);
-  background: transparent; outline: none;
-  padding: var(--space-xs) var(--space-xs) var(--space-xs) var(--space-xl);
-}
-.toolbar-search-input::placeholder { color: var(--bt-text-primary-muted); }
-.toolbar-search-sep {
-  width: 1px; height: 28px;
-  background: var(--bt-border-primary-default); flex-shrink: 0;
-}
-```
-
----
-
-## 8. Butonlar
-
-### 8.1 Base .btn
-
-```css
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: var(--space-sm); height: 28px; padding: 0 var(--space-md);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-title); font-size: var(--text-xs);
-  font-weight: 400; line-height: var(--lh-xs);
-  cursor: pointer; transition: opacity 0.15s, background 0.15s;
-}
-.btn-icon { width: 16px; height: 16px; display: block; flex-shrink: 0; }
-```
-
-### 8.2 Varyantlar
-
-```css
-/* Primary — mavi dolu */
-.btn-primary {
-  background: var(--bt-primary-default);
-  color: var(--bt-text-primary-inverted); border: none;
-}
-.btn-primary:hover  { background: var(--bt-primary-hover); }
-.btn-primary:active { background: var(--bt-primary-active); transform: scale(0.97); }
-.btn-primary:disabled {
-  background: var(--bt-base-muted); color: var(--bt-text-primary-muted);
-  cursor: not-allowed; pointer-events: none;
-}
-
-/* Outline — çerçeveli */
-.btn-outline {
-  background: transparent; color: var(--bt-text-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-}
-.btn-outline:hover { background: var(--bt-surface-primary-subtle); }
-
-/* Danger — kırmızı dolu */
-.btn-danger { background: #b31d38; color: #ffffff; border: none; }
-.btn-danger:hover  { background: #961630; }
-.btn-danger:active { background: #7d1228; transform: scale(0.97); }
-
-/* Flat small (text-only, toolbar) */
-.btn-flat-sm {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: var(--space-sm) var(--space-md); border: none;
-  border-radius: var(--radius-sm); background: transparent;
-  color: var(--bt-text-primary-default);
-  font-size: var(--text-xs); cursor: pointer; transition: background 0.15s;
-}
-.btn-flat-sm:hover { background: var(--bt-surface-primary-subtle); }
-.btn-flat-sm--danger { color: #b31d38; }
-.btn-flat-sm--danger:hover { background: #fef2f2; }
-.btn-flat-sm:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-
-/* Outline small */
-.btn-outline-sm {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); background: transparent;
-  color: var(--bt-text-primary-default); font-size: var(--text-xs);
-  cursor: pointer; transition: background 0.15s;
-}
-.btn-outline-sm:hover { background: var(--bt-surface-primary-subtle); }
-```
-
-### 8.3 Split Button (Flat)
-
-```css
-.sb-flat { position: relative; display: inline-flex; align-items: stretch; border-radius: var(--radius-sm); }
-.sb-flat__btn {
-  padding: var(--space-2xs) var(--space-sm); background: transparent; border: none;
-  font-size: var(--text-xs); cursor: pointer;
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-  transition: background 0.12s;
-}
-.sb-flat__divider { width: 1px; background: var(--bt-border-primary-default); align-self: stretch; }
-.sb-flat__split {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: var(--space-2xs); width: 20px; background: transparent; border: none;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; cursor: pointer;
-}
-.sb-flat__btn:hover, .sb-flat__split:hover,
-.sb-flat.is-open .sb-flat__btn,
-.sb-flat.is-open .sb-flat__split { background: var(--bt-surface-primary-subtle); }
-
-/* Dropdown list */
-.sb-flat__list {
-  position: absolute; top: calc(100% + 4px); left: 0; min-width: 140px;
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  z-index: 200; overflow: hidden;
-}
-.sb-flat__list[hidden] { display: none; }
-.sb-flat__item {
-  display: flex; align-items: center; gap: var(--space-sm);
-  padding: var(--space-md) var(--space-xl);
-  font-size: var(--text-xs); cursor: pointer;
-  color: var(--bt-text-primary-default); transition: background 0.1s;
-}
-.sb-flat__item:hover { background: var(--bt-surface-primary-subtle); }
-```
-
----
-
-## 9. Data Table
-
-### Yapı
-
-```
-.table-container                ← flex:1; padding:16px; overflow:hidden
-  └── .grid-card                ← white card, border, border-radius:4px
-        ├── .sc-tabs             ← segmented control (tablo türü seçimi)
-        └── .grid-table-wrap     ← overflow:auto; flex:1
-              └── .grid-table-inner  ← min-height:100%; width:1950px (sabit genişlik)
-                    └── table.data-table
-```
-
-```css
-.table-container {
-  flex: 1; overflow: hidden; padding: var(--space-2xl);
-  background: var(--bt-surface-primary-light);
-  display: flex; flex-direction: column; min-height: 0;
-}
-.grid-card {
-  flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px;
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); padding: 16px; overflow: hidden;
-}
-.grid-table-wrap { flex: 1; min-height: 0; overflow: auto; }
-.grid-table-inner { min-height: 100%; display: flex; flex-direction: column; width: 1950px; }
-
-.data-table {
-  border-collapse: collapse; table-layout: fixed; width: 1950px;
-}
-```
-
-### Header Row
-
-```css
-.data-table thead tr { height: 36px; }
-.data-table th {
-  background: var(--bt-base-default);
-  border-top: 1px solid var(--bt-border-primary-default);
-  box-shadow: inset 0 -1px 0 var(--bt-border-primary-default);
-  padding: 0; font-weight: 400;
-  position: sticky; top: 0; z-index: 1;
-  overflow: visible; user-select: none;
-}
-.data-table th:first-child { border-left:  1px solid var(--bt-border-primary-default); }
-.data-table th:last-child  { border-right: 1px solid var(--bt-border-primary-default); }
-
-.th-inner { display: flex; align-items: center; height: 36px; }
-.th-label {
-  font-size: var(--text-xs); font-weight: 500; line-height: var(--lh-xs);
-  color: var(--bt-text-primary-default);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  flex: 1; min-width: 0;
-}
-```
-
-### Kolon Resize Handle
-
-```css
-.col-resize-handle {
-  position: absolute; right: 0; top: 0; bottom: 0;
-  width: 4px; cursor: col-resize; z-index: 2; transition: background 0.15s;
-}
-.col-resize-handle:hover,
-.col-resize-handle.is-resizing { background: var(--bt-primary-default); opacity: 0.4; }
-```
-
-JS: `mousedown` → `mousemove` ile `th.style.width` güncelle, `col` elementinin `width` attribute'unu da güncelle.
-
-### Kolon Sort
-
-```css
-th[data-col] { cursor: pointer; user-select: none; }
-.th-sort {
-  display: flex; align-items: center; justify-content: center;
-  width: 20px; height: 28px; flex-shrink: 0;
-  color: var(--bt-icon-primary-muted, #aaa); opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
-}
-th[data-col]:hover .th-sort { opacity: 0.45; }
-th[data-sort="asc"]  .th-sort,
-th[data-sort="desc"] .th-sort { opacity: 1; color: var(--bt-primary-default); }
-```
-
-### Data Rows
-
-```css
-.data-table tbody tr { height: 32px; }
-.data-table tbody tr:hover td { background: var(--bt-surface-primary-subtle); }
-.data-table tbody tr.is-selected-row td { background: var(--bt-surface-brand-subtle); }
-
-/* Row blur-in animasyonu (yeni eklenen satır) */
-@keyframes textBlurInFlash {
-  0%   { filter: blur(5px); opacity: 0;   background-color: transparent; }
-  8%   { filter: blur(5px); opacity: 0.2; background-color: #dcfce7; }
-  55%  { filter: blur(0px); opacity: 1;   background-color: #dcfce7; }
-  100% { filter: blur(0px); opacity: 1;   background-color: transparent; }
-}
-.tr-blur-in td { animation: textBlurInFlash 1.6s cubic-bezier(0.4,0,0.2,1) forwards; }
-
-.data-table td {
-  background: var(--bt-base-default);
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  padding: 0; overflow: hidden;
-}
-.data-table td:first-child { border-left:  1px solid var(--bt-border-primary-default); }
-.data-table td:last-child  { border-right: 1px solid var(--bt-border-primary-default); }
-
-.td-inner { display: flex; align-items: center; height: 32px; }
-.td-cell  { display: flex; align-items: center; flex: 1; min-width: 0; padding: var(--space-md); }
-.td-text  {
-  font-size: var(--text-xs); font-weight: 400; line-height: var(--lh-xs);
-  color: var(--bt-text-primary-default);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  flex: 1; min-width: 0;
-}
-```
-
-### Frozen First Column
-
-```css
-.data-table th:first-child,
-.data-table td:first-child {
-  position: sticky; left: 0; z-index: 2;
-  background: var(--bt-base-default);
-}
-.data-table thead th:first-child { z-index: 4; }
-.data-table td:first-child { overflow: visible; }
-
-/* Sağ taraf gölgesi */
-.data-table th:first-child::after,
-.data-table td:first-child::after {
-  content: ''; position: absolute;
-  top: 0; right: -8px; width: 8px; height: 100%;
-  background: linear-gradient(to right, rgba(0,0,0,0.04), transparent);
-  pointer-events: none;
-}
-```
-
-### Checkbox
-
-```css
-.checkbox-box {
-  width: 16px; height: 16px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-2xs);
-  background: var(--bt-surface-primary-default);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.checkbox-box:hover { border-color: var(--bt-primary-default); }
-.checkbox-box.is-checked { background: var(--bt-primary-default); border-color: var(--bt-primary-default); }
-.checkbox-box svg { display: none; width: 12px; height: 12px; color: white; }
-.checkbox-box.is-checked svg { display: block; }
-```
-
-### Badge (Durum / Öncelik)
-
-```css
-.badge-cell {
-  display: flex; align-items: center; justify-content: center;
-  flex: 1; height: 28px; padding: var(--space-2xs) var(--space-2xl);
-}
-.badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  flex: 1; border-radius: var(--radius-full);
-  border: 1px solid var(--bt-border-primary-default);
-  background: var(--bt-secondary-light);
-  padding: 2px var(--space-md);
-}
-.badge-text { font-size: var(--text-xs); font-weight: 400; line-height: var(--lh-xs); }
-
-/* Durum renkleri */
-.badge--onay-bkl    { background: var(--bt-warning-subtle); }
-.badge--calisiliyor { background: var(--orange-200); }
-.badge--tamamlandi  { background: var(--green-100); }
-.badge--bilgi-bek   { background: var(--purple-100); }
-.badge--redded      { background: #fee2e2; }
-.badge--onaylandi   { background: var(--green-100); }
-```
-
-### Renkli Dot
-
-```css
-.dot-wrap { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex-shrink: 0; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bt-primary-default); }
-.dot--type-acik      { background: var(--blue-500); }
-.dot--type-onay-bek  { background: var(--yellow-500); }
-.dot--type-onaylandi { background: var(--teal-600); }
-.dot--type-redded    { background: var(--red-500); }
-```
-
-### Öncelik & İş Türü Icon Renkleri
-
-```css
-/* Öncelik */
-.oncelik-icon--dusuk  { color: var(--gray-400); }
-.oncelik-icon--normal { color: var(--blue-600); }
-.oncelik-icon--yuksek { color: var(--orange-600); }
-.oncelik-icon--acil   { color: var(--red-600); }
-
-/* İş Türü */
-.is-turu-icon--acik      { color: var(--blue-500); }
-.is-turu-icon--onay-bek  { color: var(--yellow-500); }
-.is-turu-icon--onaylandi { color: var(--teal-600); }
-.is-turu-icon--redded    { color: var(--red-500); }
-```
-
-### Kolon Visibility Toggle (Sütun Göster/Gizle)
-
-```css
-.col-toggle-btn {
-  display: flex; align-items: center; gap: 6px;
-  height: 32px; padding: 0 10px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-xs);
-  background: var(--bt-surface-primary-default);
-  cursor: pointer; transition: background 0.15s;
-}
-.col-toggle-menu {
-  position: absolute; top: calc(100% + 6px); right: 0;
-  width: 237px; background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: 4px;
-  box-shadow: 0px 4px 4px rgba(16,24,40,0.10), 0px 2px 2px rgba(16,24,40,0.06);
-  z-index: 500; padding: 16px;
-  display: flex; gap: 8px; flex-direction: column;
-  opacity: 0; transform: translateY(-6px) scale(0.97); transform-origin: top right;
-  pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.col-toggle-menu.is-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
-
-/* Toggle switch (32×20, thumb 16×16, radius:4px) */
-.col-sw {
-  flex-shrink: 0; width: 32px; height: 20px; padding: 2px;
-  border-radius: 4px; background: #d4d4d4;
-  display: flex; align-items: center; cursor: pointer; transition: background 0.2s;
-}
-.col-sw.is-on { background: var(--bt-surface-brand-default); }
-.col-sw-thumb {
-  width: 16px; height: 16px; border-radius: 4px;
-  background: #fff; flex-shrink: 0;
-  transform: translateX(0); transition: transform 0.2s;
-}
-.col-sw.is-on .col-sw-thumb { transform: translateX(12px); }
-```
-
-Kolon gizleme: `data-table` üzerine `col-hidden-N` class'ı eklenir (N = 2–15).
-```css
-.data-table.col-hidden-N thead tr th:nth-child(N),
-.data-table.col-hidden-N tbody tr td:nth-child(N) { display: none; }
-```
-
-### Column Filter Panel (Kolon Başlığı Filtresi)
-
-```css
-.col-fp {
-  position: fixed; z-index: 400;
-  min-width: 200px; max-width: 280px;
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(16,24,40,0.14);
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.col-fp[hidden] { display: none; }
-.col-fp-input {
-  width: 100%; height: 28px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-xs); padding: 0 8px;
-  font-size: var(--text-xs); outline: none;
-}
-.col-fp-input:focus { border-color: var(--bt-primary-default); }
-.col-fp-list { overflow-y: auto; max-height: 200px; padding: 4px 0; }
-.col-fp-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 10px; cursor: pointer; font-size: var(--text-xs);
-}
-.col-fp-item:hover { background: var(--bt-surface-primary-subtle); }
-.col-fp-item-check {
-  width: 14px; height: 14px; flex-shrink: 0;
-  border: 1.5px solid var(--bt-border-primary-default);
-  border-radius: 3px; display: flex; align-items: center; justify-content: center;
-}
-.col-fp-item.is-checked .col-fp-item-check { background: var(--bt-primary-default); border-color: var(--bt-primary-default); }
-.col-fp-item.is-checked .col-fp-item-check::after { content: '✓'; color: #fff; font-size: 9px; }
-```
-
-### Segmented Control (Tablo Tab)
-
-```css
-.sc-tabs {
-  display: inline-flex; align-self: flex-start;
-  background: var(--bt-surface-primary-subtle);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); overflow: hidden;
-}
-.sc-tab {
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--text-xs); font-weight: 400; line-height: var(--lh-xs);
-  background: var(--bt-surface-primary-subtle);
-  cursor: pointer; white-space: nowrap; transition: background 0.12s, color 0.12s;
-}
-.sc-tab:hover:not(.is-active) { background: var(--bt-surface-tab-hover); }
-.sc-tab.is-active { background: var(--bt-surface-brand-default); color: var(--bt-text-primary-inverted); }
-```
-
-Satır gizleme: `tr.sc-hidden`, `tr.fp-hidden`, `tr.search-hidden`, `tr.cf-hidden` → `display:none`
-
-### Grid Footer (seçim özeti)
-
-```css
-.bnt-grid-footer {
-  display: none; align-items: center; gap: 8px;
-  padding: 8px var(--space-xl);
-  border-top: 1px solid var(--bt-border-primary-default);
-  background: var(--bt-base-default); flex-shrink: 0;
-}
-.bnt-grid-footer.is-visible { display: flex; }
-.bnt-footer-label { font-size: 12px; font-weight: 500; color: var(--bt-text-primary-emphasis); }
-.bnt-footer-count { font-size: 12px; font-weight: 600; color: var(--bt-primary-default); }
-```
-
----
-
-## 10. Side Panels (Sağdan Kayan Paneller)
-
-### 10.1 Task Add Panel (Yeni Talep / 653px)
-
-#### Anatomy
-
-```
-task-panel (aside, role=dialog, hidden)
-  ├── task-panel__header (40px)
-  │     ├── task-panel__header-left   ← [×] close btn + title
-  │     └── [Kaydet] btn              ← sağda, footer YOK
-  └── task-panel__body (flex:1, arka plan: surface-light)
-        └── task-panel__card          ← beyaz inner card, overflow-y:auto
-              ├── tp-field (İşin Adı)
-              ├── tp-field (Açıklama)
-              └── tp-field (...)
-```
-
-> **Header yapısı:** Close butonu + başlık **solda** (`header-left`), Kaydet butonu **header'ın sağında**. Ayrı bir footer bölümü yoktur.
->
-> **Inner card:** Body, açık renkli (`surface-light`) bir dolgu alanıdır; formun kendisi beyaz (`surface-default`) bordered card içinde yaşar.
-
-#### CSS
-
-```css
-/* Arka plan overlay */
-.panel-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.35); z-index: 100;
-  opacity: 0; pointer-events: none; transition: opacity 0.28s ease;
-}
-.panel-overlay.is-open { opacity: 1; pointer-events: all; }
-
-/* Panel kabuğu — başlangıçta hidden attribute + translateX(100%) */
-.task-panel {
-  position: fixed; top: 0; right: 0;
-  width: 653px; height: 100vh; z-index: 201;
-  display: flex; flex-direction: column;
-  background: var(--bt-surface-primary-light);
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-.task-panel.is-open { transform: translateX(0); }
-
-/* Header — 40px */
-.task-panel__header {
-  height: 40px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--space-xl);
-  background: var(--bt-surface-primary-default);
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  box-shadow: 0px 2px 3px rgba(0,0,0,0.08);
-}
-.task-panel__header-left { display: flex; align-items: center; gap: var(--space-md); }
-.task-panel__title {
-  font-family: var(--font-title); font-size: var(--text-md);
-  font-weight: 400; line-height: var(--lh-md); color: var(--color-gray-900);
-}
-.task-panel__close {
-  display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; padding: var(--space-sm);
-  border-radius: var(--radius-sm); color: var(--bt-text-primary-default);
-  transition: background 0.15s;
-}
-.task-panel__close:hover { background: var(--bt-surface-primary-subtle); }
-
-/* Body */
-.task-panel__body {
-  flex: 1; min-height: 0; display: flex; flex-direction: column;
-  padding: var(--space-2xl); background: var(--bt-surface-primary-light);
-}
-
-/* Inner card — formun yaşadığı beyaz alan */
-.task-panel__card {
-  flex: 1; background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); padding: 20px;
-  display: flex; flex-direction: column; gap: 16px;
-  overflow-y: auto;
-}
-```
-
-#### HTML Skeleton
-
-```html
-<div class="panel-overlay" id="panelOverlay" aria-hidden="true"></div>
-
-<aside class="task-panel" id="taskPanel"
-       role="dialog" aria-modal="true"
-       aria-labelledby="taskPanelTitle"
-       hidden>
-
-  <div class="task-panel__header">
-    <div class="task-panel__header-left">
-      <button class="task-panel__close" id="taskPanelClose" aria-label="Kapat">
-        <i data-lucide="x"></i>
-      </button>
-      <span class="task-panel__title" id="taskPanelTitle">Yeni İş Talebi Ekle</span>
-    </div>
-    <button class="btn btn-primary" id="taskPanelSave">Kaydet</button>
-  </div>
-
-  <div class="task-panel__body">
-    <div class="task-panel__card">
-      <!-- tp-field'ler buraya -->
-    </div>
-  </div>
-
-</aside>
-```
-
-#### JS — Open / Close
-
-```js
-const panel   = document.getElementById('taskPanel');
-const overlay = document.getElementById('panelOverlay');
-
-function openPanel() {
-  // Edit panel açıksa sola it
-  if (editPanel.classList.contains('is-open')) {
-    editPanel.classList.add('is-pushed-panel');
-  }
-
-  panel.hidden = false;           // hidden kaldır — DOM'a geri al
-  panel.getBoundingClientRect();  // ⚠️ reflow zorla: animasyonun başlaması için şart
-  panel.classList.add('is-open');
-  overlay.classList.add('is-open');
-  overlay.setAttribute('aria-hidden', 'false');
-
-  lucide.createIcons();           // ⚠️ hidden iken ikonlar init edilemez — burada çağır
-}
-
-function closePanel() {
-  editPanel.classList.remove('is-pushed-panel');
-  panel.classList.remove('is-open');
-  overlay.classList.remove('is-open');
-  overlay.setAttribute('aria-hidden', 'true');
-
-  // Animasyon bittikten sonra DOM'dan gizle
-  panel.addEventListener('transitionend', function hide() {
-    panel.hidden = true;
-    panel.removeEventListener('transitionend', hide);
-  }, { once: true });
-}
-
-document.getElementById('taskPanelClose').addEventListener('click', closePanel);
-overlay.addEventListener('click', closePanel);
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && panel.classList.contains('is-open')) closePanel();
-});
-```
-
-#### Kritik Notlar
-
-| Kural | Neden |
-|---|---|
-| `panel.hidden = false` → `getBoundingClientRect()` → `classList.add('is-open')` | `hidden` kaldırılır kaldırılmaz browser layout'u hesaplar; reflow olmadan transform start state görünmez, animasyon çalışmaz |
-| Kapatmada `transitionend` bekle, sonra `hidden = true` set et | Animasyon tamamlanmadan `hidden=true` yapılırsa panel anında yok olur |
-| `lucide.createIcons()` panel açılışında | `hidden` iken `display:none` gibi davranır; icon SVG'leri oluşturulamaz |
-| `role="dialog"` + `aria-modal="true"` + `aria-labelledby` | Ekran okuyucular için zorunlu |
-| Kaydet butonu **header'da sağda**, ayrı footer yok | Medusa pattern — dar panel'de footer alan kaybedeceğinden tercih edilmiyor |
-
-### 10.2 Filter Panel (653px — aynı yapı)
-
-```css
-.filter-panel {
-  position: fixed; top: 0; right: 0;
-  width: 653px; height: 100vh; z-index: 101;
-  display: flex; flex-direction: column;
-  background: var(--bt-surface-primary-light);
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-.filter-panel.is-open { transform: translateX(0); }
-.filter-panel.is-fullscreen { width: 100vw; }
-.filter-panel.is-fullscreen .filter-panel-inner { width: 653px; }
-```
-
-`filter-panel-header`, `filter-panel-body`, `filter-panel-inner` yapısı task-panel ile aynı.
-
-Panel header'daki icon buton:
-```css
-.fp-icon-btn {
-  display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; padding: var(--space-sm);
-  border: none; background: none; border-radius: var(--radius-sm);
-  cursor: pointer; color: var(--bt-text-primary-default); transition: background 0.15s;
-}
-.fp-icon-btn:hover { background: var(--bt-surface-primary-subtle); }
-.fp-icon-btn svg { width: 16px; height: 16px; }
-```
-
-### 10.3 Edit Panel (Full-Screen, Daraltılabilir)
-
-Edit panel tüm ekranı kaplar ve iki sütuna ayrılır.
-
-```css
-.edit-panel {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 200; display: flex; flex-direction: column;
-  background: var(--bt-surface-primary-light);
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              left 0.3s ease, right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.edit-panel.is-open { transform: translateX(0); }
-
-/* Daraltılmış: sol yarıda görünür */
-.edit-panel.is-collapsed {
-  left: 50%;
-  box-shadow: -12px 0 32px 0 rgba(0,0,0,0.18);
-}
-
-/* Task panel ile birlikte açık: edit panel push olur */
-.edit-panel.is-open.is-pushed-panel { transform: translateX(0); }
-.edit-panel.is-open.is-collapsed.is-pushed-panel { transform: translateX(max(-653px, -50vw)); }
-
-/* Header */
-.edit-panel__header {
-  height: 40px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--space-xl);
-  background: var(--bt-surface-primary-default);
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  box-shadow: 0px 2px 3px rgba(0,0,0,0.08);
-}
-.edit-panel__title {
-  font-family: var(--font-title); font-size: var(--text-md);
-  font-weight: 400; line-height: var(--lh-md); color: var(--color-gray-900);
-}
-
-/* Toolbar */
-.edit-panel__toolbar {
-  flex-shrink: 0; display: flex; align-items: center;
-  padding: var(--space-sm) var(--space-3xl);
-  background: var(--bt-surface-primary-default);
-  border-bottom: 1px solid var(--color-gray-300);
-  gap: 10px;
-}
-
-/* Body: iki sütun */
-.edit-panel__body { flex: 1; min-height: 0; display: flex; }
-
-/* Sol sütun (form alanları) — 465px */
-.edit-panel__left {
-  width: 465px; flex-shrink: 0; height: 100%;
-  background: var(--bt-surface-primary-default);
-  border-right: 1px solid var(--bt-border-primary-default);
-  overflow-y: auto; display: flex; flex-direction: column;
-  gap: var(--space-2xl); padding: var(--space-3xl);
-  transition: width 0.3s ease;
-}
-
-/* Sağ sütun (aktivite / yorumlar) */
-.edit-panel__right {
-  flex: 1; min-width: 0; height: 100%;
-  background: var(--bt-surface-primary-light);
-  display: flex; flex-direction: column; gap: 10px;
-  padding: var(--space-2xl) 160px;
-  overflow-y: auto;
-}
-
-/* Daraltılmış modda sütunlar */
-.edit-panel.is-collapsed .edit-panel__left { width: 360px; }
-.edit-panel.is-collapsed .edit-panel__right { padding-left: 40px; padding-right: 40px; }
-.edit-panel.is-collapsed .ep-row { flex-direction: column; gap: 8px; }
-.edit-panel.is-collapsed .ep-col { flex: none; width: 100%; }
-
-/* Sağ taraf kartlar */
-.ep-right-card {
-  flex-shrink: 0; width: 100%;
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); padding: var(--space-3xl);
-  display: flex; flex-direction: column; gap: var(--space-2xl);
-}
-
-/* Section title (form bölüm başlığı) */
-.ep-section-title {
-  display: flex; flex-direction: column; gap: 4px;
-  padding-bottom: var(--space-xs);
-  border-bottom: 1px solid var(--bt-border-primary-default);
-  width: 100%; flex-shrink: 0;
-}
-.ep-section-title h3 {
-  font-family: var(--font-title); font-size: var(--text-sm);
-  font-weight: 500; color: var(--bt-text-primary-default);
-}
-.ep-section-title p {
-  font-size: var(--text-xs); font-weight: 400;
-  color: var(--bt-text-primary-emphasis);
-}
-
-/* İki sütun satır */
-.ep-row { display: flex; gap: 12px; width: 100%; flex-shrink: 0; }
-.ep-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-
-/* Expand/Collapse butonu */
-.ep-expand-btn {
-  display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; border: none; background: transparent;
-  cursor: pointer; border-radius: var(--radius-sm);
-  color: var(--bt-icon-primary-strong); flex-shrink: 0;
-}
-.ep-expand-btn:hover { background: var(--bt-surface-primary-subtle); }
-.ep-expand-btn svg { width: 14px; height: 14px; stroke-width: 1.5; }
-```
-
----
-
-### 10.4 Panel Stack (Katmanlı Panel Sistemi)
-
-Bir panel içindeki butona basıldığında yeni panel sağdan açılır, alttaki panel sola kayar. Panel kapatıldığında alttakiler geri döner. Sonsuz katman desteklenir.
-
-#### Davranış Akışı
-
-```
-Başlangıç:     [App]
-Ekle/Düzenle:  [App] ← [Panel A]
-İçeride buton: [App] ← [Panel A (sola kaydı)] ← [Panel B]
-Panel B kapat: [App] ← [Panel A (geri geldi)]
-Panel A kapat: [App]
-```
-
-#### CSS
-
-```css
-/* Temel panel — sağdan girer */
-.panel {
-  position: fixed; top: 0; right: 0;
-  height: 100vh; z-index: 300;
-  background: var(--bt-surface-primary-light);
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-.panel.is-open { transform: translateX(0); }
-
-/* Üstüne yeni panel açıldığında panel sola kayar.
-   inline style (JS tarafından set edilir) transition'ı taşır;
-   is-pushed yalnızca CSS fallback olarak kullanılabilir. */
-.panel.is-pushed { transform: translateX(-653px); }
-.panel.is-fullscreen.is-pushed { transform: translateX(-50vw); }
-```
-
-#### JS — Panel Stack Manager
-
-```js
-const panelStack = [];
-
-/**
- * Yeni bir panel açar; mevcut tüm açık panelleri sola iter.
- * @param {HTMLElement} panelEl   - Açılacak panel elementi
- * @param {number}      pushOffset - Sola kayma miktarı (px). Default 653.
- */
-function pushPanel(panelEl, pushOffset = 653) {
-  // Mevcut açık panelleri sola it
-  panelStack.forEach(({ el }) => {
-    el.style.transform = `translateX(-${pushOffset}px)`;
-  });
-
-  panelEl.hidden = false;
-  panelEl.getBoundingClientRect(); // reflow — animasyonun başlaması için zorunlu
-  panelEl.classList.add('is-open');
-  panelStack.push({ el: panelEl, pushOffset });
-}
-
-/**
- * En üstteki paneli kapatır; altındakileri orijinal konumuna geri getirir.
- */
-function popPanel() {
-  if (!panelStack.length) return;
-  const { el } = panelStack.pop();
-
-  el.classList.remove('is-open');
-  el.addEventListener('transitionend', () => {
-    el.hidden = true;
-    el.style.transform = '';
-  }, { once: true });
-
-  // Alttaki panellerin push offset'ini sıfırla
-  panelStack.forEach(({ el: pEl }) => { pEl.style.transform = ''; });
-}
-
-// Escape tuşu her zaman en üstteki paneli kapatır
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') popPanel();
-});
-```
-
-#### Kullanım Örneği
-
-```js
-// "Ekle" butonu → Panel A aç
-document.getElementById('addBtn').addEventListener('click', () => {
-  pushPanel(document.getElementById('panelA'));
-});
-
-// Panel A içindeki "İlişki Ekle" → Panel B aç (aynı 653px offset)
-document.getElementById('addRelationBtn').addEventListener('click', () => {
-  pushPanel(document.getElementById('panelB'));
-});
-
-// Her paneliniz bir .panel-close-btn içersin
-document.querySelectorAll('.panel-close-btn').forEach(btn => {
-  btn.addEventListener('click', popPanel);
-});
-
-// Overlay click da yalnızca en üstteki paneli kapatır
-document.getElementById('panelOverlay').addEventListener('click', popPanel);
-```
-
-#### Kurallar
-
-| Kural | Açıklama |
-|---|---|
-| `pushOffset` default | 653px (task/filter panel genişliği) |
-| Full-screen panel üstüne açılırsa | `pushPanel(panelB, window.innerWidth / 2)` |
-| Stack boşken `popPanel()` | Hiçbir şey yapmaz, hata vermez |
-| Birden fazla `pushPanel()` çağrısı | Her biri tüm stack'i `pushOffset` px daha sola iter — dikkatli kullan |
-| `getBoundingClientRect()` | Reflow tetikler; `hidden = false` sonrası animasyon için zorunlu |
-
----
-
-## 11. Form Bileşenleri
-
-### 11.1 Label
-
-```css
-/* Task panel */
-.tp-label {
-  font-family: var(--font-title); font-size: var(--text-xs);
-  font-weight: 400; line-height: var(--lh-xs);
-  color: var(--bt-text-primary-default); display: block;
-}
-/* Edit panel */
-.ep-label {
-  font-family: var(--font-title); font-size: var(--text-xs);
-  font-weight: 400; line-height: var(--lh-xs);
-  color: var(--bt-text-primary-default); display: block;
-}
-```
-
-### 11.2 Input
-
-```css
-/* Task panel input */
-.tp-input {
-  width: 100%; height: 32px; padding: var(--space-sm) var(--space-xl);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm);
-  background: var(--bt-surface-primary-default);
-  font-size: var(--text-xs); color: var(--bt-text-primary-default);
-  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-}
-.tp-input::placeholder { color: var(--bt-text-primary-muted); }
-.tp-input:focus {
-  border-color: var(--bt-primary-default);
-  box-shadow: 0 0 0 3px rgba(13,78,151,0.12);
-}
-
-/* Edit panel read-only */
-.ep-input-ro {
-  width: 100%; height: 32px; padding: var(--space-sm) var(--space-xl);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm);
-  background: var(--bt-surface-primary-subtle);
-  font-size: var(--text-xs); color: var(--bt-text-primary-default);
-  outline: none; cursor: default;
-}
-
-/* Edit panel editable */
-.ep-input-edit {
-  width: 100%; height: 32px; padding: var(--space-sm) var(--space-xl);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm);
-  background: var(--bt-surface-primary-default);
-  font-size: var(--text-xs); color: var(--bt-text-primary-default);
-  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-}
-.ep-input-edit:focus {
-  border-color: var(--bt-primary-default);
-  box-shadow: 0 0 0 3px rgba(13,78,151,0.12);
-}
-
-/* Textarea */
-.tp-textarea { height: 64px; resize: none; padding-top: var(--space-sm); }
-.ep-textarea-ro { height: 64px; resize: none; padding-top: var(--space-sm); }
-```
-
-### 11.3 Custom Dropdown
-
-```css
-/* Task panel dropdown */
-.tp-dropdown { position: relative; }
-.tp-dropdown-trigger {
-  width: 100%; height: 32px;
-  padding: var(--space-sm) 36px var(--space-sm) var(--space-xl);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); background: var(--bt-surface-primary-default);
-  font-size: var(--text-xs); color: var(--bt-text-primary-muted);
-  text-align: left; cursor: pointer;
-  display: flex; align-items: center;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.tp-dropdown-trigger.has-value { color: var(--bt-text-primary-default); }
-.tp-dropdown-trigger:focus {
-  outline: none; border-color: var(--bt-primary-default);
-  box-shadow: 0 0 0 3px rgba(13,78,151,0.12);
-}
-.tp-dropdown.is-open .tp-input-icon { transform: translateY(-50%) rotate(180deg); }
-
-.tp-dropdown-list {
-  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: var(--bt-surface-primary-default);
-  border-radius: var(--radius-sm); overflow-y: auto; max-height: 160px;
-  z-index: 20;
-  box-shadow: 0px 2px 4px rgba(16,24,40,0.06), 0px 4px 8px rgba(16,24,40,0.10);
-}
-.tp-dropdown-list[hidden] { display: none; }
-.tp-dropdown-option {
-  display: flex; align-items: center; gap: 10px;
-  padding: var(--space-sm) var(--space-md); cursor: pointer;
-  font-size: var(--text-xs); color: var(--bt-text-primary-default);
-}
-.tp-dropdown-option:hover       { background: var(--bt-surface-primary-subtle); }
-.tp-dropdown-option.is-selected { background: var(--bt-surface-brand-subtle); }
-
-/* Sağ chevron icon */
-.tp-input-icon {
-  position: absolute; right: var(--space-sm); top: 50%; transform: translateY(-50%);
-  pointer-events: none; color: var(--bt-icon-primary-strong);
-  transition: transform 0.2s ease;
-}
-.icon-tp-sm { width: 16px; height: 16px; display: block; }
-```
-
-Edit panel dropdown (`ep-dropdown`, `ep-dd-trigger`, `ep-dd-list`) aynı mantık ama sınıf adları `ep-` prefix'li.
-
-### 11.4 Date Picker
-
-```css
-/* Takvim ikonu solda */
-.ep-datepicker {
-  position: relative; display: flex; align-items: center;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); background: var(--bt-surface-primary-default);
-  height: 32px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s;
-}
-.ep-datepicker:focus-within {
-  border-color: var(--bt-primary-default);
-  box-shadow: 0 0 0 3px rgba(13,78,151,0.12);
-}
-.ep-dp-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; flex-shrink: 0;
-  color: var(--bt-icon-primary-strong); cursor: pointer;
-}
-.ep-dp-input {
-  flex: 1; min-width: 0; border: none; background: transparent;
-  font-size: var(--text-xs); color: var(--bt-text-primary-default);
-  outline: none; padding: var(--space-sm) var(--space-xs);
-}
-/* Gizli native date input — browser picker'ı tetikler */
-.ep-dp-native {
-  position: absolute; opacity: 0; pointer-events: none;
-  width: 0; height: 0; top: 0; left: 0;
-}
-/* Read-only variant */
-.ep-datepicker--ro { background: var(--bt-surface-primary-subtle); pointer-events: none; }
-```
-
-### 11.5 Numeric Stepper
-
-```css
-.num-stepper {
-  display: flex; align-items: stretch; height: 32px;
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); background: var(--bt-surface-primary-default);
-  overflow: hidden;
-}
-.num-stepper__input {
-  flex: 1; min-width: 0; border: none; outline: none;
-  padding: 0 var(--space-xl); background: transparent;
-  font-size: var(--text-xs); color: var(--bt-text-primary-default);
-}
-.num-stepper__arrows {
-  display: flex; flex-direction: column; flex-shrink: 0;
-  border-left: 1px solid var(--bt-border-primary-default);
-}
-.num-stepper__btn {
-  flex: 1; width: 20px; border: none; background: transparent;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  color: var(--bt-text-primary-muted); padding: 0; transition: background 0.1s;
-}
-.num-stepper__btn + .num-stepper__btn { border-top: 1px solid var(--bt-border-primary-default); }
-.num-stepper__btn:hover { background: var(--bt-surface-primary-subtle); color: var(--bt-text-primary-default); }
-.num-stepper__btn svg { width: 11px; height: 11px; }
-.num-stepper--disabled { background: var(--bt-surface-primary-subtle); pointer-events: none; }
-```
-
-### 11.6 File Dropzone
-
-```css
-.tp-dropzone {
-  display: flex; flex-direction: column; align-items: center; gap: var(--space-md);
-  padding: var(--space-2xl) var(--space-md);
-  border: 1px dashed var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); background: var(--bt-surface-primary-light);
-}
-.tp-dropzone-text {
-  font-size: var(--text-xs); color: var(--bt-text-primary-emphasis);
-  text-align: center;
-}
-```
-
-### 11.7 Edit Panel Segmented Tabs
-
-```css
-.ep-tabs {
-  display: inline-flex; align-self: flex-start;
-  background: var(--bt-surface-primary-subtle);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-md); padding: var(--space-2xs); flex-shrink: 0;
-}
-.ep-tab {
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-sm); border: 1px solid transparent;
-  font-size: var(--text-xs); font-weight: 400; line-height: var(--lh-xs);
-  background: var(--bt-surface-tab-default); cursor: pointer; transition: background 0.12s;
-}
-.ep-tab:hover:not(.is-active) { background: var(--bt-surface-tab-hover); }
-.ep-tab.is-active {
-  background: var(--bt-surface-brand-subtle);
-  color: var(--bt-primary-default);
-  border-color: var(--bt-primary-default);
-}
-```
-
-### 11.8 Chips / Multiselect
-
-```css
-.tt-chip {
-  display: inline-flex; align-items: center; justify-content: center; gap: 2px;
-  background: var(--bt-surface-primary-subtle);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: 4px; padding: 2px 4px;
-  font-size: 12px; font-weight: 400;
-  color: var(--bt-text-primary-default); white-space: nowrap;
-}
-```
-
-### 11.9 Text Editor (Rich Text Toolbar)
-
-```css
-.tt-editor { display: flex; flex-direction: column; }
-.tt-toolbar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 4px 16px; height: 40px;
-  background: var(--bt-surface-primary-subtle);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-md) var(--radius-md) 0 0; flex-shrink: 0;
-}
-.tt-tool-btn {
-  display: flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; padding: 2px; border-radius: 2px;
-  border: none; background: transparent; cursor: pointer;
-  font-size: 12px; font-weight: 700; color: var(--bt-text-primary-default);
-}
-.tt-tool-btn:hover { background: rgba(0,0,0,0.08); }
-.tt-tool-btn.is-active { background: rgba(0,0,0,0.10); }
-.tt-body {
-  min-height: 160px; padding: 6px 12px; font-size: 12px;
-  color: var(--bt-text-primary-default); outline: none; line-height: 1.5;
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default); border-top: none;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-}
-.tt-body:empty::before { content: "Açıklama giriniz..."; color: var(--bt-text-primary-muted); pointer-events: none; }
-```
-
----
-
-## 12. Activity Cards (Edit Panel Sağ Sütun)
-
-```css
-.ep-act-card {
-  width: 100%; flex-shrink: 0;
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default);
-  border-radius: var(--radius-sm); overflow: hidden;
-}
-
-/* Header — tıklanabilir, collapse/expand */
-.ep-act-card__header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  cursor: pointer;
-  padding: var(--space-md) var(--space-xs) var(--space-md) var(--space-3xl);
-}
-
-/* Avatar */
-.ep-act-card__avatar {
-  width: 28px; height: 28px; border-radius: var(--radius-full);
-  border: 1px solid var(--bt-border-primary-default);
-  display: flex; align-items: center; justify-content: center;
-  font-size: var(--text-xs); font-weight: 500; flex-shrink: 0;
-}
-.ep-act-card__avatar--blue { background: var(--bt-primary-default); color: var(--bt-text-primary-inverted); }
-.ep-act-card__avatar--gray { background: var(--bt-surface-primary-subtle); color: var(--bt-text-primary-default); }
-
-/* Chevron toggle */
-.ep-act-card__chevron {
-  display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; border-radius: var(--radius-sm);
-  color: var(--bt-icon-primary-strong); background: none; border: none; cursor: pointer;
-}
-.ep-act-card__chevron i { transition: transform 0.25s ease; display: block; }
-.ep-act-card.is-open .ep-act-card__chevron i { transform: rotate(180deg); }
-
-/* Body — collapsible max-height animasyonu */
-.ep-act-card__body {
-  display: flex; flex-direction: column; gap: var(--space-2xl);
-  overflow: hidden; max-height: 0; padding: 0 var(--space-3xl);
-  box-shadow: inset 0 1px 0 var(--bt-border-primary-default);
-  transition: max-height 0.3s ease, padding 0.3s ease;
-}
-.ep-act-card.is-open .ep-act-card__body {
-  max-height: 500px; padding: var(--space-2xl) var(--space-3xl);
-}
-
-/* Log değişim gösterimi: "alan: eskiDeger → yeniDeger" */
-.ep-act-card__log .from { font-weight: 500; color: var(--bt-primary-default); }
-.ep-act-card__log .to   { font-weight: 500; color: var(--color-activity-success); }
-/* Ok işareti: move-down iconu, -90deg döndürülmüş → sağa ok */
-.ep-log-arrow { transform: rotate(-90deg); }
-```
-
----
-
-## 13. Overlay & Dialog
+## 7. Overlay & Dialog
 
 ### Alert Dialog (`.bt-adlg`)
 
@@ -2035,257 +761,18 @@ Figma kaynağı: node `625:1451` — 4 Type × 2 Button Position × 3 Button Seg
 
 **JS Davranışı**
 
-Alert Dialog bir modal backdrop içinde açılır (z-index: overlay katmanı, bkz. §17). **Overlays grubu ortak backdrop'u:** `background: rgba(0,0,0,0.4)` + `backdrop-filter: blur(4px)` (`-webkit-` dahil) — Alert Dialog, Dialog ve Drawer (`.bt-win-overlay`) aynı değerleri paylaşır. Backdrop'a veya `data-*-close` attribute'lu herhangi bir butona tıklamak dialog'u kapatır — açılış/kapanış deseni Dialog (§15.4) ile birebir aynı: `appendChild` → reflow (`void host.offsetHeight`) → `is-visible` class'ı; kapanışta class kaldır → `setTimeout(remove, 200)`. Aynı anda birden fazla Alert Dialog açılmaz.
-
-### Toast / Alert Banner
-
-```css
-.tt-alert-wrap {
-  position: fixed; top: 0; left: 50%;
-  transform: translateX(-50%) translateY(-120%);
-  z-index: 9500; width: 520px; max-width: calc(100vw - 32px);
-  padding-top: 16px; opacity: 0; pointer-events: none;
-  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
-}
-.tt-alert-wrap.is-visible {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1; pointer-events: all;
-}
-.tt-alert {
-  display: flex; align-items: center; width: 100%;
-  background: #e8f3ee; border: 1px solid #2d584b;
-  border-radius: var(--radius-xs); box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-```
-
-### Confetti Animasyonu
-
-```css
-.tt-confetti-wrap {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 9300; overflow: hidden;
-}
-.tt-confetti-piece {
-  position: absolute; top: -20px; will-change: transform, opacity;
-  /* Her parça JS ile random renk, boyut, animasyon süresi alır */
-}
-@keyframes confettiFall {
-  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-  80%  { opacity: 1; }
-  100% { transform: translateY(110vh) rotate(680deg); opacity: 0; }
-}
-@keyframes confettiSway {
-  0%   { margin-left: 0px; }
-  25%  { margin-left: 20px; }
-  75%  { margin-left: -20px; }
-  100% { margin-left: 0px; }
-}
-```
+Alert Dialog bir modal backdrop içinde açılır. **Overlays grubu ortak backdrop'u:** `background: rgba(0,0,0,0.4)` + `backdrop-filter: blur(4px)` (`-webkit-` dahil) — Alert Dialog, Dialog ve Drawer (`.bt-win-overlay`) aynı değerleri paylaşır. Backdrop'a veya `data-*-close` attribute'lu herhangi bir butona tıklamak dialog'u kapatır — açılış/kapanış deseni Dialog (§13.4) ile birebir aynı: `appendChild` → reflow (`void host.offsetHeight`) → `is-visible` class'ı; kapanışta class kaldır → `setTimeout(remove, 200)`. Aynı anda birden fazla Alert Dialog açılmaz.
 
 ---
 
-## 14. Dashboard (Kontrol Paneli)
-
-```css
-.dp-body {
-  flex: 1; overflow-y: auto; padding: 24px 28px;
-  display: flex; flex-direction: column; gap: 14px;
-  background: var(--bt-surface-primary-subtle);
-}
-
-/* KPI satırı — auto-fit grid */
-.dp-kpi-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--space-xl);
-}
-
-/* KPI kart: header + body split (aynı border, border-top yok) */
-.dp-kpi-header {
-  background: var(--bt-surface-primary-light);
-  border: 1px solid var(--bt-border-primary-default);
-  border-top-left-radius: var(--radius-md); border-top-right-radius: var(--radius-md);
-  display: flex; align-items: center; gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-xl);
-}
-.dp-kpi-body {
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default); border-top: none;
-  border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md);
-  padding: var(--space-xl); display: flex; flex-direction: column; gap: var(--space-xs);
-}
-.dp-kpi-value {
-  font-family: var(--font-title); font-weight: 500;
-  font-size: var(--text-5xl); line-height: var(--lh-5xl);
-  color: var(--bt-text-primary-default);
-}
-.dp-kpi-desc--error   { color: var(--bt-text-error-default); }
-.dp-kpi-desc--success { color: var(--bt-text-success-default); }
-
-/* Grafik satırı — auto-fit */
-.dp-charts-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 12px; align-items: stretch;
-}
-
-/* Grafik kartları — aynı header/body split */
-.dp-status-header {
-  background: var(--bt-surface-primary-light);
-  border: 1px solid var(--bt-border-primary-default);
-  border-top-left-radius: var(--radius-md); border-top-right-radius: var(--radius-md);
-  padding: var(--space-sm) var(--space-xl);
-}
-.dp-status-body {
-  background: var(--bt-surface-primary-default);
-  border: 1px solid var(--bt-border-primary-default); border-top: none;
-  border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md);
-  padding: var(--space-3xl); flex: 1;
-  display: flex; align-items: center; justify-content: center;
-}
-.dp-col-chart { width: 100%; height: 190px; display: block; overflow: visible; }
-.dp-row-chart { width: 100%; height: auto; display: block; overflow: visible; }
-```
-
----
-
-## 15. Login Sayfası
-
-### İki Sütun Layout
-
-```css
-.login-page { display: flex; height: 100vh; min-height: 600px; }
-
-/* Sol (%62) — beyaz, form */
-.panel--left {
-  flex: 1 1 62%; display: flex; align-items: center; justify-content: center;
-  background: var(--background-color-primary); padding: 40px 32px;
-}
-.form-wrapper { width: 100%; max-width: 361px; }
-
-/* Sağ (%38) — animasyonlu gradient, marka rengi */
-.panel--right {
-  flex: 0 0 38%; max-width: 730px;
-  position: relative; overflow: hidden;
-  background: var(--brand-bg); /* #05238b */
-  background-image:
-    radial-gradient(circle clamp(300px,24vw,920px) at var(--gx) var(--gy), rgba(2,239,254,0.45) 0%, transparent 68%),
-    radial-gradient(ellipse 75% 55% at 118% -8%,  rgba(2,239,254,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 90% 65% at -12% 112%, rgba(18,14,207,0.30) 0%, transparent 55%);
-}
-```
-
-### Sağ Panel — Animated Gradient Orbs
-
-5 adet orb: #02EFFE (cyan) ve #308FFF (sky blue), blur:70px, `will-change:transform`, birbirinden farklı `ease-in-out infinite alternate` animasyonlar.
-
-```css
-.g-orb { position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform; opacity: 0.75; }
-.g-orb--1 { width:520px; height:520px; top:-15%; left:-20%; background: radial-gradient(circle,#02EFFE 0%,rgba(2,239,254,0.4)55%,transparent 100%); animation: gorb1 16s ease-in-out infinite alternate; }
-/* ... gorb2–gorb5 benzer şekilde */
-```
-
-### CSS Hover Grid (Mouse Tracking — JS gerektirmez)
-
-`@property --gx / --gy` + 4×4 `div.hz` grid + CSS `:has()` ile hover'a göre gradient pozisyonu değişir:
-
-```css
-@property --gx { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
-@property --gy { syntax: '<percentage>'; inherits: false; initial-value: 40%; }
-.panel--right { transition: --gx 0.45s ease, --gy 0.45s ease; }
-.hover-grid { position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(4,1fr); z-index:10; }
-.panel--right:has(.hz:nth-child(1):hover)  { --gx: 12%; --gy: 12%; }
-/* ... 16 hücreye kadar devam eder */
-```
-
----
-
-## 16. Dropdown & Popup Ortak Kalıplar
-
-Tüm açılır menüler aynı göster/gizle animasyonunu kullanır:
-
-```css
-.some-menu {
-  opacity: 0; pointer-events: none;
-  transform: translateY(-6px) scale(0.97);
-  transform-origin: top right;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.some-menu.is-open {
-  opacity: 1; pointer-events: all;
-  transform: translateY(0) scale(1);
-}
-```
-
-Dropdown gölgesi:
-```css
-box-shadow: 0px 2px 4px rgba(16,24,40,0.06), 0px 4px 8px rgba(16,24,40,0.10);
-```
-
----
-
-## 17. Z-Index Katmanları
-
-| Katman                   | z-index |
-|--------------------------|---------|
-| Kolon filter panel       | 400     |
-| Kolon visibility menu    | 500     |
-| Panel overlay (backdrop) | 100     |
-| Filter panel             | 101     |
-| Edit panel               | 200     |
-| Task panel               | 201     |
-| TT Panel overlay         | 201     |
-| TT Panel                 | 202     |
-| User widget (overflow)   | 50      |
-| Confetti                 | 9300    |
-| Alert banner             | 9500    |
-| Alert dialog             | 10000   |
-| Talep Durumu dialog      | 9000    |
-
----
-
-## 18. Genel Shadow Tokenları
-
-```css
-/* shadow/sm */
-box-shadow: 0px 1px 2px rgba(16,24,40,0.06), 0px 1px 3px rgba(16,24,40,0.10);
-
-/* shadow/md */
-box-shadow: 0px 2px 4px rgba(16,24,40,0.06), 0px 4px 8px rgba(16,24,40,0.10);
-
-/* shadow/lg */
-box-shadow: 0 4px 6px rgba(16,24,40,0.03), 0 12px 16px rgba(16,24,40,0.08);
-
-/* Panel header shadow */
-box-shadow: 0px 2px 3px rgba(0,0,0,0.08);
-
-/* Edit panel collapsed shadow */
-box-shadow: -12px 0 32px 0 rgba(0,0,0,0.18);
-```
-
----
-
-## 19. Yeni Proje Başlatma Checklist
-
-1. Lucide script tag'ini `<head>` veya `<body>` sonuna ekle
-2. Google Fonts: Inter + Geist (dashboard için), sadece Inter (login için)
-3. Bu dosyadaki token bloğunu (`section 3`) `:root {}` içine kopyala
-4. Reset bloğunu (`section 4`) ekle
-5. `html, body { height: 100%; overflow: hidden; }` — tüm layout buna bağlı
-6. `lucide.createIcons()` çağrısını sayfa sonuna ekle
-7. Sidebar için `width: 280px` sabit, collapse state'i `is-collapsed` class'ı ile yönet
-8. Tüm paneller `transform: translateX(100%)` → `translateX(0)` geçişiyle açılır
-9. Açılır menüler `opacity+transform` animasyonu, `[hidden]` attribute veya `is-open` class'ı ile kontrol edilir
-10. Tablo satır yüksekliği: header `36px`, data `32px`, toolbar `40px`, page-header `36px`
-
----
-
-## 20. Token Reference Düzeltmeleri (MobileDesignSystem Denetiminden)
+## 8. Token Reference Düzeltmeleri (MobileDesignSystem Denetiminden)
 
 MobileDesignSystem docs sitesindeki 13 bileşen (Alert, Alert Dialog, Dialog, Bottom Sheet,
 Accordion, Avatar, Badge, Switch, Button, Button Dock, Icon Button, Card, Bottom Tab Bar,
 TextBox) satır satır taranıp render kodundaki ham hex/px değerler `var(--bt-*, fallback)`'a
 çevrilirken bulunan, **bu token sistemini kullanan her projede geçerli** hatalar/tuzaklar:
 
-### 20.1 Var olmayan (phantom) token isimleri
+### 8.1 Var olmayan (phantom) token isimleri
 
 Figma'nın ham değişken yolu bazı yerlerde CSS custom property adıymış gibi kullanılmış,
 ama böyle bir `--bt-*` değişkeni **tanımlı değil**:
@@ -2298,7 +785,7 @@ Figma path'i (`Surface Colors/Brand/--bt-surface-brand-contrast-default` gibi) s
 kaynak izlenebilirliği için yorum/dokümantasyon metni olarak tutulabilir, ama gerçek
 `var(...)` çağrısında **her zaman** gerçekten tanımlı token adı kullanılmalı.
 
-### 20.2 Yanlış seviye seçilen semantic token
+### 8.2 Yanlış seviye seçilen semantic token
 
 `--bt-text-error-emphasis` = Red/300 = `#f7aaae` (soluk pembe) — hata mesajı/description
 metni için kullanılırsa yanlış olur, çünkü görsel olarak koyu kırmızı (`#b31d38`) bekleniyor.
@@ -2307,7 +794,7 @@ Red/700). Aynı tuzak `-emphasis` (300 seviyesi) ile `-default`/`-solid` (700/60
 arasında her renk ailesinde (error/success/warning/brand) tekrar edebilir — seviyeyi
 her zaman gerçek render edilmiş rengin hex'iyle karşılaştırarak doğrula.
 
-### 20.3 Icon token'ları border/surface'tan ayrı bir aile
+### 8.3 Icon token'ları border/surface'tan ayrı bir aile
 
 `--bt-icon-{category}-default` kendi başına bir token ailesidir (`--bt-icon-error-default`,
 `--bt-icon-warning-default`, vb.) — çoğu zaman `--bt-border-{category}-default` ile aynı
@@ -2315,7 +802,7 @@ hex'e çözülür (örn. ikisi de Red/700) ama **semantik olarak farklı token'l
 ikonun rengini class'landırırken border token'ını ödünç almak yerine kendi icon token'ını
 kullan.
 
-### 20.4 Line-height her zaman bir token'a denk gelmeyebilir
+### 8.4 Line-height her zaman bir token'a denk gelmeyebilir
 
 Typography token'ları (`--bt-text-sm-regular` vb.) font-weight + font-size + line-height'ı
 tek bir composite `font` shorthand'ında birlikte taşır (Text/sm ailesi = 14px/16px, Text/md
@@ -2328,33 +815,14 @@ render** üretir, çünkü fallback değil gerçek token değeri (16px) uygulan�
 size+lh çifti tam eşleşiyorsa composite token'ı kullan, eşleşmiyorsa `font-size` +
 `line-height`'ı ayrı ayrı literal px olarak yaz ve yanına kısa bir yorum düş.
 
-### 20.5 Alert Notification (banner) — doğrulanmış tam spec
-
-Figma Desktop Bridge ile Stroke/Light/Filled × 4 tip tek tek doğrulandı:
-
-```
-Stroke  bg=--bt-surface-primary-default(#fff)  border=--bt-border-primary-default(#d4d4d4)
-        text=--bt-text-primary-default          icon=--bt-icon-{type}-default
-Light   bg=--bt-surface-{type}-light            border=--bt-border-{type}-default
-        text=--bt-text-primary-default (DEĞİŞMEZ, tint olmuyor)
-Filled  bg=--bt-surface-{type}-default          border=none
-        text=--bt-text-inverted (title VE description aynı opaklıkta beyaz — %85 fade YOK)
-        icon=--bt-icon-inverted
-
-İkon slotu: 40×40 hit-area, --bt-space-md (8px) padding → 24×24 gerçek ikon boyutu
-Title:  --bt-title-md-regular (16/24)   Description: --bt-text-sm-regular (14/16)
-```
-
-Success/Light arka planı `--bt-surface-success-light` = Green/50 = `#e8f3ee`'dir —
-`#daede5` (Green/100) ile karıştırılmamalı.
-
 ---
 
-## 21. Playground / Component Preview Toolbar Deseni (MobileDesignSystem docs sitesi)
+## 9. Playground / Component Preview Toolbar Deseni (Bentas DS component dokümantasyon sitesi)
 
-> Bu bölüm **Medusa Dashboard'a değil**, `MobileDesignSystem\docs` (Bentas DS component
-> dokümantasyon sitesi) projesine özeldir. Genel referans olarak bırakıldı — ileride
-> benzer bir "component preview / playground" ihtiyacı çıkarsa örnek alınabilir.
+> Bu bölüm bu reponun kendi `docs/` component dokümantasyon sitesine özeldir — bir
+> host projenin ekranına değil, Bentas Design System'in kendi playground/preview
+> motoruna ait. Genel referans olarak bırakıldı — ileride benzer bir "component
+> preview / playground" ihtiyacı çıkarsa örnek alınabilir.
 
 Nord Health (nordhealth.design) tarzı, Figma "Playground" toolbar'ından (Bentas DS node
 `375:27788`) uyarlanmış, tekrar kullanılabilir bir motor: `docs/js/playground.js` →
@@ -2451,7 +919,7 @@ başlığının hemen altında durur, kutunun İÇİNDE değil.
 `config.props` normalde statik bir dizi ama artık `(currentProps) => [...]` şeklinde bir
 **fonksiyon** da olabilir (`_pgdResolveProps` helper'ı, `playground.js`) — prop LİSTESİNİN
 kendisinin state'e göre değişmesi gerektiği durumlar için (ilk kullanım: Card'ın "Segment N"
-grupları, kaç segment aktifse o kadar grup üretiliyor, bkz. §16). Statik dizi kullanan TÜM
+grupları, kaç segment aktifse o kadar grup üretiliyor, bkz. §14). Statik dizi kullanan TÜM
 diğer playground'lar (Button, Card'ın Header/Body Title-Subtitle/Footer grupları dahil)
 hiçbir değişiklik yapmadan çalışmaya devam eder — bu tamamen opt-in bir özellik, geriye dönük
 %100 uyumlu.
@@ -2506,11 +974,11 @@ curl -sL "https://unpkg.com/lucide-static@latest/icons/<icon-name>.svg"
 
 ---
 
-## 12. Upload
+## 10. Upload
 
-Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamamen interaktif — gerçek dosya seçimi, progress animasyonu, success/failed state yönetimi. İki tip destekler: **Standart Upload** (§12.1, tek satır dropzone) ve **External Drop Zone** (§12.4, dikey/vurgulu drop kutusu) — ikisi de aynı Upload File (§12.2) ve Upload container (§12.3) yapı taşlarını, aynı Default/Single/Multiple segment modlarını ve aynı JS state machine'ini (§12.5) paylaşır.
+Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamamen interaktif — gerçek dosya seçimi, progress animasyonu, success/failed state yönetimi. İki tip destekler: **Standart Upload** (§10.1, tek satır dropzone) ve **External Drop Zone** (§10.4, dikey/vurgulu drop kutusu) — ikisi de aynı Upload File (§10.2) ve Upload container (§10.3) yapı taşlarını, aynı Default/Single/Multiple segment modlarını ve aynı JS state machine'ini (§10.5) paylaşır.
 
-### 12.1 Drop Zone (`.bt-dropzone`)
+### 10.1 Drop Zone (`.bt-dropzone`)
 
 `Select Files` butonu `bt-btn bt-btn--xs bt-btn--primary-ghost` component'idir. İkonlar inline SVG.
 
@@ -2569,7 +1037,7 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-dropzone__status-icon svg { width: 16px; height: 16px; }
 ```
 
-### 12.2 Upload File (`.bt-upload-file`)
+### 10.2 Upload File (`.bt-upload-file`)
 
 İkon ve butonlar inline SVG. Action butonları `bt-upload-file__btn` custom class'ıdır (24×24px icon button).
 
@@ -2620,7 +1088,7 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-upload-file__progress-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: var(--bt-radius-sm, 4px); background: var(--bt-primary-default, #0d4e97); transition: width 0.2s ease; }
 ```
 
-### 12.3 Upload container (`.bt-upload`)
+### 10.3 Upload container (`.bt-upload`)
 
 ```html
 <div class="bt-upload">          <!-- Default: sadece dropzone -->
@@ -2632,9 +1100,9 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-upload--multiple { gap: var(--bt-space-md, 8px); }
 ```
 
-### 12.4 External Drop Zone (`.bt-edz`) — 2. tip
+### 10.4 External Drop Zone (`.bt-edz`) — 2. tip
 
-İkinci Upload tipi. Figma kaynağı: node `586:20876` (Base External Drop Zone) + `586:21058` (3 segment: Default/Single/Multiple). Upload File (§12.2) ve Upload container (§12.3) **birebir reuse edilir** — sadece dropzone kutusunun kendisi farklıdır: satır değil, dikey stack; `Select Files` de bir link değil, gerçek design system Button component'idir.
+İkinci Upload tipi. Figma kaynağı: node `586:20876` (Base External Drop Zone) + `586:21058` (3 segment: Default/Single/Multiple). Upload File (§10.2) ve Upload container (§10.3) **birebir reuse edilir** — sadece dropzone kutusunun kendisi farklıdır: satır değil, dikey stack; `Select Files` de bir link değil, gerçek design system Button component'idir.
 
 ```html
 <!-- Default -->
@@ -2695,7 +1163,7 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 .bt-upload--external { gap: var(--bt-space-md, 8px); }
 ```
 
-### 12.5 JS Davranışı
+### 10.5 JS Davranışı
 
 `pages-web.js`'de global fonksiyonlar — başka projelere taşınırken kopyalanır. Standart Upload ve External Drop Zone **aynı fonksiyonları paylaşır**: zone lookup'ları hem `.bt-dropzone` hem `.bt-edz`'i eşleştirecek şekilde genellenmiştir (`upload.querySelector('.bt-dropzone, .bt-edz')`).
 
@@ -2711,11 +1179,11 @@ Dosya yükleme bileşeni. Drop Zone + Upload File parçalarından oluşur. Tamam
 
 ---
 
-## 13. Avatar
+## 11. Avatar
 
 Kullanıcı/varlık temsili için dairesel konteyner. Figma kaynağı: node `205:25278` — 6 boyut (2xs/xs/sm/md/lg/xl) × 2 tip (Initials/Icon) × 2 tema (Default/Brand). Tamamen statik — hiç JS davranışı yok.
 
-### 13.1 Yapı
+### 11.1 Yapı
 
 ```html
 <!-- Initials, Default -->
@@ -2729,7 +1197,7 @@ Kullanıcı/varlık temsili için dairesel konteyner. Figma kaynağı: node `205
 </div>
 ```
 
-### 13.2 Figma'da doğrulanan, ilk bakışta beklenmeyen 2 detay
+### 11.2 Figma'da doğrulanan, ilk bakışta beklenmeyen 2 detay
 
 1. **Icon her boyutta sabit 24×24'tür** — avatar container 24px'ten 56px'e büyürken (2xs→xl) icon boyutu **hiç değişmez**, sadece etrafındaki boş alan artar. Bu, 6 boyutun hepsi tek tek Figma'dan sorgulanarak doğrulandı (ilk izlenim "icon da orantılı büyür" olurdu, yanlış olurdu).
 2. **Border her iki temada da var** — Figma'nın React/Tailwind çıktısında `border border-[--bt-border-primary-default]` sınıfı Default/Brand ayrımından ÖNCE, ortak (paylaşılan) kısımda tanımlı; yani koyu mavi Brand arka plan üstünde de aynı 1px `--bt-border-primary-default` border'ı var. Kolayca "brand'de border olmaz" diye atlanabilecek bir detay.
@@ -2737,7 +1205,7 @@ Kullanıcı/varlık temsili için dairesel konteyner. Figma kaynağı: node `205
 
 Padding değerleri Figma çıktısında `--radius-sm/-md/-lg/-2xl/-3xl/-4xl` gibi (radius token'larıyla aynı isimli, garip) değerler olarak görünüyor — bunlar **kullanılmadı**. Container `size-[Npx]` ile SABİT boyutlu, `items-center justify-center` ile içerik ortalanıyor; nominal padding + 24px icon toplamı bazı boyutlarda (örn. 2xs: 4px+4px+24px=32px > 24px container) container'ı geçiyor, yani bu padding değerleri gerçek layout'u etkilemeyen, muhtemelen "Hug"tan "Fixed"e geçişte kalmış eski auto-layout metadata'sı. Bu yüzden CSS'te padding hiç kullanılmadı, sadece fixed width/height + flex center.
 
-### 13.3 CSS
+### 11.3 CSS
 
 ```css
 .bt-avatar {
@@ -2778,7 +1246,7 @@ Padding değerleri Figma çıktısında `--radius-sm/-md/-lg/-2xl/-3xl/-4xl` gib
 .bt-avatar--brand .bt-avatar__icon { color: var(--bt-icon-primary-inverted, #ffffff); }
 ```
 
-### 13.4 Boyut → Token eşlemesi
+### 11.4 Boyut → Token eşlemesi
 
 | Boyut | Piksel | Token |
 |---|---|---|
@@ -2789,17 +1257,17 @@ Padding değerleri Figma çıktısında `--radius-sm/-md/-lg/-2xl/-3xl/-4xl` gib
 | lg  | 48×48 | `--bt-base-sizing-12xl` |
 | xl  | 56×56 | `--bt-base-sizing-14xl` |
 
-### 13.5 Not: pages-mobile.js'teki eski implementasyon
+### 11.5 Not: pages-mobile.js'teki eski implementasyon
 
 `pages-mobile.js`'teki `'components/avatar'` sayfası bu revizyondan **kasıtlı olarak dokunulmadan** bırakıldı — tamamen ayrı, inline `style="..."` tabanlı eski bir implementasyon (kaldırılmış `--bt-text-xs-size/-lh` gibi tokenlar, yanlış arka plan/border, orantılı büyüyen icon varsayımı). `pages-web.js`'deki yeni `.bt-avatar` component'i ile paylaşılan bir kod yolu yok. Kullanıcı isterse ayrı bir oturumda mobile tarafı da bu component'e taşınabilir.
 
 ---
 
-## 14. Accordion
+## 12. Accordion
 
 Figma kaynağı: node `605:30055`. 2 varyant (**Basic** / **Bordered**) × 2 içerik tipi (**Chevron** / **Plus-X**) × 5 state (Default/Hover/Active/Focused/Disabled). Tamamen interaktif — başlığa tıklamak bölümü gerçekten açar/kapatır.
 
-### 14.1 Yapı — flat, pozisyon class'ı yok
+### 12.1 Yapı — flat, pozisyon class'ı yok
 
 Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı varyantlar tanımlıyor (köşe yuvarlaklığı ve hangi kenarların border aldığını yönetmek için). Kodda bu **taklit edilmedi** — bunun yerine header'lar ve (açıkken) content'ler tek bir `.bt-accordion` konteynerinin **düz (flat) sıralı kardeşleri** olarak diziliyor, dış görünüm şöyle sağlanıyor:
 
@@ -2823,9 +1291,9 @@ Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı 
 </div>
 ```
 
-**Kritik nokta:** `.bt-accordion__content` her zaman DOM'da durur (yeniden oluşturulmaz), `.is-open` class'ıyla gösterilir/gizlenir (**`[hidden]`/`display:none` DEĞİL** — bkz. §14.2'deki animasyon notu). Bu sayede `:last-child` CSS kuralı her zaman doğru elemana denk gelir ve toggle sırasında DOM'u yeniden inşa etmeye gerek kalmaz.
+**Kritik nokta:** `.bt-accordion__content` her zaman DOM'da durur (yeniden oluşturulmaz), `.is-open` class'ıyla gösterilir/gizlenir (**`[hidden]`/`display:none` DEĞİL** — bkz. §12.2'deki animasyon notu). Bu sayede `:last-child` CSS kuralı her zaman doğru elemana denk gelir ve toggle sırasında DOM'u yeniden inşa etmeye gerek kalmaz.
 
-### 14.2 CSS
+### 12.2 CSS
 
 > **Kullanıcı kararıyla Figma'dan sapan 3 nokta** (aşağıdaki kodda işaretli): (1) header padding'i yatay/dikey ayrıştırıldı (Figma'da ikisi de `--bt-space-md` idi), (2) hover'da title alt çizili, (3) açılış/kapanış `grid-template-rows` ile smooth animasyonlu ve ikon artık ayrı bir "açık" SVG yerine `transform:rotate` ile dönüyor.
 
@@ -2928,7 +1396,7 @@ Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı 
 </div>
 ```
 
-### 14.3 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
+### 12.3 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
 
 1. **Hover/Active hiçbir yerde arka plan değiştirmiyor.** Figma'nın ürettiği React/Tailwind çıktısında Hover ve Active state'lerinin hiçbirinde `bg-[...]` override'ı yok — sadece ikon yönü (Active) ve ring (Hover, sadece Bordered'da) değişiyor. Eski `pages-mobile.js` implementasyonu bunun aksini varsayıp Active'de `--bt-surface-subtle` arka planı uyguluyordu — bu revizyonda **kasıtlı olarak yapılmadı**.
 2. **Focus Ring opaklığı %50, projenin geri kalanındaki butonlardan farklı.** Diğer bileşenlerde (Button, Split Button) nötr focus ring'i `rgba(212,212,212,0.25)` iken, Accordion'da Figma "Focus Ring/neutral" effect'i açıkça `#D4D4D480` (= %50 alpha) olarak tanımlı. Bu proje-geneli tutarsızlık gibi görünse de Figma'da doğrudan bu component için böyle tanımlanmış, düzeltilmedi.
@@ -2936,7 +1404,7 @@ Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı 
 4. **Sol ikon slotu (`Left Control`) gerçek kullanım örneklerinde hep kapalı.** Figma'nın component tanımında `showLeftControl` prop'u var ve varsayılan `true`, ama "Accordion Basic With Content" / "Accordion Bordered With Content" örneklerinin HİÇBİRİ sol ikonu göstermiyor (`showLeftControl={false}`) — bu yüzden `accHeaderHtml`'in `showLeftIcon` parametresi de varsayılan `false`. Kullanıcı isteğiyle sonradan opsiyonel olarak eklendi (playground'da "Left Icon" On/Off toggle'ı, `ACC_LEFT_OPTS`, varsayılan Off — component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı) — Figma'nın kendi placeholder ikonu (`Icon/placeholder`, lucide "scan") birebir kullanılıyor.
 5. **Disabled title rengi Figma'da bir ICON token'ına bağlı** (`--icon/primary/--bt-icon-primary-muted`), description ise doğru şekilde bir TEXT token'ına (`--text/primary/--bt-text-primary-muted`). İkisi de aynı hex'e (#a3a3a3) çözümlendiği için kodda ikisi de tutarlılık adına `--bt-text-primary-muted`'a bağlandı — Figma'nın olası bir bağlama hatası, bilinçli normalize edildi.
 
-### 14.4 Kullanıcı kararıyla eklenen özelleştirmeler (Figma'nın dışında)
+### 12.4 Kullanıcı kararıyla eklenen özelleştirmeler (Figma'nın dışında)
 
 - **Header padding'i yatay/dikey ayrıştırıldı:** dikey `--bt-space-md` (8px, Figma'yla aynı) kaldı, yatay `--bt-space-xl`'e (12px) çıkarıldı. Content'in yatay padding'i de (eskiden `--bt-space-md`) header'la hizalı kalması için aynı şekilde `--bt-space-xl`'e çekildi — Figma'da content'in kendisi `px-md py-xl` idi, bu artık `px-xl py-xl` (tek `--bt-space-xl` değeri, dört yönde de).
 - **Hover'da title alt çizili** (`text-decoration:underline`) — Figma'da böyle bir kural yok, kullanıcı isteğiyle eklendi.
@@ -2945,7 +1413,7 @@ Figma, Bordered varyantı için `Position: Single/First/Middle/Last` diye ayrı 
 - **Playground toolbar'ında Description/Left Icon toggle'ları On/Off:** proje genelindeki `TBX_BOOL_OPTS` (On/Off — bkz. CLAUDE.md "Playground Toolbar Boolean Toggle Standardı") konvansiyonuyla tutarlı olsun diye `ACC_DESC_OPTS`/`ACC_LEFT_OPTS` artık `TBX_BOOL_OPTS`'un aynısı (referans paylaşımı, kod tekrarı yok); Description varsayılanı On, Left Icon varsayılanı Off (component'in kendi `showLeftIcon = false` varsayılanıyla tutarlı). Bu toggle'lar tarihsel olarak önce Show/Hide, sonra Yes/No, en son On/Off olarak isimlendirildi — proje genelinde tek standarda (On/Off) sabitlendi.
 - **Content örneğine (metnin altına) 4'lü TextBox grid'i eklendi:** mevcut TextBox bileşeninin md/readonly hâli (`_tbxCls`, `_tbxInputInner`) sıfırdan yazılmadan yeniden kullanılıyor, her hücrede label görünür (`label:'yes'` davranışıyla aynı `.bt-tbx__meta`/`.bt-tbx__label` bloğu elle eklendi), 2 yatay x 2 dikey grid, hücreler arası boşluk `--bt-space-2xl` (24px).
 
-### 14.5 JS Davranışı
+### 12.5 JS Davranışı
 
 Tek global fonksiyon, gerçek DOM manipülasyonu (Upload/Split Button ile aynı desen — sayfa yeniden render edilmiyor):
 
@@ -2954,17 +1422,17 @@ Tek global fonksiyon, gerçek DOM manipülasyonu (Upload/Split Button ile aynı 
 | `btAccToggle(btn)` | Header butonuna tıklanınca çağrılır. `disabled` ise no-op. Değilse: `is-active` class'ını toggle'lar, `aria-expanded`'ı günceller, hemen sonraki `.bt-accordion__content` kardeşin `is-open` class'ını toggle'lar (CSS geri kalanını — ikon dönüşü + yükseklik animasyonu — hallediyor). |
 | `btAccIcon(iconType)` | `iconType`'a ('chevron'\|'plus') göre HER ZAMAN "kapalı" glyph SVG string'ini döndürür (chevron-down veya plus) — "açık" hâli CSS transform:rotate ile üretildiği için ayrı bir SVG'ye gerek yok. |
 
-## 15. Dialog
+## 13. Dialog
 
 Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button Position × 3 Button Segments.
 
 **Not — isimlendirme:** Figma'nın kendi variant adı "Header Type=Left/Flex". Bu isimlendirme kullanıcı kararıyla frontend/CSS mantığına göre bilinçli olarak değiştirildi: "Flex" → **"Center"** (varyantın gerçek etkisi title'ı ortalamak; "Flex" bir layout tekniğini değil, sonucu tanımlamalı). "Left" ismi ise olduğu gibi bırakıldı (kullanıcı sadece "Left"in karşılığı olan ikinci ismi değiştirmeye karar verdi, "Left"i "Start"a çevirmedi). Kod tarafında `bt-dialog--flex` → `bt-dialog--center` olarak değişti.
 
-**Not — ikonlar:** İlk implementasyon close/icon-slot ikonlarını `<i data-lucide="...">` placeholder deseniyle yazmıştı — bu, Lucide runtime'ının (`lucide.createIcons()`) sayfada yüklü olmasına bağımlı, ve bu docs sitesi (ve varsayılan olarak yeni bir proje) Lucide script'i hiç yüklemiyorsa ikon render OLMAZ (boş görünür). Bu projenin geri kalan tüm component'leri gibi ikonlar doğrudan inline `<svg>` olarak gömülmeli — sadece Lucide'ı gerçekten yükleyen bir consuming projede (örn. Medusa Dashboard, bkz. §6 "Lucide icon tuzağı") `data-lucide` kalıbı kullanılabilir.
+**Not — ikonlar:** İlk implementasyon close/icon-slot ikonlarını `<i data-lucide="...">` placeholder deseniyle yazmıştı — bu, Lucide runtime'ının (`lucide.createIcons()`) sayfada yüklü olmasına bağımlı, ve bu docs sitesi (ve varsayılan olarak yeni bir proje) Lucide script'i hiç yüklemiyorsa ikon render OLMAZ (boş görünür). Bu projenin geri kalan tüm component'leri gibi ikonlar doğrudan inline `<svg>` olarak gömülmeli — sadece Lucide'ı gerçekten yükleyen bir host projede (bkz. §6 "Lucide icon tuzağı") `data-lucide` kalıbı kullanılabilir.
 
 **Not — control slot yapısı (kullanıcı düzeltmesi):** Header'daki sol/sağ 40×40'lık alanlar (Figma "Base Dialog Controls") kendileri **stillendirilmiş elemanlar değil, sadece layout slot'ları**. İlk implementasyon bunu yanlış anlayıp close butonunu doğrudan 40×40 boyutunda, kendine özel hover/renk stilleriyle bespoke bir `<button>` olarak yazmıştı. Doğrusu: 40×40 slot içinde her zaman **reuse edilen bir bt-btn** oturuyor (Figma'nın "Button" instance'ı doğrulaması: xs boyut, 4px padding + 16px icon + 4px padding = 24px). Sol taraftaki (Center type'ta görünen) ikon da aynı mantıkla bir 24×24 **icon wrapper** (`.bt-dialog__icon-wrap`) içinde duruyor, içindeki ikonun kendisi wrapper'ı doldurmayan 16×16 boyutunda — doğrudan 40×40'a gömülü değil. Bu ayrım önemli çünkü component-özel bespoke bir buton yazmak yerine projenin mevcut Button sistemini (hover/focus/active state'leri dahil) reuse etmeyi sağlıyor — CLAUDE.md'nin "Mevcut Component'leri Reuse Et" kuralıyla örtüşüyor. **Sonradan kullanıcı kararıyla** close butonunun boyutu Figma'nın xs'inden (24×24) **sm'ye (28×28)** çıkarıldı, ve header'ın `--bt-space-xl` (12px) yatay padding'i kaldırılıp `--bt-space-none`'a çevrildi — bilinçli Figma sapması. Sonra bu ikinci karar **Left header type için kısmen geri alındı**: icon slot olmadığı için title'ın kendi sol inset'i olmadan header'ın gerçek kenarına yapışık kalması istenmedi, `.bt-dialog--left .bt-dialog__header` için `padding-left: var(--bt-space-xl, 12px)` eklendi (Center type'ta hâlâ `--bt-space-none` — 40×40 icon slot zaten aynı görsel inset'i sağlıyor).
 
-### 15.1 Markup
+### 13.1 Markup
 
 ```html
 <!-- Left header type (default), Horizontal buttons, 2 segments -->
@@ -3010,7 +1478,7 @@ Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button 
 
 **Left/Right Control görünürlüğü:** Figma'da sol icon slot'u sadece Center header type'ta gösterilir (Left'te hiç yok), sağdaki close control ise her iki tipte de her zaman gösterilir — bu ikisi arasında bağımsız bir "gizle" seçeneği Figma'da yok. Playground'a kullanıcı isteğiyle **iki bağımsız toggle** eklendi (`Left Control` / `Right Control`, On/Off, `TBX_BOOL_OPTS` reuse edilerek): markup tarafında her ikisi de boş string'e düşüp elemanı DOM'dan tamamen kaldırıyor (`[hidden]`/`display:none` değil). `Left Control`'ün görünür bir etkisi olması için Header Type'ın Center olması gerekir (Left'te icon slot zaten render edilmiyor, toggle'ın kendisi devre dışı bırakılmıyor — bu projede playground prop'ları arasında conditional/dependent görünürlük mekanizması yok). `Right Control = Off` seçildiğinde close butonu (ve onu saran 40×40 slot) tamamen kaldırılıyor, title-wrap (flex:1) kalan alanı dolduruyor — bu, Figma'nın örneklerinin dışında kullanıcı kararıyla eklenen bir esneklik (örn. kapatılamaz/zorunlu-aksiyon dialog senaryosu için).
 
-### 15.2 CSS Tokens
+### 13.2 CSS Tokens
 
 | Element | Property | Token | Fallback |
 |---|---|---|---|
@@ -3043,15 +1511,15 @@ Figma kaynağı: node `639:17632`. 2 Header Type × Subtitle On/Off × 2 Button 
 
 **Not — CSS specificity:** `.bt-dialog__body-text` bir `<p>` etiketine tek class olarak uygulanıyor (`specificity 0,1,0`). Docs sitesindeki genel `.content p` kuralı (`0,1,1`) daha spesifik olduğu için bunu ezip 14px/emphasis-color/16px-margin-bottom uygulayabilir — normal sayfa akışında (isolation mode dışında) fark edilir, isolation preview'da `.content` sarmalayıcısı olmadığı için fark edilmez. Bu yeni bir Bentaş projesine taşınırken de aynı tuzağa düşülebileceğinden selector `.bt-dialog__body .bt-dialog__body-text` (specificity `0,2,0`) olarak yazılmalı — herhangi bir `.content p`/`.prose p` benzeri genel kuraldan bağımsız olarak kazanır.
 
-### 15.3 Button Layout
+### 13.3 Button Layout
 
 - **Horizontal:** buttons right-aligned, fixed 80px width. Ghost(s) left, primary right.
 - **Vertical:** buttons stacked full-width. Primary on top, secondary/ghost(s) below.
 - Segments 1 → primary only; 2 → Cancel + Confirm; 3 → Skip + Cancel + Confirm.
 
-### 15.4 JS Davranışı
+### 13.4 JS Davranışı
 
-Dialog bir modal overlay içinde açılır. Backdrop'a tıklamak veya `data-pgd-close` attribute'lu herhangi bir butona tıklamak dialog'u kapatır. **Overlays grubu ortak backdrop'u:** `background: rgba(0,0,0,0.4)` + `backdrop-filter: blur(4px)` (`-webkit-` dahil) — Alert Dialog (§13), Dialog ve Drawer (`.bt-win-overlay`) aynı değerleri paylaşır. Uygulama kodu için:
+Dialog bir modal overlay içinde açılır. Backdrop'a tıklamak veya `data-pgd-close` attribute'lu herhangi bir butona tıklamak dialog'u kapatır. **Overlays grubu ortak backdrop'u:** `background: rgba(0,0,0,0.4)` + `backdrop-filter: blur(4px)` (`-webkit-` dahil) — Alert Dialog (§7), Dialog ve Drawer (`.bt-win-overlay`) aynı değerleri paylaşır. Uygulama kodu için:
 
 ```javascript
 // Open: append to body, add is-visible class after reflow
@@ -3071,7 +1539,7 @@ host.addEventListener('click', e => {
 });
 ```
 
-## 16. Card
+## 14. Card
 
 Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segments) + `757:7380` (Figma'da "Base Card Content Header" — aynı yapı, body içindeki bölüm ayıracı olarak reuse edilir; kod ve UI'da **"Body Title/Subtitle"** olarak adlandırıldı, çünkü Card'ın zaten kendi ana Header'ı var ve body içindeki bu ikinci parçayı da "Header" olarak etiketlemek kafa karıştırıyordu — kullanıcı kararı, 2026-08-07, bkz. HISTORY.md) + `692:30381` (assembled Card örneği, "Veritabanı Detayları"). Card, ilişkili içeriği bir **Header** ve bir **Body** olmak üzere iki bölümde gruplayan bir kapsayıcı.
 
@@ -3083,7 +1551,7 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 
 **Not — Body içeriği:** Figma'nın "Base Card Content" (`756:6684`) component'i canonical içerik reçetesi: opsiyonel Body Title/Subtitle + opsiyonel Description + N adet "Card Row Segment" (28×28 ikon + flex Label + flex Value). Gerçek kullanım örneği ("Veritabanı Detayları", `692:30381`) 12px body padding ve ikon+değer kombinasyonlu (örn. yeşil ok + "%18.2") satırlar kullanıyor — ama bu tek bir ürün ekranının özelleştirmesi, docs sitesindeki generic placeholder konvansiyonuyla (diğer tüm component'lerde "Label Text Here"/"Value Text Here" gibi) tutarlı kalmak için **canonical 16px padding + sade ikon+label+value satırları** tercih edildi.
 
-### 16.1 Markup
+### 14.1 Markup
 
 ```html
 <div class="bt-card">
@@ -3153,7 +1621,7 @@ Figma kaynağı: `670:8121` (Base Card Header — 2 Type × 2 Position × 3 Segm
 - Footer buton düzeni: `bt-card--horizontal` (sağa yaslanmış, 80px sabit) / `bt-card--vertical` (tam genişlik istifleme) — `.bt-card` wrapper'ına eklenir
 - Body Title/Subtitle: `bt-card__header--plain` (arka plansız, her zaman borderless/0-padding, body içinde kullanılır)
 
-### 16.2 CSS Tokens
+### 14.2 CSS Tokens
 
 | Element | Property | Token | Fallback |
 |---|---|---|---|
@@ -3235,9 +1703,9 @@ Body yüksekliği `.bt-card--scrollable .bt-card__body { height: 120px; overflow
 
 **Not — Background, Type'tan ayrı bağımsız bir prop oldu (2026-08-12):** Kullanıcı isteğiyle bir önceki notta Type'a (Bordered/Borderless) bağlanan arka plan davranışı geri ayrıştırıldı — artık **Background (On/Off)** kendi başına bağımsız bir Header prop'u, Type sadece alt ayracı (border-bottom) kontrol ediyor. `.bt-card__header--bordered` sadece `border-bottom` taşıyor, yeni `.bt-card__header--bg` class'ı sadece `background: var(--bt-base-subtle)` taşıyor — `crdHeaderHtml(opts)` artık `opts.background` (`'on'`/`'off'`, varsayılan `'on'` — eski "Bordered" görünümüyle birebir aynı) okuyup class'ı bağımsız ekliyor/kaldırıyor. Card/Default Card/Clickable Card/Selectable Card playground'larının Header grubuna `Background` (`TBX_BOOL_OPTS`) prop'u, `type`'ın hemen altına eklendi. (O sırada Collapsible Card henüz `crdHeaderHtml` kullanmıyordu, kendi sabit header'ı vardı — bu, aşağıdaki not ile değişti.)
 
-**Not — icon taşıyıcı vs. icon boyutu (Dialog'daki aynı ayrım, tekrar karışmıştı):** İlk implementasyonda hem header control'ünün 24×24 taşıyıcısında (`.bt-card__control-icon svg { width:100%; height:100% }`) hem de Row Segment'in ikonunda (28×28 `.bt-card__row-icon` doğrudan `svg{width:24px;height:24px}` ile, ara taşıyıcı hiç yoktu) ikon, taşıyıcı kutuyu **dolduracak** şekilde zorlanmıştı — bu, Avatar'ın "ikon = wrapper boyutu" deseniyle YANLIŞ bir benzetme (Dialog'da da aynı hata yapılıp düzeltilmişti, bkz. §15). Doğrusu: taşıyıcı kutu kendi boyutunda sabit kalır (control slotunda 24×24, Row Segment'te 28×28 dış slot → 24×24 iç taşıyıcı), ikonun kendisi ise **kendi tanımlı boyutunda** (`_crdIconScan`, 16×16) taşıyıcının içinde ortalanır, taşıyıcıyı doldurmaz. Düzeltme: `.bt-card__control-icon svg{width:100%;height:100%}` kuralı kaldırıldı; Row Segment'e eksik olan 24×24 ara taşıyıcı (`.bt-card__row-icon` içine iç içe `.bt-card__control-icon` reuse edilerek) eklendi.
+**Not — icon taşıyıcı vs. icon boyutu (Dialog'daki aynı ayrım, tekrar karışmıştı):** İlk implementasyonda hem header control'ünün 24×24 taşıyıcısında (`.bt-card__control-icon svg { width:100%; height:100% }`) hem de Row Segment'in ikonunda (28×28 `.bt-card__row-icon` doğrudan `svg{width:24px;height:24px}` ile, ara taşıyıcı hiç yoktu) ikon, taşıyıcı kutuyu **dolduracak** şekilde zorlanmıştı — bu, Avatar'ın "ikon = wrapper boyutu" deseniyle YANLIŞ bir benzetme (Dialog'da da aynı hata yapılıp düzeltilmişti, bkz. §13). Doğrusu: taşıyıcı kutu kendi boyutunda sabit kalır (control slotunda 24×24, Row Segment'te 28×28 dış slot → 24×24 iç taşıyıcı), ikonun kendisi ise **kendi tanımlı boyutunda** (`_crdIconScan`, 16×16) taşıyıcının içinde ortalanır, taşıyıcıyı doldurmaz. Düzeltme: `.bt-card__control-icon svg{width:100%;height:100%}` kuralı kaldırıldı; Row Segment'e eksik olan 24×24 ara taşıyıcı (`.bt-card__row-icon` içine iç içe `.bt-card__control-icon` reuse edilerek) eklendi.
 
-**Not — CSS specificity (Dialog'daki aynı bug, tekrar yakalandı):** `.bt-card__description` bir `<p>` etiketine tek class olarak uygulanmıştı (`specificity 0,1,0`) — docs sitesinin genel `.content p` kuralı (`0,1,1`, `styles.css` satır ~1382) daha spesifik olduğu için bunu ezip 14px/emphasis-color/16px-margin-bottom uyguluyordu (bkz. §15.2'deki aynı not, `.bt-dialog__body-text`). Düzeltme: selector `.bt-card__body .bt-card__description` (`specificity 0,2,0`) yapıldı — Dialog'da kullanılan aynı çözüm. **Bu artık projede üçüncü kez tekrarlanan bir hata** (Switch/Checkbox/Radio, Dialog, şimdi Card) — yeni bir component'te herhangi bir `<p>` etiketine tek class uygulanıyorsa, component tamamlanmadan önce mutlaka iki-class'lı bir selector'a (`.bt-x__body .bt-x__description` gibi) geçirilmeli, sona bırakılmamalı.
+**Not — CSS specificity (Dialog'daki aynı bug, tekrar yakalandı):** `.bt-card__description` bir `<p>` etiketine tek class olarak uygulanmıştı (`specificity 0,1,0`) — docs sitesinin genel `.content p` kuralı (`0,1,1`, `styles.css` satır ~1382) daha spesifik olduğu için bunu ezip 14px/emphasis-color/16px-margin-bottom uyguluyordu (bkz. §13.2'deki aynı not, `.bt-dialog__body-text`). Düzeltme: selector `.bt-card__body .bt-card__description` (`specificity 0,2,0`) yapıldı — Dialog'da kullanılan aynı çözüm. **Bu artık projede üçüncü kez tekrarlanan bir hata** (Switch/Checkbox/Radio, Dialog, şimdi Card) — yeni bir component'te herhangi bir `<p>` etiketine tek class uygulanıyorsa, component tamamlanmadan önce mutlaka iki-class'lı bir selector'a (`.bt-x__body .bt-x__description` gibi) geçirilmeli, sona bırakılmamalı.
 
 **Not — Card ailesi 4-tab standardına (Overview/CSS Properties/Usage — Examples hariç) getirildi, TOC'a otomatik Overview linki eklendi (2026-08-12):** Kullanıcı, bazı component sayfalarında Overview/CSS Properties/Examples tab'larının eksik olduğunu fark etti. İnceleme sonucu üç farklı desen bulundu: 4-tab (`Overview, Examples, CSS Properties, Usage` — Button/Checkbox gibi), 3-tab (`Overview, CSS Properties, Usage` — Examples yok, Card/Dialog gibi) ve sadece `Overview` (Clickable/Selectable Card). Kritik bulgu: 4-tab component'lerde **Examples, Overview'daki içeriğin taşınmış hali DEĞİL** — Overview kendi TOC'a eşleşen bölümleriyle (Anatomy/Sizes/States) tam kalıyor, Examples ayrıca kurgulanmış YENİ curated demo playground'ları içeriyor (örn. Checkbox'ın Examples'ında "Unchecked States"/"Checked States" diye iki ayrı tam state matrisi — Overview'daki tek genel playground'dan bağımsız). Bu yüzden site geneline Examples eklemek "mevcut içeriği taşımak" değil, her component için sıfırdan yeni örnek içerik yazmak anlamına geliyor — kapsam büyük olduğu için bu oturumda ertelendi (bkz. CLAUDE.md "Sayfa Tab Yapısı" kuralı, gelecekte component bazında ele alınacak). Bu oturumda sadece Card ailesi kendi içinde tutarlı hale getirildi: Clickable Card ve Selectable Card'a (önceden sadece `Overview` tab'ı vardı) kardeşleriyle (Default/Collapsible/Scrollable Card) aynı CSS Properties + Usage tab'ları eklendi — Examples HİÇBİR Card sayfasına eklenmedi (henüz). Ayrıca `docs/js/app.js`'teki `renderToc()`'a merkezi/otomatik bir **"Overview"** linki eklendi: `page.toc` olan HER sayfanın "On this page" panelinin en üstünde artık sayfanın başına (`#page-title`) atlayan bir link var — bu, her sayfaya manuel eklenmiyor, `renderToc()` kendisi prepend ediyor (yeni bir component eklendiğinde otomatik gelir). Card-default/Card-collapsible'ın toc'larındaki `'Anatomy'` girdileri karşılık gelen `<h2>`'lerde `id` eksikliğinden dolayı çalışmıyordu (dangling toc link) — düzeltildi (`id="Anatomy"` eklendi). `docs/js/app.js`, `docs/js/pages-web.js`, `CLAUDE.md` güncellendi.
 
@@ -3266,17 +1734,17 @@ Buna göre üç fonksiyon genişletildi (hepsi geriye dönük %100 uyumlu, opsiy
 
 **Not — Control slot'a Radio Button eklendi (2026-08-12):** Kullanıcı isteğiyle `CARD_CONTROL_OPTS`'a **Radio Button** seçeneği eklendi (Checkbox'ın hemen altına) — Header'ın sol/sağ control slotları, Row Segment'in sol/sağ slotları ve Body Title/Subtitle'ın control'leri dahil `crdControlSlot(kind)` kullanan HER yer bunu otomatik alıyor (tek kaynak fonksiyon). Radio Button sayfasının gerçek `.bt-radio__dot` class'ı (16×16, Checkbox'ın `.bt-checkbox__box`'ıyla aynı boyutta) reuse edildi — Checkbox/Switch'teki gibi gerçekten tıklanabilir: `onclick="this.querySelector('.bt-radio__dot').classList.toggle('bt-radio__dot--selected')"`. Aslında koddaki eski bir yorum satırı ("Checkbox/Radio/Switch sayfalarındaki aynı onclick+classList.toggle deseni") Radio'yu zaten kapsamı içinde varsaymıştı ama hiç implemente edilmemişti — bu eksik şimdi tamamlandı. `docs/js/pages-web.js` (`CARD_CONTROL_OPTS`, `crdControlSlot`, Control Slots örnek tablosu, CSS Properties tablosu) güncellendi.
 
-### 16.3 JS Davranışı
+### 14.3 JS Davranışı
 
 Card'ın kendisi statik bir kapsayıcı — özel bir açma/kapama/state mekanizması yok. Playground'da `crdHeaderHtml(opts)` hem ana Header hem Body Title/Subtitle için tek kaynak render fonksiyonu (`plain:true` ile ayraçsız/arka plansız moda geçiyor); `crdControlSlot(kind)` Header VE Row Segment'in sol/sağ slot içeriğini üretiyor (reuse edilen tek kaynak); `crdRowHtml(opts)` tek bir Row Segment üretiyor — `opts: { leftControl, rightControl, showLeftAdditionalText, showRightAdditionalText, showLabel, showValue }`. `crdHtml`, aktif her segment numarası için `crdRowHtml`'i o segmentin KENDİ `seg{N}LeftControl`/`seg{N}RightControl`/`seg{N}LeftAdditionalText`/`seg{N}RightAdditionalText`/`seg{N}ShowLabel`/`seg{N}ShowValue` prop'larıyla çağırıyor (bkz. aşağıdaki not — segmentler artık bağımsız). Yeni bir projeye taşırken bu üç fonksiyon (+ `crdHtml` tam kart assembly'si) `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok (tamamen string template).
 
 **Not — Row Segment control sistemi Header'la eşitlendi (2026-08-07):** Row Segment'in sol/sağ 28×28 slotları eskiden simetrik değildi ve içerik seçimi yoktu: sol ikon (`.bt-card__row-icon`) her zaman sabit/açık bir tek ikondu (toggle edilemiyordu), sağ slot (`.bt-card__row-right`) sadece on/off bir toggle'dı (yine sabit bir ikon). Ayrıca "Additional Text" TEK bir toggle'dı ve Label (sol sütun) İLE Value (sağ sütun) altına AYNI ANDA ekleniyordu, ayrı ayrı kontrol edilemiyordu. Kullanıcı kararıyla ikisi de Header'ın control sistemiyle eşitlendi: `crdControlSlot(kind)` reuse ederek None/Icon/Button/Checkbox/Switch/Avatar/Avatar Group/Badge/Text arasından seçim sunuyor (varsayılan sol=Icon — eski sabit davranışla görsel olarak birebir aynı, sağ=None — eski off ile aynı); Additional Text de Label/Value için BAĞIMSIZ iki toggle'a bölündü. `.bt-card__row-icon`/`.bt-card__row-right`'ın `width:28px` sabiti `min-width:28px`'e çevrildi (Header'ın `.bt-card__control`'ündeki "hug content" deseniyle aynı) — artık Badge/Avatar Group/Text gibi 28px'ten geniş içerik de taşabilmeden sığıyor.
 
-**Not — Row Segment control'leri PER-SEGMENT hale getirildi, `config.props` dinamikleşti (2026-08-07, devam):** Bir önceki notta eklenen Left/Right Control + Additional Text hâlâ TÜM aktif segmentler arasında PAYLAŞILAN tek bir ortak ayar setiydi (5 segment açıksa hepsi aynı control'ü/aynı additional-text durumunu gösteriyordu). Kullanıcı bunun yanlış olduğunu, bu özelliklerin segmentlere ait olduğunu belirtti — her segment KENDİ bağımsız Left Control / Right Control / Left Additional Text / Right Additional Text / **Show Value** (yeni, Value metnini gösterip gizleme) değerlerine sahip olmalı. Ayrıca varsayılan davranış "5 segment açık" yerine "sadece Segment 1 açık, diğerleri gerektikçe eklenip özelleştirilir" olarak değiştirildi. Bunu desteklemek için playground.js'e genel bir altyapı eklendi: `config.props` artık statik bir dizi yerine `(currentProps) => [...]` şeklinde bir FONKSİYON olabilir (`_pgdResolveProps` helper'ı, bkz. §21 "Dinamik props") — Card'ın props fonksiyonu, "Active Segments" seçimindeki her aktif numara için `Segment {N}` adında ayrı bir prop grubu (`seg{N}LeftControl` vb.) üretiyor; inaktif bir segmentin grubu drawer'da hiç görünmüyor. Prop key'leri `seg1LeftControl`, `seg1RightControl`, `seg1LeftAdditionalText`, `seg1RightAdditionalText`, `seg1ShowValue` (ve 2-5 için aynı desen). Bu, mevcut TÜM diğer playground'ları (statik `config.props` dizisi kullananlar) etkilemiyor — tamamen opt-in bir motor özelliği.
+**Not — Row Segment control'leri PER-SEGMENT hale getirildi, `config.props` dinamikleşti (2026-08-07, devam):** Bir önceki notta eklenen Left/Right Control + Additional Text hâlâ TÜM aktif segmentler arasında PAYLAŞILAN tek bir ortak ayar setiydi (5 segment açıksa hepsi aynı control'ü/aynı additional-text durumunu gösteriyordu). Kullanıcı bunun yanlış olduğunu, bu özelliklerin segmentlere ait olduğunu belirtti — her segment KENDİ bağımsız Left Control / Right Control / Left Additional Text / Right Additional Text / **Show Value** (yeni, Value metnini gösterip gizleme) değerlerine sahip olmalı. Ayrıca varsayılan davranış "5 segment açık" yerine "sadece Segment 1 açık, diğerleri gerektikçe eklenip özelleştirilir" olarak değiştirildi. Bunu desteklemek için playground.js'e genel bir altyapı eklendi: `config.props` artık statik bir dizi yerine `(currentProps) => [...]` şeklinde bir FONKSİYON olabilir (`_pgdResolveProps` helper'ı, bkz. §9 "Dinamik props") — Card'ın props fonksiyonu, "Active Segments" seçimindeki her aktif numara için `Segment {N}` adında ayrı bir prop grubu (`seg{N}LeftControl` vb.) üretiyor; inaktif bir segmentin grubu drawer'da hiç görünmüyor. Prop key'leri `seg1LeftControl`, `seg1RightControl`, `seg1LeftAdditionalText`, `seg1RightAdditionalText`, `seg1ShowValue` (ve 2-5 için aynı desen). Bu, mevcut TÜM diğer playground'ları (statik `config.props` dizisi kullananlar) etkilemiyor — tamamen opt-in bir motor özelliği.
 
 **Not — Show Label eklendi (2026-08-12):** Kullanıcı, `Show Value`'nun simetriği olarak Row Segment'e **Show Label** (`seg{N}ShowLabel`, On/Off, varsayılan On) prop'unu istedi — Value metni nasıl gizlenebiliyorsa Label metni de (`.bt-card__row-label`) bağımsız olarak gizlenebiliyor artık. `crdRowHtml(opts)`'a `showLabel` eklendi (`o.showLabel !== false`, Value ile aynı desen), `crdHtml`/`crdCollapsibleHtml`'deki per-segment `crdRowHtml` çağrılarına `showLabel: (p[\`seg${i}ShowLabel\`] || 'on') === 'on'` eklendi. Card/Default Card/Clickable Card/Collapsible Card/Selectable Card'ın hepsindeki dinamik segProps üretimine `Show Label` prop'u, `Show Value`'nun hemen üstüne eklendi.
 
-## 17. Data Table (Grid)
+## 15. Data Table (Grid)
 
 Figma kaynağı: Bentas DS dosyasının "Grid" sayfası — `HeaderCell` (componentSet, node `205:23581`) + `GridCell` (componentSet, node `208:29046`) + `No Record Available` (componentSet, node `222:16015`). Data Table, bir tablonun başlık satırı (Header Cell) ve veri hücrelerini (Grid Cell) temsil eden iki paralel component'ten oluşuyor — Card'ın Header/Body ayrımına benzer ama HeaderCell ve GridCell birbirinin varyantı değil, tabloda AYNI ANDA, farklı satırlarda kullanılan iki bağımsız component.
 
@@ -3284,7 +1752,7 @@ Figma kaynağı: Bentas DS dosyasının "Grid" sayfası — `HeaderCell` (compon
 
 **Not — Figma'nın bağımsız show* boolean'ları Leading/Trailing'e sadeleştirildi (Card'daki control sistemiyle aynı gerekçe):** GridCell'in Figma'da 12 bağımsız boolean'ı var (Left Control, Checkbox, Dot, Avatar, Avatar Group, Content/metin, Badge, Button, Switch, Inline TextBox, Inline DropDown, Right Control) — teorik olarak hepsi aynı anda açılabilir. Tek bir "content type" dropdown'una sadeleştirmek yerine (Card Header'daki gibi), Figma'nın kendi DOM sırası korunarak İKİ ayrı single-select'e bölündü: **Leading Control** (metinden ÖNCE gelenler — None/Checkbox/Dot/Avatar/Avatar Group) ve **Trailing Control** (metinden SONRA gelenler — None/Badge/Button/Switch/Inline TextBox/Inline Dropdown). `Content` (metin) bu ikisinden bağımsız kendi boolean'ı. Bu ayrım, "Avatar + isim metni" veya "sadece Badge" gibi gerçekçi kombinasyonları tek bir dropdown'dan daha doğru temsil ediyor — kullanıcının "avatarlı, badge'li versiyonlar var" diye tarif ettiği tam olarak bu. HeaderCell'de aynı mantıkla Checkbox (select-all) ayrı bir boolean, Sort Control kendi başına (Up/Down ikonlarını bağımsız gösterip gizleyebilen bir `Sort Direction: Both/Up/Down` seçiciyle), Filter ayrı bir boolean.
 
-### 17.1 Markup
+### 15.1 Markup
 
 ```html
 <!-- Header Cell -->
@@ -3324,7 +1792,7 @@ Figma kaynağı: Bentas DS dosyasının "Grid" sayfası — `HeaderCell` (compon
 
 **Reuse edilen gerçek component'ler:** Checkbox → `.bt-checkbox__box` (Card'daki aynı onclick+classList.toggle deseni), Avatar/Avatar Group → `.bt-avatar bt-avatar--xs` (Card'daki `-12px` bindirme deseni), Switch → `.bt-switch__track`/`.bt-switch__thumb`, Badge → gerçek `badgeHtml()` fonksiyonu (Badge artık class değil fonksiyon tabanlı), Button → `bt-btn bt-btn--sm bt-btn--primary-solid`, Inline TextBox/Dropdown → gerçek `.bt-tbx` yapısı (`_tbxCls`/`_tbxInputInner`/`_ddInputInner` reuse edilir, Label ve Helper Text hücrede hiç render edilmez — Figma'da da gizli, tablo hücresinde gereksiz).
 
-### 17.2 CSS Tokens
+### 15.2 CSS Tokens
 
 | Element | Property | Token | Fallback |
 |---|---|---|---|
@@ -3345,11 +1813,11 @@ Figma kaynağı: Bentas DS dosyasının "Grid" sayfası — `HeaderCell` (compon
 | No Record Available | Height | — | 56px |
 | No Record Available · Text | Color | `--bt-text-primary-emphasis` | #727272 |
 
-### 17.3 JS Davranışı
+### 15.3 JS Davranışı
 
-`gridHeaderCellHtml(opts)` ve `gridCellHtml(opts)` — sırasıyla Header Cell ve Grid Cell için tek kaynak render fonksiyonları, `opts: { position, state, showLeft, showCheckbox/leading, showContent, contentText, showSort/trailing, sortDir, showFilter, showRight, width, sticky, frozenEdge }`. `sticky` (px sayısı veya `null`) verilirse hücreye `position:sticky;left:${sticky}px;z-index:5;` eklenir — Frozen Column sayfası için (bkz. §17.4), diğer TÜM çağrılarda `undefined` kalır, davranış değişmez. `frozenEdge:true` verilirse `bt-grid__header-cell--frozen-edge`/`bt-grid__cell--frozen-edge` class'ı eklenir (donmuş alanın sağ kenarına ince bir gölge). `gridLeadingHtml(kind)`/`gridTrailingHtml(kind)` — Leading/Trailing control içeriğini üretir (None/Checkbox/Dot/Avatar/Avatar Group ve None/Badge/Button/Switch/Inline TextBox/Inline Dropdown). `gridNoRecordHtml(opts)`. Yeni bir projeye taşırken bu fonksiyonlar `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok.
+`gridHeaderCellHtml(opts)` ve `gridCellHtml(opts)` — sırasıyla Header Cell ve Grid Cell için tek kaynak render fonksiyonları, `opts: { position, state, showLeft, showCheckbox/leading, showContent, contentText, showSort/trailing, sortDir, showFilter, showRight, width, sticky, frozenEdge }`. `sticky` (px sayısı veya `null`) verilirse hücreye `position:sticky;left:${sticky}px;z-index:5;` eklenir — Frozen Column sayfası için (bkz. §15.4), diğer TÜM çağrılarda `undefined` kalır, davranış değişmez. `frozenEdge:true` verilirse `bt-grid__header-cell--frozen-edge`/`bt-grid__cell--frozen-edge` class'ı eklenir (donmuş alanın sağ kenarına ince bir gölge). `gridLeadingHtml(kind)`/`gridTrailingHtml(kind)` — Leading/Trailing control içeriğini üretir (None/Checkbox/Dot/Avatar/Avatar Group ve None/Badge/Button/Switch/Inline TextBox/Inline Dropdown). `gridNoRecordHtml(opts)`. Yeni bir projeye taşırken bu fonksiyonlar `docs/js/pages-web.js`'ten kopyalanabilir, JS bağımlılığı yok.
 
-### 17.4 Data Table Frozen Column (2026-08-12'de eklendi)
+### 15.4 Data Table Frozen Column (2026-08-12'de eklendi)
 
 **Figma'da karşılığı YOK** — "Grid" sayfası kontrol edildi (`page.findAll(n => /frozen|pinned|sticky/i.test(n.name))`, 0 sonuç), bu genel bir UX pattern'i (yatay scroll'da ilk N kolonu sabit tutmak), gerçek `gridHeaderCellHtml`/`gridCellHtml` yapı taşları reuse edilerek CSS `position:sticky` ile sıfırdan tasarlandı (kullanıcı isteğiyle, bkz. HISTORY.md). Kullanıcının onayladığı kapsam: ayrı bir sayfa (`components/data-table-frozen-column`), nav'da "Data Table" artık bir grup (Card/Inputs ile aynı desen) — child'lar **Data Table** (mevcut) ve **Data Table Frozen Column** (yeni).
 
@@ -3432,21 +1900,21 @@ Figma kaynağı: Bentas DS dosyasının "Grid" sayfası — `HeaderCell` (compon
 
 **Not — Frozen edge gölgesi bespoke/yumuşak bir değere geçirildi, artık hiçbir `--bt-shadow-*` token'ından türetilmiyor (2026-08-14):** Kullanıcı bir önceki notta `--bt-shadow-xs`'e sabitlenen gölgeyi test edip "çok az oldu" dedi; `--bt-shadow-sm` tabanlı bir alternatifin de (dar blur, 2-3px) "keskin" durduğunu belirtti. Mevcut hiçbir elevation token'ı (xs/sm/md/lg/xl/2xl/3xl) bu spesifik "sticky kolonun kenarında yumuşak bir fade" ihtiyacına uymuyordu — hepsi ya dar blur'lu/sert (xs/sm) ya da çok büyük/köşeli bir drop-shadow hissi veriyordu (md/lg/xl, dikey elevation için tasarlanmış). Kullanıcı isteğiyle bu efekte ÖZEL, token'a bağlı olmayan bir değer tanımlandı: iki katman, geniş blur (10px/20px), düşük opaklık (0.06/0.035) — `box-shadow: 4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)` (sağdan donmuş kenarda ters yönlü, `-4px 0 10px .../-10px 0 20px ...`). Headless Chrome + DevTools Protokolü ile zoom edilmiş ekran görüntüsüyle doğrulandı: donmuş kolonun kenarında keskin bir çizgi yerine kademeli/yumuşak bir gölge geçişi oluşuyor. Frozen Column ve Frozen Column Last'ın CSS Properties/Anatomy tablolarındaki Token sütunu artık `—` (bu proje genelinde token karşılığı olmayan sabit değerler için kullanılan standart gösterim, bkz. CLAUDE.md Anatomy bölümü kuralı). `docs/css/styles.css`, `docs/js/pages-web.js` güncellendi.
 
-**Not — Data Table ve Card'daki "EG" avatarları Brand temadan Default temaya çevrildi (2026-08-14):** Avatar component'inin kendi sayfasında (§13) `theme` prop'u zaten `default` varsayılanla geliyordu, ama Data Table'ın satır avatarı (`gridLeadingHtml('avatar')`, tüm Data Table sayfalarında — Data Table, Data Table Actions, Frozen Column, Frozen Column Last, Toolbar) ve Card'ın header avatar control item'ı (`crdHeaderHtml`) hardcoded `bt-avatar--brand` (mavi dolgu, `--bt-surface-brand-default`) class'ı kullanıyordu — kullanıcı isteğiyle bu 9 hardcoded kullanımın tamamı `bt-avatar--brand` modifier'ı kaldırılıp Default temaya (modifier'sız, nötr gri arka plan) çevrildi. `avatarHtml`/`avatarCode` (Avatar sayfasının kendi playground fonksiyonları, theme prop'una göre dinamik class üreten) DOKUNULMADI — sadece Data Table/Card'daki statik/hardcoded örnekler değişti. `docs/js/pages-web.js`, `design.md` §17.1 (markup örneği) güncellendi.
+**Not — Data Table ve Card'daki "EG" avatarları Brand temadan Default temaya çevrildi (2026-08-14):** Avatar component'inin kendi sayfasında (§11) `theme` prop'u zaten `default` varsayılanla geliyordu, ama Data Table'ın satır avatarı (`gridLeadingHtml('avatar')`, tüm Data Table sayfalarında — Data Table, Data Table Actions, Frozen Column, Frozen Column Last, Toolbar) ve Card'ın header avatar control item'ı (`crdHeaderHtml`) hardcoded `bt-avatar--brand` (mavi dolgu, `--bt-surface-brand-default`) class'ı kullanıyordu — kullanıcı isteğiyle bu 9 hardcoded kullanımın tamamı `bt-avatar--brand` modifier'ı kaldırılıp Default temaya (modifier'sız, nötr gri arka plan) çevrildi. `avatarHtml`/`avatarCode` (Avatar sayfasının kendi playground fonksiyonları, theme prop'una göre dinamik class üreten) DOKUNULMADI — sadece Data Table/Card'daki statik/hardcoded örnekler değişti. `docs/js/pages-web.js`, `design.md` §15.1 (markup örneği) güncellendi.
 
 **Not — Grid Cell'de Leading/Trailing Control (Avatar/Avatar Group/Badge/Button/Switch) hücre kenarında sadece 2px padding bırakıyordu, --bt-space-md (8px)'e düzeltildi (2026-08-14):** Kullanıcı, hücre padding'inin 8px olduğunu bildiğini ama içinde bu component'ler olduğunda bunun görünmediğini fark etti. Kök neden: `.bt-grid__cell`'in kendisinde HİÇ padding yok — kenar boşluğu tamamen o an hücrenin ilk/son çocuğu olan elemente bağlı. `.bt-grid__cell .bt-grid__content` (metin) kendi 8px'ini (`--bt-space-md`) doğru uyguluyordu, ama Leading/Trailing/Left/Right control'leri saran `.bt-grid__control` (Checkbox/Dot/Avatar/Avatar Group/Badge/Switch) ve Inline TextBox/Dropdown'ı saran `.bt-grid__inline`'ın kendi iç padding'i sadece `--bt-space-2xs` (2px) — bu değer aslında 28px'lik control kutusunda ikonu ortalamak için var, kenar boşluğu için değil, ama control hücrenin ilk/son çocuğu olduğunda YANLIŞLIKLA kenar padding'i olarak görünüyordu. Actions kolonundaki Button+More `.bt-grid__control-group`'un ise HİÇ padding'i yoktu (0px). Düzeltme: `.bt-grid__cell > .bt-grid__control:first-child/:last-child`, `.bt-grid__cell > .bt-grid__inline:first-child/:last-child`, `.bt-grid__cell > .bt-grid__control-group:first-child/:last-child` için `padding-left`/`padding-right: var(--bt-space-md, 8px)` override eklendi — control'ün kendi 2px'lik dikey/iç padding'i (ikon ortalama amaçlı) korunuyor, SADECE kenara bakan yön override ediliyor. Headless Chrome ile doğrulandı: checkbox/avatar'ın gerçek görsel kenarı artık hücre border'ından tam 8px içeride (önceden fiilen 0px görünüyordu çünkü `.bt-grid__control`'ün DIŞ kutusu zaten hücre kenarına yapışıktı, sadece kendi İÇ 2px'i ikonu hafifçe içeri itiyordu), Actions'taki control-group'un computed `padding-right` değeri 0px'ten 8px'e çıktı. Kapsam bilinçli olarak `.bt-grid__cell`'le sınırlı tutuldu — `.bt-grid__header-cell`'in kendi control'leri (Checkbox/Sort/Filter/Ellipsis, 6px `--bt-space-sm` bekleniyor) kullanıcı tarafından bildirilmedi, ayrı bir oturumda değerlendirilebilir. `docs/css/styles.css` güncellendi.
 
-**Not — Data Table örnek satırlarındaki Status Badge'i tek renk/solid'den, satır satır dönen Basic Badge (blue/green/yellow/red) + sadece sol tarafta lucide "info" ikonuna çevrildi (2026-08-14):** Kullanıcı isteğiyle: (1) önceden her satırda AYNI mavi `type:'solid'` badge, sol VE sağ tarafta spinner ikonuyla (`_bdgLoader`, Badge sayfasının kendi genel amaçlı placeholder ikonu) görünüyordu — bu, örnek veri olduğu için birden fazla Badge rengini demonstre etmek yerine tekdüze bir görüntü veriyordu; (2) ikon SADECE solda olmalıydı; (3) ikon spinner değil lucide "info" olmalıydı (lucide-static'te resmi adı "circle-info" değil "info" — WebFetch ile path doğrulandı, elle yaklaşık çizilmedi). Değişiklikler: `_gridTableRowsData`'daki her satıra `statusColor` alanı eklendi (`_gridStatusColors = ['blue','green','yellow','red']`'den `i % 4` ile döngüsel — semantik bir durum eşlemesi değil, sadece görsel çeşitlilik). `badgeHtml(_, p)` artık opsiyonel `p.icon` fonksiyonu kabul ediyor (varsayılan hâlâ `_bdgLoader` — Badge sayfasının kendi playground'u etkilenmedi), yeni `_bdgIconInfo` bu slot'a Grid'in Status Badge'i için geçiliyor. `gridTrailingHtml('badge', opts)` artık `type:'custom', colorStyle:'basic', color: opts.color || 'blue', leftIcon:'on', rightIcon:'off', icon:_bdgIconInfo` kullanıyor (önceden `type:'solid', color:'blue'` — color hiç kullanılmıyordu, solid tipi zaten kendi sabit mavi rengini kullanıyordu). `gridCellHtml`'e `trailingColor` opt'u eklendi, `gridTrailingHtml`'e `{color: trailingColor}` olarak geçiriliyor. `gridTableHtml`/`gridFrozenTableHtml`/`gridFrozenLastTableHtml`/`gridActionsTableHtml`'deki 4 satır-render call site'ı da `trailingColor: c.cellTrailing === 'badge' ? row.statusColor : undefined` ile güncellendi — Building Blocks'taki tekil Grid Cell örnekleri (§17.1) etkilenmedi, `trailingColor` geçmedikleri için varsayılan 'blue'da kalıyorlar. Headless Chrome ile doğrulandı: art arda 3 satırda blue→green→yellow Basic Badge, hepsinde tek bir sol "info" ikonu. `docs/js/pages-web.js` güncellendi.
+**Not — Data Table örnek satırlarındaki Status Badge'i tek renk/solid'den, satır satır dönen Basic Badge (blue/green/yellow/red) + sadece sol tarafta lucide "info" ikonuna çevrildi (2026-08-14):** Kullanıcı isteğiyle: (1) önceden her satırda AYNI mavi `type:'solid'` badge, sol VE sağ tarafta spinner ikonuyla (`_bdgLoader`, Badge sayfasının kendi genel amaçlı placeholder ikonu) görünüyordu — bu, örnek veri olduğu için birden fazla Badge rengini demonstre etmek yerine tekdüze bir görüntü veriyordu; (2) ikon SADECE solda olmalıydı; (3) ikon spinner değil lucide "info" olmalıydı (lucide-static'te resmi adı "circle-info" değil "info" — WebFetch ile path doğrulandı, elle yaklaşık çizilmedi). Değişiklikler: `_gridTableRowsData`'daki her satıra `statusColor` alanı eklendi (`_gridStatusColors = ['blue','green','yellow','red']`'den `i % 4` ile döngüsel — semantik bir durum eşlemesi değil, sadece görsel çeşitlilik). `badgeHtml(_, p)` artık opsiyonel `p.icon` fonksiyonu kabul ediyor (varsayılan hâlâ `_bdgLoader` — Badge sayfasının kendi playground'u etkilenmedi), yeni `_bdgIconInfo` bu slot'a Grid'in Status Badge'i için geçiliyor. `gridTrailingHtml('badge', opts)` artık `type:'custom', colorStyle:'basic', color: opts.color || 'blue', leftIcon:'on', rightIcon:'off', icon:_bdgIconInfo` kullanıyor (önceden `type:'solid', color:'blue'` — color hiç kullanılmıyordu, solid tipi zaten kendi sabit mavi rengini kullanıyordu). `gridCellHtml`'e `trailingColor` opt'u eklendi, `gridTrailingHtml`'e `{color: trailingColor}` olarak geçiriliyor. `gridTableHtml`/`gridFrozenTableHtml`/`gridFrozenLastTableHtml`/`gridActionsTableHtml`'deki 4 satır-render call site'ı da `trailingColor: c.cellTrailing === 'badge' ? row.statusColor : undefined` ile güncellendi — Building Blocks'taki tekil Grid Cell örnekleri (§15.1) etkilenmedi, `trailingColor` geçmedikleri için varsayılan 'blue'da kalıyorlar. Headless Chrome ile doğrulandı: art arda 3 satırda blue→green→yellow Basic Badge, hepsinde tek bir sol "info" ikonu. `docs/js/pages-web.js` güncellendi.
 
 **Not — Status Badge'in içindeki sabit "Badge" metni, Status koluna uygun gerçek etiketlere çevrildi (2026-08-14):** Bir önceki not renk+ikonu düzeltmişti ama badge içeriği hâlâ her satırda literal "Badge" yazıyordu — kullanıcı bunun yerine Status kolonuna uygun bir metin istedi. `badgeHtml(_, p)`'deki hardcoded `Badge` metni artık `p.label || 'Badge'` (Badge sayfasının kendi playground'u parametre geçmediği için hâlâ "Badge" gösteriyor, davranışı değişmedi). Yeni `_gridStatusOptions` dizisi (`_gridStatusColors`'ın yerine geçti) renk+etiketi BİRLİKTE tanımlıyor — standart bir renk↔anlam eşlemesiyle: `blue→Active, green→Completed, yellow→Pending, red→Inactive` (gerçek bir durum makinesi değil, sadece örnek veri çeşitliliği için mantıklı bir eşleme). `_gridTableRowsData`'nın her satırına `statusColor`'ın yanına `statusLabel` de eklendi (aynı `i % 4` döngüsüyle, ikisi birlikte). `gridTrailingHtml('badge', opts)` artık `label: o.label` geçiyor, `gridCellHtml`'e `trailingLabel` opt'u eklendi (`trailingColor` ile birebir aynı desen). 4 satır-render call site'ı da `trailingLabel: c.cellTrailing === 'badge' ? row.statusLabel : undefined` ile güncellendi. Headless Chrome ile doğrulandı: art arda 3 satırda "Active"/"Completed"/"Pending" metinleri kendi renkleriyle eşleşiyor. `docs/js/pages-web.js` güncellendi.
 
-**Not — Status Badge ikonu "info"den geri loader'a (_bdgLoader) çevrildi, 15×15px'e küçültüldü; Avatar'lar Default'tan geri Brand temaya çevrildi (2026-08-14):** Kullanıcı iki önceki oturum adımını fikrini değiştirip geri aldı. (1) Badge: `gridTrailingHtml('badge')` artık özel bir `icon` geçmiyor — `badgeHtml`'in kendi varsayılanı zaten `_bdgLoader` olduğu için otomatik ona düşüyor; `_bdgIconInfo` (lucide "info") ve `badgeHtml`'in `icon` parametresi TAMAMEN kaldırıldı çünkü artık hiçbir çağıran özel bir ikon geçmiyordu (kullanılmayan esneklik/dead code, bkz. CLAUDE.md "gereksiz abstraction ekleme" ilkesi) — `badgeHtml` şu an sadece `_bdgLoader`'ı doğrudan kullanıyor. `_bdgLoader`'ın boyutu da kullanıcı isteğiyle iki adımda değişti: önce 16×16'dan 12×12'ye, sonra 15×15'e (SVG `width`/`height`, `viewBox="0 0 24 24"` sabit kaldı — sadece render boyutu küçüldü). Bu, Badge sayfasının kendi playground'undaki ikon boyutunu DA etkiliyor (fonksiyon paylaşılıyor, kasıtlı — kullanıcı özel olarak "badge icon" dedi, Grid'e özel bir instance istemedi). (2) Avatar: Data Table'ın satır avatarı ve Card'ın header avatar control item'ındaki 9 hardcoded kullanım, bir önceki oturumda (bkz. yukarıdaki not) Default temaya çevrilmişti — kullanıcı bunu geri Brand temaya (`bt-avatar--brand` eklendi) çevirdi. Avatar Group'taki "+N" overflow göstergesi (asıl bir kişi avatarı değil) bu değişikliğin HİÇBİR aşamasında brand almadı — hep nötr/varsayılan kaldı (orijinal koddaki tasarım kararı, dokunulmadı). Headless Chrome ile doğrulandı: avatarlar tekrar solid mavi, Status Badge'leri tekrar loader/spinner ikonuyla (Active/Completed/Pending etiketleri ve renk döngüsü korunarak). `docs/js/pages-web.js`, `design.md` §17.1 güncellendi.
+**Not — Status Badge ikonu "info"den geri loader'a (_bdgLoader) çevrildi, 15×15px'e küçültüldü; Avatar'lar Default'tan geri Brand temaya çevrildi (2026-08-14):** Kullanıcı iki önceki oturum adımını fikrini değiştirip geri aldı. (1) Badge: `gridTrailingHtml('badge')` artık özel bir `icon` geçmiyor — `badgeHtml`'in kendi varsayılanı zaten `_bdgLoader` olduğu için otomatik ona düşüyor; `_bdgIconInfo` (lucide "info") ve `badgeHtml`'in `icon` parametresi TAMAMEN kaldırıldı çünkü artık hiçbir çağıran özel bir ikon geçmiyordu (kullanılmayan esneklik/dead code, bkz. CLAUDE.md "gereksiz abstraction ekleme" ilkesi) — `badgeHtml` şu an sadece `_bdgLoader`'ı doğrudan kullanıyor. `_bdgLoader`'ın boyutu da kullanıcı isteğiyle iki adımda değişti: önce 16×16'dan 12×12'ye, sonra 15×15'e (SVG `width`/`height`, `viewBox="0 0 24 24"` sabit kaldı — sadece render boyutu küçüldü). Bu, Badge sayfasının kendi playground'undaki ikon boyutunu DA etkiliyor (fonksiyon paylaşılıyor, kasıtlı — kullanıcı özel olarak "badge icon" dedi, Grid'e özel bir instance istemedi). (2) Avatar: Data Table'ın satır avatarı ve Card'ın header avatar control item'ındaki 9 hardcoded kullanım, bir önceki oturumda (bkz. yukarıdaki not) Default temaya çevrilmişti — kullanıcı bunu geri Brand temaya (`bt-avatar--brand` eklendi) çevirdi. Avatar Group'taki "+N" overflow göstergesi (asıl bir kişi avatarı değil) bu değişikliğin HİÇBİR aşamasında brand almadı — hep nötr/varsayılan kaldı (orijinal koddaki tasarım kararı, dokunulmadı). Headless Chrome ile doğrulandı: avatarlar tekrar solid mavi, Status Badge'leri tekrar loader/spinner ikonuyla (Active/Completed/Pending etiketleri ve renk döngüsü korunarak). `docs/js/pages-web.js`, `design.md` §15.1 güncellendi.
 
 **Not — Status Badge sabit min-width alıp uzun metinde ellipsis + native title tooltip gösteriyor (2026-08-14):** Kullanıcı, Status kolonundaki badge genişliklerinin içindeki metne göre değiştiğini ("Active" ile "Completed" farklı genişlik), bunun yerine badge'in min-width ile sabitlenmesini, çok uzun bir metin gelirse ellipsis'lenip hover'da tooltip ile tam metnin gösterilmesini istedi. `badgeHtml(_, p)`'e iki yeni opsiyonel param eklendi: `minWidth` (pill'e `min-width:Xpx` verir) ve `maxLabelWidth` (metni bu genişlikte `overflow:hidden;text-overflow:ellipsis;white-space:nowrap` ile saran bir `<span>`'e sarar) — ikisi de sadece geçilirse devreye giriyor, Badge sayfasının kendi playground'u bunları hiç geçmediği için content-hugging davranışı DEĞİŞMEDİ. `minWidth` geçildiğinde ayrıca pill'in kendisine `title="{tam metin}"` ekleniyor (native browser tooltip — projede henüz ayrı bir Tooltip component'i yok, CLAUDE.md'nin "reuse et" kuralına uyacak bir şey bulunamadı, bu yüzden en basit/standart çözüm seçildi; kullanıcı ileride custom stilli bir Tooltip component'i isterse ayrı bir iş olarak ele alınmalı). `gridTrailingHtml('badge')` artık `minWidth:104, maxLabelWidth:64` sabit değerleriyle çağırıyor (Status kolonunun 140px genişliğine, 16px cell padding'ine ve badge'in kendi 16px iç padding'i + 15px icon + 2px gap'ine göre hesaplandı — "Completed"/"Inactive" gibi en uzun mevcut etiketler bile ellipsis'lenmeden tam sığıyor). Headless Chrome ile doğrulandı: "Active"/"Completed" badge'leri artık PIKSEL PIKSEL aynı genişlikte (104px); deneme amaçlı enjekte edilen "Waiting For Approval" gibi uzun bir etiket doğru şekilde "Waiting F…"'e kırpılıyor (`scrollWidth 114 > clientWidth 64`), badge genişliği yine 104px'te sabit kalıyor, `title` attribute'u tam metni ("Waiting For Approval") taşıyor. `docs/js/pages-web.js` güncellendi.
 
 **Not — Status Badge min-width/ellipsis/tooltip'i tamamen geri alındı (2026-08-14):** Kullanıcı bir önceki adımdan hemen sonra fikrini değiştirdi: "max width vermekten vazgeçtim, önceki versiyonda kalsın" — yani sabit genişlik + ellipsis + tooltip fikri tamamen terk edildi, Badge tekrar content-hugging (her satırın metnine göre doğal genişlik alan) haline döndü. `badgeHtml`'deki `minWidth`/`maxLabelWidth`/`titleAttr`/`labelHtml` mantığı SİLİNDİ (bir önceki notta eklenmişti) — fonksiyon artık doğrudan `label`'ı basıyor, hiçbir width/title işleme yok. `gridTrailingHtml('badge')` çağrısından `minWidth`/`maxLabelWidth` param'ları kaldırıldı. Node harness ile 127 sayfa/tab hatasız doğrulandı. `docs/js/pages-web.js` güncellendi.
 
-**Not — Name kolonunun leading control'ü tüm Data Table örneklerinde Avatar'dan Dot'a çevrildi (2026-08-14):** Kullanıcı, Leading/Trailing control ayrımının cell'in tamamını kapsayan tek bir bütün gibi düşünülmesi gerektiğini belirtip, şimdilik tüm tablo örneklerinde tutarlı olarak "Dot yanında text" kullanılmasını istedi. Değişenler: `gridTableColumns(p)`'deki `nameLeading` varsayılanı `'avatar'`den `'dot'`e (interaktif prop, kullanıcı Properties panelinden hâlâ Avatar/Avatar Group/None'a çevirebilir — sadece İLK açılış değeri değişti); Overview playground'daki `nameLeading` prop tanımının `default` alanı da eşleştirildi. `gridActionsColumns`, `gridFrozenColumns`, `gridFrozenLastColumns`'daki HARDCODED (prop'suz, kullanıcı değiştiremeyen) `cellLeading: 'avatar'` üçü de `cellLeading: 'dot'`e çevrildi — bu üç sayfada Name kolonu artık her zaman Dot gösteriyor. Data Table Toolbar sayfası `gridTableHtml`'i doğrudan reuse ettiği için ayrı bir değişikliğe gerek kalmadan otomatik etkilendi. Building Blocks'taki tekil "Avatar + Text" örnek satırı (§17.1, Grid Cell'in leading seçeneklerini tek tek gösteren referans tablo) BİLİNÇLİ olarak dokunulmadı — o satır Avatar seçeneğini özellikle göstermek için var. Headless Chrome ile Data Table/Data Table Actions/Frozen Column/Frozen Column Last'ın hepsinde Name kolonunun artık Dot+Text gösterdiği doğrulandı. `docs/js/pages-web.js` güncellendi.
+**Not — Name kolonunun leading control'ü tüm Data Table örneklerinde Avatar'dan Dot'a çevrildi (2026-08-14):** Kullanıcı, Leading/Trailing control ayrımının cell'in tamamını kapsayan tek bir bütün gibi düşünülmesi gerektiğini belirtip, şimdilik tüm tablo örneklerinde tutarlı olarak "Dot yanında text" kullanılmasını istedi. Değişenler: `gridTableColumns(p)`'deki `nameLeading` varsayılanı `'avatar'`den `'dot'`e (interaktif prop, kullanıcı Properties panelinden hâlâ Avatar/Avatar Group/None'a çevirebilir — sadece İLK açılış değeri değişti); Overview playground'daki `nameLeading` prop tanımının `default` alanı da eşleştirildi. `gridActionsColumns`, `gridFrozenColumns`, `gridFrozenLastColumns`'daki HARDCODED (prop'suz, kullanıcı değiştiremeyen) `cellLeading: 'avatar'` üçü de `cellLeading: 'dot'`e çevrildi — bu üç sayfada Name kolonu artık her zaman Dot gösteriyor. Data Table Toolbar sayfası `gridTableHtml`'i doğrudan reuse ettiği için ayrı bir değişikliğe gerek kalmadan otomatik etkilendi. Building Blocks'taki tekil "Avatar + Text" örnek satırı (§15.1, Grid Cell'in leading seçeneklerini tek tek gösteren referans tablo) BİLİNÇLİ olarak dokunulmadı — o satır Avatar seçeneğini özellikle göstermek için var. Headless Chrome ile Data Table/Data Table Actions/Frozen Column/Frozen Column Last'ın hepsinde Name kolonunun artık Dot+Text gösterdiği doğrulandı. `docs/js/pages-web.js` güncellendi.
 
 **Not — Bir önceki değişiklik YANLIŞ kolonu değiştirmişti — Name geri Avatar'a döndü, Dot Role kolonuna eklendi; Figma'da GridCell'in Leading Control'ünün kolon-agnostik olduğu doğrulandı (2026-08-14):** Kullanıcı, "Name" değil "Role" kolonuna dot istediğini belirtti — asıl sorunun, Leading/Trailing control sisteminin sadece Name kolonuna (`nameLeading` prop'u) özel/hardcoded kurulmuş olması, herhangi bir kolonda serbestçe kullanılabilir bir yapı OLMAMASI olduğunu vurguladı. Kullanıcının paylaştığı Figma linkiyle (`GridCell`, node `839:46982`) `get_design_context` çağrısı doğrulama için yapıldı: Figma'daki gerçek component YAPISI zaten TAM olarak kod tarafındaki `gridLeadingHtml`/`gridTrailingHtml` switch-case mimarisiyle birebir eşleşiyor — Left Control/Checkbox Control/Dot Control/Avatar Control/Avatar Group Control/[content]/Badge Control/Button Control/Switch Control/Inline Textbox Control/Inline DropDown Control/Right Control hepsi AYNI GridCell'in İÇİNDE yan yana, birbirinden bağımsız, herhangi bir kombinasyonda açılıp kapanabilen slotlar olarak modellenmiş (kod tarafında zaten böyle) — yani mimari YANLIŞ değildi, sadece Data Table örnek sayfalarında Leading control'ün SADECE Name kolonuna kablolanmış olması (Role gibi diğer kolonlarda hiç kullanılamaması) kısıtlayıcıydı. Düzeltme: `nameLeading` varsayılanı ve playground prop default'u `'avatar'`e geri döndü (bir önceki notun tersi), `gridActionsColumns`/`gridFrozenColumns`/`gridFrozenLastColumns`'daki hardcoded Name `cellLeading` de `'avatar'`e döndü. Role kolonuna (`gridTableColumns` + aynı üç fonksiyon) YENİ `cellLeading: 'dot'` eklendi — dört sayfada da Role artık Dot+Text gösteriyor. **Bilinen sınırlama/gelecek iş:** Role'ün leading control'ü şu an (Name'in `nameLeading` prop'unun aksine) hardcoded/sabit — kullanıcının asıl istediği "her kolon custom olarak değiştirilebilsin" genel kapasitesi henüz eklenmedi, bu "şimdilik" bir kesin çözüm (kullanıcının kendi ifadesiyle). Headless Chrome ile Data Table ve Data Table Actions'ta Name=Avatar, Role=Dot+Text doğrulandı. `docs/js/pages-web.js` güncellendi.
 
@@ -3458,7 +1926,7 @@ Kuruluş: (1) **`GRID_TABLE_CONTENT_OPTS`** — None/Checkbox/Dot/Avatar/Avatar 
 
 Headless Chrome ile `_pgdSetProp` üzerinden üç ayrı senaryo canlı test edildi: **Status→Avatar** (kullanıcının verdiği tam örnek — Badge kayboldu, Status artık bir Avatar gösteriyor); **ID→Switch** (önceden HİÇ konfigüre edilemeyen bir kolon artık ID numarasının yanında bir Switch gösteriyor); **Email→Badge** (Email HEM kendi email metnini HEM de Status'un kullandığı AYNI döngüsel renk/etiket mantığıyla bir Badge gösteriyor — `cellTrailing==='badge'` kontrolü zaten kolon-agnostikti, ekstra wiring gerekmedi). Üçü de `gridTableColumns`'daki hiçbir özel-durum koduna ihtiyaç duymadan, salt prop değişimiyle çalıştı — bu, sistemin gerçekten generic olduğunun kanıtı. `docs/js/pages-web.js` güncellendi.
 
-**Not — Data Table Toolbar sayfası "Alanı Doldurma" tekniğini hiç KULLANMIYORDU — satır sayısı azken tablo çerçevesi panelin alt kenarına kadar uzamıyordu, düzeltildi (2026-08-14):** Kullanıcı, Toolbar sayfasında satırların altındaki boşluğun tablonun bir parçası gibi görünmediğini (yani `.bt-grid-container`'ın "Alanı Doldurma" davranışının orada çalışmadığını) fark edip §17'deki ilgili dokümantasyon bölümünü (Container'ı Doldurma tekniği, `.bt-grid-container` ile parent'ın kalan yüksekliğini doldurma) hatırlattı. Kök neden: Toolbar sayfasının playground preview'ı `gridTableHtml(p)`'yi `.bt-grid-container` YERİNE düz, class'sız bir `<div style="flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column;">` ile sarıyordu — bu div'in kendi border'ı YOK ve `.bt-grid` (base kural: `display:inline-flex;width:fit-content`) içerik boyutuna sarılı kalıyordu, panelin kalan yüksekliğine hiç esnemiyordu. Sonuç: az satırla (örn. 3), tablonun görünen sınırı (satırların kendi Position bazlı sol/sağ hücre border'ları + son satırın alt border'ı) satırların bittiği yerde kesiliyor, altındaki boşluk "kopuk"/tabloya ait olmayan bir alan gibi duruyordu — TAM olarak `.bt-grid-container`'ın çözmek için var olduğu problem, ama bu sayfada hiç kullanılmamıştı. Düzeltme tek satır: sarmalayıcı `<div class="bt-grid-container" style="overflow-x:auto;">` oldu (ana Data Table Overview playground'unun preview'ıyla BİREBİR aynı desen). `.bt-grid-panel .bt-grid`'in ZATEN var olan `flex:1;width:100%;min-height:0` kuralı ile `.bt-grid-container .bt-grid`'in (aynı özellikler, farklı selector) çakışması YOK — ikisi de aynı sonuca varıyor, specificity eşit, kaynak sırasında sonra tanımlanan (`.bt-grid-panel`) kazanıyor ama değerler identik olduğu için görsel fark yaratmıyor. `.bt-grid-container`'ın kendi border-left/right/bottom'u + `.bt-grid-container .bt-grid__cell--left/--right{border-left/right:none}` (çift border'ı önleyen suppress kuralı) artık devrede — panel içinde panelin KENDİ dış border'ından ayrı, tabloyu SARAN ikinci bir iç border oluşuyor (ekran görüntülerinde zaten görülen, ama alt kenarda kesilen görünüm bu şekilde tamamlandı). Headless Chrome ile hem rowCount=3 hem varsayılan rowCount=6 durumunda doğrulandı: `.bt-grid-container`'ın alt kenarı artık panelin iç (padding sonrası) alt kenarına 17px kalana kadar uzanıyor (bu 17px panelin kendi `--bt-space-2xl` alt padding'i, beklenen/doğru değer) — border ve arka plan satır sayısından bağımsız olarak panelin tamamını dolduruyor. `docs/js/pages-web.js` güncellendi.
+**Not — Data Table Toolbar sayfası "Alanı Doldurma" tekniğini hiç KULLANMIYORDU — satır sayısı azken tablo çerçevesi panelin alt kenarına kadar uzamıyordu, düzeltildi (2026-08-14):** Kullanıcı, Toolbar sayfasında satırların altındaki boşluğun tablonun bir parçası gibi görünmediğini (yani `.bt-grid-container`'ın "Alanı Doldurma" davranışının orada çalışmadığını) fark edip §15'deki ilgili dokümantasyon bölümünü (Container'ı Doldurma tekniği, `.bt-grid-container` ile parent'ın kalan yüksekliğini doldurma) hatırlattı. Kök neden: Toolbar sayfasının playground preview'ı `gridTableHtml(p)`'yi `.bt-grid-container` YERİNE düz, class'sız bir `<div style="flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column;">` ile sarıyordu — bu div'in kendi border'ı YOK ve `.bt-grid` (base kural: `display:inline-flex;width:fit-content`) içerik boyutuna sarılı kalıyordu, panelin kalan yüksekliğine hiç esnemiyordu. Sonuç: az satırla (örn. 3), tablonun görünen sınırı (satırların kendi Position bazlı sol/sağ hücre border'ları + son satırın alt border'ı) satırların bittiği yerde kesiliyor, altındaki boşluk "kopuk"/tabloya ait olmayan bir alan gibi duruyordu — TAM olarak `.bt-grid-container`'ın çözmek için var olduğu problem, ama bu sayfada hiç kullanılmamıştı. Düzeltme tek satır: sarmalayıcı `<div class="bt-grid-container" style="overflow-x:auto;">` oldu (ana Data Table Overview playground'unun preview'ıyla BİREBİR aynı desen). `.bt-grid-panel .bt-grid`'in ZATEN var olan `flex:1;width:100%;min-height:0` kuralı ile `.bt-grid-container .bt-grid`'in (aynı özellikler, farklı selector) çakışması YOK — ikisi de aynı sonuca varıyor, specificity eşit, kaynak sırasında sonra tanımlanan (`.bt-grid-panel`) kazanıyor ama değerler identik olduğu için görsel fark yaratmıyor. `.bt-grid-container`'ın kendi border-left/right/bottom'u + `.bt-grid-container .bt-grid__cell--left/--right{border-left/right:none}` (çift border'ı önleyen suppress kuralı) artık devrede — panel içinde panelin KENDİ dış border'ından ayrı, tabloyu SARAN ikinci bir iç border oluşuyor (ekran görüntülerinde zaten görülen, ama alt kenarda kesilen görünüm bu şekilde tamamlandı). Headless Chrome ile hem rowCount=3 hem varsayılan rowCount=6 durumunda doğrulandı: `.bt-grid-container`'ın alt kenarı artık panelin iç (padding sonrası) alt kenarına 17px kalana kadar uzanıyor (bu 17px panelin kendi `--bt-space-2xl` alt padding'i, beklenen/doğru değer) — border ve arka plan satır sayısından bağımsız olarak panelin tamamını dolduruyor. `docs/js/pages-web.js` güncellendi.
 
 **Not — `.bt-grid-container` (base Data Table + Toolbar) Properties paneli açıkken header/body senkron kayması yaşıyordu — Data Table Actions'ta zaten çözülen AYNI hatanın `.bt-grid-container`'a hiç uygulanmamış hali, `min-width:max-content` ile düzeltildi (2026-08-14):** Kullanıcı, Properties paneli açıkken (preview alanı daralınca) Data Table sayfasındaki header row'un bozulduğunu ekran görüntüsüyle bildirdi. Kök neden BİREBİR daha önce Data Table Actions'ta bulunup çözülen sorunla aynıydı (bkz. yukarıdaki "devam" notları): `.bt-grid-container .bt-grid` `width:100%` (sabit, `min-width:max-content` YOK) + `.bt-grid-container .bt-grid__body { overflow:auto }` (her iki eksende) — içerik (944px'lik 6 kolon) mevcut genişliği (Properties paneliyle daralmış, örn. ~386px) aştığında, `.bt-grid__body` KENDİ BAŞINA (header'dan bağımsız, senkronsuz) hem yatay hem dikey scroll edilebilir bir container'a dönüşüyordu — header ise hiç scroll yeteneği olmadığı için sadece görünen ilk birkaç kolonda (ID/Name/Role) donup kalıyor, body'nin kendi scrollbar'ıyla kaydırılan Status/Email'e hiç senkron olmuyordu. Bu hata SADECE Actions'ta değil `.bt-grid-container`'ı kullanan HER sayfada (plain Data Table, Data Table Toolbar) potansiyel olarak vardı ama önceki oturumda `min-width:max-content` fix'i yanlışlıkla sadece `.bt-grid-actions-container`'a uygulanmış, base `.bt-grid-container`'a hiç taşınmamıştı.
 
@@ -3475,7 +1943,7 @@ Headless Chrome ile TEK TEK doğrulandı (ilk seferki gibi yüzeysel değil): (1
 **Not — Generic column-content-config sistemi (ID/Name/Role/Status/Email Content) DÖRT sayfaya daha yayıldı: Data Table Toolbar, Data Table Actions, Frozen Column, Frozen Column Last (2026-08-14):** Kullanıcı, bu sistemin sadece ana Data Table sayfasında olmasının yetmediğini, "tüm data table sayfalarındaki örneklere" getirilmesini istedi. Önceden bu 4 sayfanın kolon fonksiyonları (`gridActionsColumns`, `gridFrozenColumns`, `gridFrozenLastColumns`) Name/Role/Status'u HARDCODED (`cellLeading:'avatar'`, `cellLeading:'dot'`, `cellTrailing:'badge'`) tutuyordu — Toolbar ise zaten `gridTableColumns`'u reuse ettiği için altyapı hazırdı ama Properties panelinde "Columns" grubu hiç YOKTU. Değişiklikler:
 
 - **`gridActionsColumns(p)`**: ID/Name/Role/Status/Email artık `gridTableColumns` ile BİREBİR aynı mekanizmayla (`gridContentKindToSlots(p.xContent || default)`) çalışıyor. Actions kolonu (`actionsContent`) DOKUNULMADI — zaten kendi `GRID_TABLE_ACTIONS_OPTS`'uyla configurable'dı.
-- **`gridFrozenColumns(p)`** / **`gridFrozenLastColumns(p)`**: Aynı 5 kolon aynı mekanizmaya geçirildi. Department/Location/Last Login BİLİNÇLİ olarak dokunulmadı — bunlar Figma'da karşılığı olmayan, sadece frozen-column davranışını göstermek için genişlik eklemeye yarayan yardımcı kolonlar (bkz. §17.4 "Neden ayrı bir kolon seti gerekti" notu), generic content sistemine dahil edilmeleri o amaçla çelişir. Frozen Column Last'ta Actions kolonu ÖNCEDEN hiç configurable DEĞİLDİ (`cellTrailing:'button'` hardcoded, `frozenRight:true`) — Data Table Actions'takiyle AYNI `actionsContent`/`GRID_TABLE_ACTIONS_OPTS` mekanizması YENİ eklendi (kullanıcı `'none'` seçerse sağdan-donma demosu geçici olarak kaybolur — bu, Status'un `'none'`de tüm sütunu kaldırmasıyla aynı, zaten var olan bir davranış kalıbı, özel olarak engellenmedi).
+- **`gridFrozenColumns(p)`** / **`gridFrozenLastColumns(p)`**: Aynı 5 kolon aynı mekanizmaya geçirildi. Department/Location/Last Login BİLİNÇLİ olarak dokunulmadı — bunlar Figma'da karşılığı olmayan, sadece frozen-column davranışını göstermek için genişlik eklemeye yarayan yardımcı kolonlar (bkz. §15.4 "Neden ayrı bir kolon seti gerekti" notu), generic content sistemine dahil edilmeleri o amaçla çelişir. Frozen Column Last'ta Actions kolonu ÖNCEDEN hiç configurable DEĞİLDİ (`cellTrailing:'button'` hardcoded, `frozenRight:true`) — Data Table Actions'takiyle AYNI `actionsContent`/`GRID_TABLE_ACTIONS_OPTS` mekanizması YENİ eklendi (kullanıcı `'none'` seçerse sağdan-donma demosu geçici olarak kaybolur — bu, Status'un `'none'`de tüm sütunu kaldırmasıyla aynı, zaten var olan bir davranış kalıbı, özel olarak engellenmedi).
 - **Properties panelleri**: Toolbar'a `showCheckboxCol`/`idContent`/`nameContent`/`showSort`/`roleContent`/`showFilter`/`statusContent`/`emailContent` (ana Data Table'la BİREBİR aynı "Columns" grubu) eklendi. Data Table Actions'a `idContent`/`nameContent`/`roleContent`/`statusContent`/`emailContent` eklendi (`actionsContent` zaten vardı, sırası korunarak grubun sonuna alındı). Frozen Column'a ve Frozen Column Last'a aynı 5 prop eklendi (Frozen Last'a ayrıca `actionsContent` de YENİ eklendi). Hepsi `GRID_TABLE_CONTENT_OPTS`'u (None/Checkbox/Dot/Avatar/Avatar Group/Badge/Button/Switch/Inline TextBox/Inline Dropdown) reuse ediyor — tek kaynak, 4 sayfa arasında hiç kod tekrarı yok.
 
 Headless Chrome ile 4 sayfanın da Properties panelinde doğru prop setinin registered olduğu (`window._pgdConfigs[id].props`) VE her sayfada bir test prop'u (`statusContent`→avatar, `roleContent`→badge vb.) canlı değiştirilip DOM'da doğru şekilde yansıdığı doğrulandı — hatasız, JS exception yok. Frozen Column Last'ta `roleContent:'badge'` testi özellikle DOM seviyesinde (`innerHTML` kontrolü) doğrulandı çünkü ekran görüntüsü kırpması badge'i görsel olarak dar kolon genişliğinde kesmişti (gerçek bir hata değil, sadece test screenshot'ının crop alanı yetersizdi). Node harness ile 127 sayfa/tab hatasız. `docs/js/pages-web.js` güncellendi.
@@ -3498,9 +1966,9 @@ Headless Chrome ile doğrulandı: Email'i Badge'e çevirince hücrenin `innerHTM
 
 Headless Chrome ile 4 senaryo canlı test edildi: **Status→Icon** — siren ikonu (kırmızı, `rgb(179,29,56)`, doğrulanan path verisiyle) + "Active"/"Completed"/"Pending" metni yan yana, Role'ün dot'u ve Name'in avatar'ı etkilenmedi; **Email→Badge** — badge içinde gerçek email adresi (`emre.gocer@bentas.com`); **Name→Badge** — badge içinde gerçek isim ("Emre Göçer", "Ayşe Yılmaz", "Mert Demir"), varsayılan (mavi) renkte; **Status→Badge (regresyon)** — renk döngüsü (blue/green/yellow) ve etiketler (Active/Completed/Pending) hâlâ doğru eşleşiyor, önceki behavior bozulmadı. Dördü de hem DOM assertion hem ekran görüntüsüyle doğrulandı. `node --check` + Node `vm` harness (127 sayfa/tab) hatasız. `docs/js/pages-web.js` güncellendi.
 
-**Not — REGRESYON: bir önceki notun `showContent` formülü Frozen sayfalarındaki Department/Location/Last Login kolonlarının verisini kaybettirmişti, düzeltildi (2026-08-14):** Kullanıcı, bir önceki değişiklik sonrası Frozen Column ve Frozen Column Last sayfalarında Department/Location/Last Login kolonlarındaki datanın kaybolduğunu bildirdi. Kök neden: bir önceki notta 4 render fonksiyonuna eklenen `showContent: (c.field && c.cellTrailing === 'none') ? 'on' : 'off'` formülü, `c.cellTrailing`'in HER ZAMAN açıkça bir string olduğunu varsayıyordu — bu, `gridContentKindToSlots()`'tan geçen ID/Name/Role/Status/Email için doğruydu (o fonksiyon `trailing:'none'`i her zaman açıkça döndürüyor, bkz. §17.4 "Generic content-kind" notu), AMA Department/Location/Last Login (SADECE Frozen sayfalarına özel, `gridContentKindToSlots()`'tan hiç geçmeyen, sadece `field` taşıyan yardımcı kolonlar, bkz. yukarıdaki "Neden ayrı bir kolon seti gerekti" notu) için `c.cellTrailing` hiç set edilmediğinden `undefined` kalıyordu — `undefined === 'none'` `false` olduğu için `showContent` yanlışlıkla `'off'`e düşüyor, kolonun `field`'ı olsa bile metni gizliyordu (asıl render'da kullanılan `trailing: c.cellTrailing || 'none'` ifadesiyle TUTARSIZ bir kontroldü). Düzeltme: formül `showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off'` oldu — artık `cellTrailing`'in hem `undefined` (helper kolonlar) hem açık `'none'` (generic kolonlar) hallerini AYNI şekilde ele alıyor, gerçek render'daki `|| 'none'` fallback'iyle birebir tutarlı. Değişiklik 4 render fonksiyonunun (`gridTableHtml`/`gridActionsTableHtml`/`gridFrozenTableHtml`/`gridFrozenLastTableHtml`) hepsinde birebir aynı. Headless Chrome ile doğrulandı: Frozen Column'da satır 1 artık `["10000001","EG Emre Göçer","Designer","Design","İstanbul","2 saat önce","Active","emre.gocer@bentas.com"]` (Department/Location/Last Login geri geldi), Frozen Column Last'ta aynı satır + Actions (Button+More) da bozulmadan görünüyor. `node --check` + Node `vm` harness (127 sayfa/tab) hatasız. `docs/js/pages-web.js` güncellendi.
+**Not — REGRESYON: bir önceki notun `showContent` formülü Frozen sayfalarındaki Department/Location/Last Login kolonlarının verisini kaybettirmişti, düzeltildi (2026-08-14):** Kullanıcı, bir önceki değişiklik sonrası Frozen Column ve Frozen Column Last sayfalarında Department/Location/Last Login kolonlarındaki datanın kaybolduğunu bildirdi. Kök neden: bir önceki notta 4 render fonksiyonuna eklenen `showContent: (c.field && c.cellTrailing === 'none') ? 'on' : 'off'` formülü, `c.cellTrailing`'in HER ZAMAN açıkça bir string olduğunu varsayıyordu — bu, `gridContentKindToSlots()`'tan geçen ID/Name/Role/Status/Email için doğruydu (o fonksiyon `trailing:'none'`i her zaman açıkça döndürüyor, bkz. §15.4 "Generic content-kind" notu), AMA Department/Location/Last Login (SADECE Frozen sayfalarına özel, `gridContentKindToSlots()`'tan hiç geçmeyen, sadece `field` taşıyan yardımcı kolonlar, bkz. yukarıdaki "Neden ayrı bir kolon seti gerekti" notu) için `c.cellTrailing` hiç set edilmediğinden `undefined` kalıyordu — `undefined === 'none'` `false` olduğu için `showContent` yanlışlıkla `'off'`e düşüyor, kolonun `field`'ı olsa bile metni gizliyordu (asıl render'da kullanılan `trailing: c.cellTrailing || 'none'` ifadesiyle TUTARSIZ bir kontroldü). Düzeltme: formül `showContent: (c.field && (c.cellTrailing || 'none') === 'none') ? 'on' : 'off'` oldu — artık `cellTrailing`'in hem `undefined` (helper kolonlar) hem açık `'none'` (generic kolonlar) hallerini AYNI şekilde ele alıyor, gerçek render'daki `|| 'none'` fallback'iyle birebir tutarlı. Değişiklik 4 render fonksiyonunun (`gridTableHtml`/`gridActionsTableHtml`/`gridFrozenTableHtml`/`gridFrozenLastTableHtml`) hepsinde birebir aynı. Headless Chrome ile doğrulandı: Frozen Column'da satır 1 artık `["10000001","EG Emre Göçer","Designer","Design","İstanbul","2 saat önce","Active","emre.gocer@bentas.com"]` (Department/Location/Last Login geri geldi), Frozen Column Last'ta aynı satır + Actions (Button+More) da bozulmadan görünüyor. `node --check` + Node `vm` harness (127 sayfa/tab) hatasız. `docs/js/pages-web.js` güncellendi.
 
-### 17.5 Data Table Inline Editing / InCell Editing (2026-08-24'te eklendi)
+### 15.5 Data Table Inline Editing / InCell Editing (2026-08-24'te eklendi)
 
 **Figma'da karşılığı YOK** — kullanıcı isteğiyle sıfırdan tasarlandı (data grid dünyasındaki standart ayrım): **Inline Editing** satır bazlı düzenleme (Actions kolonundaki kalem ikonuna tıklanınca satırın TÜM editable hücreleri aynı anda view'dan edit'e geçer, Save/Cancel ile açıkça onaylanır/iptal edilir), **InCell Editing** hücre bazlı düzenleme (Excel/Sheets deseni — bir hücreye ÇİFT tıklanınca SADECE o hücre edit'e geçer, Enter/blur/dışarı tıklama ile otomatik kaydedilir, Escape ile eski değerine döner). İkisi de nav'da Data Table grubunun altında ayrı sayfalar (`components/data-table-inline-editing`, `components/data-table-incell-editing`).
 
@@ -3540,7 +2008,7 @@ Headless Chrome ile 4 senaryo canlı test edildi: **Status→Icon** — siren ik
 
 Headless Chrome + gerçek DevTools Protokolü ile uçtan uca doğrulandı: Inline Editing'de Edit tıklaması → satır `--editing` alıyor → Name input'u değiştirilip Save'e basılınca view metni güncelleniyor VE satır kapanıyor; InCell Editing'de bir hücreye dblclick → SADECE o hücre `--editing` (input focus+select), Escape orijinal değere dönüp kapatıyor, başka bir hücrede Enter ile commit ediliyor, Status hücresinde dblclick dropdown'ı açıyor (`bt-tbx--active`), bir seçenek tıklanınca hem dropdown metni hem badge etiketi güncellenip hücre kapanıyor — konsol hatası YOK. Node `vm` harness ile 133 sayfa/tab (127 + 2 yeni sayfa × 4 tab) hatasız. `docs/css/styles.css`, `docs/js/pages-web.js`, `design.md` güncellendi.
 
-### 17.6 Table-level Sort & Filter — gerçek sıralama, tüm sayfalarda tutarlı (2026-08-24'te eklendi)
+### 15.6 Table-level Sort & Filter — gerçek sıralama, tüm sayfalarda tutarlı (2026-08-24'te eklendi)
 
 Kullanıcı üç ayrı sorun bildirdi: (1) Data Table sayfalarının Properties panelleri birbirinden farklı özellik setlerine sahipti (Frozen First/Last ve Data Table Actions'ta Sort/Filter hiç yoktu, Inline/InCell Editing'de de yoktu). (2) Sort/Filter aslında "Columns" grubunda, TEK bir kolona bağlıydı (`Sort (Name)`, `Filter (Role)`) — mantıken bir "Table" davranışı olduğu için `Table` grubuna taşınmalı ve TÜM kolon header'larına uygulanmalıydı. (3) Filter ikonu statik kalabilir (gerçek filter overlay'i ayrı bir oturumda eklenecek) ama Sort ikonları sadece header hover'dayken görünmeli VE header'a tıklayınca GERÇEKTEN sıralama yapmalı.
 
@@ -3577,23 +2045,23 @@ Examples tab'ındaki statik "Unsorted/Ascending/Descending" illüstrasyonları i
 - `gridHeaderCellHtml`'e opsiyonel `forceSorted` (bool) param'ı eklendi — `true` ise header, `window.btGridSortBy`'ın çalışma zamanında eklediği AYNI `.bt-grid__header-cell--sorted` class'ı + `data-sort-dir` attribute'unu doğrudan render'a gömer (CSS hiç değişmedi, aynı kurallar geçerli olur), `sortDir` param'ı ('up'/'down') sadece o yöndeki ikonu render eder.
 - `gridTableHtml`, `p.forceSortField` set edildiyse `_gridTableRowsData` slice'ını (dizi seviyesinde, DOM'da değil) yeni `_gridCompareFieldValues(a,b)` helper'ıyla sıralar — bu helper `window.btGridSortBy`'daki AYNI karşılaştırma mantığını (sayısal round-trip veya `localeCompare(v,'tr')`) paylaşır, tek kaynak.
 
-**Kritik ders:** İlk yazımda sayfa açıklama metninde ham backtick (`` `field` ``) kullanıldı — bu, "devam 27" notundaki (bkz. §17.4 öncesi tarih) hatayla AYNI tuzak: sayfa tamamen bir JS template literal'i olduğu için ham backtick'ler string'i erken kapatıp `ReferenceError` fırlatır. `node --check` ile anında yakalanıp `<code>` tag'ine çevrildi — bu tür prose metinlerde kod terimi göstermek için HER ZAMAN `<code>` tag'i kullanılmalı, asla ham backtick değil.
+**Kritik ders:** İlk yazımda sayfa açıklama metninde ham backtick (`` `field` ``) kullanıldı — bu, "devam 27" notundaki (bkz. §15.4 öncesi tarih) hatayla AYNI tuzak: sayfa tamamen bir JS template literal'i olduğu için ham backtick'ler string'i erken kapatıp `ReferenceError` fırlatır. `node --check` ile anında yakalanıp `<code>` tag'ine çevrildi — bu tür prose metinlerde kod terimi göstermek için HER ZAMAN `<code>` tag'i kullanılmalı, asla ham backtick değil.
 
 Headless Chrome + DevTools Protokolü ile doğrulandı: Overview'da Sort varsayılan `'on'` (5 kolon anında sortable, toggle'a gerek kalmadan), Examples'taki 3 statik tablo hiç JS etkileşimi olmadan doğru sırada + doğru header göstergesiyle render oluyor (Ascending'de sadece yukarı ok/mavi, Descending'de sadece aşağı ok/mavi, Unsorted'da hiç işaretlenmemiş) — konsol hatası yok. Ekran görüntüsüyle de teyit edildi. Node harness ile 137 sayfa/tab (133+4) hatasız. `docs/js/pages-web.js` güncellendi.
 
 **Data Table Filtering sayfası (2026-08-24 devam 8'de eklendi, `components/data-table-filtering`, nav'da Sorting'in ÜSTÜNDE):** Sorting sayfasıyla BİREBİR aynı teknik desen — ana Data Table'ın `gridTableColumns`/`gridTableHtml`'ini reuse eder, ayrı bir kolon/render fonksiyonu yok. Tek farkı Overview playground'unun `showFilter` prop'unun varsayılanının `'on'` (Sort ise bu sayfada varsayılan `'off'`) olması.
 
-**Bilinçli kapsam sınırı:** Filter ikonu şu an SADECE görsel/statik bir sinyal — hangi kolonların filtrelenebilir olduğunu gösteriyor ama tıklanınca gerçek bir filtre paneli/overlay'i açmıyor. Kullanıcı gerçek filtreleme mekanizmasının nasıl çalışması gerektiğini AYRI bir mesajda tarif edeceğini belirtti (bkz. HISTORY.md) — bu sayfa o davranış eklenene kadar sadece "aktif/statik ikon" durumunu dürüstçe belgeliyor, Usage tab'ında bu sınırlamayı netleştiren bir Don't maddesi var. Filter'ın Sort'tan CSS'te farkı: hover'a bağlı DEĞİL, `showFilter:'on'` olduğunda ikon her zaman görünür kalır (bkz. §17.6'nın "hover-only sort" notu — bu kural SADECE sort ikonlarına uygulanıyor, filter ikonuna hiç uygulanmadı).
+**Bilinçli kapsam sınırı:** Filter ikonu şu an SADECE görsel/statik bir sinyal — hangi kolonların filtrelenebilir olduğunu gösteriyor ama tıklanınca gerçek bir filtre paneli/overlay'i açmıyor. Kullanıcı gerçek filtreleme mekanizmasının nasıl çalışması gerektiğini AYRI bir mesajda tarif edeceğini belirtti (bkz. HISTORY.md) — bu sayfa o davranış eklenene kadar sadece "aktif/statik ikon" durumunu dürüstçe belgeliyor, Usage tab'ında bu sınırlamayı netleştiren bir Don't maddesi var. Filter'ın Sort'tan CSS'te farkı: hover'a bağlı DEĞİL, `showFilter:'on'` olduğunda ikon her zaman görünür kalır (bkz. §15.6'nın "hover-only sort" notu — bu kural SADECE sort ikonlarına uygulanıyor, filter ikonuna hiç uygulanmadı).
 
 Headless Chrome ile doğrulandı: nav'da Filtering, Sorting'in hemen üstünde; Overview'da Filter varsayılan `'on'` (6 filter ikonu anında görünür), Sort varsayılan `'off'` (0 sortable header) — konsol hatası yok, ekran görüntüsüyle teyit edildi. Node harness ile 141 sayfa/tab (137+4) hatasız. `docs/js/pages-web.js` güncellendi.
 
-### 17.7 Table-level Filter — gerçek çalışan overlay (2026-08-24 devam 9'da eklendi)
+### 15.7 Table-level Filter — gerçek çalışan overlay (2026-08-24 devam 9'da eklendi)
 
 Kullanıcı bir referans ekran görüntüsü paylaştı: filter ikonu flat bir buton gibi çalışmalı ve aktifken basılı/aktif state'te kalmalı; tıklanınca Ara input'u + Tümünü Seç + kolonun kendi verisinden türeyen checkbox listesi + Temizle/Uygula footer'lı bir overlay açılmalı. Bu, `gridHeaderCellHtml`'in filter ikonunu üreten TEK PAYLAŞILAN kod yolu olduğu için TÜM Data Table sayfalarında (Data Table, Toolbar, Actions, Frozen First/Last, Inline/InCell Editing, Filtering, Sorting) otomatik aktif oldu — ayrı bir implementasyon yok.
 
 **Filter trigger:** Statik `<span>` yerine gerçek `bt-btn bt-btn--sm bt-btn--base-flat bt-btn--icon` butonu (`.bt-grid__filter-btn` class'ı eklendi). Aktifken (`data-filter-active="true"` header'da) Button component'inin ZATEN var olan `.bt-btn--state-selected` modifier'ı (`background: var(--bt-primary-subtle); box-shadow: inset 0 0 0 1px var(--bt-primary-default);`) reuse edilir — yeni bir "aktif filter" stili icat edilmedi (CLAUDE.md "Mevcut Component'leri Reuse Et" kuralı).
 
-**Panel — Overflow Menu'süyle AYNI portal deseni:** `.bt-grid__filter-panel`, Actions kolonundaki "More" overflow menu'sünün (`btGridMenuToggle`, §17 üstü) kanıtlanmış `document.body`'ye portal + `position:fixed` (`getBoundingClientRect()`'ten hesaplanan `top`/`left`) desenini kullanır — bu, grid'in `overflow:auto` sarmalayıcılarının (`.bt-grid-container`/`.bt-grid-actions-container` vb.) paneli kırpmasını önler (bkz. HISTORY.md'deki "izole çalışıyor, gerçek sayfada kırılıyor" sınıfı geçmiş hatalar). FARKI: panel ephemeral — her açılışta `document.createElement` ile yeniden oluşturulur, kapanışta `.remove()` ile DOM'dan tamamen kaldırılır; overflow menu'nün "kendi `.bt-grid__menu`'süne geri taşınma" (home konumu) mekanizmasına ihtiyaç yok çünkü panel'in sabit bir DOM konumu hiç olmadı.
+**Panel — Overflow Menu'süyle AYNI portal deseni:** `.bt-grid__filter-panel`, Actions kolonundaki "More" overflow menu'sünün (`btGridMenuToggle`, §15 üstü) kanıtlanmış `document.body`'ye portal + `position:fixed` (`getBoundingClientRect()`'ten hesaplanan `top`/`left`) desenini kullanır — bu, grid'in `overflow:auto` sarmalayıcılarının (`.bt-grid-container`/`.bt-grid-actions-container` vb.) paneli kırpmasını önler (bkz. HISTORY.md'deki "izole çalışıyor, gerçek sayfada kırılıyor" sınıfı geçmiş hatalar). FARKI: panel ephemeral — her açılışta `document.createElement` ile yeniden oluşturulur, kapanışta `.remove()` ile DOM'dan tamamen kaldırılır; overflow menu'nün "kendi `.bt-grid__menu`'süne geri taşınma" (home konumu) mekanizmasına ihtiyaç yok çünkü panel'in sabit bir DOM konumu hiç olmadı.
 
 **Seçenek listesi — kolonun KENDİ verisinden türer, hardcoded DEĞİL:** Panel açılırken, o kolonun index'indeki (`nth-child`) TÜM body hücrelerinin `data-sort-value` attribute'u (zaten `gridCellHtml`'in `sortValue` opt'undan geliyor — Sort kapalı olsa bile `c.field` varsa her zaman set edilir) toplanıp `Set` ile benzersizleştirilip `localeCompare(v,'tr')` ile alfabetik sıralanır. Bu sayede aynı panel kodu Status (Active/Completed/Pending/Inactive), Role, Department, Location gibi HERHANGİ bir field'lı kolonda doğru çalışır.
 
@@ -3632,7 +2100,7 @@ Checkbox'lar gerçek `.bt-checkbox__box` (+ `_chkCheck` ikonu), footer butonlar�
 - `window.btGridApplyFilters(grid)`: grid'deki TÜM `[data-filter-active="true"]` header'ları toplar, her biri için `{nth, values:Set}` çıkarır, `.bt-grid__body`'nin HER satırı için TÜM aktif filtrelerden geçip geçmediğini (AND mantığı — `filters.every(...)`) kontrol edip `row.style.display` ile gösterir/gizler. Birden fazla kolon aynı anda filtrelenebilir, birbirini bozmadan; her Apply/Clear TÜM aktif filtreleri yeniden değerlendirir (tek kolonun state'ini izole güncellemez).
 - Panel her açıldığında `data-filter-values`'tan önceki seçim geri okunur — kullanıcı hangi değerleri seçtiğini kaybetmez.
 
-**Sort ile etkileşim:** Filter ve Sort tamamen bağımsız — Sort DOM node'larını `appendChild` ile yeniden sıralar, Filter sadece `display:none` ile görünürlüğü değiştirir; ikisi aynı anda aktif olabilir (örn. Status=Active filtrelenip ID'ye göre azalan sıralanabilir), birbirini bozmaz. Filter ikonuna tıklama zaten `event.stopPropagation()` ile header'ın sort click'ini hiç tetiklemez (bu davranış §17.6'dan beri zaten vardı, değişmedi).
+**Sort ile etkileşim:** Filter ve Sort tamamen bağımsız — Sort DOM node'larını `appendChild` ile yeniden sıralar, Filter sadece `display:none` ile görünürlüğü değiştirir; ikisi aynı anda aktif olabilir (örn. Status=Active filtrelenip ID'ye göre azalan sıralanabilir), birbirini bozmaz. Filter ikonuna tıklama zaten `event.stopPropagation()` ile header'ın sort click'ini hiç tetiklemez (bu davranış §15.6'dan beri zaten vardı, değişmedi).
 
 Headless Chrome + DevTools Protokolü ile kapsamlıca doğrulandı: Status kolonu için panel açılışında 4 doğru değer + Tümünü Seç başta işaretli; Pending'i kaldırıp Uygula → panel kapanır, buton `.bt-btn--state-selected` alır, 6 satırdan TAM 1'i (Pending) gizlenir; paneli tekrar açınca Pending hâlâ işaretsiz (state korunmuş); arama "active" → sadece Active/Inactive listelenir; Temizle → tüm satırlar geri gelir, buton pasife döner; dışarı tıklayınca panel kapanır; filter tıklaması sort'u tetiklemez. Filter+Sort birlikte (Status=Active + ID desc) doğru çalışır (6→2 satır, ikisi de Active, azalan ID sırasında). Data Table Actions'ın farklı container/scroll yapısında da panel doğru konumlanıp viewport içinde kalır. Ekran görüntüsü kullanıcının referans görseline neredeyse birebir uyuyor. Konsol hatası YOK. Node harness ile 141 sayfa/tab hatasız. `docs/css/styles.css`, `docs/js/pages-web.js` güncellendi.
 
@@ -3664,7 +2132,7 @@ Headless Chrome + DevTools Protokolü ile kapsamlıca doğrulandı: Status kolon
 
 **Not (2026-08-24 devam 23-24):** `.bt-grid__filter-list`'in yönlere göre padding'i ayrıştırıldı: top=`0` (none), right=`var(--bt-space-xs, 4px)`, bottom=`var(--bt-space-lg, 10px)`, left=`var(--bt-space-lg, 10px)` — `padding: 0 var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-lg, 10px)` (4 değerli shorthand). Kullanıcı önce sağı da `none` istedi, ardından `4px`'e düzeltti — bu son hâl. Doğrulandı: computed `paddingTop=0px`, `paddingRight=4px`, `paddingBottom=10px`, `paddingLeft=10px`.
 
-## 18. Segmented Control
+## 16. Segmented Control
 
 Figma kaynağı: `Segmented Control` component set (Size × Content × Segments, 45 varyant) + alt `Segment` component set (Size × Content × State, 54 varyant). İki seviyeli yapı: **container (track)** + tekrarlanan **segment** düğmeleri. Birbirini dışlayan görünüm/mod seçimleri için — sekme navigasyonu değil.
 
@@ -3676,7 +2144,7 @@ Figma kaynağı: `Segmented Control` component set (Size × Content × Segments,
 
 **Not — varsayılan boyut = Md (Figma sapması, kullanıcı kararı):** Figma'da `Size` varyantının varsayılanı `sm`'dir; bu projede docs + implementasyon için **Md varsayılan** kabul edilir. Md = modifiersiz `.bt-seg-ctrl` (segment 32px); Sm için `.bt-seg-ctrl--sm` (28px), Lg için `.bt-seg-ctrl--lg` (36px). Icon & Label ikon↔label boşluğu varsayılanda (Md/Lg) 4px, `.bt-seg-ctrl--sm`'de 0. Playground'ların `size` prop varsayılanı `md`, demo etiketleri `Label 1 / Label 2 / …`.
 
-### 18.1 Markup
+### 16.1 Markup
 
 Taşıyıcı hiyerarşisi Figma'nın **Segment › Base Segment › Left Control / Label / Right Control** yapısıyla birebir:
 
@@ -3721,9 +2189,9 @@ Taşıyıcı hiyerarşisi Figma'nın **Segment › Base Segment › Left Control
 | Icon | `.bt-segment--icon` | Left Control (kare segment) |
 | Icon & Label | `.bt-segment--icon-label` | Left Control + Label |
 
-**İkon = inline SVG (data-lucide DEĞİL):** Figma'da Icon Control placeholder olarak `Icon/loader` taşır. Kodda ikon `<span class="bt-segment__left"><span class="bt-segment__icon"><svg width="18" height="18" …>…</svg></span></span>` olarak gömülür — bu proje Lucide runtime'ı yüklemediği için `<i data-lucide="…">` deseni ikonu **boş render eder** (bkz. §15). CSS `.bt-segment__icon i, .bt-segment__icon svg` ikisini de hedefler; renk `currentColor` üzerinden state'ten gelir. Consuming projede SVG gerçek ikonla değiştirilir. Docs demolarında `_segIcons` = 6 elemanlık Lucide seti (loader / sparkles / sun / user-round / flame / map-pin); `segItemHtml({ iconIndex })` pozisyona göre seçer (`segCtrlHtml` `i`'yi geçer, taşarsa `% 6` ile başa döner) — böylece 2–6 segmentin her biri farklı ikon gösterir.
+**İkon = inline SVG (data-lucide DEĞİL):** Figma'da Icon Control placeholder olarak `Icon/loader` taşır. Kodda ikon `<span class="bt-segment__left"><span class="bt-segment__icon"><svg width="18" height="18" …>…</svg></span></span>` olarak gömülür — bu proje Lucide runtime'ı yüklemediği için `<i data-lucide="…">` deseni ikonu **boş render eder** (bkz. §13). CSS `.bt-segment__icon i, .bt-segment__icon svg` ikisini de hedefler; renk `currentColor` üzerinden state'ten gelir. Consuming projede SVG gerçek ikonla değiştirilir. Docs demolarında `_segIcons` = 6 elemanlık Lucide seti (loader / sparkles / sun / user-round / flame / map-pin); `segItemHtml({ iconIndex })` pozisyona göre seçer (`segCtrlHtml` `i`'yi geçer, taşarsa `% 6` ile başa döner) — böylece 2–6 segmentin her biri farklı ikon gösterir.
 
-### 18.2 CSS Tokens
+### 16.2 CSS Tokens
 
 **Container (`.bt-seg-ctrl`)**
 
@@ -3814,7 +2282,7 @@ Segment yüksekliği (28/32/36), radius, tüm state/renk token'ları, "divider y
 | seçili segment komşuluğu | `.bt-segment--selected + .bt-segment::before` ve `.bt-segment--selected::before` → `opacity: 0` (aktif pill kenarıyla çakışmasın) |
 | Vertical | çizgi yatay: `left`/`right: var(--bt-space-sm)`, `top: -1px`, `height: 1px` |
 
-### 18.3 JS Davranışı
+### 16.3 JS Davranışı
 
 Tek fonksiyon: seçili class'ı taşımak.
 
@@ -3831,7 +2299,7 @@ Her segment `<button onclick="btSegSelect(this)">`. Consuming projede (Blazor) s
 
 **Disabled — segment bazında:** Tüm kontrolü değil, tek bir segmenti kapatmak için o segment `<button class="bt-segment" disabled>` olur (tıklama tarayıcıca engellenir, `btSegSelect` çağrılmaz). Görsel: segment/track zemini DEĞİŞMEZ, yalnız `.bt-segment:disabled` metni `text/primary/muted` (#a3a3a3), ikonu `icon/primary/muted` (#a3a3a3) yapar ve `cursor: not-allowed` verir; diğer segmentler etkilenmez. Blazor karşılığı `Enabled="false"` veya bağlı bir `bool`. Docs sayfasında hem Overview/Examples playground'larında hem ayrı "Disabled" bölümündeki playground'da bir `Disabled` property'si (None / 1st…6th) hangi segmentin kapatılacağını seçtirir.
 
-### 18.4 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
+### 16.4 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
 
 1. **Content tipi padding'i değiştirir** — Label 12/12, Icon 0/0 (kare), Icon & Label **0/12 asimetrik** (ikon sola yaslı). Tek bir sabit yatay padding yok.
 2. **Icon ↔ Label boşluğu boyuta bağlı** — Sm'de 0, Md/Lg'de 4px.
@@ -3846,13 +2314,13 @@ Her segment `<button onclick="btSegSelect(this)">`. Consuming projede (Blazor) s
 11. **Right Control (counter) Figma'da tanımlı ama pasif** — Base Segment'in 3. bölümü olan Right Control (28×28 sayaç rozeti: `radius-full` `surface/brand`, `text-2xs` beyaz sayı) var; ancak shipped Segmented Control'de `Show Right Control = false`, docs implementasyonunda henüz render edilmiyor (`.bt-segment__right` slotu ayrıldı).
 
 
-## 19. Tab
+## 17. Tab
 
 Figma kaynağı: "Bentas DS" dosyası, "Tabs" sayfası — **Base Tab** (`1040:6309`, atomik yapı) + **Tab** (`1045:22304`, 216 varyant: Size × Fill Mode × Content × Type × State) + "Tabs …" assembly frame'leri.
 
 Tab, aynı bağlamda birbirini dışlayan bölümler/görünümler arasında geçiş sağlar; Segmented Control'den farkı sayfa navigasyonu (route) için de kullanılabilmesidir. `components/tab` tek sayfa (Line/Bordered/Segmented Examples bölümleri, 4-tab standardı).
 
-### 19.1 Yapı — Base Tab
+### 17.1 Yapı — Base Tab
 
 `Base Tab` HORIZONTAL auto-layout, yatay padding `Space/spacing-xl` (12px), center/center:
 
@@ -3878,7 +2346,7 @@ Docs implementasyonu — markup:
 ```
 Not: close **`<span>`** (iç içe `<button>` geçersiz olurdu); `.bt-btn` class'ları span'e de tam stil verir.
 
-### 19.2 Fill Mode'lar
+### 17.2 Fill Mode'lar
 
 | | Track (sarmalayıcı) | Seçili tab |
 |---|---|---|
@@ -3888,7 +2356,7 @@ Not: close **`<span>`** (iç içe `<button>` geçersiz olurdu); `.bt-btn` class'
 
 Her tab sürekli şeffaf 1px border taşır → seçim değişince layout shift yok (Segmented Control ile aynı desen). Line/Bordered tab'larda `margin-bottom:-1px` (dikeyde `-1px` sağ/sol) ile track çizgisine biner.
 
-### 19.3 State'ler
+### 17.3 State'ler
 
 Default / Hover / Selected / Focus / Disabled (Figma'da ayrıca Active = Selected ile aynı).
 
@@ -3898,11 +2366,11 @@ Default / Hover / Selected / Focus / Disabled (Figma'da ayrıca Active = Selecte
 - İkon rengi hiçbir state'te değişmez: her zaman `icon/primary/strong` (#535353).
 - Metin tipografisi state'ten bağımsız: Geist 400 12px/16px (`--bt-text-xs-regular`) — Selected'da da weight artmaz.
 
-### 19.4 Yatay / Dikey
+### 17.4 Yatay / Dikey
 
 `.bt-tab-list--vertical` → `flex-direction: column`, tab içeriği sola hizalı (`justify-content: flex-start`). Line indicator alt-border yerine **sağ-border**. Bordered seçili tab (Figma `Tab Bordered Vertical` 1052:39818 — soldaki panele bağlanır): grey border **üst + sağ**, **sol kenar açık** (`border-left-color: transparent`), beyaz **alt-seam** (`border-bottom-color: base/default`), radius **sağ köşeler** (`0 4px 4px 0`). Segmented track dikey pill olur.
 
-### 19.5 JS davranışı
+### 17.5 JS davranışı
 
 ```js
 // seçim
@@ -3942,7 +2410,7 @@ window.btTabAdd = function (el) {
 ```
 Close `<span>`: `onclick="event.stopPropagation();btTabClose(this)"` — tab seçimini tetiklemeden kapatır. **Add Tab** butonu (Figma `1055:40422`) `.bt-tab-list`'in son çocuğudur: `<button class="bt-tab-list__add bt-btn bt-btn--2xs bt-btn--base-flat" onclick="btTabAdd(this)">` (plus ikon + "Add Tab", 20px). `.bt-tab-list__add` yatayda `align-self: center` + `margin-left: --bt-space-xs`; dikeyde `align-self: stretch` + `justify-content: flex-start`. Blazor'da seçim bağlı bir index/enum veya `TelerikTabStrip` ile, kapatma/ekleme koleksiyon mutasyonuyla yönetilir.
 
-### 19.6 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
+### 17.6 Figma'da doğrulanan, ilk bakışta beklenmeyen detaylar
 
 1. **Bordered'ın "kutu"su tab'ın kendisinde, "beyaz kesik" container'da** — Figma'da Base Tab instance'ı 3 kenar (`sw:[1,1,0,1]`) `border/primary/default` alır, Tab container'ı `border-bottom` (`sw:[0,0,1,0]`) `base/default` (beyaz) alır. Docs'ta ikisi de tek `.bt-tab--selected` kuralında birleştirildi.
 2. **Bordered'da metin rengi değişmez** — Line ve Segmented seçili tab'da metin brand mavisine döner, Bordered'da `text/primary/default` kalır.
@@ -3953,13 +2421,13 @@ Close `<span>`: `onclick="event.stopPropagation();btTabClose(this)"` — tab se�
 7. **Counter Base Tab'da default açık** ama Tab component'inde ayrı bir varyant değil — `Show Counter` boolean'ı; docs playground'da `Counter` (On/Off) toggle'ıyla kontrol edilir.
 
 
-## 20. Kbd
+## 18. Kbd
 
 Figma kaynağı: "Bentas DS" dosyası, "Kbd" sayfası — tek bir component set: **kbd** (`1148:132414`), `Type` (Single / Combo) × `Shortcut` (15 varyant). `Type=Single` tek bir key cap, `Type=Combo` key cap + "+" ayırıcı + key cap dizisidir.
 
 Kbd, metin içinde bir klavye tuşunu veya kısayol kombinasyonunu görsel olarak işaretler (menü öğesi, tooltip, yardım metni). **Etkileşimsiz** bir göstergedir — semantik `<kbd>` elementi, buton değil; hover/focus/disabled state'i, boyut ekseni, tema ekseni **yoktur**. Tek biçim ekseni: tek tuş mu, kombo mu. `components/kbd` tek sayfa (4-tab standardı: Overview / Examples / CSS Properties / Usage).
 
-### 20.1 Yapı
+### 18.1 Yapı
 
 **Key cap** (`.bt-kbd`) — tek bir `<kbd>`:
 
@@ -4015,16 +2483,16 @@ CSS:
 }
 ```
 
-### 20.2 Tuş tipleri
+### 18.2 Tuş tipleri
 
 Etiket serbest metindir — üç tipik kategori: sözcük tuşları (Ctrl, Tab, Esc, Enter, Space, Del), tek harf/rakam (A, K, 5 — kare görünür) ve tek-glyph sembol tuşları (⇧ ⌘ ⌥ ⌃ ⏎ ⌫ ↑ ↓ ← →). Sembol tuşları kombolarda sözcük adlarından daha kompakt ve platformlar arası daha taşınabilirdir. Kbd hiçbir dönüşüm yapmaz; ne yazılırsa onu gösterir — platforma göre doğru glyph'i seçmek (Windows `Ctrl`, macOS `⌘`) tüketen tarafın işidir.
 
-### 20.3 JS davranışı
+### 18.3 JS davranışı
 
 **Yok.** Kbd salt-sunum bir parçadır; markup doğrudan gömülür, `window.bt*` global'i veya event handler'ı gerektirmez.
 
 
-## 21. Overflow Menu
+## 19. Overflow Menu
 
 Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`). Alt yapı taşları:
 
@@ -4035,7 +2503,7 @@ Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`).
 - **Overflow Menu List** — beyaz zemin, `border/primary/muted` (#e6e6e6) 1px kenar, `Shadow/sm` (`--bt-shadow-sm`), `radius-sm`. İçinde bir veya daha çok **Section** (padding `spacing-xs` = 4px). İki Section arasına Figma bir **Seperator** component'i (`Mode=Light`; `Line`, 1px, `border/primary/default` #d4d4d4, tam genişlik) koyar — docs'ta bu `.bt-ovf-menu__section + .bt-ovf-menu__section { border-top }` ile üretilir (aynı görünüm). "Overflow Menu Sections" frame'i 3 section gösterir: File (2 item) · Actions (5 item) · ayrı Delete section'ı (`Type=Destructive`, sol ikon `trash-2`, group label'sız).
 - **Trigger** — `Base Button` Sm / Outline / Base ("Open Menu" metni) **veya** icon-only bir `bt-btn--icon` (⋯).
 
-### 21.1 Docs implementasyonu — markup
+### 19.1 Docs implementasyonu — markup
 
 ```html
 <div class="bt-ovf-menu">
@@ -4059,7 +2527,7 @@ Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`).
 </div>
 ```
 
-### 21.2 Control slot (9 tip) — gerçek component reuse
+### 19.2 Control slot (9 tip) — gerçek component reuse
 
 `.bt-ovf-menu__ctrl` 32×32, `overflow:clip`, içeriği ortalar. İçine konan:
 
@@ -4093,7 +2561,7 @@ Figma kaynağı: "Bentas DS" dosyası, "Overflow Menu" sayfası (`1089:133016`).
 
 `.bt-ovf-menu__label` (Figma "Label" FRAME) padding'i varsayılan **8/8** (`radius-lg` / `spacing-md`); **sol kontrol varsa** her iki yanda **8/4**'e iner (`.bt-ovf-menu__ctrl + .bt-ovf-menu__label` → `padding-inline: spacing-xs`). Sağ kontrol tek başına 8/8'i değiştirmez. Figma set'inden doğrulandı: `Content=Label` → [8,8,8,8], `Content=Left Control & Label` → [8,4,8,4], `Content=Label & Right Control` → [8,8,8,8].
 
-### 21.3 State paletleri (item wrapper üzerinde)
+### 19.3 State paletleri (item wrapper üzerinde)
 
 **Type=Default:** Hover `base/subtle` (#f5f5f5) · Active = Selected `base/muted` (#e6e6e6) · Focus **beyaz zemin** + nötr gri ring `0 0 0 3px rgba(212,212,212,.5)` (Figma effect `Focus Ring/neutral`, brand değil — proje standardı) · Disabled metin `text/primary/muted` (#a3a3a3) + `pointer-events:none`, slot ikonu `icon/primary/muted`. Description satırı (`.bt-ovf-menu__label-desc`) hiçbir state'te renk değiştirmez — daima `text/primary/emphasis` (#727272).
 
@@ -4103,7 +2571,7 @@ Selected ile Active görsel olarak birebir aynıdır (Selected = kalıcı vurgu,
 
 **Kullanım deseni — Destructive item'lar:** `--danger` bir *item* modifier'ıdır, menü modu değil. Bir menü yıkıcı bir aksiyon barındırıyorsa (Delete, Remove…) yalnızca o item `--danger` alır ve **ayrı bir son `Section`'a** konur (`section + section` → `border-top` = Figma "Line"); sol kontrol ikon ise `trash-2`. Normal item'lar Default kalır — tüm menü kırmızıya boyanmaz. Figma "Overflow Menu Desctuctive" frame'i bu deseni gösterir (birkaç normal aksiyon + Line + Delete).
 
-### 21.4 Submenu — iç içe menü listesi (Figma "Overflow Menu Submenu" `1164:4836`)
+### 19.4 Submenu — iç içe menü listesi (Figma "Overflow Menu Submenu" `1164:4836`)
 
 Bir menü item'ı, kendi **sağına ikinci bir menü listesi** açabilir. Figma frame'i iki `Overflow Menu List`'i yan yana gösterir: parent (226px, 6 item) ve child (189px, 3 item); child, parent'ın **sağ kenarına yaslı** ve tetikleyici item'ın **üst hizasında** durur (frame'de child `x = 226 = parent genişliği`, `y = 132 ≈ 5. item'ın üstü`). Tetikleyici item **Active** state'te (alt menü açık) ve sağ 32×32 slotunda `Icon/chevron-right` taşır.
 
@@ -4129,7 +2597,7 @@ Alt liste bir kök menü listesiyle **birebir aynı** yapıdadır (kendi Section
 
 **CSS:** `.bt-ovf-menu__item--has-sub { position: relative }` · `.bt-ovf-menu__list--sub { z-index: 201 }` (parent list `z-index:200` üstünde). Alt menü açıkken parent item'a `.bt-ovf-menu__item--selected` eklenir (Active zemin `base/muted` #e6e6e6).
 
-### 21.5 Toggle varyantları — Checkboxes / Radios / Switches [+ Icons]
+### 19.5 Toggle varyantları — Checkboxes / Radios / Switches [+ Icons]
 
 Sağ 32×32 slotta gerçek DS bir toggle kontrolü taşıyan, **tıklamanın menüyü KAPATMADIĞI** varyant ailesi (ayar menüsü deseni). Her item `Content = Label & Right Control`; item `role="menuitemcheckbox"` (radio → `menuitemradio`) + `aria-checked` taşır.
 
@@ -4138,7 +2606,7 @@ Sağ 32×32 slotta gerçek DS bir toggle kontrolü taşıyan, **tıklamanın men
 | **Checkboxes** | `.bt-checkbox__box` (Md 16×16) | çoklu (bağımsız) | `btOvfToggle` | `--checked` | "Overflow Menu Checkboxes" `1178:22447` |
 | **Radios** | `.bt-radio__dot` (16×16) | **tekli** (liste = 1 grup) | `btOvfRadioPick` | `--selected` | "Overflow Menu Radios" `1180:132375` |
 | **Switches** | `.bt-switch__track` (32×20) | çoklu (bağımsız) | `btOvfToggle` | `--on` | "Overflow Menu Switches" |
-| **Palettes** | `.bt-ovf-menu__ctrl-palette` (20×20) | **tekli** (liste = 1 grup) | `btOvfRadioPick` | `.bt-ovf-menu__item--selected` (item'ın kendisi — diğer satırlardaki gibi kontrolün EKİ değil, bkz. §21.5c) | Figma'da ayrı sayfa yok — bkz. §21.5c |
+| **Palettes** | `.bt-ovf-menu__ctrl-palette` (20×20) | **tekli** (liste = 1 grup) | `btOvfRadioPick` | `.bt-ovf-menu__item--selected` (item'ın kendisi — diğer satırlardaki gibi kontrolün EKİ değil, bkz. §19.5c) | Figma'da ayrı sayfa yok — bkz. §19.5c |
 
 - `btOvfToggle(event,item)` — `stopPropagation`, item Disabled değilse satırın **son** `.bt-checkbox__box`/`.bt-switch__track`'ine ilgili `--checked`/`--on` class'ını toggle eder, `aria-checked` eşler. `_btOvfCloseAll`/`btOvfMenuClose` **çağırmaz**.
 - `btOvfRadioPick(event,item)` — aynı `.bt-ovf-menu__list` içindeki tüm `[role="menuitemradio"]`'ları gezer, tıklanan item'ı seçili bırakır. **Radio ile Palette AYNI fonksiyonu paylaşır** (2026-09-07, devam 18) — renk seçimi de doğası gereği tekli — ama seçili göstergesinin YERİ kontrol tipine göre değişir (devam 19'da netleşti): Radio'da kontrolün kendisi (`.bt-radio__dot--selected`, Figma'da dolu/boş iki hâlli), Palette'te item'ın kendisi (`.bt-ovf-menu__item--selected` — Figma'da Palette'e özel bir "selected" tasarımı yok, bu yüzden component'te zaten var olan genel item state reuse edildi, swatch'a özel bir görsel icat edilmedi). Her iki durumda da `aria-checked` eşlenir, menü açık kalır.
@@ -4158,7 +2626,7 @@ Sağ 32×32 slotta gerçek DS bir toggle kontrolü taşıyan, **tıklamanın men
 
 Toggle'ın seçili durumu item state'inden (Default/Hover/Active/…) bağımsızdır.
 
-### 21.5c Palettes [+ Icons] — renk seçici (2026-09-07, devam 18, kullanıcı isteği)
+### 19.5c Palettes [+ Icons] — renk seçici (2026-09-07, devam 18, kullanıcı isteği)
 
 Kullanıcının kendi tanımı: *"bu palettes aslında bizim şu an playgroundda kullandığımız background color picker mantığında çalışıyor olan variant dolayısıyla palette renklerini orada kullandığımız color variablelarından örnekleyebiliriz"* — yani bu varyant kendi renk paletini İCAT ETMİYOR, docs sitesinin HER playground'unda zaten var olan toolbar'daki **Background** renk seçicisiyle (`playground.js` → `PGD_BG_OPTIONS`) AYNI 8 `--bt-surface-*` token'ı, aynı sırada/etiketle örnekliyor:
 
@@ -4179,7 +2647,7 @@ const PGD_BG_OPTIONS = [
 
 **UX — Radio ile birebir aynı, tekli seçim:** bir menüde aynı anda yalnız BİR renk "seçili" olabilir (çoklu checkbox/switch değil) — bu yüzden Palette, kontrol tipi bakımından ayrı olsa da (`.bt-ovf-menu__ctrl-palette`, 20×20 swatch), UX/interaksiyon bakımından Radio ailesine dahildir: `role="menuitemradio"`, tıklama `btOvfRadioPick`'e gider (aynı fonksiyon, Radio ile PAYLAŞILIR), menü açık kalır. Varsayılan olarak ilk item (idx 0) seçili başlar.
 
-**Seçili göstergesi — swatch'ta DEĞİL, item'ın kendisinde (2026-09-07, devam 19 — kullanıcı düzeltmesi):** İlk uygulamada (devam 18) swatch'a özel yeni bir `box-shadow` ring icat edilmişti — ama **Figma'da Palette için "selected" diye bir tasarım YOK**, bu ring hiçbir Figma karşılığı olmayan uydurma bir görseldi. Kullanıcı bunu fark edip düzeltti: *"neden menu iteminde zaten varolan selected'i kullanmayı tercih etmedin çünkü figma tasarımında palette'in selected diye bir tasarımı yok"* — doğru çözüm, component'te ZATEN var olan ve Figma'dan doğrulanmış genel item **Active/Selected** state'ini (`.bt-ovf-menu__item--selected`, `--bt-base-muted`, §21.3) reuse etmek. Swatch olduğu gibi (kendi rengiyle) kalır, seçili olduğunda İTEM'IN ZEMİNİ vurgulanır — Submenu'nün "alt menü açıkken parent item Active olur" desenindeki mantığın birebir aynısı. `btOvfRadioPick` bu yüzden kontrol tipine göre dallanıyor: Radio'da kendi dot'unu (`.bt-radio__dot--selected` — Figma'da zaten dolu/boş iki hâlli), Palette'te item'ın kendisini (`.bt-ovf-menu__item--selected`) toggle ediyor.
+**Seçili göstergesi — swatch'ta DEĞİL, item'ın kendisinde (2026-09-07, devam 19 — kullanıcı düzeltmesi):** İlk uygulamada (devam 18) swatch'a özel yeni bir `box-shadow` ring icat edilmişti — ama **Figma'da Palette için "selected" diye bir tasarım YOK**, bu ring hiçbir Figma karşılığı olmayan uydurma bir görseldi. Kullanıcı bunu fark edip düzeltti: *"neden menu iteminde zaten varolan selected'i kullanmayı tercih etmedin çünkü figma tasarımında palette'in selected diye bir tasarımı yok"* — doğru çözüm, component'te ZATEN var olan ve Figma'dan doğrulanmış genel item **Active/Selected** state'ini (`.bt-ovf-menu__item--selected`, `--bt-base-muted`, §19.3) reuse etmek. Swatch olduğu gibi (kendi rengiyle) kalır, seçili olduğunda İTEM'IN ZEMİNİ vurgulanır — Submenu'nün "alt menü açıkken parent item Active olur" desenindeki mantığın birebir aynısı. `btOvfRadioPick` bu yüzden kontrol tipine göre dallanıyor: Radio'da kendi dot'unu (`.bt-radio__dot--selected` — Figma'da zaten dolu/boş iki hâlli), Palette'te item'ın kendisini (`.bt-ovf-menu__item--selected`) toggle ediyor.
 
 **Palettes Icons:** sol slotta HER item'da AYNI Lucide `blend` ikonu (2026-09-07, devam 20 — kullanıcı isteğiyle `palette` ikonundan değiştirildi; `_paletteLeftIcons = [blend]`, tek elemanlı dizi — renk zaten sağdaki swatch'la ayırt edildiği için farklı ikon gerekmez, yalnızca "bu bir renk seçici" bağlamını taşır).
 
@@ -4195,7 +2663,7 @@ const PGD_BG_OPTIONS = [
 
 `ovfItemHtml`'de `o.toggle='palette'` + `o.toggleOn` + `o.toggleColor` (yeni param, 2026-09-07) verildiğinde bu yol tetiklenir — `toggleColor` yalnızca Palette'e özel, `ovfCtrlHtml`'in `'palette'` case'inin `opt.color`'ına gider (diğer toggle tipleri bu alanı yok sayar, zararsız).
 
-### 21.5b Avatar — hesap / kullanıcı menüsü (Figma "Overflow Menu Avatar" `1212:132236`)
+### 19.5b Avatar — hesap / kullanıcı menüsü (Figma "Overflow Menu Avatar" `1212:132236`)
 
 Bir tetikleyici avatarın altında açılan hesap menüsü. **Ayrı bir builder DEĞİL** — diğer tüm varyantlarla AYNI `Group`/`Items`/`Item N` motorundan (`mkItem`/`ov()`/chunk mantığı) geçer; yalnız **pozisyona göre varsayılan** değişir:
 
@@ -4209,7 +2677,7 @@ Varsayılan `Group=3` / `Items=6` ile bölünüş **[1, 4, 1]** (kimlik / 4 aksi
 
 **Her pozisyonun varsayılan Left/Right Control + Description'ı, aynı `Item N` override panelinden geçersiz kılınabilir** — `ov(i+1)` her zaman önceliklidir (`o.left/right/desc/state != null` ise pozisyonel varsayılan yerine kullanıcı değeri geçerli olur; opt de buna göre yeniden hesaplanır, eski pozisyonel `leftOpt`/`rightOpt`'ta kalınmaz). Bu, **kullanıcı feedback'ine** yanıttır: önceki sürümde Avatar tamamen ayrı bir builder'dı (Group/Items'ı hiç okumuyordu) ve "Item 1" görsel olarak 2. section'ın 1. item'ı ("Profile") gibi yanlış bir item'ı hedefliyordu, üstelik playground `Group`/`Group Label`/`Destructive Item` satırlarını gizleyip `Items`→`Actions`/`Item`→`Action N` şeklinde yeniden adlandırıyordu. Artık **hiçbir prop gizlenmiyor/yeniden adlandırılmıyor** — `ovfSecProps` avatar için de tamamen generic (`{ left:false, right:false, groupsDefault:'3' }` — Icons/Submenu/Shortcuts'ta olduğu gibi yalnız kilitli ortak Left/Right satırı gizleniyor, `Sections`'taki `groupsDefault:'2'` ile aynı mekanizma); `Item 1` = menünün gerçek 1. item'ı (kimlik), son `Item N` = gerçek son item'ı (Log Out).
 
-### 21.6 JS davranışı
+### 19.6 JS davranışı
 
 **Kök menü** — `window.btOvfMenuToggle(event, btn)` / `btOvfMenuClose(event, item)` / `btOvfMenuHide(list)`. Liste açılınca `.bt-ovf-menu__list` `document.body`'ye portal'lanır ve `position:fixed` + `btn.getBoundingClientRect()`'ten hesaplanan `top`/`right` ile konumlanır (ata elementlerin `overflow:hidden`/`transform` kurallarından bağımsız — `.bt-grid__menu` ile aynı desen). `<div role="menu">` / `<div role="menuitem">` — eski `<ul>/<li>` bırakıldı.
 
@@ -4222,9 +2690,9 @@ Varsayılan `Group=3` / `Items=6` ile bölünüş **[1, 4, 1]** (kimlik / 4 aksi
 
 Kapanışta `btOvfSubHide(sub)` önce torun submenu'leri (recursive), sonra kendini gizleyip item'ın içine geri koyar, parent'ın `--selected`'ını kaldırır. **Dışarı tıklama / scroll (capture) / bir yaprak item tıklama** → `_btOvfCloseAll()` tüm zinciri (kök + submenu'ler) toplar. `btOvfMenuClose` artık `_btOvfCloseAll`'a delege eder.
 
-**Toggle varyantları** — `window.btOvfToggle(event, item)` (Checkboxes/Switches: satırın son `.bt-checkbox__box`/`.bt-switch__track`'ine `--checked`/`--on` toggle) ve `window.btOvfRadioPick(event, item)` (Radios: aynı liste içindeki tek radio grubu — yalnız tıklanan `--selected`). İkisi de `event.stopPropagation()`, `aria-checked` eşler, `_btOvfCloseAll`/`btOvfMenuClose` **çağırmaz** — menü açık kalır. Ayrıntı: §21.5.
+**Toggle varyantları** — `window.btOvfToggle(event, item)` (Checkboxes/Switches: satırın son `.bt-checkbox__box`/`.bt-switch__track`'ine `--checked`/`--on` toggle) ve `window.btOvfRadioPick(event, item)` (Radios: aynı liste içindeki tek radio grubu — yalnız tıklanan `--selected`). İkisi de `event.stopPropagation()`, `aria-checked` eşler, `_btOvfCloseAll`/`btOvfMenuClose` **çağırmaz** — menü açık kalır. Ayrıntı: §19.5.
 
-### 21.7 Docs playground properties (Figma "Properties" spec + docs eklentileri)
+### 19.7 Docs playground properties (Figma "Properties" spec + docs eklentileri)
 
 **Master (`pgd-ovf-menu-overview`) ve 13 per-variant (`pgd-ovf-{basic|submenu|icons|shortcuts|checkboxes|checkboxes-icons|radios|radios-icons|switches|switches-icons|avatar|sections|destructive}-sec`) playground'un hepsi** aynı `props` yapısını `ovfSecProps(opts)` fonksiyonundan alır:
 
@@ -4238,17 +2706,17 @@ Kapanışta `btOvfSubHide(sub)` önce torun submenu'leri (recursive), sonra kend
 
 `Group` ve `Divider` Figma "Properties" text node'unda henüz yok — docs'a kullanıcı isteğiyle eklendi (2026-09-04). `ovfMenuHtml(p)` bunları `p.groups` / `p.divider` / `p.i{N}{left|right|desc|state}` olarak okur. CSS'te ayrı bir "divider" element/class'ı yoktur — çizgi `.bt-ovf-menu__section + .bt-ovf-menu__section { border-top }`'tur; `Divider=Off` bunu `.bt-ovf-menu__list--no-divider` modifier'ıyla iptal eder.
 
-### 21.8 Not — eski API korundu
+### 19.8 Not — eski API korundu
 
 `.bt-ovf-menu__item-icon` (16×16 eski ikon slotu) ve `.bt-ovf-menu__divider` (`<li>` tam-genişlik çizgi) CSS'te bırakıldı ama yeni implementasyon bunları kullanmıyor — grup ayrımı artık `.bt-ovf-menu__section + .bt-ovf-menu__section` border'ıyla yapılıyor.
 
-## 22. SearchBox (Base Input çekirdeği üzerine)
+## 20. SearchBox (Base Input çekirdeği üzerine)
 
 Figma kaynağı: "Inputs NEW" sayfası (Bentas DS) — **Base Input** artık tüm input tiplerinin üzerine kurulduğu bağımsız bir çekirdek component (SearchBox ve ileride TextBox onu instance olarak sarıyor). Bu bölüm, 2026-09-11'de SearchBox'ın bu mimariye göre yeniden kurulmasını belgeler.
 
 **Not — TextBox henüz migrate edilmedi:** `.bt-tbx__input` (TextBox'ın kendi shell'i) bu geçişe dahil değil, kasıtlı olarak ayrı bir oturuma bırakıldı (TextBox zaten tamamlanmış/dokümante edilmiş, regresyon riskini izole etmek için). `.bt-input` bugün yalnız SearchBox tarafından kullanılıyor.
 
-### 22.1 Mimari — `.bt-input` çekirdek + SearchBox kompozisyonu
+### 20.1 Mimari — `.bt-input` çekirdek + SearchBox kompozisyonu
 
 `.bt-input`, Figma'nın "Base Input" component'inin kod karşılığı: border, background, border-radius, height (sm/md/lg) ve hover/focus(active)/disabled state renklerini taşıyan bağımsız bir shell class'ı (`docs/css/styles.css`, "BASE INPUT" bloğu). SearchBox bunun üzerine **ayrı bir iç wrapper olarak değil, aynı elementte iki class'ı birlikte** kullanarak kurulur — Figma'da Basic SearchBox'ın birebir bir Base Input instance'ı olmasıyla aynı mantık:
 
@@ -4265,7 +2733,7 @@ Figma kaynağı: "Inputs NEW" sayfası (Bentas DS) — **Base Input** artık tü
 
 `.bt-searchbox` kendi başına HİÇBİR görsel CSS taşımıyor (border/bg/radius/height tamamen `.bt-input`'ta) — yalnızca SearchBox'a özgü bir davranış eklenirse (bugün yok) oraya gidecek bir kimlik class'ı. Leading ikon kutusu (`.bt-input__control`) boyuta göre skalalanır (28/32/36, içinde her zaman sabit 24×24 `.bt-icon`); trailing kontroller (Clear/Filter, `.bt-input__control--fixed`) Figma'da boyuttan bağımsız sabit 28×28'dir.
 
-### 22.2 Type ekseni — Basic / Advanced Filtered
+### 20.2 Type ekseni — Basic / Advanced Filtered
 
 İki tip, aynı `.bt-input` çekirdeğini paylaşır, yalnızca sağdaki trailing kontrol farklıdır:
 - **Basic**: yalnızca sol arama ikonu; Filled state'te sağda Clear (X) belirir.
@@ -4273,7 +2741,7 @@ Figma kaynağı: "Inputs NEW" sayfası (Bentas DS) — **Base Input** artık tü
 
 Filter butonunun tıklama davranışı Figma'da tanımlı değil (yalnızca görsel) — `sbxFilterToggle(el)` şu an sadece `.bt-input--filter-open` class'ını toggle'lıyor, gerçek bir filtre paneli entegrasyonu bu component'in kapsamı dışında.
 
-### 22.3 Düzeltilen 2 doğrulanmış bug (eski koddan)
+### 20.3 Düzeltilen 2 doğrulanmış bug (eski koddan)
 
 Figma Desktop Bridge (`get_design_context`) ile doğrulanan, eski `.bt-searchbox` implementasyonundaki 2 yanlış token:
 1. **Border-radius**: `--bt-radius-md` (6px) → doğrusu `--bt-radius-sm` (4px).
@@ -4281,15 +2749,15 @@ Figma Desktop Bridge (`get_design_context`) ile doğrulanan, eski `.bt-searchbox
 
 Ayrıca CLAUDE.md "İkon Wrapper Standardı" ihlali düzeltildi: özel `.bt-searchbox__icon` class'ı kaldırıldı, global `.bt-icon` kullanılıyor; el ile yaklaşık çizilmiş SVG'ler (`sbxIconSearch` eski `r="7"`, custom 10×10 X) gerçek Lucide path'leriyle (`search`, `x`, `sliders-horizontal` — `unpkg.com/lucide-static`) değiştirildi.
 
-### 22.4 Diğer reuse noktaları
+### 20.4 Diğer reuse noktaları
 
 `.bt-searchbox`'ı reuse eden yerler (Standart/Hub Sidebar arama kutusu, Data Table filtre paneli arama alanı, Design Examples örneği) yeni `.bt-input bt-searchbox bt-input--{sm|md}` + `.bt-input__control`/`.bt-input__field`/`.bt-input__text`/`.bt-icon` yapısına geçirildi — görsel sonuç değişmedi, yalnızca class isimleri güncellendi.
 
-### 22.5 Docs sayfası (`components/searchbox`)
+### 20.5 Docs sayfası (`components/searchbox`)
 
 4-tab standardı + Primary eksen (Type) dokümantasyon deseni uygulandı (`add-component` skill): Overview'da master playground (`pgd-sbx-overview`, props: type → size) + Anatomy/Sizes/States (core) + Types karşılaştırma tablosu + her tip için kilitli playground (`pgd-sbx-basic-sec`/`pgd-sbx-advanced-filtered-sec`) + kendi States/Anatomy alt tabloları. TOC: `Anatomy, Sizes, States, Types, Basic, Advanced Filtered`.
 
-### 22.6 STANDART — Clear butonu ve "Filled" gerçekten interaktif olmalı
+### 20.6 STANDART — Clear butonu ve "Filled" gerçekten interaktif olmalı
 
 Herhangi bir input component'inde Clear butonu varsa (`.bt-input__control--clear`), bu buton
 **yalnızca dokümantasyon amaçlı statik bir Filled state göstergesi DEĞİL** — gerçek `<input>`'a
@@ -4304,15 +2772,15 @@ Filtered gibi birden fazla trailing control olan durumlarda Clear, diğer sabit 
 HEMEN ÖNÜNE ekleniyor. Base Input'a dayanan HER YENİ component (Dropdown, Select LookUp vb.) bu
 deseni uygulamalı — kullanıcı ayrıca hatırlatmasın.
 
-## 23. TextBox (Base Input üzerine — SearchBox'tan sonraki 2. adım)
+## 21. TextBox (Base Input üzerine — SearchBox'tan sonraki 2. adım)
 
 SearchBox'ın ardından, "tüm input component'lerini tek tek `.bt-input` çekirdeğine taşıma" programının
-2. adımı TextBox oldu (bkz. §22 — SearchBox, aynı programın 1. adımı). Figma Desktop Bridge ile
+2. adımı TextBox oldu (bkz. §20 — SearchBox, aynı programın 1. adımı). Figma Desktop Bridge ile
 TextBox'ın "Inputs NEW" sayfasındaki (node `1308:135866`) TÜM 9 state'i (Default/Hover/Focused/
 Active/Filled/Disabled/Read Only/Error/Error Focused, sm/md/lg) tek tek `get_design_context` ile
 incelendi.
 
-### 23.1 Doğrulanmış 5 bug (eski koddan)
+### 21.1 Doğrulanmış 5 bug (eski koddan)
 
 1. **Text Content sol padding**: Figma'da tüm boyutlarda sabit **8px** (`--bt-space-md`). Eski kod
    `--bt-space-xl` (**12px**) kullanıyordu.
@@ -4328,7 +2796,7 @@ incelendi.
    `--fixed` (2px+24=28×28) deseninden farklı kendi footprint'i var. Eski kod bunu genel kontrol
    padding'iyle karıştırıyordu.
 
-### 23.2 Mimari — SearchBox'la aynı desen, ama kritik bir kapsam kısıtıyla
+### 21.2 Mimari — SearchBox'la aynı desen, ama kritik bir kapsam kısıtıyla
 
 TextBox'ın "Input" kutusu, SearchBox'taki gibi `.bt-input` çekirdeğini (border/bg/radius/height/
 hover/focus/active/disabled) aynı elementte yeni bir kimlik class'ıyla (`.bt-tbx__box`) kompoze
@@ -4360,7 +2828,7 @@ kural olduğu için) — "diğer component'ler hiç değişmemeli" kuralının t
 Yeni `.bt-tbx__helper--error` modifier'ı (kırmızı) sadece TextBox'ın yeni fonksiyonları tarafından
 kullanılıyor.
 
-### 23.3 Field padding component-özel
+### 21.3 Field padding component-özel
 
 SearchBox'ın dikey padding skalası (sm=4/md=6/lg=8) ile TextBox'ınki (sm=6/md=8/lg=10) Figma'da
 FARKLI — `.bt-input__field`'ın padding'i düz `.bt-input--sm/md/lg` kuralıyla paylaşılamıyor.
@@ -4368,14 +2836,14 @@ FARKLI — `.bt-input__field`'ın padding'i düz `.bt-input--sm/md/lg` kuralıyl
 (`docs/css/styles.css`, "TEXTBOX (Base Input)" bloğu) — sol her zaman sabit `--bt-space-md` (8px),
 `.bt-input__field`'ın SearchBox'taki genel kuralları değişmeden kalıyor.
 
-### 23.4 Docs sayfası
+### 21.4 Docs sayfası
 
 TOC sırası add-component skill'in "Anatomy → Sizes → States" sabit blok kuralına uydurmak için
 `['Anatomy','States','Sizes']` → `['Anatomy','Sizes','States']` düzeltildi (hem TOC dizisi hem
 sayfa gövdesindeki h2 sırası birlikte taşındı). Master playground'a `variantLabel: 'State'`
 eklendi (SearchBox'takiyle aynı düzeltme — üst dropdown genel "Variant" yerine "State" gösteriyor).
 
-### 23.5 Properties paneli düzeltmesi — Figma'nın gerçek property modeli (aynı gün, devam)
+### 21.5 Properties paneli düzeltmesi — Figma'nın gerçek property modeli (aynı gün, devam)
 
 İlk implementasyonda Properties paneli eski (Base Input öncesi) TextBox'ın "Label / Required /
 Helper" üçlü boolean'ını aynen taşımıştı — kullanıcı bunun Figma'nın yeni component'iyle
@@ -4403,14 +2871,14 @@ kullanıcının kendi toggle'ına bağlı, aynı anda gösterilebiliyor (Figma'y
 yerine TextBox'a özel `TBX_BASE_SIZE_OPTS` (Sm Default — TextBox'ın kendi Figma kaynağı `size =
 "sm"` varsayılanını her fetch'te doğruladı) kullanılıyor, paylaşılan array'e dokunulmadı.
 
-## 24. Dropdown (Base Input üzerine — TextBox'tan sonraki 3. adım)
+## 22. Dropdown (Base Input üzerine — TextBox'tan sonraki 3. adım)
 
 TextBox'ın ardından, "tüm input component'lerini tek tek `.bt-input` çekirdeğine taşıma"
-programının 3. adımı Dropdown oldu (bkz. §22 SearchBox, §23 TextBox). Kullanıcı Figma'da
+programının 3. adımı Dropdown oldu (bkz. §20 SearchBox, §21 TextBox). Kullanıcı Figma'da
 Dropdown'ı "Inputs NEW" sayfasına TextBox'la BİREBİR AYNI 9-state yapıda ekledi (node
 `1320:141166`); Figma Desktop Bridge ile tüm state'ler `get_design_context` ile incelendi.
 
-### 24.1 Mimari — TextBox'la neredeyse birebir aynı, TEK gerçek fark: sağdaki chevron
+### 22.1 Mimari — TextBox'la neredeyse birebir aynı, TEK gerçek fark: sağdaki chevron
 
 Dropdown'ın "Input" kutusu TextBox'takiyle aynı desende `.bt-input` çekirdeğini yeni bir kimlik
 class'ıyla (`.bt-dd__box`) kompoze eder. Value alanı TextBox'ın `<input>`'ından FARKLI olarak her
@@ -4421,7 +2889,7 @@ ailesindeki statik glyph'lerden FARKLI). Bunu yansıtmak için yeni, genel `.bt-
 class'ı eklendi (`docs/css/styles.css`, hover/focus/active'de `--bt-base-subtle` arka plan) — Content=
 Button olan HER gelecekteki control (bugün sadece Dropdown'ın chevron'u) bunu kullanabilir.
 
-### 24.2 Doğrulanmış, TEK GERÇEK 2 düzeltme (diğerleri "bug" değil — ayrıntı için 24.3)
+### 22.2 Doğrulanmış, TEK GERÇEK 2 düzeltme (diğerleri "bug" değil — ayrıntı için 22.3)
 
 1. **Chevron ikonu el ile çizilmişti** (`_ddIconChevron`/`_ddIconChevronUp`, 12×7 custom SVG) —
    gerçek Lucide `chevron-down`/`chevron-up` (`ddBaseIconChevronDown/Up`) ile değiştirildi, CLAUDE.md
@@ -4430,7 +2898,7 @@ Button olan HER gelecekteki control (bugün sadece Dropdown'ın chevron'u) bunu 
    `.bt-input__control--fixed` (2px padding + 24×24 = 28×28 sabit), Validation padding'siz düz
    24×24 — TextBox'ta zaten kurulan `.bt-input__control--validation` doğrudan reuse edildi.
 
-### 24.3 "Bug" DEĞİL — zaten kurulmuş standardın Dropdown'a henüz yansımamış hali
+### 22.3 "Bug" DEĞİL — zaten kurulmuş standardın Dropdown'a henüz yansımamış hali
 
 Bu component'in incelemesinde, TextBox'ta doğrulanmış standartların Dropdown'ın (henüz eski
 paylaşılan `_tbxCls`'i kullandığı için) eski görünümüyle karşılaştırılıp yanlışlıkla "yeni bug"
@@ -4444,24 +2912,24 @@ olarak raporlanma riski oluştu — kullanıcı bunu düzeltti, ileride tekrarla
   `_tbxCls`/`.bt-tbx__field`'ı kullandığı için henüz eski (4/6/8px) değerleri gösteriyordu;
   TextBox'ta kurulan yeni standart (sm=6/md=8/lg=10, `--bt-space-sm/md/lg`) migrasyonla otomatik
   gelir, ayrıca dokunmaya gerek yok.
-- **Hint text rengi zaten paylaşılan `.bt-tbx__helper`'da düzeltildi** (§23.2'deki bilinçli
+- **Hint text rengi zaten paylaşılan `.bt-tbx__helper`'da düzeltildi** (§21.2'deki bilinçli
   istisna) — Dropdown dahil TÜM `.bt-tbx__helper` tüketicileri otomatik doğru, her component'te
   yeniden "bug" olarak raporlanmamalı.
 - **"Required Field yok" ve "Hint/Error State'ten bağımsız" bir eksiklik değil, KURULU STANDART**
-  (§23.5) — Dropdown da aynı modeli uyguluyor: Required Field yok, Hint ve Error birbirinden ve
+  (§21.5) — Dropdown da aynı modeli uyguluyor: Required Field yok, Hint ve Error birbirinden ve
   State'ten bağımsız, ikisi de kullanıcının kendi toggle'ına bağlı.
 
-### 24.4 Korunan gerçek interaktivite + Clear standardı
+### 22.4 Korunan gerçek interaktivite + Clear standardı
 
 Eski koddaki `btDdToggle` (Default state'te kutuya tıklayınca `.bt-dd-options` panelini açıp
 kapatan, chevron'u down↔up çeviren) DEĞERLİ bir davranış — Figma bunu modellemiyor (statik state
 kütüphanesi) ama üründe zaten var. Base Input mimarisine uyarlanmış yeni bir kopyası
 (`window.ddBaseToggle`) yazıldı; `.bt-input--active` zaten çekirdekte gerçek border+ring kuralına
-sahip olduğu için ayrı bir "açık" class'ı icat edilmedi. Filled state'in Clear butonu §22.6
+sahip olduğu için ayrı bir "açık" class'ı icat edilmedi. Filled state'in Clear butonu §20.6
 standardını izliyor (`ddBaseClear`) — tıklanınca value span'ı placeholder görünümüne döner, buton
 kendini kaldırır; canlı olarak tarayıcıda doğrulandı.
 
-### 24.5 Kapsam kısıtı (SearchBox/TextBox'takiyle aynı gerekçe)
+### 22.5 Kapsam kısıtı (SearchBox/TextBox'takiyle aynı gerekçe)
 
 `_ddInputInner`, `_ddIconChevron`/`_ddIconChevronUp`, `btDdToggle`, `_ddOptionsHtml`, `_tbxCls`
 Dropdown'ın kendi sayfası DIŞINDA da kullanılıyor (Dialog form örneği — `components/dialog` sayfası,
@@ -4471,17 +2939,17 @@ doğrulandı. Dropdown'ın kendi sayfası için TextBox'taki gibi paralel `ddBas
 (`_ddBaseCls`, `_ddBaseInner`, `ddBasePreview`, `ddBaseCode`, `ddBaseCss`), `.bt-dd__box` kimlik
 class'ıyla.
 
-### 24.6 Docs sayfası
+### 22.6 Docs sayfası
 
 TOC `['Anatomy','Sizes','States']` (h2 sırası da buna göre taşındı). `size` varsayılanı gerçekten
 **Md** (Figma açıkça "Size=md (default)" diye işaretlemiş — SearchBox/TextBox'ın "sm (default)"
 durumundan FARKLI) — paylaşılan `TBX_SIZE_OPTS` doğrudan reuse edildi, TextBox'taki gibi ayrı bir
-`_SIZE_OPTS` icat edilmedi (zaten doğru default'u taşıyordu). Properties paneli §23.5'teki modeli
+`_SIZE_OPTS` icat edilmedi (zaten doğru default'u taşıyordu). Properties paneli §21.5'teki modeli
 uyguluyor: State/Size + bağımsız Label/Hint/Error (Show toggle + editable text).
 
 ---
 
-## 25. Alert (`.bt-alert`, notification banner)
+## 23. Alert (`.bt-alert`, notification banner)
 
 Figma kaynağı: top-level page "Alert" → "Alert Notification" component set (node `381:28155`) — 4 Type (Error/Warning/Success/Information) × 3 Theme Color (Stroke/Light/Filled) × Close Button (Off/On) × Show Description (On/Off, "Base Alert Notification" node `381:28146`'ın component property'si), Size=Default (tek boyut). Alert Dialog'un (modal, akışı kesen) aksine sayfa akışına gömülü, kapatılabilir bir bildirim bannerıdır.
 

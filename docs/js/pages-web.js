@@ -4889,7 +4889,7 @@ window.ddBaseToggle = function(boxEl) {
   const iconSpan = boxEl.querySelector('.bt-input__control:last-child .bt-icon');
   if (iconSpan) iconSpan.innerHTML = isOpen ? ddBaseIconChevronUp : ddBaseIconChevronDown;
 };
-// SearchBox/TextBox'taki AYNI standart (design.md §22.6): Clear tıklanınca
+// SearchBox/TextBox'taki AYNI standart (design.md §20.6): Clear tıklanınca
 // değeri gerçekten temizler, kendini kaldırır. Value bir <span> olduğu için
 // "temizlemek" placeholder görünümüne (muted renk) dönmek anlamına gelir.
 function ddBaseClear(el) {
@@ -11047,7 +11047,7 @@ PAGES_WEB['components/badge'] = {
 // Checkbox, Dot, Avatar, Avatar Group, Content/text, Badge, Button, Switch,
 // Inline TextBox, Inline DropDown, Right Control) — hepsi teorik olarak aynı
 // anda açılabilir. Card'daki control sistemiyle aynı gerekçeyle (bkz.
-// design.md §16) tek bir "content type" seçimine sadeleştirmek yerine,
+// design.md §14) tek bir "content type" seçimine sadeleştirmek yerine,
 // Figma'nın kendi DOM sırası (Checkbox/Dot/Avatar/AvatarGroup METİNDEN ÖNCE,
 // Badge/Button/Switch/Inline TextBox/DropDown METİNDEN SONRA geliyor)
 // korunarak İKİ ayrı single-select'e bölündü: **Leading Control** (metinden
@@ -11201,7 +11201,7 @@ function gridTrailingHtml(kind, opts) {
 
 // Editable-cell input'ları — Inline Editing (satır bazlı) ve InCell Editing
 // (hücre bazlı) sayfalarının ikisi de aynı bu iki fonksiyonu kullanır, gerçek
-// .bt-tbx / .bt-dd-* yapısını reuse eder (bkz. design.md §17.5). Görünüm
+// .bt-tbx / .bt-dd-* yapısını reuse eder (bkz. design.md §15.5). Görünüm
 // (view: .bt-grid__content veya Status badge'i) DOM'dan hiç kaldırılmıyor —
 // yanına bu edit markup'ı ekleniyor, hangisinin görüneceğini SADECE CSS
 // (.bt-grid__row--editing / .bt-grid__cell--editing) belirliyor, JS sadece
@@ -12008,7 +12008,7 @@ function gridHeaderCellHtml(opts) {
     ${sortDir !== 'up'   ? `<span class="bt-grid__control bt-grid__control--sort-down">${gridControlIcon(_gridIconSortDown)}</span>` : ''}
   </span>` : '';
   // Filter — gerçek flat icon-button (kullanıcı isteğiyle statik ikondan
-  // çevrildi, bkz. HISTORY.md/design.md §17.7): tıklanınca bir filtre
+  // çevrildi, bkz. HISTORY.md/design.md §15.7): tıklanınca bir filtre
   // overlay'i açar (window.btGridFilterToggle), aktif bir filtre varken
   // .bt-btn--state-selected (Button component'inin ZATEN var olan "selected"
   // modifier'ı, reuse edildi) ile basılı/mavi görünür. stopPropagation
@@ -12046,7 +12046,7 @@ function gridCellHtml(opts) {
   const stickyRight = o.stickyRight;
   const frozenRightEdge = o.frozenRightEdge === true;
   // editable/editKind/editValue/editDblClick — SADECE Inline Editing/InCell
-  // Editing sayfaları kullanır (bkz. design.md §17.5), diğer TÜM çağrılarda
+  // Editing sayfaları kullanır (bkz. design.md §15.5), diğer TÜM çağrılarda
   // undefined/false kalır, mevcut davranış hiç değişmez. editable:true olan
   // hücre hem view (content/trailing, hiç kaldırılmıyor) hem edit
   // (.bt-grid__cell-edit, bkz. styles.css) markup'ını AYNI ANDA barındırır —
@@ -12477,7 +12477,7 @@ function gridFrozenColumns(p) {
   // tüm kolonların properties'i olmalı", bkz. HISTORY.md). Department/
   // Location/Last Login'in Figma'da karşılığı yok (sadece frozen-column
   // davranışını göstermek için genişlik eklemeye yarayan yardımcı kolonlar,
-  // bkz. §17.4 "Neden ayrı bir kolon seti gerekti" notu) ama bu, Properties
+  // bkz. §15.4 "Neden ayrı bir kolon seti gerekti" notu) ama bu, Properties
   // panelinden yapılandırılamamaları için bir gerekçe değil — varsayılan
   // 'none' ile davranışları hiç değişmiyor.
   const idContent         = gridContentKindToSlots(p.idContent         || 'none');
@@ -15838,7 +15838,7 @@ function ovfItemHtml(o = {}) {
   // item'da zaten var olan selected'ı kullan"): swatch'a özel yeni bir ring
   // ICAT ETMEK yerine (devam 18'de yapılmıştı, Figma karşılığı yoktu) item'ın
   // KENDİSİ genel Active/Selected state'ini (--bt-base-muted, Figma'dan
-  // doğrulanmış, §21.3) alır — Submenu'nün açık-alt-menü göstergesiyle (has-sub
+  // doğrulanmış, §19.3) alır — Submenu'nün açık-alt-menü göstergesiyle (has-sub
   // item Active olur) BİREBİR aynı desen.
   if (toggle === 'palette' && toggleOn === 'on' && !cls.includes('bt-ovf-menu__item--selected')) cls.push('bt-ovf-menu__item--selected');
   const descHtml  = desc ? `<span class="bt-ovf-menu__label-desc">${desc}</span>` : '';
@@ -16487,9 +16487,9 @@ PAGES_WEB['components/overflow-menu'] = {
       // icat etmek (devam 18'deki box-shadow ring, artık kaldırıldı) yerine,
       // component'te ZATEN var olan genel item Active/Selected state'i
       // (.bt-ovf-menu__item--selected, --bt-base-muted, Figma'dan doğrulanmış,
-      // §21.3) reuse edilir — selectedSelector item'ı işaret eder, ctrl'i değil.
+      // §19.3) reuse edilir — selectedSelector item'ı işaret eder, ctrl'i değil.
       palette: { name: 'DS Palette Swatch', size: '20×20', ctrl: '.bt-ovf-menu__ctrl-palette', selectedSelector: '.bt-ovf-menu__item--selected', role: 'menuitemradio', fn: 'btOvfRadioPick', pick: 'tek seçim (aynı menüdeki diğer renkleri temizler)',
-        selectedNote: "item'ın kendisi (§21.3 Active/Selected state reuse — swatch'ta Figma'da olmayan ayrı bir görsel icat edilmedi)",
+        selectedNote: "item'ın kendisi (§19.3 Active/Selected state reuse — swatch'ta Figma'da olmayan ayrı bir görsel icat edilmedi)",
         iconDesc: `Sol slotta her item'da <strong>aynı</strong> ${tk('blend')} ikonu bulunur — renk zaten sağdaki swatch'la ayırt edilir, ikon yalnızca "bu bir renk seçici" bağlamını taşır; sol kontrol Label yatay padding'ini 8→4px indirir.`,
         iconAnatomy: `Sol ${tk('.bt-ovf-menu__ctrl')} slot'u: 32×32 + ${tk('.bt-icon')} + 24×24 Lucide ${tk('blend')} ikonu (${tk('_paletteLeftIcons')} — tek elemanlı, her item'da tekrarlanır). `,
         demoIcon: _ovfIconBlend, demoColor: 'var(--bt-surface-brand-default)', demoLabel: 'Surface Brand Default' },
