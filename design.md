@@ -1960,76 +1960,6 @@ Edit panel dropdown (`ep-dropdown`, `ep-dd-trigger`, `ep-dd-list`) aynı mantık
 
 ## 13. Overlay & Dialog
 
-### Alert (`.bt-alert`, notification banner)
-
-Figma kaynağı: top-level page "Alert" → "Alert Notification" component set (node `381:28155`) — 4 Type (Error/Warning/Success/Information) × 3 Theme Color (Stroke/Light/Filled) × Close Button (Off/On) × Show Description (On/Off, "Base Alert Notification" node `381:28146`'ın component property'si), Size=Default (tek boyut). Alert Dialog'un (modal, akışı kesen) aksine sayfa akışına gömülü, kapatılabilir bir bildirim bannerıdır.
-
-> **Not — düzeltme turu (kullanıcı Figma'yı tekrar detaylıca kontrol ettirdi).** İlk implementasyonda 4 gerçek sapma bulundu ve düzeltildi:
-> 1. **İkon boyutu**: sol tip ikonu global `.bt-icon` standardının 16×16'sı DEĞİL, component-özel **18×18** — ham SVG asset'i (`get_design_context`'in localhost bridge'inden indirilip incelendi) kendi 24×24 viewBox'ı içinde yalnızca 18×18'lik bir alanı dolduruyor (örn. circle-alert'in dış çemberi x/y 3→21 arası). Close (X) ikonu standart 16×16'da kaldı (farklı asset, farklı oran).
-> 2. **Content padding**: yatay **0**, dikey `--bt-space-md` (8px) — ilk analizdeki "8px tüm yönler" okuması yanlıştı; `get_design_context` hem "Base Alert Notification" hem "Alert Notification" düğümlerinde tutarlı biçimde `px-0/py-8` döndürüyor (Alert Controls ikon slotu zaten kendi 8px inset'ini taşıdığından ekstra yatay boşluk yok).
-> 3. **Konteyner yüksekliği**: gerçek `border` yerine **inset `box-shadow`** kullanılıyor (`.bt-btn`'in Outline varyantıyla aynı teknik) — gerçek `border` kullanılsaydı toplam yükseklik 52px yerine 54px olurdu (1+1px). Yükseklik hiçbir yerde sabitlenmez; 52px tamamen içerikten doğar: 8 (padding-top) + 16 (title lh) + 4 (gap) + 16 (desc lh) + 8 (padding-bottom) = 52, 40×40 icon slot'lar bu satırda `align-items:center` ile ortalanır. Description kapalıyken yükseklik 40px'e düşer (icon slot'un kendisi belirler).
-> 4. **Show Description**: ilk analizde tamamen atlanmıştı — Feature toggle olarak eklendi (`desc` prop, `TBX_BOOL_OPTS`, varsayılan On).
->
-> Ayrıca: Başlık `Title/sm/Medium` (500 · 14px/16px), açıklama `Text/xs/Regular` (400 · 12px/16px) text style'larını kullanır — Alert Dialog ile birebir aynı tipografi. Close (X) ikonu **tip renginden bağımsız**, sabit nötr `--bt-icon-primary-strong` kullanır (Filled temada `--bt-icon-primary-inverted`); bu, `get_variable_defs` ile ayrı ayrı doğrulanmış, sol tip ikonundan farklı bir davranıştır.
-
-**Markup**
-
-```html
-<!-- Type=Error, Theme Color=Light, Close Button=On, Show Description=On -->
-<div class="bt-alert bt-alert--error bt-alert--light">
-  <div class="bt-alert__icon-slot">
-    <span class="bt-icon">
-      <!-- SVG'ye width/height YAZILMAZ — component-özel CSS kuralı 18×18 zorlar
-           (bkz. .bt-alert__icon-slot .bt-icon svg, global .bt-icon standardından SAPMA) -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    </span>
-  </div>
-  <div class="bt-alert__content">
-    <p class="bt-alert__title">Insert Alert Title Here</p>
-    <!-- Show Description=Off'ta bu <p> hiç render edilmez -->
-    <p class="bt-alert__desc">Description for additional information displayed below the title.</p>
-  </div>
-  <!-- Close Button=Off olsa da Figma bu 40×40 alanı boş bırakır (simetri için) -->
-  <button class="bt-alert__close" type="button" onclick="btAlertDismiss(this)" aria-label="Dismiss">
-    <span class="bt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
-  </button>
-</div>
-```
-
-**Modifier class'ları**
-
-- Type: `bt-alert--error` / `bt-alert--warning` / `bt-alert--information` / `bt-alert--success` — her biri `--bt-alert-tint`/`--bt-alert-solid`/`--bt-alert-border`/`--bt-alert-icon` custom property'lerini o tipin token karşılıklarına ayarlar (CSS'te 4×3=12 ayrı blok yazılmaz).
-- Theme Color: **Stroke** (varsayılan, modifier yok — base `.bt-alert` kuralı zaten odur) / `bt-alert--light` (tint zemin + inset box-shadow border) / `bt-alert--filled` (solid zemin, box-shadow yok, metin/ikon inverted). Bu modifier'lar yalnızca yukarıdaki custom property'leri background/box-shadow/color'a uygular — Type'tan bağımsız çalışır.
-- Close Button: ayrı bir modifier değil — `.bt-alert__close` (buton) varsa görünür, yoksa aynı 40×40 boş bir `.bt-alert__icon-slot` render edilir (simetri korunur).
-- Show Description: ayrı bir modifier değil — `.bt-alert__desc` `<p>`'si render edilir ya da hiç edilmez (JS `desc` prop'una göre).
-
-**JS Davranışı**
-
-`btAlertDismiss(btn)` global fonksiyonu, tıklanan close butonunun en yakın `.bt-alert` atasını `display:none` ile gizler — Accordion/Upload/Split Button ile aynı doğrudan-DOM-manipülasyonu deseni, ayrı bir state yönetimi yok. Docs sitesinde playground'un **Click Me** trigger'ı (`trigger: { label: 'Click Me' }`, modal DEĞİL — `playground.js`'in "toast mode"u) alert'i statik preview'un dışında ekranın üstünden kayarak gösterir ve varsayılan 3 saniye sonra otomatik kapanır; Close Button'ın gerçek dismiss davranışı da bu gerçekçi bağlamda denenebilir.
-
-**CSS Tokens**
-
-| Element | Property | Token | Fallback |
-|---|---|---|---|
-| Konteyner `.bt-alert` | Border radius | `--bt-radius-sm` | 4px |
-| Konteyner `.bt-alert` | Border | `box-shadow: inset 0 0 0 1px …` (gerçek `border` DEĞİL — layout boyutuna eklenmesin diye, Figma "stroke inside") | — |
-| Konteyner · Stroke | Background / Border | `--bt-surface-primary-default` / `--bt-border-primary-default` | #ffffff / #d4d4d4 |
-| Konteyner · Light | Background / Border | `--bt-surface-{type}-light` / `--bt-border-{type}-default` | tipe göre değişir |
-| Konteyner · Filled | Background / Border | `--bt-surface-{type}-default` / — | tipe göre değişir / none |
-| Konteyner | Height (sabit değil) | — | 52px, içerikten doğar (Description açıkken); Description kapalıyken 40px |
-| Icon slot / Close `.bt-alert__icon-slot`, `.bt-alert__close` | Size | — | sabit 40×40 |
-| Icon (sol, tip) SVG | Size | — | **18×18** (component-özel override, global `.bt-icon` standardı 16×16 değil) |
-| Icon (`.bt-icon` içinde) | Color · Stroke/Light | `--bt-icon-{type}-default` | tipe göre değişir |
-| Icon / Close | Color · Filled | `--bt-icon-primary-inverted` | #ffffff |
-| Close (X) SVG | Size | — | standart 16×16 |
-| Close (X) | Color · Stroke/Light | `--bt-icon-primary-strong` | #535353 — tip renginden bağımsız |
-| Content `.bt-alert__content` | Padding | `--bt-space-md` | 8px **yalnızca dikey** (top/bottom), yatay 0 |
-| Content `.bt-alert__content` | Gap | `--bt-space-xs` | 4px |
-| Title `.bt-alert__title` | Font | `--bt-title-sm-medium` | 500 14px/16px |
-| Description `.bt-alert__desc` (opsiyonel) | Font | `--bt-text-xs-regular` | 400 12px/16px |
-| Title / Description · Stroke, Light | Color | `--bt-text-primary-default` | #1a1a1a |
-| Title / Description · Filled | Color | `--bt-text-primary-inverted` | #ffffff |
-
 ### Alert Dialog (`.bt-adlg`)
 
 Figma kaynağı: node `625:1451` — 4 Type × 2 Button Position × 3 Button Segments. Kullanıcıdan tek bir kritik kararı isteyen, arka plan etkileşimini bloklayan sabit 420px modal. Dialog'un (`.bt-dialog`) aksine form alanı / header bar taşımaz: yalnızca ikon + başlık + açıklama + footer butonları.
@@ -4548,3 +4478,75 @@ TOC `['Anatomy','Sizes','States']` (h2 sırası da buna göre taşındı). `size
 durumundan FARKLI) — paylaşılan `TBX_SIZE_OPTS` doğrudan reuse edildi, TextBox'taki gibi ayrı bir
 `_SIZE_OPTS` icat edilmedi (zaten doğru default'u taşıyordu). Properties paneli §23.5'teki modeli
 uyguluyor: State/Size + bağımsız Label/Hint/Error (Show toggle + editable text).
+
+---
+
+## 25. Alert (`.bt-alert`, notification banner)
+
+Figma kaynağı: top-level page "Alert" → "Alert Notification" component set (node `381:28155`) — 4 Type (Error/Warning/Success/Information) × 3 Theme Color (Stroke/Light/Filled) × Close Button (Off/On) × Show Description (On/Off, "Base Alert Notification" node `381:28146`'ın component property'si), Size=Default (tek boyut). Alert Dialog'un (modal, akışı kesen) aksine sayfa akışına gömülü, kapatılabilir bir bildirim bannerıdır.
+
+> **Not — düzeltme turu (kullanıcı Figma'yı tekrar detaylıca kontrol ettirdi).** İlk implementasyonda 4 gerçek sapma bulundu ve düzeltildi:
+> 1. **İkon boyutu**: sol tip ikonu global `.bt-icon` standardının 16×16'sı DEĞİL, component-özel **18×18** — ham SVG asset'i (`get_design_context`'in localhost bridge'inden indirilip incelendi) kendi 24×24 viewBox'ı içinde yalnızca 18×18'lik bir alanı dolduruyor (örn. circle-alert'in dış çemberi x/y 3→21 arası). Close (X) ikonu standart 16×16'da kaldı (farklı asset, farklı oran).
+> 2. **Content padding**: yatay **0**, dikey `--bt-space-md` (8px) — ilk analizdeki "8px tüm yönler" okuması yanlıştı; `get_design_context` hem "Base Alert Notification" hem "Alert Notification" düğümlerinde tutarlı biçimde `px-0/py-8` döndürüyor (Alert Controls ikon slotu zaten kendi 8px inset'ini taşıdığından ekstra yatay boşluk yok).
+> 3. **Konteyner yüksekliği**: gerçek `border` yerine **inset `box-shadow`** kullanılıyor (`.bt-btn`'in Outline varyantıyla aynı teknik) — gerçek `border` kullanılsaydı toplam yükseklik 52px yerine 54px olurdu (1+1px). Yükseklik hiçbir yerde sabitlenmez; 52px tamamen içerikten doğar: 8 (padding-top) + 16 (title lh) + 4 (gap) + 16 (desc lh) + 8 (padding-bottom) = 52, 40×40 icon slot'lar bu satırda `align-items:center` ile ortalanır. Description kapalıyken yükseklik 40px'e düşer (icon slot'un kendisi belirler).
+> 4. **Show Description**: ilk analizde tamamen atlanmıştı — Feature toggle olarak eklendi (`desc` prop, `TBX_BOOL_OPTS`, varsayılan On).
+>
+> Ayrıca: Başlık `Title/sm/Medium` (500 · 14px/16px), açıklama `Text/xs/Regular` (400 · 12px/16px) text style'larını kullanır — Alert Dialog ile birebir aynı tipografi. Close (X) ikonu **tip renginden bağımsız**, sabit nötr `--bt-icon-primary-strong` kullanır (Filled temada `--bt-icon-primary-inverted`); bu, `get_variable_defs` ile ayrı ayrı doğrulanmış, sol tip ikonundan farklı bir davranıştır.
+
+**Markup**
+
+```html
+<!-- Type=Error, Theme Color=Light, Close Button=On, Show Description=On -->
+<div class="bt-alert bt-alert--error bt-alert--light">
+  <div class="bt-alert__icon-slot">
+    <span class="bt-icon">
+      <!-- SVG'ye width/height YAZILMAZ — component-özel CSS kuralı 18×18 zorlar
+           (bkz. .bt-alert__icon-slot .bt-icon svg, global .bt-icon standardından SAPMA) -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </span>
+  </div>
+  <div class="bt-alert__content">
+    <p class="bt-alert__title">Insert Alert Title Here</p>
+    <!-- Show Description=Off'ta bu <p> hiç render edilmez -->
+    <p class="bt-alert__desc">Description for additional information displayed below the title.</p>
+  </div>
+  <!-- Close Button=Off olsa da Figma bu 40×40 alanı boş bırakır (simetri için) -->
+  <button class="bt-alert__close" type="button" onclick="btAlertDismiss(this)" aria-label="Dismiss">
+    <span class="bt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+  </button>
+</div>
+```
+
+**Modifier class'ları**
+
+- Type: `bt-alert--error` / `bt-alert--warning` / `bt-alert--information` / `bt-alert--success` — her biri `--bt-alert-tint`/`--bt-alert-solid`/`--bt-alert-border`/`--bt-alert-icon` custom property'lerini o tipin token karşılıklarına ayarlar (CSS'te 4×3=12 ayrı blok yazılmaz).
+- Theme Color: **Stroke** (varsayılan, modifier yok — base `.bt-alert` kuralı zaten odur) / `bt-alert--light` (tint zemin + inset box-shadow border) / `bt-alert--filled` (solid zemin, box-shadow yok, metin/ikon inverted). Bu modifier'lar yalnızca yukarıdaki custom property'leri background/box-shadow/color'a uygular — Type'tan bağımsız çalışır.
+- Close Button: ayrı bir modifier değil — `.bt-alert__close` (buton) varsa görünür, yoksa aynı 40×40 boş bir `.bt-alert__icon-slot` render edilir (simetri korunur).
+- Show Description: ayrı bir modifier değil — `.bt-alert__desc` `<p>`'si render edilir ya da hiç edilmez (JS `desc` prop'una göre).
+
+**JS Davranışı**
+
+`btAlertDismiss(btn)` global fonksiyonu, tıklanan close butonunun en yakın `.bt-alert` atasını `display:none` ile gizler — Accordion/Upload/Split Button ile aynı doğrudan-DOM-manipülasyonu deseni, ayrı bir state yönetimi yok. Docs sitesinde playground'un **Click Me** trigger'ı (`trigger: { label: 'Click Me' }`, modal DEĞİL — `playground.js`'in "toast mode"u) alert'i statik preview'un dışında ekranın üstünden kayarak gösterir ve varsayılan 3 saniye sonra otomatik kapanır; Close Button'ın gerçek dismiss davranışı da bu gerçekçi bağlamda denenebilir.
+
+**CSS Tokens**
+
+| Element | Property | Token | Fallback |
+|---|---|---|---|
+| Konteyner `.bt-alert` | Border radius | `--bt-radius-sm` | 4px |
+| Konteyner `.bt-alert` | Border | `box-shadow: inset 0 0 0 1px …` (gerçek `border` DEĞİL — layout boyutuna eklenmesin diye, Figma "stroke inside") | — |
+| Konteyner · Stroke | Background / Border | `--bt-surface-primary-default` / `--bt-border-primary-default` | #ffffff / #d4d4d4 |
+| Konteyner · Light | Background / Border | `--bt-surface-{type}-light` / `--bt-border-{type}-default` | tipe göre değişir |
+| Konteyner · Filled | Background / Border | `--bt-surface-{type}-default` / — | tipe göre değişir / none |
+| Konteyner | Height (sabit değil) | — | 52px, içerikten doğar (Description açıkken); Description kapalıyken 40px |
+| Icon slot / Close `.bt-alert__icon-slot`, `.bt-alert__close` | Size | — | sabit 40×40 |
+| Icon (sol, tip) SVG | Size | — | **18×18** (component-özel override, global `.bt-icon` standardı 16×16 değil) |
+| Icon (`.bt-icon` içinde) | Color · Stroke/Light | `--bt-icon-{type}-default` | tipe göre değişir |
+| Icon / Close | Color · Filled | `--bt-icon-primary-inverted` | #ffffff |
+| Close (X) SVG | Size | — | standart 16×16 |
+| Close (X) | Color · Stroke/Light | `--bt-icon-primary-strong` | #535353 — tip renginden bağımsız |
+| Content `.bt-alert__content` | Padding | `--bt-space-md` | 8px **yalnızca dikey** (top/bottom), yatay 0 |
+| Content `.bt-alert__content` | Gap | `--bt-space-xs` | 4px |
+| Title `.bt-alert__title` | Font | `--bt-title-sm-medium` | 500 14px/16px |
+| Description `.bt-alert__desc` (opsiyonel) | Font | `--bt-text-xs-regular` | 400 12px/16px |
+| Title / Description · Stroke, Light | Color | `--bt-text-primary-default` | #1a1a1a |
+| Title / Description · Filled | Color | `--bt-text-primary-inverted` | #ffffff |
