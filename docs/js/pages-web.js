@@ -4231,7 +4231,10 @@ function tbxBasePreview(state, props = {}) {
   const metaHtml  = label === 'on' ? `<div class="bt-tbx__meta"><span class="bt-tbx__label">${_tbxEsc(labelValue)}</span></div>` : '';
   const hintHtml  = hint  === 'on' ? `<span class="bt-tbx__helper">${_tbxEsc(hintValue)}</span>` : '';
   const errorHtml = error === 'on' ? `<span class="bt-tbx__helper bt-tbx__helper--error">${_tbxEsc(errorValue)}</span>` : '';
-  const outerCls  = `bt-tbx bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  // .bt-textbox kimlik class'ı — kullanıcı isteğiyle eklendi (2026-09-17):
+  // .bt-tbx paylaşılan Label/Hint/Error sarmalayıcısı tek başına hangi
+  // component olduğunu söylemiyordu (Dropdown'la birebir aynı görünüyordu).
+  const outerCls  = `bt-tbx bt-textbox bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${outerCls}">
@@ -4248,7 +4251,7 @@ function tbxBaseCode(state, props = {}) {
   const isFilled   = state === 'filled';
   const isDisabled = state === 'disabled';
   const isReadOnly = state === 'readonly';
-  const outerCls   = `bt-tbx bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  const outerCls   = `bt-tbx bt-textbox bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
   const boxCls     = _tbxBaseCls(state, size);
 
   const metaBlock  = label === 'on' ? `<div class="bt-tbx__meta">\n  <span class="bt-tbx__label">${labelValue}</span>\n</div>\n` : '';
@@ -4402,6 +4405,7 @@ PAGES_WEB['components/textbox'] = {
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
           <tr><td>${tk('.bt-tbx')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı dikey diziyor (paylaşılan, Select LookUp/Dropdown/MultiSelect/Date Picker/Textarea ile ortak)</td></tr>
+          <tr><td>${tk('.bt-textbox')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-tbx')} ile AYNI elementte — "bu bir TextBox" kimliği (kullanıcı isteğiyle eklendi, 2026-09-17: paylaşılan ${tk('.bt-tbx')} tek başına Dropdown'dan ayırt edilemiyordu)</td></tr>
           <tr><td>${tk('.bt-input')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i — border/radius/bg/height/state renkleri burada (bkz. styles.css "BASE INPUT")</td></tr>
           <tr><td>${tk('.bt-tbx__box')}</td><td>Input kutusu</td><td>TextBox kimliği — aynı elementte ${tk('.bt-input')} ile birlikte kullanılır; field padding override'ı burada scoped</td></tr>
           <tr><td>${tk('.bt-input--sm/md/lg')}</td><td>Input kutusu</td><td>Yükseklik belirler</td></tr>
@@ -4765,30 +4769,30 @@ const _ddIconLoader = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 // Content ekseni burada sabit "Left Control + Label" (`--has-left`), Dialog
 // örneği ve Data Table'ın kapsam kısıtı gereği içerik/seçenek sayısı
 // DEĞİŞMEDİ (bkz. yukarıdaki not) — yalnızca yeni doğrulanmış class yapısına
-// (.bt-dd-option__control > .bt-icon, --has-left modifier) taşındı.
+// (.bt-dropdown-list-item__control > .bt-icon, --has-left modifier) taşındı.
 const _ddOptionsHtml = `
-  <div class="bt-dd-option bt-dd-option--has-left bt-dd-option--selected">
-    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
-    <span class="bt-dd-option__text">Option 1</span>
+  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left bt-dropdown-list-item--selected">
+    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+    <span class="bt-dropdown-list-item__text">Option 1</span>
   </div>
-  <div class="bt-dd-option bt-dd-option--has-left">
-    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
-    <span class="bt-dd-option__text">Option 2</span>
+  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left">
+    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+    <span class="bt-dropdown-list-item__text">Option 2</span>
   </div>
-  <div class="bt-dd-option bt-dd-option--has-left">
-    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
-    <span class="bt-dd-option__text">Option 3</span>
+  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left">
+    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+    <span class="bt-dropdown-list-item__text">Option 3</span>
   </div>
-  <div class="bt-dd-option bt-dd-option--has-left">
-    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
-    <span class="bt-dd-option__text">Option 4</span>
+  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left">
+    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+    <span class="bt-dropdown-list-item__text">Option 4</span>
   </div>`;
 
 // Global toggle for interactive default-state dropdown in playground
 window.btDdToggle = function(inputEl) {
   const root   = inputEl.closest('.bt-tbx');
   const isOpen = root.classList.toggle('bt-tbx--active');
-  const opts   = root.querySelector('.bt-dd-options');
+  const opts   = root.querySelector('.bt-dropdown-list');
   if (opts) opts.style.display = isOpen ? '' : 'none';
   const icon = inputEl.querySelector('.bt-tbx__control--right .bt-tbx__icon');
   if (icon) {
@@ -4807,7 +4811,7 @@ function ddPreview(state, props = {}) {
   const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-tbx__meta">${labelHtml}${requiredHtml}</div>` : '';
   const helperHtml   = helper   === 'on' ? `<span class="bt-tbx__helper">Helper Text</span>` : '';
   // Options panel: always inside bt-tbx__anchor (positioned absolute below input). Hidden initially for default (interactive), visible for active.
-  const optionsHtml = (isActive || isDefault) ? `<div class="bt-dd-options"${isDefault ? ' style="display:none;"' : ''}>${_ddOptionsHtml}</div>` : '';
+  const optionsHtml = (isActive || isDefault) ? `<div class="bt-dropdown-list"${isDefault ? ' style="display:none;"' : ''}>${_ddOptionsHtml}</div>` : '';
   // Interactive click only for default state
   const inputAttrs  = isDefault ? ` onclick="btDdToggle(this)" style="cursor:pointer;"` : '';
   return `
@@ -4836,7 +4840,7 @@ function ddCode(state, props = {}) {
   const helperBlock = helper === 'on' ? `\n<span class="bt-tbx__helper">Helper Text</span>` : '';
   const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
   const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const optionsBlock = isActive ? `\n<div class="bt-dd-options">\n  <div class="bt-dd-option bt-dd-option--selected">\n    <span class="bt-dd-option__text">Option 1</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 2</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 3</span>\n  </div>\n</div>` : '';
+  const optionsBlock = isActive ? `\n<div class="bt-dropdown-list">\n  <div class="bt-dropdown-list-item bt-dropdown-list-item--selected">\n    <span class="bt-dropdown-list-item__text">Option 1</span>\n  </div>\n  <div class="bt-dropdown-list-item">\n    <span class="bt-dropdown-list-item__text">Option 2</span>\n  </div>\n  <div class="bt-dropdown-list-item">\n    <span class="bt-dropdown-list-item__text">Option 3</span>\n  </div>\n</div>` : '';
   const code = `${metaBlock}<div class="bt-tbx__input">
   <div class="bt-tbx__field">
     <span class="bt-tbx__text">Placeholder Text</span>
@@ -4858,7 +4862,7 @@ const ddBaseIconChevronDown = `<svg viewBox="0 0 24 24" fill="none" stroke="curr
 const ddBaseIconChevronUp   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
 
 function _ddBaseCls(state, size) {
-  const parts = ['bt-input', 'bt-dd__box', `bt-input--${size}`];
+  const parts = ['bt-input', 'bt-dropdown__box', `bt-input--${size}`];
   if (state === 'error-focused') {
     parts.push('bt-input--error', 'bt-input--error-focused');
   } else if (state !== 'default' && state !== 'filled') {
@@ -4892,7 +4896,7 @@ function _ddBaseInner(state, opts = {}) {
 window.ddBaseToggle = function(boxEl) {
   const anchor = boxEl.closest('.bt-tbx__anchor');
   const isOpen = boxEl.classList.toggle('bt-input--active');
-  const opts = anchor ? anchor.querySelector('.bt-dd-options') : null;
+  const opts = anchor ? anchor.querySelector('.bt-dropdown-list') : null;
   if (opts) opts.style.display = isOpen ? '' : 'none';
   const iconSpan = boxEl.querySelector('.bt-input__control:last-child .bt-icon');
   if (iconSpan) iconSpan.innerHTML = isOpen ? ddBaseIconChevronUp : ddBaseIconChevronDown;
@@ -4917,9 +4921,12 @@ function ddBasePreview(state, props = {}) {
   const metaHtml  = label === 'on' ? `<div class="bt-tbx__meta"><span class="bt-tbx__label">${_tbxEsc(labelValue)}</span></div>` : '';
   const hintHtml  = hint  === 'on' ? `<span class="bt-tbx__helper">${_tbxEsc(hintValue)}</span>` : '';
   const errorHtml = error === 'on' ? `<span class="bt-tbx__helper bt-tbx__helper--error">${_tbxEsc(errorValue)}</span>` : '';
-  const outerCls  = `bt-tbx bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  // .bt-dropdown kimlik class'ı — kullanıcı isteğiyle eklendi (2026-09-17):
+  // .bt-tbx paylaşılan Label/Hint/Error sarmalayıcısı tek başına TextBox'la
+  // birebir aynı görünüyordu, hangi component olduğunu ayırt etmiyordu.
+  const outerCls  = `bt-tbx bt-dropdown bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
   // Options paneli sadece Default'ta gerçekten tıklanabilir (kapalı başlar).
-  const optionsHtml = isDefault ? `<div class="bt-dd-options" style="display:none;">${_ddOptionsHtml}</div>` : '';
+  const optionsHtml = isDefault ? `<div class="bt-dropdown-list" style="display:none;">${_ddOptionsHtml}</div>` : '';
   const boxAttrs = isDefault ? ` onclick="ddBaseToggle(this)" style="cursor:pointer;"` : '';
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
@@ -4939,13 +4946,13 @@ function ddBaseCode(state, props = {}) {
   const isError  = state === 'error' || state === 'error-focused';
   const isFilled = state === 'filled';
   const isActive = state === 'active';
-  const outerCls = `bt-tbx bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
+  const outerCls = `bt-tbx bt-dropdown bt-tbx--${size}${isError ? ' bt-tbx--error' : ''}`;
   const boxCls   = _ddBaseCls(state, size);
 
   const metaBlock    = label === 'on' ? `<div class="bt-tbx__meta">\n  <span class="bt-tbx__label">${labelValue}</span>\n</div>\n` : '';
   const valBlock     = isError  ? `\n  <div class="bt-input__control bt-input__control--validation">\n    <!-- Lucide circle-alert -->\n  </div>` : '';
   const clearBlock   = isFilled ? `\n  <div class="bt-input__control bt-input__control--fixed bt-input__control--clear bt-input__control--clickable">\n    <!-- Input Clear Button — Lucide x -->\n  </div>` : '';
-  const optionsBlock = isActive ? `\n<div class="bt-dd-options">\n  <div class="bt-dd-option bt-dd-option--selected">\n    <span class="bt-dd-option__text">Option 1</span>\n  </div>\n  <div class="bt-dd-option">\n    <span class="bt-dd-option__text">Option 2</span>\n  </div>\n</div>` : '';
+  const optionsBlock = isActive ? `\n<div class="bt-dropdown-list">\n  <div class="bt-dropdown-list-item bt-dropdown-list-item--selected">\n    <span class="bt-dropdown-list-item__text">Option 1</span>\n  </div>\n  <div class="bt-dropdown-list-item">\n    <span class="bt-dropdown-list-item__text">Option 2</span>\n  </div>\n</div>` : '';
   const hintBlock    = hint  === 'on' ? `\n<span class="bt-tbx__helper">${hintValue}</span>` : '';
   const errorBlock   = error === 'on' ? `\n<span class="bt-tbx__helper bt-tbx__helper--error">${errorValue}</span>` : '';
 
@@ -4990,7 +4997,7 @@ function ddBaseCss(state, props = {}) {
   lines.push('}');
 
   lines.push('');
-  lines.push(`.bt-dd__box.bt-input--${size} .bt-input__field {`);
+  lines.push(`.bt-dropdown__box.bt-input--${size} .bt-input__field {`);
   lines.push(p('padding', size === 'lg'
     ? 'var(--bt-space-lg) var(--bt-space-xs) var(--bt-space-lg) var(--bt-space-md)  /* 10px 4px 10px 8px */'
     : size === 'sm'
@@ -5043,7 +5050,7 @@ PAGES_WEB['components/dropdown'] = {
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Dropdown için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell ${tk('.bt-input')} çekirdek class'ında tanımlıdır — Dropdown onu ${tk('.bt-dd__box')} kimlik class'ıyla aynı elementte kompoze eder (bkz. SearchBox/TextBox).</p>
+      <p class="page-desc">Dropdown için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell ${tk('.bt-input')} çekirdek class'ında tanımlıdır — Dropdown onu ${tk('.bt-dropdown__box')} kimlik class'ıyla aynı elementte kompoze eder (bkz. SearchBox/TextBox).</p>
       <h2>Sizes</h2>
       <table class="token-table">
         <thead><tr><th>Size</th><th>Height</th><th>Field padding (dikey)</th><th>Chevron control padding</th></tr></thead>
@@ -5077,17 +5084,17 @@ PAGES_WEB['components/dropdown'] = {
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Panel ${tk('.bt-dd-options')}</td><td>Konum</td><td>${tk('--bt-space-xs')}</td><td>4px — input'un altındaki boşluk (eskiden hardcoded 2px, düzeltildi)</td></tr>
+          <tr><td>Panel ${tk('.bt-dropdown-list')}</td><td>Konum</td><td>${tk('--bt-space-xs')}</td><td>4px — input'un altındaki boşluk (eskiden hardcoded 2px, düzeltildi)</td></tr>
           <tr><td>Panel</td><td>Padding</td><td>${tk('--bt-space-xs')}</td><td>4px, tüm yönler</td></tr>
           <tr><td>Panel</td><td>Border</td><td>${tk('--bt-border-primary-subtle')}</td><td>#f5f5f5 — çok ince</td></tr>
           <tr><td>Panel</td><td>Shadow</td><td>${tk('--bt-shadow-md')}</td><td>0 2px 4px … / 0 4px 8px … (eskiden ${tk('--bt-shadow-lg')} idi)</td></tr>
-          <tr><td>Item ${tk('.bt-dd-option')}</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Item ${tk('.bt-dropdown-list-item')}</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
           <tr><td>Item · Hover</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
           <tr><td>Item · Active / Selected</td><td>Background</td><td>${tk('--bt-base-muted')}</td><td>#e6e6e6 — ikisi aynı</td></tr>
           <tr><td>Item · Focus</td><td>Box-shadow</td><td>—</td><td>0 0 0 3px rgba(114,114,114,.25) — nötr ring, input'un mavi ring'inden FARKLI</td></tr>
           <tr><td>Item · Disabled</td><td>Text / Icon color</td><td>${tk('--bt-text-primary-muted')} / ${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Control ${tk('.bt-dd-option__control')}</td><td>Boyut (sabit)</td><td>—</td><td>32×32, içinde global ${tk('.bt-icon')} (24×24 wrapper, SVG 16×16)</td></tr>
-          <tr><td>Text ${tk('.bt-dd-option__text')}</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px, tüm yönler — sol control varsa (${tk('--has-left')}) ${tk('--bt-space-xs')} (4px)'e düşer</td></tr>
+          <tr><td>Control ${tk('.bt-dropdown-list-item__control')}</td><td>Boyut (sabit)</td><td>—</td><td>32×32, içinde global ${tk('.bt-icon')} (24×24 wrapper, SVG 16×16)</td></tr>
+          <tr><td>Text ${tk('.bt-dropdown-list-item__text')}</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px, tüm yönler — sol control varsa (${tk('--has-left')}) ${tk('--bt-space-xs')} (4px)'e düşer</td></tr>
           <tr><td>Text</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
         </tbody>
       </table>
@@ -5096,10 +5103,11 @@ PAGES_WEB['components/dropdown'] = {
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-tbx')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı diziyor (paylaşılan)</td></tr>
+          <tr><td>${tk('.bt-tbx')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Helper'ı diziyor (paylaşılan, SearchBox/TextBox/Dropdown/Date Picker hepsi kullanır)</td></tr>
+          <tr><td>${tk('.bt-dropdown')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-tbx')} ile AYNI elementte — "bu bir Dropdown" kimliği (kullanıcı isteğiyle eklendi, 2026-09-17: ${tk('.bt-tbx')} tek başına TextBox'la ayırt edilemiyordu)</td></tr>
           <tr><td>${tk('.bt-input')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i — border/radius/bg/height/state renkleri (bkz. styles.css "BASE INPUT")</td></tr>
-          <tr><td>${tk('.bt-dd__box')}</td><td>Input kutusu</td><td>Dropdown kimliği — aynı elementte ${tk('.bt-input')} ile birlikte; field padding override'ı burada scoped</td></tr>
-          <tr><td>${tk('.bt-tbx__anchor')}</td><td>Konum sarmalayıcı</td><td>position:relative — ${tk('.bt-dd-options')} panelinin absolute konumlandığı yer (paylaşılan)</td></tr>
+          <tr><td>${tk('.bt-dropdown__box')}</td><td>Input kutusu</td><td>Dropdown kimliği — aynı elementte ${tk('.bt-input')} ile birlikte; field padding override'ı burada scoped</td></tr>
+          <tr><td>${tk('.bt-tbx__anchor')}</td><td>Konum sarmalayıcı</td><td>position:relative — ${tk('.bt-dropdown-list')} panelinin absolute konumlandığı yer (paylaşılan)</td></tr>
           <tr><td>${tk('.bt-input__field')}</td><td>Metin bölgesi</td><td>Seçili değer veya placeholder ${tk('&lt;span&gt;')}'ını içerir (Dropdown gerçek ${tk('&lt;input&gt;')} kullanmaz)</td></tr>
           <tr><td>${tk('.bt-input__control--validation')}</td><td>İkon sarmalayıcı</td><td>Error/Error Focused'da circle-alert — padding yok, sabit 24×24</td></tr>
           <tr><td>${tk('.bt-input__control--fixed.bt-input__control--clear')}</td><td>İkon sarmalayıcı</td><td>Filled'da × ikonu — SearchBox/TextBox'la AYNI class'lar</td></tr>
@@ -8435,7 +8443,7 @@ function dialogHtml(variant, props) {
       <div class="bt-tbx__meta"><span class="bt-tbx__label">Label Text</span></div>
       <div class="bt-tbx__anchor">
         <div class="bt-tbx__input" onclick="btDdToggle(this)" style="cursor:pointer;">${_ddInputInner('default')}</div>
-        <div class="bt-dd-options" style="display:none;">${_ddOptionsHtml}</div>
+        <div class="bt-dropdown-list" style="display:none;">${_ddOptionsHtml}</div>
       </div>
     </div>
     <div class="${_txaCls('default', 'sm')}">
@@ -11198,7 +11206,7 @@ function gridTrailingHtml(kind, opts) {
       // .bt-grid__control-group iki .bt-grid__control'ü sabit gap ile sarar,
       // .bt-grid__menu ise More butonu + açılır listeyi saran positioned
       // wrapper (btGridMenuToggle ile aç/kapa, bkz. aşağısı). Liste/item stili
-      // Dropdown'ın açılır listesiyle (.bt-dd-options/.bt-dd-option) AYNI
+      // Dropdown'ın açılır listesiyle (.bt-dropdown-list/.bt-dropdown-list-item) AYNI
       // görünüyor ama BİLİNÇLİ olarak sınıfları paylaşmıyor, kendi bağımsız
       // .bt-grid__menu-list/.bt-grid__menu-item kuralları var — Dropdown'daki
       // ileride yapılacak bir değişiklik Data Table'ı yanlışlıkla etkilemesin
@@ -11229,7 +11237,7 @@ function gridTrailingHtml(kind, opts) {
 
 // Editable-cell input'ları — Inline Editing (satır bazlı) ve InCell Editing
 // (hücre bazlı) sayfalarının ikisi de aynı bu iki fonksiyonu kullanır, gerçek
-// .bt-tbx / .bt-dd-* yapısını reuse eder (bkz. design.md §15.5). Görünüm
+// .bt-tbx / .bt-dropdown-list* yapısını reuse eder (bkz. design.md §15.5). Görünüm
 // (view: .bt-grid__content veya Status badge'i) DOM'dan hiç kaldırılmıyor —
 // yanına bu edit markup'ı ekleniyor, hangisinin görüneceğini SADECE CSS
 // (.bt-grid__row--editing / .bt-grid__cell--editing) belirliyor, JS sadece
@@ -11247,8 +11255,8 @@ function _gridEditDropdownHtml(value) {
         <div class="bt-tbx__field"><span class="bt-tbx__text" style="color:var(--bt-text-primary-default, #1a1a1a);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(v)}</span></div>
         <div class="bt-tbx__control bt-tbx__control--right"><span class="bt-tbx__icon">${_ddIconChevron}</span></div>
       </div>
-      <div class="bt-dd-options" style="display:none;">
-        ${_gridStatusOptions.map(s => `<div class="bt-dd-option${s.label === v ? ' bt-dd-option--selected' : ''}" onclick="btGridStatusOptionSelect(event,this)"><span class="bt-dd-option__text">${esc(s.label)}</span></div>`).join('')}
+      <div class="bt-dropdown-list" style="display:none;">
+        ${_gridStatusOptions.map(s => `<div class="bt-dropdown-list-item${s.label === v ? ' bt-dropdown-list-item--selected' : ''}" onclick="btGridStatusOptionSelect(event,this)"><span class="bt-dropdown-list-item__text">${esc(s.label)}</span></div>`).join('')}
       </div>
     </div>
   </div>`;
@@ -11299,11 +11307,11 @@ window.btGridCellEditBlur = function(event, input) {
 window.btGridStatusOptionSelect = function(event, optEl) {
   event.stopPropagation();
   const cell = optEl.closest('.bt-grid__cell');
-  const label = optEl.querySelector('.bt-dd-option__text').textContent;
+  const label = optEl.querySelector('.bt-dropdown-list-item__text').textContent;
   const textSpan = optEl.closest('.bt-tbx__anchor').querySelector('.bt-tbx__field .bt-tbx__text');
   if (textSpan) textSpan.textContent = label;
-  optEl.parentElement.querySelectorAll('.bt-dd-option').forEach(o => o.classList.remove('bt-dd-option--selected'));
-  optEl.classList.add('bt-dd-option--selected');
+  optEl.parentElement.querySelectorAll('.bt-dropdown-list-item').forEach(o => o.classList.remove('bt-dropdown-list-item--selected'));
+  optEl.classList.add('bt-dropdown-list-item--selected');
   const badgeLabel = cell.querySelector('.bt-badge__label');
   if (badgeLabel) badgeLabel.textContent = label;
   cell.classList.remove('bt-grid__cell--editing');
@@ -12864,7 +12872,7 @@ function gridActionsTableCss(_, props) {
 // Satır bazlı düzenleme — Figma'da ayrı bir component YOK, kullanıcı
 // isteğiyle sıfırdan tasarlandı (bkz. HISTORY.md): Actions kolonundaki Edit
 // butonuna tıklanınca satırın Name/Role/Status/Email hücreleri AYNI ANDA
-// view'dan edit'e geçer (gerçek .bt-tbx/.bt-dd-* input'ları), Actions'taki
+// view'dan edit'e geçer (gerçek .bt-tbx/.bt-dropdown-list* input'ları), Actions'taki
 // buton Save/Cancel çiftine döner. ID ve Checkbox salt-okunur kalır.
 // VIEW içeriği (Avatar/Badge/Dot/vb.) diğer TÜM Data Table sayfalarıyla AYNI
 // generic content-kind mekanizmasını (GRID_TABLE_CONTENT_OPTS) kullanır —

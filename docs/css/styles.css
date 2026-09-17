@@ -4058,13 +4058,13 @@ pre.code-block.line-numbers {
 .bt-tbx__box.bt-input--lg .bt-input__field { padding: var(--bt-space-lg, 10px) var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px); }
 
 /* ════════════════════════════════════════════════════════════════
-   DROPDOWN (Base Input) — .bt-dd__box, TextBox'ın .bt-tbx__box'ıyla AYNI
+   DROPDOWN (Base Input) — .bt-dropdown__box, TextBox'ın .bt-tbx__box'ıyla AYNI
    Text Content padding kuralı: solda aktif control yok (control sağda,
    chevron) → sol sabit --bt-space-md (8px), dikey sm/md/lg=6/8/10.
    ════════════════════════════════════════════════════════════════ */
-.bt-dd__box.bt-input--sm .bt-input__field { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px) var(--bt-space-sm, 6px) var(--bt-space-md, 8px); }
-.bt-dd__box.bt-input--md .bt-input__field { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px) var(--bt-space-md, 8px) var(--bt-space-md, 8px); }
-.bt-dd__box.bt-input--lg .bt-input__field { padding: var(--bt-space-lg, 10px) var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px); }
+.bt-dropdown__box.bt-input--sm .bt-input__field { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px) var(--bt-space-sm, 6px) var(--bt-space-md, 8px); }
+.bt-dropdown__box.bt-input--md .bt-input__field { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px) var(--bt-space-md, 8px) var(--bt-space-md, 8px); }
+.bt-dropdown__box.bt-input--lg .bt-input__field { padding: var(--bt-space-lg, 10px) var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px); }
 
 /* ════════════════════════════════════════════════════════════════
    TEXTBOX
@@ -4459,7 +4459,7 @@ pre.code-block.line-numbers {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   DROPDOWN OPTIONS PANEL — bt-dd-*
+   DROPDOWN LIST PANEL — bt-dropdown-list*
    Figma "Dropdown List" (node 1400:137801) + "Base Dropdown List Item"
    ile doğrulandı (2026-09-17) — panel: 4px iç padding + ince kenarlık +
    Shadow/md, input'tan 4px boşlukla; item: Content ekseni (Basic/Left/
@@ -4473,7 +4473,7 @@ pre.code-block.line-numbers {
 .bt-tbx__anchor {
   position: relative;
 }
-.bt-dd-options {
+.bt-dropdown-list {
   position: absolute;
   top: 100%;
   left: 0;
@@ -4490,27 +4490,27 @@ pre.code-block.line-numbers {
   box-shadow: var(--bt-shadow-md, 0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10));
 }
 
-.bt-dd-option {
+.bt-dropdown-list-item {
   display: flex;
   align-items: center;
   border-radius: var(--bt-radius-sm, 4px);
   cursor: pointer;
 }
 
-.bt-dd-option:hover { background: var(--bt-base-subtle, #f5f5f5); }
+.bt-dropdown-list-item:hover { background: var(--bt-base-subtle, #f5f5f5); }
 /* Active ve Selected Figma'da aynı zemini paylaşır */
-.bt-dd-option--active,
-.bt-dd-option--selected { background: var(--bt-base-muted, #e6e6e6); }
-.bt-dd-option--focus {
+.bt-dropdown-list-item--active,
+.bt-dropdown-list-item--selected { background: var(--bt-base-muted, #e6e6e6); }
+.bt-dropdown-list-item--focus {
   background: var(--bt-base-default, #ffffff);
   box-shadow: 0 0 0 3px rgba(114,114,114,0.25);
 }
-.bt-dd-option--disabled { cursor: not-allowed; }
-.bt-dd-option--disabled .bt-dd-option__text { color: var(--bt-text-primary-muted, #a3a3a3); }
-.bt-dd-option--disabled .bt-dd-option__control { color: var(--bt-icon-primary-muted, #a3a3a3); }
+.bt-dropdown-list-item--disabled { cursor: not-allowed; }
+.bt-dropdown-list-item--disabled .bt-dropdown-list-item__text { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-dropdown-list-item--disabled .bt-dropdown-list-item__control { color: var(--bt-icon-primary-muted, #a3a3a3); }
 
 /* 32×32 control slot — içinde global .bt-icon (24×24 wrapper, SVG 16×16) */
-.bt-dd-option__control {
+.bt-dropdown-list-item__control {
   width: 32px;
   height: 32px;
   display: flex;
@@ -4520,7 +4520,7 @@ pre.code-block.line-numbers {
   color: var(--bt-icon-primary-strong, #535353);
 }
 
-.bt-dd-option__text {
+.bt-dropdown-list-item__text {
   flex: 1;
   min-width: 0;
   padding: var(--bt-space-md, 8px);
@@ -4534,7 +4534,7 @@ pre.code-block.line-numbers {
 /* Sol control varsa yatay padding md(8px)→xs(4px)'e düşer — ikon zaten
    kendi 32px slotunda ayırıcı boşluğu sağlıyor (Figma: yalnızca SOL
    control'ün varlığına bağlı, sağ control'den bağımsız). */
-.bt-dd-option--has-left .bt-dd-option__text {
+.bt-dropdown-list-item--has-left .bt-dropdown-list-item__text {
   padding-left: var(--bt-space-xs, 4px);
   padding-right: var(--bt-space-xs, 4px);
 }
@@ -6990,13 +6990,13 @@ pre.code-block.line-numbers {
 
 /* — Actions Overflow Menu — More butonunun açtığı gerçek çalışır dropdown.
    Görünüm BİLİNÇLİ olarak Dropdown component'inin açılır listesiyle
-   (.bt-dd-options/.bt-dd-option, "DROPDOWN OPTIONS PANEL" bloğu) aynı token
+   (.bt-dropdown-list/.bt-dropdown-list-item, "DROPDOWN OPTIONS PANEL" bloğu) aynı token
    ve ölçülere sahip ama sınıfları PAYLAŞMIYOR — kendi bağımsız
    .bt-grid__menu-list/.bt-grid__menu-item kuralları var. Bilinçli tercih:
    Dropdown'ın CSS'inde ileride yapılacak bir değişiklik Data Table'ı
    (veya tam tersi) yanlışlıkla etkilemesin diye görsel benzerlik ayrı
    ayrı tanımlanan iki kural setiyle sağlanıyor (kullanıcı isteğiyle, bkz.
-   HISTORY.md — ilk implementasyon .bt-dd-options'ı doğrudan paylaşıyordu). */
+   HISTORY.md — ilk implementasyon .bt-dropdown-list'ı doğrudan paylaşıyordu). */
 .bt-grid__menu {
   position: relative;
   display: inline-flex;

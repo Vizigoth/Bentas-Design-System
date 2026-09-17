@@ -60,6 +60,12 @@ Bileşen adları **PascalCase** olmalı, kelimeler ayrı harf büyüklüğüyle 
 
 Figma sayfa adı referans alınır; belirsizlik varsa major design system'lerdeki (Material, Carbon, Fluent) yaygın kullanım tercih edilir.
 
+### CSS class isimlerinde kısaltma icat etme — ZORUNLU (kullanıcı kararı, 2026-09-17)
+
+CSS class prefix'leri **Figma'daki gerçek component/katman adını** yansıtmalı — `bt-dd-option`, `bt-tbx`, `bt-adlg` gibi kendi başına anlaşılmayan kısaltmalar İCAT EDİLMEZ. Figma'da bir katman "Dropdown List Item" diyorsa class da `bt-dropdown-list-item` olmalı, "dd" gibi bir kısaltmaya sıkıştırılmaz. (Not: `bt-tbx`/`bt-adlg`/`bt-crd` gibi mevcut kısaltmalar geçmiş oturumlardan kalma — yeni bir component/katman eklerken AYNI kısaltma alışkanlığı TEKRARLANMAZ, mevcut isimlere dokunmak ayrı bir karar gerektirir.)
+
+**Paylaşılan wrapper class'ları da kimliksiz bırakılmaz.** Birden fazla component aynı CSS'i paylaşıyorsa (örn. `.bt-tbx` — SearchBox/TextBox/Dropdown/Date Picker'ın ortak Label/Hint/Error sarmalayıcısı), paylaşılan class'a ek olarak her component KENDİ kimlik class'ını da aynı elemente ekler (`class="bt-tbx bt-dropdown"`, `class="bt-tbx bt-textbox"`) — DOM'da hangi component olduğu paylaşılan class'a bakarak asla belirsiz kalmaz. Bu, component'in kendi input kutusunda zaten uygulanan desenle (`.bt-input.bt-searchbox`, `.bt-input.bt-dropdown__box` gibi) aynı prensip — yalnızca dış wrapper'a da uygulanmalı.
+
 ## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
 
 Bu projede oluşturulan component'ler (markup + CSS + JS davranışı) **bundan sonraki
