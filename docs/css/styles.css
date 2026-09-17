@@ -5269,6 +5269,101 @@ pre.code-block.line-numbers {
   text-align: center; line-height: 1.6; margin: 0;
 }
 
+/* ── Alert (Notification banner) ──────────────────────────────── */
+/* Figma "Alert Notification" (node 381:28155) — Type (Error/Warning/
+   Success/Information) × Theme Color (Stroke/Light/Filled) × Close Button
+   (Off/On). Type modifier defines --bt-alert-* custom properties (tint/solid/
+   border/icon token karşılıkları); Theme Color modifier bu değişkenleri
+   background/border/text/icon'a uygular — böylece 4×3=12 kombinasyon için
+   ayrı ayrı blok yazmak yerine iki eksen birbirinden bağımsız CSS kuralı
+   olarak kalır. Stroke tema hiçbir modifier eklemez (base kural zaten odur).
+*/
+/* Border, gerçek `border` yerine inset box-shadow ile çiziliyor — Figma'nın
+   auto-layout frame'i stroke'u "inside" uyguluyor (kutunun layout boyutuna
+   eklenmiyor); gerçek `border` kullanılsaydı toplam yükseklik 52px yerine
+   54px olurdu (Button'daki Outline varyantıyla aynı teknik, bkz. .bt-btn
+   yorumu: "Outline border is implemented via box-shadow: inset so size
+   stays exact"). Ölçüldü: getBoundingClientRect().height === 52. */
+.bt-alert {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: var(--bt-radius-sm, 4px);
+  background: var(--bt-surface-primary-default, #ffffff);
+  box-shadow: inset 0 0 0 1px var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-alert--error       { --bt-alert-tint: var(--bt-surface-error-light, #fef2f2);       --bt-alert-solid: var(--bt-surface-error-default, #b31d38);       --bt-alert-border: var(--bt-border-error-default, #b31d38);       --bt-alert-icon: var(--bt-icon-error-default, #b31d38); }
+.bt-alert--warning     { --bt-alert-tint: var(--bt-surface-warning-light, #fdf9e8);     --bt-alert-solid: var(--bt-surface-warning-default, #aa820a);     --bt-alert-border: var(--bt-border-warning-default, #aa820a);     --bt-alert-icon: var(--bt-icon-warning-default, #aa820a); }
+.bt-alert--information { --bt-alert-tint: var(--bt-surface-information-light, #f1f7fe); --bt-alert-solid: var(--bt-surface-information-default, #0d4e97); --bt-alert-border: var(--bt-border-information-default, #0d4e97); --bt-alert-icon: var(--bt-icon-information-default, #0d4e97); }
+.bt-alert--success     { --bt-alert-tint: var(--bt-surface-success-light, #e8f3ee);     --bt-alert-solid: var(--bt-surface-success-default, #2d584b);     --bt-alert-border: var(--bt-border-success-default, #2d584b);     --bt-alert-icon: var(--bt-icon-success-default, #2d584b); }
+
+.bt-alert--light  { background: var(--bt-alert-tint); box-shadow: inset 0 0 0 1px var(--bt-alert-border); }
+.bt-alert--filled { background: var(--bt-alert-solid); box-shadow: none; }
+
+.bt-alert__icon-slot,
+.bt-alert__close {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bt-alert__icon-slot .bt-icon { color: var(--bt-alert-icon); }
+/* Figma'nın "Icon/placeholder" 24×24 swap-slotu görsel olarak dolu görünse de
+   gerçek ikon asset'i (get_design_context ile indirilen ham SVG, circle-alert)
+   kendi 24×24 viewBox'ı içinde yalnızca 18×18'lik bir alanı kaplıyor (3px pay
+   her yanda) — global .bt-icon standardının varsayılan 16×16'sından farklı,
+   component'e özel bir boyut override'ı (CLAUDE.md "Farklı boyut gerekiyorsa"
+   istisnası; global .bt-icon class'ı değiştirilmedi, yalnızca bu slot içinde
+   override edildi). Close (X) ikonu standart 16×16'da kalır.
+*/
+.bt-alert__icon-slot .bt-icon svg { width: 18px; height: 18px; }
+.bt-alert__close {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: var(--bt-icon-primary-strong, #535353);
+}
+/* Yatay padding YOK — Alert Controls (40×40) slotu zaten kendi 8px inset'ini
+   taşıyor, Content'e ayrıca yatay padding eklemek çift boşluk yaratırdı
+   (Figma'da "Base Alert Notification" ve "Alert Notification" için doğrulandı:
+   px-0/py-8, ilk analizdeki yanlış "p-8 tüm yönler" okuması düzeltildi).
+   Yükseklik (52px) BURADAN gelir: 8 (padding-top) + 16 (title lh) + 4 (gap)
+   + 16 (desc lh) + 8 (padding-bottom) = 52 — konteynerde sabit height YOK,
+   40×40 icon slot'lar .bt-alert'in align-items:center'ıyla bu 52px'in
+   içinde ortalanıyor. */
+.bt-alert__content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--bt-space-md, 8px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bt-space-xs, 4px);
+}
+/* İki-class specificity — genel `.content p` kuralının bu `<p>`'leri
+   ezmesini engeller (bkz. HISTORY.md: Checkbox/Dialog/Card'da tekrarlanan
+   aynı hata — `.bt-alert__desc` tek class ile `.content p`'ye kaybederdi). */
+.bt-alert .bt-alert__title {
+  font: var(--bt-title-sm-medium, 500 14px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  margin: 0;
+}
+.bt-alert .bt-alert__desc {
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  margin: 0;
+}
+.bt-alert--filled .bt-alert__title,
+.bt-alert--filled .bt-alert__desc {
+  color: var(--bt-text-primary-inverted, #ffffff);
+}
+.bt-alert--filled .bt-alert__icon-slot .bt-icon,
+.bt-alert--filled .bt-alert__close {
+  color: var(--bt-icon-primary-inverted, #ffffff);
+}
+
 /* ── Alert Dialog ──────────────────────────────────────────── */
 /* Figma node 625:1451 — 4 Type × 2 Button Position × 3 Button Segments */
 .bt-adlg {

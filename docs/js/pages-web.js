@@ -7398,6 +7398,394 @@ PAGES_WEB['components/upload'] = {
   },
 };
 
+// ── Alert (Notification banner) ──────────────────────────────
+// Figma "Alert Notification" (node 381:28155, top-level page "Alert",
+// Desktop Bridge ile doğrulandı) — Type (Error/Warning/Success/Information)
+// × Theme Color (Stroke/Light/Filled) × Close Button (Off/On), Size=Default
+// (tek boyut). Type = Primary eksen (Alert Dialog'daki aynı davranış:
+// karşılaştırma h2 + her değer için kilitli-playground'lu ayrı h2 bölümü).
+// Theme Color = Core "Themes" ekseni (Avatar'daki Default/Brand deseniyle
+// aynı muamele — tek karşılaştırma h2, per-value h2 yok). Close Button =
+// Feature toggle (TBX_BOOL_OPTS reuse, On/Off) — kendi başına h2 almaz,
+// tüm playground'larda serbest bir prop olarak durur.
+// Düzeltme (devam 2 — kullanıcı Figma'yı tekrar kontrol ettirdi): sol tip
+// ikonu 24×24 ".bt-icon" wrapper'ı içinde global 16×16 STANDARDINDAN SAPAR —
+// ham SVG asset'i (`get_design_context`'in localhost bridge'inden indirilip
+// incelendi) kendi 24×24 viewBox'ı içinde yalnızca 18×18'lik bir alanı
+// dolduruyor (örn. circle-alert'in dış çemberi x/y 3→21 arası çiziliyor).
+// Bu yüzden `.bt-alert__icon-slot .bt-icon svg` component-özel 18×18'e
+// override edildi (CLAUDE.md "Farklı boyut gerekiyorsa" istisnası, global
+// `.bt-icon` class'ı DEĞİŞTİRİLMEDİ). Close (X) ikonu standart 16×16'da
+// kaldı — kendi asset'i (`Icon/x2`) farklı bir oranda çizilmiş, ayrıca proje
+// genelinde close butonları (Dialog/Upload) zaten 16×16 kullanıyor. Close (X)
+// ikonu Stroke/Light'ta nötr --bt-icon-primary-strong, Filled'de
+// --bt-icon-primary-inverted kullanır — Figma'da tip rengine BAĞLI DEĞİL
+// (get_variable_defs ile doğrulandı), sol tip ikonundan bağımsız.
+// Content padding'i de düzeltildi: yatay 0, dikey --bt-space-md (8px) —
+// "Alert Controls" ikon slotu zaten kendi 8px inset'ini taşıdığından
+// Content'e ayrıca yatay padding eklemek Figma'da YOK (ilk analizdeki "p-8
+// tüm yönler" okuması yanlıştı, `get_design_context` "Base Alert
+// Notification" + "Alert Notification" düğümlerinde px-0/py-8 olarak
+// doğrulandı). Konteynerin 52px yüksekliği BUNDAN doğar: 8+16(title lh)+
+// 4(gap)+16(desc lh)+8 = 52 — sabit height YAZILMAZ, bkz. styles.css.
+// Show Description: Figma'nın "Base Alert Notification" (node 381:28146)
+// component property'si olarak keşfedildi (`showDescription`, varsayılan
+// true) — ilk analizde atlanmıştı, Feature toggle olarak eklendi.
+
+const ALERT_TYPE_OPTS = [
+  { key: 'information', label: 'Information' },
+  { key: 'success',     label: 'Success' },
+  { key: 'warning',     label: 'Warning' },
+  { key: 'error',       label: 'Error' },
+];
+const ALERT_THEME_OPTS = [
+  { key: 'stroke', label: 'Stroke' },
+  { key: 'light',  label: 'Light' },
+  { key: 'filled', label: 'Filled' },
+];
+const ALERT_CLOSE_OPTS = TBX_BOOL_OPTS;
+const ALERT_DESC_OPTS = TBX_BOOL_OPTS;
+
+// İkonlar .bt-icon wrapper'ı içinde render edilir (bkz. alertHtml) — SVG'ye
+// width/height attribute'u YAZILMAZ (CLAUDE.md "İkon Wrapper Standardı").
+// error/warning aynı circle-alert glyph'ini paylaşır — Alert Dialog'daki
+// (`_adlgIcons`) aynı reuse deseniyle tutarlı.
+const _alertIcons = {
+  error:       `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  warning:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  information: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
+  success:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+};
+const _alertIconX = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+
+const _alertTypeIconName = { error: 'circle-alert', warning: 'circle-alert', information: 'info', success: 'circle-check' };
+
+// Gerçek dismiss davranışı — Accordion/Upload/Split Button ile aynı desen:
+// doğrudan DOM manipülasyonu, playground state'ine dokunmaz (bir prop
+// değişince playground yeniden render olduğunda alert kendiliğinden geri gelir).
+window.btAlertDismiss = function(btn) {
+  const el = btn.closest('.bt-alert');
+  if (el) el.style.display = 'none';
+};
+
+function alertHtml(p) {
+  const type    = (p && p.type)  || 'information';
+  const theme   = (p && p.theme) || 'stroke';
+  const closeOn = (p && p.close) === 'on';
+  const descOn  = (p && p.desc)  !== 'off';
+  const themeCls = theme === 'stroke' ? '' : ` bt-alert--${theme}`;
+  // Figma sağ "Alert Controls" slotunu Close Button kapalıyken de boş
+  // olarak DOM'da tutar (get_design_context ile doğrulandı) — başlık/açıklama
+  // bloğu sol ikonla simetrik kalsın diye 40px boşluk her koşulda ayrılır.
+  const closeSlot = closeOn
+    ? `<button class="bt-alert__close" type="button" onclick="btAlertDismiss(this)" aria-label="Dismiss">
+      <span class="bt-icon">${_alertIconX}</span>
+    </button>`
+    : `<div class="bt-alert__icon-slot" aria-hidden="true"></div>`;
+  return `<div class="bt-alert bt-alert--${type}${themeCls}">
+  <div class="bt-alert__icon-slot"><span class="bt-icon">${_alertIcons[type] || ''}</span></div>
+  <div class="bt-alert__content">
+    <p class="bt-alert__title">Insert Alert Title Here</p>
+    ${descOn ? `<p class="bt-alert__desc">Description for additional information displayed below the title.</p>` : ''}
+  </div>
+  ${closeSlot}
+</div>`;
+}
+
+function alertCss(p) {
+  const type    = (p && p.type)  || 'information';
+  const theme   = (p && p.theme) || 'stroke';
+  const closeOn = (p && p.close) === 'on';
+  const pk = (k, v) => `  ${k}: ${v};`;
+
+  const bg = theme === 'filled'
+    ? `var(--bt-surface-${type}-default)`
+    : theme === 'light'
+      ? `var(--bt-surface-${type}-light)`
+      : `var(--bt-surface-primary-default)`;
+  const boxShadowDecl = theme === 'filled'
+    ? 'none'
+    : theme === 'light'
+      ? `inset 0 0 0 1px var(--bt-border-${type}-default)`
+      : `inset 0 0 0 1px var(--bt-border-primary-default)`;
+  const textColor = theme === 'filled' ? 'var(--bt-text-primary-inverted)' : 'var(--bt-text-primary-default)';
+  const iconColor = theme === 'filled' ? 'var(--bt-icon-primary-inverted)' : `var(--bt-icon-${type}-default)`;
+  const closeColor = theme === 'filled' ? 'var(--bt-icon-primary-inverted)' : 'var(--bt-icon-primary-strong)';
+
+  const lines = [
+    `.bt-alert {`,
+    pk('display', 'flex'),
+    pk('align-items', 'center'),
+    pk('border-radius', 'var(--bt-radius-sm)  /* 4px */'),
+    pk('background', `${bg}  /* ${theme} · ${type} */`),
+    pk('box-shadow', `${boxShadowDecl}  /* inset — layout boyutuna eklenmez, Figma "stroke inside" */`),
+    `}`,
+    ``,
+    `.bt-alert__icon-slot .bt-icon svg {`,
+    pk('width', '18px'),
+    pk('height', '18px'),
+    `}`,
+    ``,
+    `.bt-alert__icon-slot .bt-icon {`,
+    pk('color', `${iconColor}  /* ${_alertTypeIconName[type]} */`),
+    `}`,
+    ``,
+    `.bt-alert__title {`,
+    pk('font', 'var(--bt-title-sm-medium)  /* 500 14px/16px */'),
+    pk('color', textColor),
+    `}`,
+    ``,
+    `.bt-alert__desc {`,
+    pk('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'),
+    pk('color', textColor),
+    `}`,
+  ];
+  if (closeOn) lines.push(``, `.bt-alert__close {`, pk('color', closeColor), `}`);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+PAGES_WEB['components/alert'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc: ['Anatomy', 'Themes', 'Types', 'Information', 'Success', 'Warning', 'Error'],
+  render(tab) {
+    const title = 'Alert';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+
+    // Overview'daki per-Type bölümlerinin kilitli playground'u — type sabit,
+    // theme + closeButton serbest (Alert Dialog'un `adlgLockedPg` deseni).
+    const alertLockedPg = (type) => {
+      const label = ALERT_TYPE_OPTS.find(t => t.key === type).label;
+      return registerPlayground({
+        id: `pgd-alert-${type}-sec`,
+        variants: [{ key: type, label }],
+        props: [
+          { key: 'theme', label: 'Theme Color',      options: ALERT_THEME_OPTS, default: 'stroke' },
+          { key: 'close', label: 'Close Button',      options: ALERT_CLOSE_OPTS, default: 'off' },
+          { key: 'desc',  label: 'Show Description',  options: ALERT_DESC_OPTS,  default: 'on' },
+        ],
+        preview: (v, p) => `<div style="max-width:440px;width:100%;margin:0 auto;">${alertHtml({ ...p, type })}</div>`,
+        code:    (v, p) => alertHtml({ ...p, type }),
+        css:     (v, p) => alertCss({ ...p, type }),
+        trigger: { label: 'Click Me' },
+      });
+    };
+
+    // Type'a kilitli, üç Theme Color'ı tek bakışta gösteren statik tablo —
+    // per-type Overview bölümünde playground'un HEMEN ardından (kullanıcı
+    // isteği: "information/success/warning/error bölümlerinde theme
+    // örneklerini de tabloda göstermeliyiz" — önceden yalnızca playground'un
+    // içinde manuel olarak değiştirilebiliyordu, sabit bir referans yoktu).
+    const alertThemeTable = (type) => `
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Theme Color</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${ALERT_THEME_OPTS.map(th => `<tr><td><span class="token-name">${th.label}</span></td><td>${alertHtml({ type, theme: th.key })}</td></tr>`).join('')}
+        </tbody>
+      </table>`;
+
+    // Examples'ta her tip için tekrar eden Theme × Close Button matrisi —
+    // canlı alertHtml, playground Code tab'ıyla aynı fonksiyon.
+    const alertTypeTable = (type) => `
+      <table class="token-table">
+        <thead><tr><th>Theme Color</th><th>Close Off</th><th>Close On</th></tr></thead>
+        <tbody>
+          ${ALERT_THEME_OPTS.map(th => `
+          <tr>
+            <td><span class="token-name">${th.label}</span></td>
+            <td>${alertHtml({ type, theme: th.key, close: 'off' })}</td>
+            <td>${alertHtml({ type, theme: th.key, close: 'on' })}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Alert için kullanılan design token–CSS değişken eşleşmeleri. Type modifier'ı (${tk('.bt-alert--{type}')}) yalnızca renk token'larını (tint/solid/border/icon) seçer, Theme Color modifier'ı (${tk('.bt-alert--light')} / ${tk('.bt-alert--filled')}, Stroke için modifier yok) bu token'ları background/border/text'e uygular — 12 kombinasyon için ayrı CSS bloğu yazılmaz.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Container</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Container · Stroke</td><td>Background</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Container · Stroke</td><td>Border (${tk('box-shadow:inset')})</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4 — layout boyutunu etkilemesin diye ${tk('border')} değil inset ${tk('box-shadow')}</td></tr>
+          <tr><td>Container · Light</td><td>Background</td><td>${tk('--bt-surface-{type}-light')}</td><td>tip başına farklı</td></tr>
+          <tr><td>Container · Light</td><td>Border (${tk('box-shadow:inset')})</td><td>${tk('--bt-border-{type}-default')}</td><td>tip başına farklı</td></tr>
+          <tr><td>Container · Filled</td><td>Background</td><td>${tk('--bt-surface-{type}-default')}</td><td>tip başına farklı</td></tr>
+          <tr><td>Container · Filled</td><td>Border</td><td>—</td><td>none</td></tr>
+          <tr><td>Container</td><td>Height (sabit değil)</td><td>—</td><td>52px — içerikten doğar: 8+16(title)+4(gap)+16(desc)+8, icon slot'lar (40×40) bu satırda ortalanır</td></tr>
+          <tr><td>Icon slot / Close</td><td>Boyut (sabit)</td><td>—</td><td>40×40px</td></tr>
+          <tr><td>Icon (sol, tip)</td><td>Wrapper / SVG</td><td>${tk('.bt-icon')}</td><td>24×24 wrapper, SVG <strong>18×18</strong> (component-özel override — global standart 16×16 değil)</td></tr>
+          <tr><td>Icon · Error</td><td>Color</td><td>${tk('--bt-icon-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Icon · Warning</td><td>Color</td><td>${tk('--bt-icon-warning-default')}</td><td>#aa820a</td></tr>
+          <tr><td>Icon · Information</td><td>Color</td><td>${tk('--bt-icon-information-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Icon · Success</td><td>Color</td><td>${tk('--bt-icon-success-default')}</td><td>#2d584b</td></tr>
+          <tr><td>Icon · Filled tema (her tip)</td><td>Color</td><td>${tk('--bt-icon-primary-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Close (X)</td><td>Wrapper / SVG</td><td>${tk('.bt-icon')}</td><td>24×24 wrapper, SVG standart 16×16</td></tr>
+          <tr><td>Close (X) · Stroke/Light</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353 — tip renginden bağımsız, sabit nötr</td></tr>
+          <tr><td>Close (X) · Filled</td><td>Color</td><td>${tk('--bt-icon-primary-inverted')}</td><td>#ffffff</td></tr>
+          <tr><td>Content</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px <strong>yalnızca dikey</strong> (top/bottom) — yatay 0, Alert Controls slotu kendi inset'ini zaten taşıyor</td></tr>
+          <tr><td>Content</td><td>Gap (title ↔ desc)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Title</td><td>Font</td><td>${tk('--bt-title-sm-medium')}</td><td>500 · 14px/16px</td></tr>
+          <tr><td>Description (opsiyonel)</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px — Show Description=Off'ta hiç render edilmez</td></tr>
+          <tr><td>Title / Description · Stroke, Light</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Title / Description · Filled</td><td>Color</td><td>${tk('--bt-text-primary-inverted')}</td><td>#ffffff</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Alert'in hangi tip, tema ve close button kombinasyonuyla kullanılacağına dair kılavuz. Yanlış tip seçimi mesajın anlamsal ağırlığını, gereksiz Filled kullanımı ise sayfanın görsel hiyerarşisini bozar.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Type'ı içeriğin anlamsal bağlamıyla eşleştir — doğrulama hatası için Error, geçici bir uyarı için Warning</li>
+        <li>Kullanıcının kapatabileceği (kalıcı olmayan) bildirimlerde Close Button'ı aç</li>
+        <li>Stroke temayı sayfa içi/gömülü bildirimler için, Light'ı biraz daha vurgulu bir bağlam için, Filled'ı yalnızca gerçekten kritik/tekil mesajlar için kullan</li>
+        <li>Başlığı kısa ve eylem/sonuç odaklı tut; ayrıntıyı description'a bırak</li>
+        <li>Başlık tek başına yeterince açıklayıcıysa Show Description'ı kapat — gereksiz boş satır eklemekten daha temiz</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Aynı sayfada birden fazla Filled Alert kullanma — hepsi "en kritik" mesaj gibi göründüğünde hiçbiri öyle görünmez</li>
+        <li>Kullanıcının görmesi zorunlu, kaybolmaması gereken bir mesajda Close Button'ı açık bırakma</li>
+        <li>Type'ı yalnızca renk beğenisine göre seçme — her tipin ikonu ve rengi anlamsal bir karşılığı temsil eder</li>
+      </ul>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">Alert'in üç Theme Color'ı ve dört Type'ı, Close Button açık/kapalı ile birlikte — Overview'daki tek birleşik playground'un aksine burada her tip kendi karşılaştırma tablosunda ele alınır. Theme Color yalnızca zemin/kenarlık/metin renginin kaynağını değiştirir, tip ikon ve renk setini belirler; ikisi birbirinden bağımsız çalışır.</p>
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Aynı Information tipi, üç Theme Color'da — geometri ve ikon/başlık/açıklama içeriği aynı kalır, yalnızca zemin/kenarlık/metin renk kaynağı değişir. Stroke en düşük görsel ağırlık, Filled en yüksek görsel ağırlıktır.</p>
+      <table class="token-table">
+        <thead><tr><th>Theme Color</th><th>Preview (Information)</th></tr></thead>
+        <tbody>
+          ${ALERT_THEME_OPTS.map(th => `<tr><td><span class="token-name">${th.label}</span></td><td>${alertHtml({ type: 'information', theme: th.key })}</td></tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="Types">Types</h2>
+      <p class="page-desc">Alert dört anlamsal tipte gelir; her biri kendi ikon ve renk setini taşır (Stroke temada gösterilmiştir). Type seçimi mesajın duygusal ağırlığını belirler — Blazor/Telerik tarafında ${tk('Type')} prop'u bu seti tek satırda değiştirir.</p>
+      <table class="token-table">
+        <thead><tr><th>Type</th><th>Preview</th><th>Icon</th><th>Kullanım</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Information</span></td><td>${alertHtml({ type: 'information' })}</td><td>info</td><td>Nötr bilgilendirme veya bağlam açıklaması.</td></tr>
+          <tr><td><span class="token-name">Success</span></td><td>${alertHtml({ type: 'success' })}</td><td>circle-check</td><td>Başarıyla tamamlanan bir eylemin teyidi.</td></tr>
+          <tr><td><span class="token-name">Warning</span></td><td>${alertHtml({ type: 'warning' })}</td><td>circle-alert</td><td>Dikkat gerektiren, henüz kritik olmayan durum.</td></tr>
+          <tr><td><span class="token-name">Error</span></td><td>${alertHtml({ type: 'error' })}</td><td>circle-alert</td><td>Kritik hata veya engelleyici durum.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Information">Information</h2>
+      <p class="page-desc">Nötr, bilgilendirici içerik — kullanıcıya bir durumu açıklar, acil aksiyon istemez. Aşağıda üç Theme Color × Close Button açık/kapalı kombinasyonu.</p>
+      ${alertTypeTable('information')}
+
+      <h2 id="Success">Success</h2>
+      <p class="page-desc">Başarıyla tamamlanan bir eylemin teyidi — kayıt oluşturuldu, işlem gönderildi gibi olumlu sonuçlar. Aşağıda üç Theme Color × Close Button açık/kapalı kombinasyonu.</p>
+      ${alertTypeTable('success')}
+
+      <h2 id="Warning">Warning</h2>
+      <p class="page-desc">Dikkat gerektiren ama henüz engelleyici olmayan bir durum. Aşağıda üç Theme Color × Close Button açık/kapalı kombinasyonu.</p>
+      ${alertTypeTable('warning')}
+
+      <h2 id="Error">Error</h2>
+      <p class="page-desc">Kritik hata veya engelleyici bir durumun bildirimi — kullanıcının işlemi tamamlaması için müdahale gerekir. Aşağıda üç Theme Color × Close Button açık/kapalı kombinasyonu.</p>
+      ${alertTypeTable('error')}
+    `};
+
+    // Overview
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-alert-overview',
+        variants: [{ key: 'default', label: 'Alert' }],
+        props: [
+          { key: 'type',  label: 'Type',              options: ALERT_TYPE_OPTS,  default: 'information' },
+          { key: 'theme', label: 'Theme Color',       options: ALERT_THEME_OPTS, default: 'stroke' },
+          { key: 'close', label: 'Close Button',       options: ALERT_CLOSE_OPTS, default: 'off' },
+          { key: 'desc',  label: 'Show Description',   options: ALERT_DESC_OPTS,  default: 'on' },
+        ],
+        preview: (v, p) => `<div style="max-width:440px;width:100%;margin:0 auto;">${alertHtml(p)}</div>`,
+        code:    (v, p) => alertHtml(p),
+        css:     (v, p) => alertCss(p),
+        trigger: { label: 'Click Me' },
+      })}
+
+      <p class="page-desc">Alert, sayfa akışına gömülü, kapatılabilir bir bildirim bannerıdır — modal Alert Dialog'un aksine kullanıcının akışını kesmez, bir form/panel/sayfa üstünde yerinde durur. Dört anlamsal tip (${tk('Information')} / ${tk('Success')} / ${tk('Warning')} / ${tk('Error')}) mesajın bağlamını, üç Theme Color (${tk('Stroke')} / ${tk('Light')} / ${tk('Filled')}) görsel ağırlığını, Close Button kalıcı olmayan bildirimlerde kapatılabilirliği, Show Description ise açıklama satırının gösterilip gösterilmeyeceğini belirler — dört eksen birbirinden bağımsızdır. Toolbar'daki <strong>Click Me</strong> butonu, alert'i statik önizlemenin dışında gerçek bir toast gibi ekranın üstünden kayarak gösterir ve birkaç saniye sonra otomatik kapanır — Close Button'ın gerçek dismiss davranışını da bu şekilde deneyebilirsin. HTML'de ${tk('.bt-alert')} + ${tk('.bt-alert--{type}')} (+ ${tk('.bt-alert--light')} / ${tk('.bt-alert--filled')}), Blazor/Telerik'te ${tk('Type')} / ${tk('ThemeColor')} / ${tk('ShowCloseButton')} / ${tk('ShowDescription')} prop'larıyla yönetilir.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Alert, yatay bir flex satırdır: solda sabit 40×40 ${tk('.bt-alert__icon-slot')} (içinde global ${tk('.bt-icon')} wrapper, ama SVG component'e özel <strong>18×18</strong>'e büyütülmüş — standart 16×16 değil, Figma'nın ham ikon asset'i kendi 24×24 çerçevesi içinde gerçekten 18×18'lik bir alan kaplıyor), ortada esnek genişlikte ${tk('.bt-alert__content')} (başlık + açıklama, dikey istiflenmiş, yalnızca dikey padding — yatayda ekstra boşluk yok), sağda opsiyonel ${tk('.bt-alert__close')} — kapalıyken bile Figma bu alanı boş 40×40 olarak korur, böylece içerik bloğu her koşulda simetrik kalır. Konteynerde sabit bir yükseklik YOK: 52px'lik toplam yükseklik tamamen içerikten doğar (padding + başlık + gap + açıklama), 40×40 ikon slotları bu satırın içinde ${tk('align-items:center')} ile ortalanır. Type modifier'ı (${tk('.bt-alert--{type}')}) yalnızca ikon rengini ve Light/Filled temaların renk kaynağını seçer; Theme Color modifier'ı geometriye dokunmadan yalnızca zemin/kenarlık/metin rengini değiştirir. Blazor karşılığı ${tk('.bt-alert')} sınıf ailesidir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Katman</th><th>Class</th><th>Rol</th></tr></thead>
+        <tbody>
+          <tr><td>Konteyner</td><td>${tk('.bt-alert')} + ${tk('.bt-alert--{type}')} (+ ${tk('.bt-alert--light')} / ${tk('.bt-alert--filled')})</td><td>yatay flex satır, ${tk('--bt-radius-sm')} köşe, 1px kenarlık ${tk('box-shadow:inset')} ile (Filled'de yok) — layout boyutuna eklenmesin diye gerçek ${tk('border')} DEĞİL, <strong>sabit height yok</strong> — 52px içerikten gelir</td></tr>
+          <tr><td>İkon slotu</td><td>${tk('.bt-alert__icon-slot')} › ${tk('.bt-icon')}</td><td>sabit 40×40, ${tk('.bt-icon')} wrapper 24×24 ama SVG <strong>18×18</strong> (component-özel override, global standarttan sapma)</td></tr>
+          <tr><td>İçerik</td><td>${tk('.bt-alert__content')}</td><td>${tk('flex:1')}, padding ${tk('var(--bt-space-md) 0')} (8px <strong>yalnızca dikey</strong>), ${tk('--bt-space-xs')} (4px) dikey gap</td></tr>
+          <tr><td>Başlık</td><td>${tk('.bt-alert__title')}</td><td>${tk('--bt-title-sm-medium')} (500 · 14px/16px)</td></tr>
+          <tr><td>Açıklama (opsiyonel)</td><td>${tk('.bt-alert__desc')}</td><td>${tk('--bt-text-xs-regular')} (400 · 12px/16px) · Show Description=Off'ta hiç render edilmez</td></tr>
+          <tr><td>Kapat butonu</td><td>${tk('.bt-alert__close')} › ${tk('.bt-icon')}</td><td>sabit 40×40 native ${tk('&lt;button&gt;')}, standart 16×16 SVG, tıklanınca ${tk('btAlertDismiss')} ile alert'i gizler</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Üç Theme Color bir görsel ağırlık katmanıdır — geometri ve içerik değişmez. ${tk('Stroke')} (varsayılan): ${tk('--bt-surface-primary-default')} beyaz zemin + nötr ${tk('--bt-border-primary-default')} kenarlık, en düşük ağırlık. ${tk('Light')}: tipe özgü ${tk('--bt-surface-{type}-light')} tonlu zemin + ${tk('--bt-border-{type}-default')} kenarlık, orta ağırlık. ${tk('Filled')}: tipe özgü ${tk('--bt-surface-{type}-default')} dolu zemin, kenarlıksız, metin/ikon ${tk('inverted')} (beyaz) — en yüksek ağırlık. Her üç temada da ikon ve başlık/açıklama renkleri merkezi token'lardan gelir; CSS'te ${tk('.bt-alert--light')} / ${tk('.bt-alert--filled')} modifier'ları (Stroke modifier almaz).</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Theme Color</th><th>Zemin</th><th>Kenarlık</th><th>Metin/İkon</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Stroke</span></td><td>${tk('--bt-surface-primary-default')}</td><td>${tk('--bt-border-primary-default')}</td><td>${tk('--bt-text-primary-default')}</td><td>${alertHtml({ type: 'information', theme: 'stroke' })}</td></tr>
+          <tr><td><span class="token-name">Light</span></td><td>${tk('--bt-surface-{type}-light')}</td><td>${tk('--bt-border-{type}-default')}</td><td>${tk('--bt-text-primary-default')}</td><td>${alertHtml({ type: 'information', theme: 'light' })}</td></tr>
+          <tr><td><span class="token-name">Filled</span></td><td>${tk('--bt-surface-{type}-default')}</td><td>—</td><td>${tk('--bt-text-primary-inverted')}</td><td>${alertHtml({ type: 'information', theme: 'filled' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Types">Types</h2>
+      <p class="page-desc">Alert dört anlamsal tipi destekler — her biri kendi ikon glyph'i ve renk setiyle gelir, üç Theme Color'ın hepsinde aynı davranır. Type, mesajın kullanıcıya ilettiği duygusal ağırlığı belirler; tasarım sistemi renk/ikon eşleşmesini merkezi olarak yönetir. Aşağıda her tip kendi bölümünde, Theme Color ve Close Button serbest bırakılarak ele alınır.</p>
+      <table class="token-table" style="margin-bottom:12px">
+        <thead><tr><th>Type</th><th>Icon</th><th>Preview (Stroke)</th></tr></thead>
+        <tbody>
+          ${ALERT_TYPE_OPTS.map(t => `<tr><td><span class="token-name">${t.label}</span></td><td>${_alertTypeIconName[t.key]}</td><td>${alertHtml({ type: t.key })}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      <h3>Anatomy</h3>
+      <p class="page-desc">Her tipin ikonu global ${tk('.bt-icon')} wrapper'ıyla (24×24, SVG 16×16) render edilir; renk kaynağı Theme Color'a göre değişir — Stroke/Light'ta ${tk('--bt-icon-{type}-default')}, Filled'de ${tk('--bt-icon-primary-inverted')} (beyaz). Light/Filled temaların zemin/kenarlık token'ları da aynı ${tk('{type}')} adlandırma desenini takip eder, bu yüzden yeni bir tip eklemek tek bir CSS modifier bloğuyla mümkündür.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Type</th><th>Icon token (Stroke/Light)</th><th>Surface Light</th><th>Surface Filled</th></tr></thead>
+        <tbody>
+          <tr><td>Information</td><td>${tk('--bt-icon-information-default')}</td><td>${tk('--bt-surface-information-light')}</td><td>${tk('--bt-surface-information-default')}</td></tr>
+          <tr><td>Success</td><td>${tk('--bt-icon-success-default')}</td><td>${tk('--bt-surface-success-light')}</td><td>${tk('--bt-surface-success-default')}</td></tr>
+          <tr><td>Warning</td><td>${tk('--bt-icon-warning-default')}</td><td>${tk('--bt-surface-warning-light')}</td><td>${tk('--bt-surface-warning-default')}</td></tr>
+          <tr><td>Error</td><td>${tk('--bt-icon-error-default')}</td><td>${tk('--bt-surface-error-light')}</td><td>${tk('--bt-surface-error-default')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Information">Information</h2>
+      <p class="page-desc">Nötr, bilgilendirici içerik için — kullanıcıya bir durumu veya bağlamı açıklar, aksiyon zorunluluğu taşımaz. İkon ${tk('info')} glyph'i, Stroke/Light'ta ${tk('--bt-icon-information-default')} rengiyle, Filled'de tam ${tk('--bt-surface-information-default')} zeminle. ${tk('.bt-alert--information')} modifier'ı, Blazor'da ${tk('Type=Information')}. Aşağıdaki playground bu tipe kilitli; Theme Color, Close Button ve Show Description serbest — toolbar'daki Click Me ile gerçek toast/dismiss davranışını dene.</p>
+      ${alertLockedPg('information')}
+      <h3>Themes</h3>
+      <p class="page-desc">Information tipinin üç Theme Color'daki hâli — Stroke/Light/Filled arasında yalnızca zemin/kenarlık/metin rengi değişir, ikon ve içerik aynı kalır.</p>
+      ${alertThemeTable('information')}
+
+      <h2 id="Success">Success</h2>
+      <p class="page-desc">Başarıyla tamamlanan bir eylemin teyidi için — kayıt oluşturuldu, işlem gönderildi gibi olumlu sonuçlar. İkon ${tk('circle-check')} glyph'i, Stroke/Light'ta ${tk('--bt-icon-success-default')} rengiyle, Filled'de tam ${tk('--bt-surface-success-default')} zeminle. ${tk('.bt-alert--success')} modifier'ı, Blazor'da ${tk('Type=Success')}. Aşağıdaki playground bu tipe kilitli; Theme Color, Close Button ve Show Description serbest — toolbar'daki Click Me ile gerçek toast/dismiss davranışını dene.</p>
+      ${alertLockedPg('success')}
+      <h3>Themes</h3>
+      <p class="page-desc">Success tipinin üç Theme Color'daki hâli — Stroke/Light/Filled arasında yalnızca zemin/kenarlık/metin rengi değişir, ikon ve içerik aynı kalır.</p>
+      ${alertThemeTable('success')}
+
+      <h2 id="Warning">Warning</h2>
+      <p class="page-desc">Dikkat gerektiren ama henüz engelleyici olmayan bir durum için — kullanıcıyı bilgilendirir, işlemi durdurmaz. İkon ${tk('circle-alert')} glyph'i, Stroke/Light'ta ${tk('--bt-icon-warning-default')} rengiyle, Filled'de tam ${tk('--bt-surface-warning-default')} zeminle. ${tk('.bt-alert--warning')} modifier'ı, Blazor'da ${tk('Type=Warning')}. Aşağıdaki playground bu tipe kilitli; Theme Color, Close Button ve Show Description serbest — toolbar'daki Click Me ile gerçek toast/dismiss davranışını dene.</p>
+      ${alertLockedPg('warning')}
+      <h3>Themes</h3>
+      <p class="page-desc">Warning tipinin üç Theme Color'daki hâli — Stroke/Light/Filled arasında yalnızca zemin/kenarlık/metin rengi değişir, ikon ve içerik aynı kalır.</p>
+      ${alertThemeTable('warning')}
+
+      <h2 id="Error">Error</h2>
+      <p class="page-desc">Kritik hata veya engelleyici bir durumun bildirimi için — kullanıcının devam edebilmesi için müdahale gerekir. İkon ${tk('circle-alert')} glyph'i, Stroke/Light'ta ${tk('--bt-icon-error-default')} rengiyle, Filled'de tam ${tk('--bt-surface-error-default')} zeminle. ${tk('.bt-alert--error')} modifier'ı, Blazor'da ${tk('Type=Error')}. Aşağıdaki playground bu tipe kilitli; Theme Color, Close Button ve Show Description serbest — toolbar'daki Click Me ile gerçek toast/dismiss davranışını dene.</p>
+      ${alertLockedPg('error')}
+      <h3>Themes</h3>
+      <p class="page-desc">Error tipinin üç Theme Color'daki hâli — Stroke/Light/Filled arasında yalnızca zemin/kenarlık/metin rengi değişir, ikon ve içerik aynı kalır.</p>
+      ${alertThemeTable('error')}
+    `};
+  },
+};
+
 // ── Alert Dialog ──────────────────────────────────────────────
 // Figma node 625:1451 — 4 Type × 2 Button Position × 3 Button Segments
 // Type belirler: ikon + ikon-bg rengi + primary buton rengi
