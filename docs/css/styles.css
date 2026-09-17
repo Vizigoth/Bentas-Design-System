@@ -4460,6 +4460,13 @@ pre.code-block.line-numbers {
 
 /* ════════════════════════════════════════════════════════════════
    DROPDOWN OPTIONS PANEL — bt-dd-*
+   Figma "Dropdown List" (node 1400:137801) + "Base Dropdown List Item"
+   ile doğrulandı (2026-09-17) — panel: 4px iç padding + ince kenarlık +
+   Shadow/md, input'tan 4px boşlukla; item: Content ekseni (Basic/Left/
+   Right/Left+Right control — `--has-left`/`--has-right` modifier'ları) ×
+   State ekseni (Default/Hover/Active/Selected/Focus/Disabled). Active ve
+   Selected Figma'da GÖRSEL OLARAK AYNI (`--bt-base-muted`) — bilinçli,
+   ayrı bir Active rengi icat edilmedi.
    ════════════════════════════════════════════════════════════════ */
 
 /* Anchor wrapper — sits between bt-tbx and bt-tbx__input; options/calendar positioned relative to it */
@@ -4471,29 +4478,41 @@ pre.code-block.line-numbers {
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 2px;
+  margin-top: var(--bt-space-xs, 4px);
   z-index: 200;
-  background: var(--bt-surface-primary-default, #ffffff);
+  display: flex;
+  flex-direction: column;
+  background: var(--bt-base-default, #ffffff);
+  border: 1px solid var(--bt-border-primary-subtle, #f5f5f5);
   border-radius: var(--bt-radius-sm, 4px);
-  overflow: hidden;
-  box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
+  padding: var(--bt-space-xs, 4px);
+  box-sizing: border-box;
+  box-shadow: var(--bt-shadow-md, 0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10));
 }
 
 .bt-dd-option {
   display: flex;
   align-items: center;
-  gap: var(--bt-space-xs, 4px);
-  padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px);
+  border-radius: var(--bt-radius-sm, 4px);
   cursor: pointer;
-  background: var(--bt-surface-primary-default, #ffffff);
 }
 
-.bt-dd-option:hover,
-.bt-dd-option--selected { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.bt-dd-option:hover { background: var(--bt-base-subtle, #f5f5f5); }
+/* Active ve Selected Figma'da aynı zemini paylaşır */
+.bt-dd-option--active,
+.bt-dd-option--selected { background: var(--bt-base-muted, #e6e6e6); }
+.bt-dd-option--focus {
+  background: var(--bt-base-default, #ffffff);
+  box-shadow: 0 0 0 3px rgba(114,114,114,0.25);
+}
+.bt-dd-option--disabled { cursor: not-allowed; }
+.bt-dd-option--disabled .bt-dd-option__text { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-dd-option--disabled .bt-dd-option__control { color: var(--bt-icon-primary-muted, #a3a3a3); }
 
-.bt-dd-option__icon {
-  width: 20px;
-  height: 20px;
+/* 32×32 control slot — içinde global .bt-icon (24×24 wrapper, SVG 16×16) */
+.bt-dd-option__control {
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4504,11 +4523,20 @@ pre.code-block.line-numbers {
 .bt-dd-option__text {
   flex: 1;
   min-width: 0;
+  padding: var(--bt-space-md, 8px);
+  box-sizing: border-box;
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-default, #1a1a1a);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* Sol control varsa yatay padding md(8px)→xs(4px)'e düşer — ikon zaten
+   kendi 32px slotunda ayırıcı boşluğu sağlıyor (Figma: yalnızca SOL
+   control'ün varlığına bağlı, sağ control'den bağımsız). */
+.bt-dd-option--has-left .bt-dd-option__text {
+  padding-left: var(--bt-space-xs, 4px);
+  padding-right: var(--bt-space-xs, 4px);
 }
 
 /* ════════════════════════════════════════════════════════════════

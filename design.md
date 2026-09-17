@@ -2947,6 +2947,19 @@ durumundan FARKLI) — paylaşılan `TBX_SIZE_OPTS` doğrudan reuse edildi, Text
 `_SIZE_OPTS` icat edilmedi (zaten doğru default'u taşıyordu). Properties paneli §21.5'teki modeli
 uyguluyor: State/Size + bağımsız Label/Hint/Error (Show toggle + editable text).
 
+### 22.7 Options Panel & List Item — Figma "Dropdown List" ile doğrulanıp düzeltildi (2026-09-17)
+
+Kullanıcı Figma'da açık liste (Active state'te görünen panel) için ayrı bir "Dropdown List" / "Base Dropdown List Item" component set'i hazırladı (node `1400:137801` + `1378:23215`) — Content ekseni (Basic / Left Control / Right Control / Left+Right Control, `--has-left`/`--has-right` modifier'ları) × State ekseni (Default/Hover/**Active**/Selected/Focus/Disabled). Önceki implementasyon (`.bt-dd-options`/`.bt-dd-option`, `_ddOptionsHtml`) bu spec'ten önce yazılmıştı ve 4 gerçek sapma içeriyordu:
+
+1. **Panel**: padding'siz + kenarlıksız + `--bt-shadow-lg` + `margin-top:2px` (hardcoded) → doğrusu `--bt-space-xs` (4px) padding + `--bt-border-primary-subtle` kenarlık + `--bt-shadow-md` + `margin-top: var(--bt-space-xs)` (4px).
+2. **Active/Selected aynı renk değil**: Hover ve Selected ikisi de `--bt-surface-primary-subtle` kullanıyordu (aynı ton) → Figma'da Hover = `--bt-base-subtle` (açık), Active/Selected = `--bt-base-muted` (koyu) — Active ve Selected BİRBİRİYLE aynı, ama Hover'dan farklı.
+3. **Focus ve Disabled state'leri hiç yoktu** → eklendi: Focus = nötr `box-shadow: 0 0 0 3px rgba(114,114,114,.25)` (input'un mavi ring'inden FARKLI — item-seviyesi ring her zaman nötr gri); Disabled = metin/ikon `--bt-text-primary-muted`/`--bt-icon-primary-muted`.
+4. **İkon 20×20 + component-özel `.bt-dd-option__icon`** → global standart `.bt-icon` (24×24 wrapper, SVG 16×16) içinde yeni `.bt-dd-option__control` (32×32 slot) — ham SVG asset'i indirilip gerçek boyut ölçüldü (~15×15, 16'ya yeterince yakın, ayrı bir override gerekmedi — Alert'teki 18×18 sapmasının aksine).
+
+**Content ekseni (padding kuralı):** sol control varsa (`--has-left`) metin padding'i `--bt-space-md`(8px)'den `--bt-space-xs`(4px)'e düşer — SADECE sol control'ün varlığına bağlı, sağ control'den bağımsız (Figma'da böyle doğrulandı).
+
+**Kapsam kararı:** `_ddOptionsHtml` (Dialog form örneği ve Data Table InCell Editing'in status dropdown'ı tarafından da reuse edilen paylaşılan sabit) yalnızca YENİ class yapısına taşındı (`.bt-dd-option__control` > `.bt-icon`, `--has-left`) — mevcut 4 seçenek/ilk-seçili içeriği DEĞİŞMEDİ, yeni bir Hover/Focus/Disabled demo'su İCAT EDİLMEDİ (paylaşılan sabit olduğu için Dialog/Data Table'ın görünümünü beklenmedik şekilde değiştirmemek adına). Data Table'ın kendi "Basic" (ikonsuz) status dropdown'ı (`_gridEditDropdownHtml`, `.bt-dd-option` — `--has-left` YOK) yeni CSS'le otomatik doğru render oluyor (8px padding varsayılanı zaten "Basic" content type'a karşılık geliyor). `docs/css/styles.css` ("DROPDOWN OPTIONS PANEL" bloğu), `docs/js/pages-web.js` (`_ddIconLoader`, `_ddOptionsHtml`, Dropdown sayfası CSS Properties tab'ına yeni "Options Panel & List Item" tablosu) güncellendi. **Doğrulama:** `node --check` temiz; tarayıcıda `getComputedStyle` ile panel padding (4px), border (`#f5f5f5`), box-shadow (shadow-md), margin-top (4px), seçili item arka planı (`#e6e6e6`), ikon boyutu (16×16) tek tek ölçüldü — hepsi doğru; Dialog örneği ve Data Table InCell Editing'in status dropdown'ı canlı açılıp regresyon olmadığı (Basic ve Left-Control varyantlarının ikisi de) doğrulandı; konsolda JS hatası yok.
+
 ---
 
 ## 23. Alert (`.bt-alert`, notification banner)

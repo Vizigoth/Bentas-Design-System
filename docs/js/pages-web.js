@@ -4756,23 +4756,31 @@ function _ddInputInner(state) {
         </div>`;
 }
 
-const _ddIconLoader = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>`;
+// SVG'ye width/height YAZILMAZ — .bt-icon svg kuralı 16×16 zorlar (CLAUDE.md
+// "İkon Wrapper Standardı"). Bu ikon Dialog örneği ve Data Table inline
+// dropdown hücresi tarafından da reuse edildiği için isim/içerik DEĞİŞMEDİ.
+const _ddIconLoader = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>`;
 
+// Figma "Dropdown List"/"Base Dropdown List Item" (2026-09-17'de doğrulandı) —
+// Content ekseni burada sabit "Left Control + Label" (`--has-left`), Dialog
+// örneği ve Data Table'ın kapsam kısıtı gereği içerik/seçenek sayısı
+// DEĞİŞMEDİ (bkz. yukarıdaki not) — yalnızca yeni doğrulanmış class yapısına
+// (.bt-dd-option__control > .bt-icon, --has-left modifier) taşındı.
 const _ddOptionsHtml = `
-  <div class="bt-dd-option bt-dd-option--selected">
-    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+  <div class="bt-dd-option bt-dd-option--has-left bt-dd-option--selected">
+    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
     <span class="bt-dd-option__text">Option 1</span>
   </div>
-  <div class="bt-dd-option">
-    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+  <div class="bt-dd-option bt-dd-option--has-left">
+    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
     <span class="bt-dd-option__text">Option 2</span>
   </div>
-  <div class="bt-dd-option">
-    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+  <div class="bt-dd-option bt-dd-option--has-left">
+    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
     <span class="bt-dd-option__text">Option 3</span>
   </div>
-  <div class="bt-dd-option">
-    <span class="bt-dd-option__icon">${_ddIconLoader}</span>
+  <div class="bt-dd-option bt-dd-option--has-left">
+    <span class="bt-dd-option__control"><span class="bt-icon">${_ddIconLoader}</span></span>
     <span class="bt-dd-option__text">Option 4</span>
   </div>`;
 
@@ -5064,6 +5072,26 @@ PAGES_WEB['components/dropdown'] = {
           <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
+      <h2>Options Panel &amp; List Item</h2>
+      <p class="page-desc">Figma "Dropdown List" / "Base Dropdown List Item" (2026-09-17'de Desktop Bridge ile doğrulandı) — panel input'un 4px altında açılır, item'lar Content ekseni (Basic / Left Control / Right Control / Left+Right Control — ${tk('--has-left')}/${tk('--has-right')} modifier'ları) × State ekseni (Default/Hover/Active/Selected/Focus/Disabled) taşır. Active ve Selected Figma'da GÖRSEL OLARAK AYNI zemini paylaşır — ayrı bir Active rengi icat edilmedi.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Panel ${tk('.bt-dd-options')}</td><td>Konum</td><td>${tk('--bt-space-xs')}</td><td>4px — input'un altındaki boşluk (eskiden hardcoded 2px, düzeltildi)</td></tr>
+          <tr><td>Panel</td><td>Padding</td><td>${tk('--bt-space-xs')}</td><td>4px, tüm yönler</td></tr>
+          <tr><td>Panel</td><td>Border</td><td>${tk('--bt-border-primary-subtle')}</td><td>#f5f5f5 — çok ince</td></tr>
+          <tr><td>Panel</td><td>Shadow</td><td>${tk('--bt-shadow-md')}</td><td>0 2px 4px … / 0 4px 8px … (eskiden ${tk('--bt-shadow-lg')} idi)</td></tr>
+          <tr><td>Item ${tk('.bt-dd-option')}</td><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Item · Hover</td><td>Background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Item · Active / Selected</td><td>Background</td><td>${tk('--bt-base-muted')}</td><td>#e6e6e6 — ikisi aynı</td></tr>
+          <tr><td>Item · Focus</td><td>Box-shadow</td><td>—</td><td>0 0 0 3px rgba(114,114,114,.25) — nötr ring, input'un mavi ring'inden FARKLI</td></tr>
+          <tr><td>Item · Disabled</td><td>Text / Icon color</td><td>${tk('--bt-text-primary-muted')} / ${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Control ${tk('.bt-dd-option__control')}</td><td>Boyut (sabit)</td><td>—</td><td>32×32, içinde global ${tk('.bt-icon')} (24×24 wrapper, SVG 16×16)</td></tr>
+          <tr><td>Text ${tk('.bt-dd-option__text')}</td><td>Padding</td><td>${tk('--bt-space-md')}</td><td>8px, tüm yönler — sol control varsa (${tk('--has-left')}) ${tk('--bt-space-xs')} (4px)'e düşer</td></tr>
+          <tr><td>Text</td><td>Font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+        </tbody>
+      </table>
+
       <h2>Class Reference</h2>
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
