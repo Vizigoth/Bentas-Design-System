@@ -34,6 +34,8 @@ Sabit piksel değeri sadece **token karşılığı olmayan** boyutlarda kabul ed
 
 Yeni bir token gerektiğinde veya bir component tamamlandığında yapılacak kontroller için, ve genel olarak component sayfası ekleme/dokümante etme iş akışı (playground config, tab yapısı, description kuralları, varyant dokümantasyonu vb.) için: **`add-component` skill'i** (`.claude/skills/add-component/SKILL.md`).
 
+Bir **input-ailesi component'i** (SearchBox, TextBox, Dropdown, Date Input, Date Picker, MultiSelect, Select LookUp, Textarea) eklerken veya kullanıcı açıkça var olan birini revize etmeni istediğinde — Base Input'un Figma node hiyerarşisi, güncel class isimlendirmesi ve ne zaman sıfırdan kurup ne zaman dokunmayacağın için: **`add-input` skill'i** (`.claude/skills/add-input/SKILL.md`, `add-component` ile BİRLİKTE yüklenir — `add-input` mimariyi, `add-component` sayfa/tab yapısını kapsar).
+
 ## Mevcut Component'leri Reuse Et — ZORUNLU
 
 Yeni bir component oluştururken, içinde kullanılan alt öğeler (buton, ikon, input vb.) için **özel CSS yazmak yerine tasarım sistemine eklenmiş component class'larını kullan**.
@@ -70,6 +72,25 @@ CSS class prefix'leri **Figma'daki gerçek component/katman adını** yansıtmal
 
 Paylaşılan dış sarmalayıcı `.bt-tbx` → `.bt-input` oldu (çocukları: `__meta`/`__label`/`__required`/`__anchor`/`__helper→__hint`); çakışmayı önlemek için Base Input'un kutu çekirdeği önce `.bt-input__box`'a taşındı (`.bt-input--X` → `.bt-input__box--X`, `.bt-input__text` → `.bt-input__value`), `.bt-tbx__box`/`.bt-dropdown__box` kimlik class'ları kaldırılıp ata-seçiciyle (`.bt-textbox .bt-input__box--{size} ...`) değiştirildi. **Bilinçli, kalıcı olmayan sınır:** eski "TEXTBOX" sisteminin içi (`.bt-tbx__input/__field/__text/__control/__icon/__clear`, MultiSelect/Select LookUp/Date Picker/Dialog örneği/Data Table Inline-InCell edit hücrelerinde) bu turda DOKUNULMADI — bu 3 component henüz Base Input'a migrate edilmedi (Figma karşılaştırması yapılmadı), ayrı bir oturum bekliyor. Detay ve tam class tablosu: `design.md` §22.9.
 
+### Base Input çekirdeğinin İÇ katmanları da Figma isimlerine tam taşındı (2026-09-18)
+
+Yukarıdaki 09-17 rename'i sadece DIŞ sarmalayıcıyı (`.bt-tbx`→`.bt-input`) kapsıyordu — `.bt-input__box`'un İÇİNDEKİ katmanlar (`__meta`, `__field`, `__control`, `__hint`/`--error`) hâlâ Figma'dan doğrulanmamış, icat edilmiş isimler taşıyordu. Kullanıcı DateInput'u eklerken bunu fark etti ("son konuştuğumuz yapıda nerede input box yazıyor... input meta diye neden input labelın bir taşıyıcısı var") — Date Input'un Figma katman ağacı node-by-node doğrulanırken ortaya çıkan gerçek isimlere göre TÜM Base Input tüketicileri (SearchBox/TextBox/Dropdown/Date Input) tek seferde revize edildi:
+
+| Eski (icat edilmiş) | Yeni (Figma) |
+|---|---|
+| `.bt-input__meta` (Label Value'nun sarmalayıcısı — Figma'da hiç yoktu) | `.bt-input__label-value` |
+| `.bt-input__field` | `.bt-input__content` |
+| `.bt-input__control` | `.bt-input__controls` |
+| `.bt-input__control--validation` (modifier) | `.bt-input__validation` (kendi class'ı — Figma'da ayrı component) |
+| `.bt-input__control--fixed.--clear.--clickable` (modifier zinciri) | `.bt-input__clear-button` (kendi class'ı) |
+| `.bt-input__control--fixed.--filter.--clickable` | `.bt-input__filter-button` (kendi class'ı) |
+| `.bt-input__control--button` (modifier) | `.bt-input__controls--button` (aynı, sadece isim düzeltildi) |
+| `.bt-input__hint` | `.bt-input__hint-value` |
+| `.bt-input__hint--error` (Hint'in modifier'ı, ayrı element DEĞİL) | `.bt-input__error-value` (Hint'ten TAMAMEN bağımsız kendi class'ı — Figma'da ayrı bir node) |
+| — (hiç yoktu) | `.bt-input__prepend-text` / `.bt-input__append-text` (YENİ — standart Base Input property'si, kullanıcı isteğiyle eklendi) |
+
+Bu rename `.bt-input__box`'ı KULLANAN her yerde (SearchBox/TextBox/Dropdown/Date Input'un kendi sayfaları + Sidebar arama kutusu + Data Table filtre paneli arama alanı + Design Examples) uygulandı; paylaşılan DIŞ sarmalayıcı class'ları (`.bt-input__label-value`, `.bt-input__hint-value`, `.bt-input__error-value`) eski "TEXTBOX" sistemini kullanan sayfalarda da (MultiSelect/Select LookUp/eski Date Picker/Dialog örneği/Data Table Inline-InCell) OTOMATİK güncellendi (saf string rename, görsel/davranışsal hiçbir şey değişmedi — tarayıcıda tek tek doğrulandı). Detay: `design.md` §20-24.
+
 ## design.md ve CLAUDE.md senkronizasyonu — ZORUNLU
 
 Bu projede oluşturulan component'ler (markup + CSS + JS davranışı) **bundan sonraki
@@ -88,6 +109,10 @@ Bunu component değişikliği yapılan HER oturumda otomatik yap, kullanıcı ay
 Playground config standartları (prop.group, boolean toggle, preview centering, CSS tab), bölüm açıklama kuralları, 4-tab yapısı, Example Viewer pattern, varyant/çok-eksenli dokümantasyon standartları ve Data Table properties tutarlılığı **`add-component` skill'ine taşındı** (2026-09-07, doctor cleanup — bkz. HISTORY.md). Bir component eklerken veya bir component sayfasını restructure/dokümante ederken bu skill otomatik yüklenir.
 
 ## Son Tamamlanan Component
+
+**Base Input çekirdeği — iç katman rename + Prepend/Append Text** — 2026-09-18 (SearchBox/TextBox/Dropdown/Date Input'un TAMAMINI etkileyen çekirdek revizyon, Date Input eklendikten hemen sonra aynı oturumda). Kullanıcı, önceden üzerinde anlaşılan Figma input hiyerarşisiyle kodu karşılaştırınca `.bt-input__meta`/`.bt-input__field`/`.bt-input__control`(+modifier'ları)/`.bt-input__hint--error` gibi isimlerin Figma'da karşılığı olmayan, icat edilmiş isimler olduğunu fark etti (CLAUDE.md'nin kendi kuralıyla çelişiyordu) — tam class tablosu için bkz. yukarıdaki "Base Input çekirdeğinin İÇ katmanları da Figma isimlerine tam taşındı" ve `design.md` §25 (GÜNCEL/NİHAİ referans). Aynı oturumda, daha önce hiç implemente edilmemiş **Prepend Text / Append Text** (standart Base Input property'leri) tüm 4 component'e eklendi. Tarayıcıda doğrulandı (SearchBox'ta canlı Prepend/Append toggle, Dropdown'ın aç/kapa davranışı, Clear butonu davranışı, eski "TEXTBOX" sistemini kullanan sayfalarda (Select LookUp/MultiSelect/Data Table) regresyon olmadığı) — konsol hatası yok, commit'lenmedi.
+
+**Date Input** — 2026-09-18 (`components/date-input`, Inputs grubu, Base Input geçiş programının 4. adımı — SearchBox→TextBox→Dropdown'dan sonra). Figma "Date Inputs" sayfası (`_Base DateInput` + `DateInput`, sm/md/lg × 9 state) node-by-node Desktop Bridge ile doğrulandı. TextBox'la aynı mimari (gerçek `<input>`) ama Content yatay padding'i her iki yanda sabit 8px (TextBox'ın sağ-4px kuralından farklı) ve state davranışı basit boolean'lara indirgenemediği için açık bir `DTI_STATE_CONFIG` tablosuyla uygulandı. **Açık nokta:** Figma'nın field state'lerinde takvim ikonu (Input Controls) hiç görünmüyor — muhtemelen ayrı bir gelecek "Date Picker" component'ine ait, ikon eklenmeden bırakıldı, kullanıcı onayı bekliyor (design.md §24.4). Bu oturumda ayrıca kullanıcı tüm input component'leri için genel bir standart Figma/kod hiyerarşisi tanımladı (Label Value / [Component] Input → Input Controls(left) + Content[Prepend/Value/Append] + Validation + Clear Button + Input Controls(right) / Hint Value / Error Value) — bundan sonraki her input component'i (Select LookUp/MultiSelect/Date Picker/Textarea vb.) bu standarda göre kurulacak.
 
 **Alert** (notification banner) — 2026-09-17 (`components/alert`, Feedback grubu, daha önce yalnızca boş bir nav linkiydi — sıfırdan implement edildi). Figma "Alert Notification" (node 381:28155) Desktop Bridge ile yeniden analiz edildi: 4 Type (Error/Warning/Success/Information, Primary eksen) × 3 Theme Color (Stroke/Light/Filled, Core "Themes" ekseni) × Close Button + Show Description (Feature toggle'lar). `.bt-alert` + `.bt-alert--{type}` (custom property'ler) + `.bt-alert--light`/`--filled`; `.bt-icon` standardından sapan component-özel 18×18 ikon override'ı, gerçek `btAlertDismiss` kapatma davranışı + playground "Click Me" toast trigger'ı. **Alert Dialog'la (`.bt-adlg`, modal) hiçbir kod/CSS bağımlılığı yok — kavramsal olarak ayrı iki component**; design.md'de de bu netleştirildi: `## 23. Alert` kendi bağımsız üst-seviye bölümü (önceden yanlışlıkla "Overlay & Dialog" altında Alert Dialog'un `###` alt-bölümü gibi duruyordu, Alert bir overlay olmadığı için taşındı).
 

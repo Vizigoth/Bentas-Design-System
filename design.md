@@ -3068,3 +3068,135 @@ Figma kaynağı: top-level page "Alert" → "Alert Notification" component set (
 | Description `.bt-alert__desc` (opsiyonel) | Font | `--bt-text-xs-regular` | 400 12px/16px |
 | Title / Description · Stroke, Light | Color | `--bt-text-primary-default` | #1a1a1a |
 | Title / Description · Filled | Color | `--bt-text-primary-inverted` | #ffffff |
+
+---
+
+## 24. Date Input (Base Input üzerine — Dropdown'dan sonraki 4. adım)
+
+"Tüm input component'lerini tek tek `.bt-input` çekirdeğine taşıma" programının 4. adımı Date Input
+oldu (bkz. §20 SearchBox, §21 TextBox, §22 Dropdown). Kullanıcı Figma'da yeni bir "Date Inputs"
+sayfası açtı (node `1420:6714`, "Bentas DS" dosyası) — `_Base DateInput` (node `1420:6793`, Size=sm/
+md/lg, 3 boyut) + `DateInput` (node `1422:7778`, Size×State = 3×9 = 27 varyant). Desktop Bridge ile
+`get_metadata` + `get_design_context` kullanılarak TÜM 9 state (Default/Hover/Focus/Active/Filled/
+Error/Error Focus/Disabled/Read Only) md boyutunda, ayrıca sm/lg'nin `_Base DateInput` düzeyinde
+node-by-node doğrulandı (2026-09-18).
+
+### 24.1 Mimari — TextBox'la aynı desen (gerçek `<input>`), TEK gerçek fark: Content padding
+
+Date Input'un "Input" kutusu TextBox'takiyle birebir aynı `.bt-input__box` çekirdeğini taşır — Value
+alanı Dropdown'ın statik `<span>`'inden FARKLI olarak TextBox gibi gerçek bir `<input type="text">`
+(kullanıcı klavyeden serbestçe tarih yazıyor, seçim yapmıyor). Tek component-özel fark: Text Content'in
+yatay padding'i **her iki yanda da sabit `--bt-space-md` (8px)** — TextBox/Dropdown'ın "sağ sabit 4px,
+sol control'e göre 4/8px" kuralı burada geçerli değil, çünkü Figma'nın gerçek `DateInput` field
+state'lerinin (9'unun da) İÇİNDE hiçbir zaman bir Input Controls (ikon) render edilmiyor (bkz. §24.4).
+
+### 24.2 Doğrulanmış state tablosu — basit isFilled/isError boolean'larına İNDİRGENEMEZ
+
+TextBox'ın aksine (`isFilled`/`isError`/`isReadOnly` üç bağımsız boolean yeterli), Date Input'un state
+davranışı Figma'da daha düzensiz çıktı — her state'in `Input Value` rengi (koyu/muted) ve Clear
+Button'ın görünüp görünmediği birbirinden bağımsız kombinasyonlar taşıyor:
+
+| State | Value rengi | Clear Button | Validation |
+|---|---|---|---|
+| Default / Hover / Focused | muted (#a3a3a3, placeholder) | yok | yok |
+| Active | **koyu** (#1a1a1a) + cursor mockup | yok | yok |
+| Filled | koyu | **var** | yok |
+| Error / Error Focused | **koyu** (TextBox'ta Error'da value hep muted kalırdı — burada FARKLI, Figma'da gerçek bir değer + hata birlikte gösteriliyor) | yok | var (circle-alert) |
+| Disabled | muted (kalır) | **var** (görsel olarak tuhaf ama Figma'da birebir böyle — clear ikonu disabled'da da render ediliyor) | yok |
+| Read Only | **koyu** (Disabled'dan FARKLI) | **var** | yok |
+
+Bu yüzden kodda `_tbxBaseInner`'daki gibi 3 boolean yerine açık bir `DTI_STATE_CONFIG` state tablosu
+kullanıldı (`pages-web.js`, `{dark, clear, validation, cursor?, disabled?, readonly?}` per state).
+
+### 24.3 Ring opacity — 0.25, Checkbox/Radio/Switch'in 0.5'inden FARKLI ama Dropdown/TextBox'la AYNI
+
+Focus/Active ring'i `rgba(13,78,151,0.25)` (Figma "Focus Ring/primary" effect, hex `#0D4E9740` →
+`0x40/255=0.25`), Error Focus `rgba(232,75,91,0.25)` — Base Input çekirdeğinin ZATEN sahip olduğu
+değerlerle (TextBox/Dropdown, bkz. §20-22) birebir aynı, yeni bir CSS kuralı gerekmedi. **Not:** bu,
+`project_bentas_design_system` hafıza kaydındaki "Focus ring opacity 0.5'tir" notuyla ÇELİŞMİYOR — o
+not eski mobile Switch/Checkbox item-seviyesi ring'i için, Base Input kutusunun kendi ring'i hep 0.25
+olmuştur (bu oturumda yeniden doğrulandı, hafıza notu Base Input'u kapsamıyor).
+
+### 24.4 Kullanıcı onayı bekleyen açık nokta — takvim ikonu Input Controls
+
+`_Base DateInput` building-block'unun kendi Figma önizlemesinde (`showLeftControl`/`showRightControl`
+component property'leri) solda/sağda opsiyonel bir takvim ikonu (Input Controls, "Input Button" ailesi,
+Content=Date) var — ama gerçek `DateInput` field'ının incelenen 9 state'inin **HİÇBİRİNDE** bu ikon
+render edilmiyor (Instance override ile kapatılmış). Bu, muhtemelen kasıtlı bir ayrım: Date Input =
+serbest klavye girişi (ikon yok), gelecekteki ayrı bir "Date Picker"/"DateTime Picker" component'i =
+Date Input + takvim ikonu + açılır panel. **Kodda bu varsayımla, ikon EKLENMEDEN** uygulandı — kullanıcı
+"DatePicker" component'ine geçildiğinde bu netleşecek; yanlışsa Date Input'a sonradan `Input Controls`
+eklemek gerekecek.
+
+### 24.5 Docs sayfası (`components/date-input`)
+
+TextBox/Dropdown'la aynı 4-tab standardı: Overview (master playground + Anatomy/Sizes/States) +
+Examples (kilitli playground) + CSS Properties (state tablosu + Class Reference + §24.4'teki açık
+notu tekrarlayan bir uyarı) + Usage. Nav: `Inputs` grubunda `Checkbox` ile `Date Picker` arasına
+"Date Input" eklendi (var olan eski, `.bt-tbx__*` tabanlı "Date Picker" sayfasına — bkz. §21.2'nin
+kapsam listesi — DOKUNULMADI, ayrı ve bağımsız bir sayfa).
+
+### 24.6 Input Value gerçek tarih maskesi taşır — serbest metin DEĞİL (2026-09-18, kullanıcı isteği)
+
+Kullanıcı netleştirdi: component'in adı "Date Input" olduğu için Input Value SADECE tarih formatında
+yazılabilmeli — TextBox'ın aksine serbest metin girişi değil. Uygulanan davranış (otomatik
+maskeleme, kullanıcının 3 seçenekten seçtiği): `oninput` handler'ı (`dtiBaseInput`) her tuş
+vuruşunda `_dtiFormatDateMask()` ile değeri işler — rakam DIŞINDAKİ her karakter (harf, boşluk,
+sembol) sessizce atılır, kalan rakamlar gg/aa/yyyy pozisyonlarına göre `/` ayraçlarıyla yeniden
+biçimlendirilir (`"15032026"` → `"15/03/2026"`), 8 rakamdan (gg+aa+yyyy) sonrası kesilir — kullanıcı
+10 karakterden fazla yazamaz. `<input>` ayrıca `inputmode="numeric"` (mobilde sayısal klavye) ve
+`maxlength="10"` taşır. Caret, yazının sonundaysa (yaygın kullanım) otomatik biçimlendirmeden sonra
+tekrar sona konumlandırılır — **bilinçli, basit bir sınır:** ayracın hemen sonrasına gelen bir
+backspace, o ayracı silmek yerine görsel olarak "hiçbir şey olmamış" gibi görünebilir (rakamlar
+değişmediği için maske aynı ayracı hemen geri ekliyor) — kullanıcı ikinci bir backspace ile rakamı
+siler. Bu, IMask gibi özel bir kütüphane olmadan yazılan basit maskeleme implementasyonlarında
+yaygın/kabul edilebilir bir davranış, caret-mükemmel bir çözüm bu component'in kapsamı dışında.
+Referans implementasyon: `_dtiFormatDateMask`/`dtiBaseInput`, `pages-web.js`.
+
+---
+
+## 25. Base Input çekirdeği — GÜNCEL/NİHAİ class isimleri (2026-09-18)
+
+**Bu bölüm, `.bt-input__box`'a dayanan TÜM component'ler (SearchBox, TextBox, Dropdown, Date Input)
+için class isimlerinin GÜNCEL, tek doğru kaynağıdır.** §20-24'teki metin ve kod örnekleri
+YAZILDIKLARI ANDA doğruydu, ama o bölümlerde geçen bazı class isimleri (`.bt-input__meta`,
+`.bt-input__field`, `.bt-input__control`(+`--validation`/`--clear`/`--filter`/`--button`
+modifier'ları), `.bt-input__hint`/`--error`) bu bölümdeki rename ile DEĞİŞTİ — §20-24'ü okurken
+class isimlerini burada verilenle eşleştir, tarihsel anlatıyı (neden/nasıl karar verildiği) o
+bölümlerden takip et.
+
+Kullanıcı DateInput eklenirken (bkz. §24) önceden üzerinde anlaşılan Figma input hiyerarşisiyle
+kodu karşılaştırdı ve `.bt-input__meta`/`.bt-input__field` gibi isimlerin Figma'da hiç karşılığı
+olmadığını, icat edilmiş olduğunu fark etti — CLAUDE.md'nin kendi "kısaltma icat etme" kuralıyla
+çelişiyordu. Base Input'un TÜM iç katmanları Figma'nın gerçek katman adlarına göre tek seferde
+revize edildi:
+
+| Element (Figma) | Class |
+|---|---|
+| `[Component] Input Class` (kök, dış wrapper) | `.bt-input` (paylaşılan) + `.bt-{component}` (kimlik, örn. `.bt-dateinput`) |
+| `Input Label Value` | `.bt-input__label-value` (içinde `.bt-input__label`) |
+| `[Component] Input` (kutu) | `.bt-input__box` (paylaşılan çekirdek — tek bir Figma node'una değil, "her component'in kendi kutusu" soyut kavramına karşılık gelir, `.bt-input`in kendisiyle aynı mantık) |
+| `Input Controls` (sol/sağ ikon-buton slotu) | `.bt-input__controls` (+ `--button` modifier, Content=Button ailesi için, örn. Dropdown'ın chevron'u) |
+| `Input Content` | `.bt-input__content` |
+| `Prepend Text` | `.bt-input__prepend-text` |
+| `Input Value` | `.bt-input__value` |
+| `Append Text` | `.bt-input__append-text` |
+| `Validation` (ikon) | `.bt-input__validation` (kendi class'ı, Input Controls'ün modifier'ı DEĞİL) |
+| `Input Clear Button` | `.bt-input__clear-button` (kendi class'ı) |
+| `Input Advanced Filter Button` (SearchBox) | `.bt-input__filter-button` (kendi class'ı) |
+| `Hint Value` | `.bt-input__hint-value` |
+| `Error Value` | `.bt-input__error-value` (Hint'in modifier'ı DEĞİL — Figma'da bağımsız bir node olduğu için kodda da tamamen ayrı bir class) |
+
+**Prepend/Append Text — YENİ eklenen standart property (2026-09-18):** Daha önce hiçbir Base Input
+component'inde implemente edilmemişti (Figma'da component property olarak var olsa da kod hiç
+kullanmıyordu). Kullanıcı "standart input yapısında olan properties" olduğunu belirtince tüm 4
+component'e birden eklendi — paylaşılan `_biAffixHtml()`/`BI_AFFIX_PROPS` (`pages-web.js`)
+üzerinden: `prepend`/`prependValue`, `append`/`appendValue` (ikisi de `TBX_BOOL_OPTS` desenli
+bağımsız toggle+text, varsayılan Off). Her component'in Overview playground'una eklendi.
+
+**Doğrulama:** `node --check` temiz, CSS brace-denge kontrolü temiz (0). Tarayıcıda: SearchBox'ta
+Prepend/Append Text playground'dan açılıp input içinde doğru render edildiği görüldü; Dropdown'ın
+tıkla-aç/kapa davranışı (`.bt-input__controls:last-child` seçicisi) ve TextBox/SearchBox'ın canlı
+Clear butonu davranışı (`.bt-input__clear-button` seçicisi) çalışır durumda doğrulandı; eski
+"TEXTBOX" sistemini kullanan sayfalar (Select LookUp, MultiSelect, Data Table Toolbar/filtre paneli
+arama kutusu) da görsel regresyon olmadan, konsol hatası vermeden test edildi.
