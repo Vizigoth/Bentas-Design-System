@@ -3176,7 +3176,8 @@ revize edildi:
 | `[Component] Input Class` (kök, dış wrapper) | `.bt-input` (paylaşılan) + `.bt-{component}` (kimlik, örn. `.bt-dateinput`) |
 | `Input Label Value` | `.bt-input__label-value` (içinde `.bt-input__label`) |
 | `[Component] Input` (kutu) | `.bt-input__box` (paylaşılan çekirdek — tek bir Figma node'una değil, "her component'in kendi kutusu" soyut kavramına karşılık gelir, `.bt-input`in kendisiyle aynı mantık) |
-| `Input Controls` (sol/sağ ikon-buton slotu) | `.bt-input__controls` (+ `--button` modifier, Content=Button ailesi için, örn. Dropdown'ın chevron'u) |
+| `Input Controls` (sol/sağ ikon-buton slotu) | `.bt-input__controls` (dış slot — Content=Icon'da ikon doğrudan içinde, Content=Button'da `Input Button` alt katmanını sarmalar) |
+| `Input Button` (Content=Button — Dropdown'ın chevron'u VE Date Picker'ın takvim ikonu AYNI component) | `.bt-input__button` (kendi class'ı, `.bt-input__controls` İÇİNDE nested — `--button` modifier'ı 2026-09-21'de kaldırıldı, bkz. §26.4) |
 | `Input Content` | `.bt-input__content` |
 | `Prepend Text` | `.bt-input__prepend-text` |
 | `Input Value` | `.bt-input__value` |
@@ -3200,3 +3201,175 @@ tıkla-aç/kapa davranışı (`.bt-input__controls:last-child` seçicisi) ve Tex
 Clear butonu davranışı (`.bt-input__clear-button` seçicisi) çalışır durumda doğrulandı; eski
 "TEXTBOX" sistemini kullanan sayfalar (Select LookUp, MultiSelect, Data Table Toolbar/filtre paneli
 arama kutusu) da görsel regresyon olmadan, konsol hatası vermeden test edildi.
+
+---
+
+## 26. Date Picker + Calendar (§24.4'teki açık nokta kapatıldı)
+
+Date Input eklenirken (§24.4) Figma'nın hiçbir field state'inde takvim ikonu render edilmediği
+görülmüş ve bu, ayrı bir gelecek "Date Picker" component'ine bırakılmıştı. Kullanıcı bu oturumda
+Figma'nın "Calender Base Components" (1456:20308), "Calender" (1456:20307) ve "DatePicker"
+(1458:23415) node'larını — properties + nested instance'lar dahil — node-by-node doğrulattı
+(cloud `get_metadata`/`get_design_context`, dosya `hnnWtIvTnz9GRnWVJLU0GG`, 2026-09-21) ve açık
+notu kapattı: **Date Picker = Date Input'un AYNI mimarisi + sol Input Controls'te gerçek bir
+takvim butonu + o butona tıklayınca açılan, Figma'dan doğrulanmış bir Calendar paneli.**
+
+Kullanıcı kararları: Calendar sadece Date Picker'ın içinde yaşıyor (kendi ayrı nav/docs sayfası
+yok); eski `components/date-picker` sayfasının (`.bt-tbx__*` + Figma'dan hiç doğrulanmamış mock
+`.bt-cal` takvimi) içeriği tamamen bu yeni mimariyle değiştirildi (aynı nav id korunuyor); takvim
+tam gerçek davranış taşıyor (ay navigasyonu, Bugün, Day↔Month↔Year↔Decade arası tıklayarak geçiş,
+gün seçince input'a gerçek tarih yazma + panel kapanması); "Date Range Selected" cell state'i
+CSS'te hazır ama JS'te şimdilik uygulanmadı (muhtemel gelecekteki bir Date Range Picker için).
+
+### 26.1 Base Calendar Components — Figma'nın 9 primitifi
+
+`_Base Date Text` (36×36, gün numarası) / `_Base Week-Year-Decade Text` (68×68, ay/yıl/dekad
+hücresi) / `_Base Week Days` (7 sabit gün kısaltması: PZT SL ÇR PR CM CT PZ) / `_Base Calendar
+Header` (sol marka-renkli ay-yıl başlığı + sağ nav grubu — Figma bu grubu "Today" diye
+adlandırmış ama chevron'ları da içeriyor, kodda işlevini yansıtan bir isim kullanıldı) / `_Base
+Body Weeks/Months/Years/Decades` (grid'ler). Kodda Figma'nın "Calendar Cell" wrapper +
+"_Base Date/Period Text" iki katmanı **TEK bir `<button class="bt-calendar__cell">` DOM
+node'unda birleştirildi** — Figma'daki ekstra wrapper sadece component-instance yapısıydı, görsel
+bir katman eklemiyordu (yapısal basitleştirme, görsel fark yok).
+
+### 26.2 Figma'nın gerçek kodunda tespit edilen 2 tutarsızlık — silent bırakılmadı, DÜZELTİLDİ
+
+1. Figma'nın `CalendarBody` render fonksiyonu Month/Year/Decade tipinde de anlamsızca hafta-günü
+   satırını (`_Base Week Days`) render ediyordu. Kodda bu **SADECE Day view'da** render ediliyor.
+2. Figma'nın üst-seviye "Calendar" component'i Week/Month/Year View için `CalendarBody`'yi
+   `type` prop'uyla çağırırken, "Decade View" için AYRI, kopyalanmış bir kod bloğu kullanıyordu
+   (`CalendarBody`'nin `type=Decade` yolunu hiç kullanmıyordu). Kodda tek bir yol var — Decade de
+   diğerleri gibi aynı render fonksiyonundan geçiyor.
+3. `_Base Body Decades` Figma'da sabit "2000" placeholder'lar taşıyordu (gerçek bir dekad
+   artışı wire'lanmamıştı) — kodda gerçek hesaplanan bir yüzyıl penceresi kullanılıyor
+   (`Math.floor(year/100)*100` başlangıçlı, 10'ar yıllık artışla 10 dekad).
+4. "`_Base Month-Year-Decade Title`" primitifi Figma dosyasında tanımlı ama gerçek
+   Calendar/CalendarBody kodunda hiçbir yerde instantiate edilmemiş (**ölü asset**) — Month/Year/
+   Decade view'lar da diğerleriyle AYNI, nav'lı `_Base Calendar Header`'ı paylaşıyor gerçek Figma
+   kodunda; bu yüzden kodda da kullanılmadı.
+5. Calendar Cell'in **Disabled** state'i, **Previous/Next** state'lerinden görsel olarak ayırt
+   edilemiyor (Figma'da üçü de aynı stil: muted text, bg yok) — olduğu gibi bırakıldı, min/max
+   tarih kısıtlaması bu build'in kapsamında değil (CSS hazır, `.bt-calendar__cell:disabled`).
+
+### 26.3 Projenin kendi eklediği davranış — Figma statik mockup, interaksiyon spesifikasyonu yok
+
+Figma'da Calendar sadece görsel bir mockup (state'ler arası gerçek bir tıklama/navigasyon
+tanımı yok). Aşağıdakiler bu projenin kendi makul tamamlaması, silent bırakılmadı:
+
+- **Başlığa tıkla = yukarı drill** (day→month→year→decade, decade'de kalır), **hücreye tıkla =
+  aşağı drill** (decade hücresi→o dekadın year view'ı, year hücresi→o yılın month view'ı, month
+  hücresi→o ayın day view'ı, day hücresi→seçim).
+- **Nav okları (‹ ›)** mevcut view'a göre kayar: Day'de ay, Month'ta yıl, Year'da dekad (±10),
+  Decade'de yüzyıl (±100).
+- **"Bugün"** her zaman `Day` view'a + gerçek bugünkü aya döner (seçili tarihi DEĞİŞTİRMEZ,
+  sadece navigasyon).
+- **Month/Year/Decade view başlık metni** (yıl / dekad aralığı / yüzyıl aralığı) — Figma'nın
+  statik mockup'ı her zaman "Eylül 2026" gösteriyordu, bu view'lara özgü başlıklar yok; kodda
+  `{year}` / `{decadeStart}-{decadeStart+9}` / `{centuryStart}-{centuryStart+90}` üretiliyor.
+- **Year view penceresi** Figma'nın kendi örneğiyle AYNI kural: onluğun BİR ÖNCESİNDEN +8'e
+  (örn. 2026 → 2019-2028, `Math.floor(year/10)*10 - 1` başlangıçlı 10 öğe).
+- **Takvim açılırken input'un mevcut değeri parse ediliyor** — geçerli bir `gg/aa/yyyy` ise
+  panel o tarihin ay/yılına açılıyor (ör. Filled bir input'a tıklayınca takvim o tarihte
+  başlar), geçersiz/boşsa bugüne açılıyor.
+- **Dışarı tıklayınca kapanma** — projede İLK KEZ burada eklenen bir pattern (Dropdown'da yok).
+  Sadece `.bt-datepicker .bt-input__box--active`'ı hedefliyor, Dropdown'ın kendi
+  `.bt-input__box--active`'ına dokunmuyor (global `document` click listener, tek seferlik bind).
+
+### 26.4 Date Picker mimarisi — Date Input'un AYNI çekirdeği + gerçek sol Input Controls
+
+Date Input'tan (§24) TEK fark: sol Input Controls'te gerçek, tıklanabilir bir takvim butonu
+(Figma "Input Button", DatePicker'ın 9 state'inin HEPSİNDE var — Date Input'ta hiç render
+edilmeyen ikonun tam tersi).
+
+**Düzeltme (2026-09-21, aynı oturum, kullanıcı geri bildirimi):** İlk yazımda bu buton "Dropdown'ın
+pasif/dekoratif chevron'undan mimari olarak FARKLI" diye tanımlanıp ayrı, bağlantısız bir
+`.bt-input__button` class'ı eklenmişti (`.bt-input__controls--button` modifier'ına dokunulmadan).
+Kullanıcı düzeltti: Dropdown'ın chevron'u da AYNI Figma component'i — "Input Controls > **Input
+Button** > Icon" (`Content=Button` — Content=Icon'dan, örn. SearchBox'ın arama ikonundan, farklı)
+— DatePicker'ın takvim butonuyla BİREBİR aynı building-block, sadece ikon farklı. Tek fark
+component'in tıklamayı NEREYE bağladığı: Dropdown tüm `.bt-input__box`'a bağlıyor (chevron kendi
+başına tıklanamaz ama box'ın hover/focus/active'i onu da aydınlatmalı), Date Picker butonun
+kendisine bağlıyor (kendi `:hover`'ı da çalışmalı). **Sonuç:** `.bt-input__controls--button`
+modifier'ı kaldırıldı, TEK class (`.bt-input__button`) hem box-seviyesi hem kendi `:hover`'ını
+kapsayacak şekilde birleştirildi — Dropdown'ın `_ddBaseInner`/`ddBaseCode`'u da bu class'a
+taşındı (`.bt-input__controls > .bt-input__button > .bt-icon` — Date Picker'la AYNI iç
+hiyerarşi). `add-input` skill'ine bu ayrım (`--button` modifier YOK artık, tek `.bt-input__button`
+class'ı + ne zaman box-wide ne zaman self-hover gerektiği) kalıcı referans olarak eklendi.
+
+**İkinci düzeltme (aynı gün, kullanıcı "bunu sana daha önce de incelettirmiştim ama şimdi tekrar
+incele" diyerek master "Input Controls" component set'ini — node `1283:3651`, Position=Left/Right
+× Content=Button/Icon × Type=Search/Dropdown/Select/Date/Counter/Icon × Size=sm/md/lg ×
+State=Default/Hover/Active/Selected/Disabled — yeniden inceletti):** İlk birleştirmede Hover VE
+Active/box-wide-active AYNI `--bt-base-subtle` rengine bağlanmıştı. Master set'ten Content=Button/
+Type=Date'in 5 state'i tek tek çekilince gerçek tablo ortaya çıktı: **Default** bg yok, **Hover**
+`--bt-base-subtle` (#f5f5f5), **Active** `--bt-base-muted` (#e6e6e6 — Hover'dan KOYU, farklı
+token), **Selected** Active'le GÖRSEL OLARAK AYNI (#e6e6e6, şu an hiçbir component'te wire'lı
+değil — muhtemel bir gelecek Type=Select/Counter kullanımı için ayrılmış), **Disabled** bg yok.
+Type=Dropdown'ın kendi Hover'ı da ayrıca doğrulandı — Type=Date'inkiyle BİREBİR aynı `--bt-base-
+subtle`, yani Dropdown/Date Picker arasında renk tutarlılığı zaten doğruydu, sadece Active'in
+kendi rengi yanlıştı. Content=Icon'un (dekoratif, örn. SearchBox'ın arama ikonu) Hover state'i de
+ayrıca doğrulandı: Default'la BİREBİR AYNI kod çıktı — yani gerçekten state'siz, ilk varsayım
+doğruydu. **Düzeltme:** `.bt-input__button`'ın box-wide `.bt-input__box--active` tetikleyicisi
+artık `--bt-base-muted`'a bağlı (Hover/focus-within hâlâ `--bt-base-subtle`), ayrıca ileride bir
+component'in doğrudan "basılı/seçili" bir buton state'i göstermesi gerekirse diye
+`.bt-input__button--selected` modifier'ı da eklendi (şu an inert, hiçbir yerde kullanılmıyor).
+
+**Üçüncü düzeltme (aynı gün, aynı oturum, kullanıcı geri bildirimi — "bt input control statelerinde
+hover state'inde sanki içerisindeki buton state alıyor gibi etrafında boşluklu şekilde geliyor...
+bt input button içerisinde padding var evet ama bt input controlde böyle bir padding yok"):** Bu
+oturumun kendi `get_design_context` çıktısında (yukarıdaki `InputButton`/`InputControls` React
+kodu) açıkça görülüyordu — `InputControls`'ün kendisi HER ZAMAN `p-[spacing-none,0px]` (padding
+yok), boyuta göre değişen padding (`p-[spacing-2xs,4px]` sm'de) `InputButton`'ın ÜZERİNDE — ama bu
+gözlemlenip "görsel olarak fark etmez" diye YANLIŞ gerekçeyle padding yine de `.bt-input__controls`'a
+yazılmış, `.bt-input__button` da bunu doldurmak için `width/height:100%` kullanmıştı. Gerçekte fark
+ediyordu: `width/height:100%`, auto-boyutlu bir flex parent'ın (`.bt-input__controls`, sabit
+width/height'ı olmayan) child'ında `auto`'ya çözülüyor — yani buton kendi içerik boyutuna (24×24
+ikon) küçülüyor, Controls'ün padding'i ise butonun DIŞINDA, hover/active renklendirmesinin
+KAPSAMADIĞI boş bir çerçeve olarak kalıyordu (kullanıcının tarif ettiği "boşluklu görünüm"). **Kalıcı
+düzeltme:** `.bt-input__controls` artık boyuta göre SABİT bir kare kutu (28/32/36px, hiç padding
+yok — Content=Icon'un dekoratif kullanımıyla BİREBİR Figma'daki gibi); `.bt-input__button` kendi
+padding'ini taşıyor (2xs/xs/sm, `width/height:100%` KALDIRILDI) — padding + 24×24 ikon toplamı zaten
+Controls'ün sabit kutusuyla birebir eşleşiyor (2+24+2=28, 4+24+4=32, 6+24+6=36), bu yüzden hover/
+active rengi artık Controls'ün tam kare alanını kenara kadar dolduruyor, boşluk kalmıyor. SearchBox'ın
+dekoratif arama ikonu da (Content=Icon, aynı `.bt-input__controls`'u kullanıyor) bu değişiklikten
+GÖRSEL OLARAK etkilenmedi — flex-centered 24×24 ikon, sabit 28/32/36 kutu içinde, padding'le aynı
+matematiksel sonucu (kenarlardan 2/4/6px) üretiyor. `docs/css/styles.css`, SearchBox'ın CSS-tab
+üretici fonksiyonu ve Class Reference metni (`docs/js/pages-web.js`), `add-input` skill'i
+güncellendi.
+
+Content padding Dropdown'ın "sağ control" deseninin AYNASI: sol control var → sol `--bt-space-xs`
+(4px), sağ sabit `--bt-space-md` (8px) — Date Input'un "her iki yanda sabit 8px" kuralından
+FARKLI (Date Input'ta hiç control yok).
+
+Value TextBox/Date Input'la AYNI gerçek maskelenmiş `<input>` (Dropdown'ın statik `<span>`'inden
+FARKLI — Date Picker hem yazarak hem takvimden seçerek doldurulabilir); `_dtiFormatDateMask`
+(§24.6) AYNEN reuse edildi, ayrı bir maskeleme implementasyonu yazılmadı.
+
+**9 state tablosu** (sm boyutu, Figma'da TEK TEK doğrulandı — Date Input'tan FARKLI olarak temiz
+bir `isFilled`/`isError`/`isReadOnly`/`isDisabled` boolean setine indirgeniyor, `DP_STATE_CONFIG`
+`pages-web.js`'te):
+
+| State | Border | BG | Value | Clear | Validation |
+|---|---|---|---|---|---|
+| Default | primary-default | white | muted | – | – |
+| Hover | brand-default | white | muted | – | – |
+| Focus | brand-default | white | muted | – | – |
+| Active | brand-default | white | koyu | – | – |
+| Filled | primary-default | white | koyu | var | – |
+| Disabled | primary-default | base-subtle | muted | – | – |
+| Read Only | primary-default | base-subtle | koyu | – | – |
+| Error | error-default | white | koyu | – | var |
+| Error Focus | error-default | white | koyu | – | var |
+
+Error/Error Focus'ta **Label rengi de** error'a döner — bu davranış `.bt-input--error
+.bt-input__label` kuralından zaten paylaşılan (Date Input'un playground'unda görülmemişti çünkü
+o sayfa bu kuralı tetiklememiş, kural TextBox'la birlikte zaten vardı).
+
+### 26.5 Doğrulama
+
+`node --check docs/js/pages-web.js` temiz, CSS brace-denge kontrolü temiz (0). Tarayıcıda:
+`components/date-picker` sayfasında sm/md/lg × 9 state gezildi; Default state'te takvim ikonuna
+tıklayınca panelin açıldığı, ‹›/Bugün navigasyonunun çalıştığı, başlığa tıklayıp Month→Year→
+Decade'e çıkıp bir dekad→yıl→ay→gün seçerek geri Day view'a inildiği, seçilen günün input'a
+`gg/aa/yyyy` olarak yazıldığı ve panelin kapandığı, dışarı tıklayınca da kapandığı, Clear/Error/
+Disabled/Read Only state'lerinin doğru göründüğü ve konsol hatası olmadığı doğrulandı.

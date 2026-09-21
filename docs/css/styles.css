@@ -3980,7 +3980,20 @@ pre.code-block.line-numbers {
 /* — Input Controls (Figma "Input Controls" — leading/trailing ikon-buton slotu,
    solda VEYA sağda konumlanabilen TEK reusable component; Validation/Clear/Filter
    FARKLI Figma component'leri olduğu için AŞAĞIDA kendi class'larını taşır,
-   burada modifier değiller — bkz. HISTORY.md 2026-09-18) — */
+   burada modifier değiller — bkz. HISTORY.md 2026-09-18).
+
+   DÜZELTME (2026-09-21, kullanıcı geri bildirimi — "bt input control içerisinde
+   padding atmışsın, bu böyle değil, bt input button içerisinde padding var evet
+   ama bt input controlde böyle bir padding yok"): Figma'nın kendi kodu (master
+   "Input Controls" set, node 1283:3651) net: Input Controls'ün KENDİSİ hiçbir
+   zaman padding taşımıyor — Content=Icon'da (dekoratif, örn. SearchBox'ın arama
+   ikonu) sabit bir kare kutu (28/32/36px, boyuta göre), Content=Button'da ise
+   İÇERİDEKİ "Input Button" kendi padding'ini taşıyor (aşağıya bkz.). Önceki
+   yazımda padding yanlışlıkla BURAYA (Controls'e) konmuştu — bu, Content=Button
+   durumunda `.bt-input__button`'ın (width/height:100% ile) Controls'ün padding'i
+   KADAR küçük kalıp hover renginin etrafında boşluklu görünmesine (gerçek
+   tıklanabilir/hover alanının Controls'ün tam kare alanını doldurmaması) yol
+   açıyordu. Artık Controls SADECE sabit boyutlu, padding'siz bir kutu. */
 .bt-input__controls {
   flex-shrink: 0;
   display: flex;
@@ -3989,20 +4002,60 @@ pre.code-block.line-numbers {
   box-sizing: border-box;
   color: var(--bt-icon-primary-strong, #535353);
 }
-.bt-input__box--sm .bt-input__controls { padding: var(--bt-space-2xs, 2px); }
-.bt-input__box--md .bt-input__controls { padding: var(--bt-space-xs, 4px); }
-.bt-input__box--lg .bt-input__controls { padding: var(--bt-space-sm, 6px); }
+.bt-input__box--sm .bt-input__controls { width: 28px; height: 28px; }
+.bt-input__box--md .bt-input__controls { width: 32px; height: 32px; }
+.bt-input__box--lg .bt-input__controls { width: 36px; height: 36px; }
 .bt-input__box--disabled .bt-input__controls { color: var(--bt-icon-primary-muted, #a3a3a3); }
-/* Input Button (Content=Button, örn. Dropdown'ın chevron'u) — Content=Icon'dan
-   (SearchBox'ın leading arama ikonu gibi) FARKLI: hover/focus'ta arka plan
-   dolgusu alır (Figma'da doğrulandı — Dropdown node 1320:141221, ikon rengi
-   DEĞİŞMİYOR, sadece bg). Dropdown ile eklendi, TextBox/SearchBox'ta kullanılmıyor
-   (inert) ama Content=Button taşıyan her gelecekteki control için hazır. */
-.bt-input__box:not(.bt-input__box--disabled):hover .bt-input__controls--button,
-.bt-input__box:not(.bt-input__box--disabled):focus-within .bt-input__controls--button,
-.bt-input__box--active .bt-input__controls--button {
+
+/* Input Button (Figma master component set "Input Controls", node 1283:3651 —
+   Position=Left/Right × Content=Button/Icon × Type=Search/Dropdown/Select/Date/
+   Counter/Icon × Size=sm/md/lg × State=Default/Hover/Active/Selected/Disabled,
+   node-by-node re-doğrulandı 2026-09-21). Input Controls iki farklı içerik
+   taşıyabilir: dekoratif bir ikon (Content=Icon, örn. SearchBox'ın arama ikonu —
+   TÜM state varyantları GÖRSEL OLARAK ÖZDEŞ, yani gerçekte state'siz, hiçbir class
+   almaz) VEYA bu "Input Button" component'i (Content=Button — Dropdown'ın
+   chevron'u, Date Picker'ın takvim ikonu; Type farklı ama İKİSİ DE AYNI Input
+   Button component'i, sadece ikon farklı). Input Button 5 gerçek state taşır:
+   - Default: bg yok
+   - Hover: bg `--bt-base-subtle` (#f5f5f5)
+   - Active: bg `--bt-base-muted` (#e6e6e6) — Hover'dan KOYU, AYNI renk DEĞİL
+     (önceki yazımda ikisi yanlışlıkla aynı subtle rengine birleştirilmişti)
+   - Selected: bg `--bt-base-muted` (#e6e6e6) — Active'le GÖRSEL OLARAK AYNI
+     (Dropdown List Item'ın Active/Selected'ıyla aynı ilke) — şu an hiçbir
+     tüketen component'te ayrıca WIRE'lanmıyor, gelecekte bir Type=Select/Counter
+     component'i (örn. bir stepper +/- butonunun "basılı" hali) kullanabilir
+   - Disabled: bg yok (rengi `.bt-input__box--disabled .bt-input__controls`'tan miras alır)
+   Tüketen component tıklamayı NEREYE bağladığına göre tetikleyici değişir:
+   Dropdown tüm `.bt-input__box`'a bağlıyor (chevron kendi başına tıklanamaz, ama
+   box'ın hover/focus-within/active'i onu da aydınlatmalı), Date Picker butonun
+   kendisine bağlıyor (kendi ":hover"ı da çalışmalı) — TEK class (`.bt-input__button`)
+   her iki tetikleyiciyi de kapsıyor, iki ayrı class icat edilmedi (kullanıcı
+   düzeltmesi, 2026-09-21 — bkz. design.md "Date Picker" §26.4, add-input skill). */
+.bt-input__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--bt-radius-sm, 4px);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.bt-input__box--sm .bt-input__button { padding: var(--bt-space-2xs, 2px); }
+.bt-input__box--md .bt-input__button { padding: var(--bt-space-xs, 4px); }
+.bt-input__box--lg .bt-input__button { padding: var(--bt-space-sm, 6px); }
+.bt-input__button:hover,
+.bt-input__box:not(.bt-input__box--disabled):hover .bt-input__button,
+.bt-input__box:not(.bt-input__box--disabled):focus-within .bt-input__button {
   background: var(--bt-base-subtle, #f5f5f5);
 }
+.bt-input__button--selected,
+.bt-input__box--active .bt-input__button {
+  background: var(--bt-base-muted, #e6e6e6);
+}
+.bt-input__button:disabled { cursor: not-allowed; }
 
 /* — Clear Button / Filter Button (Figma "Input Clear Button" / "Input Advanced
    Filter Button" — Input Controls'tan AYRI component'ler, kendi Default/Hover/
@@ -4120,6 +4173,18 @@ pre.code-block.line-numbers {
 .bt-dateinput .bt-input__box--sm .bt-input__content { padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px); }
 .bt-dateinput .bt-input__box--md .bt-input__content { padding: var(--bt-space-md, 8px) var(--bt-space-md, 8px); }
 .bt-dateinput .bt-input__box--lg .bt-input__content { padding: var(--bt-space-lg, 10px) var(--bt-space-md, 8px); }
+
+/* ════════════════════════════════════════════════════════════════
+   DATE PICKER (Base Input) — .bt-datepicker ata seçicisi. Date Input'un
+   AYNI çekirdeği + gerçek Figma "DatePicker" node'undan (1458:23415)
+   doğrulanmış SOL Input Controls (takvim ikon butonu, her state'te var —
+   Date Input'ın aksine). Content padding Dropdown'ın "sağ control" deseninin
+   AYNASI: sol control olduğu için sol xs(4px), sağ sabit md(8px). Dikey
+   sm/md/lg=6/8/10, aynı ölçek.
+   ════════════════════════════════════════════════════════════════ */
+.bt-datepicker .bt-input__box--sm .bt-input__content { padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px) var(--bt-space-sm, 6px) var(--bt-space-xs, 4px); }
+.bt-datepicker .bt-input__box--md .bt-input__content { padding: var(--bt-space-md, 8px) var(--bt-space-md, 8px) var(--bt-space-md, 8px) var(--bt-space-xs, 4px); }
+.bt-datepicker .bt-input__box--lg .bt-input__content { padding: var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-lg, 10px) var(--bt-space-xs, 4px); }
 
 /* ════════════════════════════════════════════════════════════════
    TEXTBOX
@@ -4599,110 +4664,152 @@ pre.code-block.line-numbers {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   DATE PICKER CALENDAR PANEL — bt-cal-*
+   CALENDAR — bt-calendar-* (Date Picker'ın açılır paneli)
+   Figma "Calender Base Components" (1456:20308) + "Calender" (1456:20307)
+   node-by-node doğrulandı (2026-09-21). Panel 272px sabit genişlik (input'un
+   kendi genişliğinden BAĞIMSIZ — Dropdown'ın listesi gibi input'a yayılmıyor),
+   Shadow/md + input'tan 4px boşluk, Dropdown List paneliyle AYNI z-index:200
+   deseni. Day/Month/Year/Decade 4 view arası "başlığa tıkla = yukarı çık,
+   hücreye tıkla = aşağı in" navigasyonu JS tarafında (bkz. pages-web.js
+   "Calendar" bölümü) — Figma statik mockup olduğu için bu interaksiyon
+   projenin kendi makul varsayımı, design.md'de böyle işaretli.
+
+   Figma'nın kendi kodunda 2 tutarsızlık DÜZELTİLDİ (silent değil, design.md'de
+   açık not): (1) Month/Year/Decade body'lerinde de anlamsızca haftagünü satırı
+   render ediliyordu — burada SADECE Day view'da var. (2) "_Base Month-Year-
+   Decade Title" primitifi Figma'da tanımlı ama gerçek Calendar/CalendarBody
+   kodunda hiç instantiate edilmemiş (ölü asset) — kullanılmadı, tüm view'lar
+   AYNI Calendar Header'ı (nav okları + Bugün ile) paylaşıyor.
    ════════════════════════════════════════════════════════════════ */
 
-.bt-cal {
+.bt-calendar {
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
-  margin-top: 2px;
+  margin-top: var(--bt-space-xs, 4px);
   z-index: 200;
-  background: var(--bt-surface-primary-default, #ffffff);
+  width: 272px;
+  box-sizing: border-box;
+  background: var(--bt-base-default, #ffffff);
   border-radius: var(--bt-radius-sm, 4px);
-  box-shadow: var(--bt-shadow-lg, 0 4px 6px rgba(16,24,40,0.031), 0 12px 16px rgba(16,24,40,0.078));
-  width: 274px;
+  box-shadow: var(--bt-shadow-md, 0 2px 4px rgba(16,24,40,0.06), 0 4px 8px rgba(16,24,40,0.10));
   overflow: hidden;
   user-select: none;
-  margin-top: 2px;
 }
 
-/* — Header — */
-.bt-cal__header {
+/* — Header (Figma "_Base Calendar Header") — sol: ay/yıl/dekad başlığı
+   (tıklanınca yukarı drill), sağ: ‹ / Bugün / › (Figma bu grubu "Today" diye
+   adlandırmış ama chevron'ları da içeriyor — kod ismi işlevini yansıtıyor,
+   design.md'de bu Figma-isim tutarsızlığı not edildi). — */
+.bt-calendar__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--bt-space-xs, 4px);
+  padding: var(--bt-space-md, 8px);
 }
-
-.bt-cal__month-btn {
+.bt-calendar__title {
   background: none;
   border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: var(--bt-space-sm, 6px);
-  padding: var(--bt-space-2xs, 2px) var(--bt-space-xs, 4px);
+  padding: var(--bt-space-xs, 4px) var(--bt-space-md, 8px);
   border-radius: var(--bt-radius-sm, 4px);
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-brand-default, #0d4e97);
   font-family: inherit;
+  white-space: nowrap;
 }
-.bt-cal__month-btn:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
-
-.bt-cal__nav { display: flex; align-items: center; }
-
-.bt-cal__nav-btn {
+.bt-calendar__title:hover { background: var(--bt-primary-subtle, #e2edfc); }
+.bt-calendar__nav { display: flex; align-items: center; }
+.bt-calendar__nav-btn,
+.bt-calendar__today-btn {
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  padding: var(--bt-space-xs, 4px);
   border-radius: var(--bt-radius-sm, 4px);
-  color: var(--bt-text-primary-default, #1a1a1a);
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
   font-family: inherit;
+  white-space: nowrap;
 }
-.bt-cal__nav-btn--today { width: auto; padding: var(--bt-space-sm, 6px) 12px; }
-.bt-cal__nav-btn:hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
+.bt-calendar__nav-btn:hover,
+.bt-calendar__today-btn:hover { background: var(--bt-base-emphasis, #d4d4d4); }
 
-/* — Body — */
-.bt-cal__body {
-  width: 266px;
-  margin: 0 auto;
-  padding-bottom: var(--bt-space-xs, 4px);
-}
-
-.bt-cal__weekdays,
-.bt-cal__week {
+/* — Weekdays (Figma "_Base Week Days") — SADECE Day view'da, bkz. yukarıdaki not. — */
+.bt-calendar__weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  padding: 0 var(--bt-space-md, 8px);
 }
-
-.bt-cal__weekday {
+.bt-calendar__weekday {
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
-  color: var(--bt-text-primary-emphasis, #727272);
+  color: var(--bt-text-primary-strong, #535353);
 }
 
-/* — Day cells — */
-.bt-cal__day {
-  height: 36px;
+/* — Body / rows (Figma "Calendar Body" + "Row") — Day view 7 sütun, Month/
+   Year/Decade 4 sütun. — */
+.bt-calendar__body { padding-bottom: var(--bt-space-xs, 4px); }
+.bt-calendar__row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 var(--bt-space-md, 8px);
+}
+.bt-calendar__row--period { grid-template-columns: repeat(4, 1fr); }
+
+/* — Calendar Cell (Figma "Calendar Cell" + "_Base Date Text"/"_Base
+   Week-Year-Decade Text" tek bir DOM node'unda birleştirildi — Figma'daki
+   ekstra wrapper sadece component-instance yapısıydı, görsel bir katman
+   eklemiyordu). Gerçek <button> — klavye erişilebilir, :hover/:disabled/
+   :focus-visible native. — */
+.bt-calendar__cell {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: var(--bt-radius-sm, 4px);
+  background: none;
   cursor: pointer;
+  box-sizing: border-box;
   font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
   color: var(--bt-text-primary-default, #1a1a1a);
 }
-.bt-cal__day--other-month { color: var(--bt-text-primary-emphasis, #727272); }
-.bt-cal__day:not(.bt-cal__day--selected):hover { background: var(--bt-surface-primary-subtle, #f5f5f5); }
-.bt-cal__day--selected {
+.bt-calendar__cell--day { width: 36px; height: 36px; }
+.bt-calendar__cell--period { width: 68px; height: 68px; }
+.bt-calendar__cell:hover:not(:disabled):not(.bt-calendar__cell--selected) {
+  background: var(--bt-base-subtle, #f5f5f5);
+}
+.bt-calendar__cell--current {
+  background: var(--bt-base-muted, #e6e6e6);
+  border-color: var(--bt-border-primary-default, #d4d4d4);
+}
+.bt-calendar__cell--selected {
   background: var(--bt-primary-default, #0d4e97);
   color: var(--bt-text-primary-inverted, #ffffff);
 }
-.bt-cal__day--in-range {
+/* Date Range Selected — CSS hazır, JS'te şimdilik uygulanmıyor (bkz. design.md,
+   muhtemel gelecekteki bir Date Range Picker component'i için ayrılmış). */
+.bt-calendar__cell--range-selected {
   background: var(--bt-primary-subtle, #e2edfc);
   border-radius: 0;
-  color: var(--bt-text-primary-default, #1a1a1a);
+}
+.bt-calendar__cell--previous,
+.bt-calendar__cell--next,
+.bt-calendar__cell:disabled {
+  color: var(--bt-text-primary-muted, #a3a3a3);
+}
+.bt-calendar__cell:disabled { cursor: not-allowed; }
+.bt-calendar__cell:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(114,114,114,0.25);
 }
 
 /* ════════════════════════════════════════════════════════════════

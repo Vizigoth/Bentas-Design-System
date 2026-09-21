@@ -110,6 +110,31 @@ Playground config standartları (prop.group, boolean toggle, preview centering, 
 
 ## Son Tamamlanan Component
 
+**Date Picker + Calendar** — 2026-09-21 (`components/date-picker`, Inputs grubu — Date Input'un
+§24.4'teki açık noktası kapatıldı: DatePicker = Date Input'un AYNI mimarisi + sol Input
+Controls'te gerçek bir takvim butonu + o butona tıklayınca açılan, Figma'dan doğrulanmış bir
+Calendar paneli). Figma "Calender Base Components" (1456:20308) + "Calender" (1456:20307) +
+"DatePicker" (1458:23415) node-by-node doğrulandı (properties + nested instance'lar dahil).
+Calendar sadece Date Picker'ın içinde yaşıyor (ayrı nav/docs sayfası yok); eski
+`components/date-picker`'ın `.bt-tbx__*` + Figma'dan hiç doğrulanmamış mock `.bt-cal` takvimi
+TAMAMEN yeni mimariyle değiştirildi; takvim tam gerçek davranış taşıyor (ay navigasyonu, Bugün,
+Day↔Month↔Year↔Decade arası tıklayarak geçiş, gün seçince input'a gerçek tarih yazma + panel
+kapanması). Figma'nın kendi kodundaki 2 tutarsızlık (Month/Year/Decade'de gereksiz haftagünü
+satırı, Decade View'ın CalendarBody'yi bypass eden kopya kodu) silent bırakılmadan düzeltildi.
+Yeni `.bt-input__button` class'ı (Figma "Input Controls > Input Button" — Dropdown'ın chevron'u
+VE Date Picker'ın takvim ikonu AYNI component, sadece tıklama farklı yere bağlı; kullanıcı
+düzeltmesiyle `--button` modifier'ı bununla birleştirildi, Dropdown'ın kendi kodu da bu class'a
+taşındı, bkz. aşağıdaki oturum notu) ve dışarı-tıklayınca-kapanma pattern'i (projede ilk kez,
+sadece `.bt-datepicker`'ı etkiliyor) eklendi. Detay: `design.md` §26 (GÜNCEL/NİHAİ referans — tüm
+açık notlar/varsayımlar dahil).
+
+**Düzeltme (aynı gün, devam):** `.bt-input__button` ilk yazımda Dropdown'ın chevron'undan "mimari
+olarak farklı" sayılıp `.bt-input__controls--button` modifier'ına dokunulmamıştı — kullanıcı
+düzeltti: ikisi AYNI Figma component'i (Content=Button), tek fark tıklamanın box'a mı butona mı
+bağlı olduğu. `--button` modifier'ı kaldırılıp TEK `.bt-input__button` class'ında birleştirildi
+(hem kendi hover'ı hem box-seviyesi hover/focus/active tetiklemesi aynı anda), Dropdown'ın kendi
+kodu da buna taşındı. `add-input` skill'i bu ayrımı kalıcı referans olarak içeriyor artık.
+
 **Base Input çekirdeği — iç katman rename + Prepend/Append Text** — 2026-09-18 (SearchBox/TextBox/Dropdown/Date Input'un TAMAMINI etkileyen çekirdek revizyon, Date Input eklendikten hemen sonra aynı oturumda). Kullanıcı, önceden üzerinde anlaşılan Figma input hiyerarşisiyle kodu karşılaştırınca `.bt-input__meta`/`.bt-input__field`/`.bt-input__control`(+modifier'ları)/`.bt-input__hint--error` gibi isimlerin Figma'da karşılığı olmayan, icat edilmiş isimler olduğunu fark etti (CLAUDE.md'nin kendi kuralıyla çelişiyordu) — tam class tablosu için bkz. yukarıdaki "Base Input çekirdeğinin İÇ katmanları da Figma isimlerine tam taşındı" ve `design.md` §25 (GÜNCEL/NİHAİ referans). Aynı oturumda, daha önce hiç implemente edilmemiş **Prepend Text / Append Text** (standart Base Input property'leri) tüm 4 component'e eklendi. Tarayıcıda doğrulandı (SearchBox'ta canlı Prepend/Append toggle, Dropdown'ın aç/kapa davranışı, Clear butonu davranışı, eski "TEXTBOX" sistemini kullanan sayfalarda (Select LookUp/MultiSelect/Data Table) regresyon olmadığı) — konsol hatası yok, commit'lenmedi.
 
 **Date Input** — 2026-09-18 (`components/date-input`, Inputs grubu, Base Input geçiş programının 4. adımı — SearchBox→TextBox→Dropdown'dan sonra). Figma "Date Inputs" sayfası (`_Base DateInput` + `DateInput`, sm/md/lg × 9 state) node-by-node Desktop Bridge ile doğrulandı. TextBox'la aynı mimari (gerçek `<input>`) ama Content yatay padding'i her iki yanda sabit 8px (TextBox'ın sağ-4px kuralından farklı) ve state davranışı basit boolean'lara indirgenemediği için açık bir `DTI_STATE_CONFIG` tablosuyla uygulandı. **Açık nokta:** Figma'nın field state'lerinde takvim ikonu (Input Controls) hiç görünmüyor — muhtemelen ayrı bir gelecek "Date Picker" component'ine ait, ikon eklenmeden bırakıldı, kullanıcı onayı bekliyor (design.md §24.4). Bu oturumda ayrıca kullanıcı tüm input component'leri için genel bir standart Figma/kod hiyerarşisi tanımladı (Label Value / [Component] Input → Input Controls(left) + Content[Prepend/Value/Append] + Validation + Clear Button + Input Controls(right) / Hint Value / Error Value) — bundan sonraki her input component'i (Select LookUp/MultiSelect/Date Picker/Textarea vb.) bu standarda göre kurulacak.

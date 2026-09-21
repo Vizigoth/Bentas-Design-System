@@ -2861,8 +2861,9 @@ function sbxCss(state, props = {}) {
 
   lines.push('');
   lines.push('.bt-input__controls {');
-  const ctrlPad = size === 'md' ? 'var(--bt-space-xs)  /* 4px */' : size === 'lg' ? 'var(--bt-space-sm)  /* 6px */' : 'var(--bt-space-2xs)  /* 2px */';
-  lines.push(p('padding', ctrlPad));
+  const ctrlSize = size === 'md' ? '32px' : size === 'lg' ? '36px' : '28px';
+  lines.push(p('width', ctrlSize));
+  lines.push(p('height', ctrlSize));
   lines.push('}');
 
   if (filled || advanced) {
@@ -2968,7 +2969,7 @@ PAGES_WEB['components/searchbox'] = {
           <tr><td>${tk('.bt-searchbox')}</td><td>Wrapper</td><td>SearchBox kimliği — aynı elementte ${tk('.bt-input__box')} ile birlikte kullanılır, kendi görsel CSS'i yok</td></tr>
           <tr><td>${tk('.bt-input__box--sm/--md/--lg')}</td><td>Wrapper</td><td>Yükseklik ve iç padding'leri belirler</td></tr>
           <tr><td>${tk('.bt-input__box--hover/--active/--disabled')}</td><td>Wrapper</td><td>State'i zorlamak için (docs amaçlı) — gerçek kullanımda :hover/:focus-within otomatik çalışır</td></tr>
-          <tr><td>${tk('.bt-input__controls')}</td><td>İkon kutusu (leading)</td><td>Boyuta göre padding alır, içine her zaman ${tk('.bt-icon')} konur</td></tr>
+          <tr><td>${tk('.bt-input__controls')}</td><td>İkon kutusu (leading)</td><td>Boyuta göre sabit kare kutu (28/32/36px, padding DEĞİL — Figma "Input Controls" hiçbir padding taşımaz), içine her zaman ${tk('.bt-icon')} konur</td></tr>
           <tr><td>${tk('.bt-input__clear-button')} / ${tk('.bt-input__filter-button')}</td><td>İkon kutusu (trailing)</td><td>Kendi CSS'i olan bağımsız class'lar (modifier DEĞİL) — sırasıyla Figma "Input Clear Button" / "Input Advanced Filter Button" component'ine karşılık gelir; boyuttan bağımsız sabit padding + cursor:pointer ikisinde de baştan gelir</td></tr>
           <tr><td>${tk('.bt-icon')}</td><td>İkon</td><td>Global 24×24 ikon sarmalayıcı, içindeki svg 16×16'ya zorlanır</td></tr>
           <tr><td>${tk('.bt-input__content')}</td><td>Input sarmalayıcı</td><td>flex:1, size'a göre padding — Figma "Content" katmanı</td></tr>
@@ -4913,7 +4914,7 @@ function _ddBaseInner(state, opts = {}) {
   const chevronIcon = opts.open ? ddBaseIconChevronUp : ddBaseIconChevronDown;
   return `
         <div class="bt-input__content">${prependHtml}<span class="bt-input__value" style="color:${textColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Placeholder Text</span>${cursorHtml}${appendHtml}</div>${validationHtml}${clearHtml}
-        <div class="bt-input__controls bt-input__controls--button"><span class="bt-icon">${chevronIcon}</span></div>`;
+        <div class="bt-input__controls"><div class="bt-input__button"><span class="bt-icon">${chevronIcon}</span></div></div>`;
 }
 
 // Default state'in canlı tıkla-aç/kapa davranışı — btDdToggle'ın YENİ Base
@@ -4989,8 +4990,10 @@ function ddBaseCode(state, props = {}) {
   <div class="bt-input__content">${prependBlock}
     <span class="bt-input__value">Placeholder Text</span>${appendBlock}
   </div>${valBlock}${clearBlock}
-  <div class="bt-input__controls bt-input__controls--button">
-    <!-- Lucide ${isActive ? 'chevron-up' : 'chevron-down'} -->
+  <div class="bt-input__controls">
+    <div class="bt-input__button">
+      <!-- Lucide ${isActive ? 'chevron-up' : 'chevron-down'} -->
+    </div>
   </div>
 </div>${optionsBlock}${hintBlock}${errorBlock}`;
 
@@ -5141,7 +5144,7 @@ PAGES_WEB['components/dropdown'] = {
           <tr><td>${tk('.bt-input__content')}</td><td>Metin bölgesi</td><td>Seçili değer veya placeholder ${tk('&lt;span&gt;')}'ını içerir (Dropdown gerçek ${tk('&lt;input&gt;')} kullanmaz)</td></tr>
           <tr><td>${tk('.bt-input__validation')}</td><td>İkon sarmalayıcı</td><td>Error/Error Focused'da circle-alert — padding yok, sabit 24×24</td></tr>
           <tr><td>${tk('.bt-input__clear-button')}</td><td>İkon sarmalayıcı</td><td>Filled'da × ikonu — SearchBox/TextBox'la AYNI class</td></tr>
-          <tr><td>${tk('.bt-input__controls--button')}</td><td>Chevron sarmalayıcı</td><td>Content=Button (Figma "Input Button") — hover/focus/active'te ${tk('--bt-base-subtle')} arka plan dolgusu alır; Content=Icon'dan (SearchBox'ın arama ikonu gibi) farkı budur</td></tr>
+          <tr><td>${tk('.bt-input__button')}</td><td>Chevron sarmalayıcı</td><td>Figma "Input Controls &gt; Input Button" (Content=Icon'dan, örn. SearchBox'ın arama ikonundan, farkı budur) — Hover/focus'ta ${tk('--bt-base-subtle')} (#f5f5f5), box AÇIKKEN (${tk('.bt-input__box--active')}) ${tk('--bt-base-muted')} (#e6e6e6, Hover'dan KOYU) arka plan alır. Date Picker'ın takvim butonuyla AYNI class — Dropdown'da tıklama box'a bağlı olduğu için box-hover/active'te de aydınlanır, Date Picker'da butonun kendi hover'ı da ayrıca çalışır</td></tr>
           <tr><td>${tk('.bt-input__hint-value')}</td><td>Hint metni</td><td>color: --bt-text-primary-emphasis</td></tr>
           <tr><td>${tk('.bt-input__error-value')}</td><td>Error metni</td><td>color: --bt-text-error-default — Hint ile birlikte de gösterilebilir</td></tr>
         </tbody>
@@ -5185,7 +5188,7 @@ PAGES_WEB['components/dropdown'] = {
       <p class="page-desc">Listeden tek seçim yapılan dropdown bileşeni, Base Input çekirdeğinin (${tk('.bt-input__box')}) üzerine kurulur. Label, Hint Text ve Error Text ile birleşik yapı — üçü de bağımsız gösterilebilir/gizlenebilir ve düzenlenebilir; 3 boyut (Sm/Md/Lg, varsayılan Md) ve 9 state sunar. Default state'te kutuya tıklayınca seçenek paneli gerçekten açılır, chevron down↔up döner.</p>
 
       <h2 id="Anatomy">Anatomy</h2>
-      <p class="page-desc">Dropdown'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ından gelir — TextBox'la aynı, TEK fark sağda her zaman görünen chevron ${tk('.bt-input__controls--button')}'ı (Figma "Input Button", hover'da arka plan dolgusu alır). Value her zaman bir ${tk('&lt;span&gt;')} — Dropdown gerçek metin girişi almıyor, seçim yapıyor.</p>
+      <p class="page-desc">Dropdown'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ından gelir — TextBox'la aynı, TEK fark sağda her zaman görünen chevron ${tk('.bt-input__button')}'ı (Figma "Input Controls &gt; Input Button", hover'da arka plan dolgusu alır — Date Picker'ın takvim butonuyla AYNI Figma component'i). Value her zaman bir ${tk('&lt;span&gt;')} — Dropdown gerçek metin girişi almıyor, seçim yapıyor.</p>
       <table class="token-table" style="margin-bottom:40px;">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5957,169 +5960,488 @@ PAGES_WEB['components/multi-select'] = {
   }
 };
 
-// ── Date Picker ──────────────────────────────────────────────────────────────
+// ── Calendar (Base Calendar Components — Date Picker'ın açılır paneli) ───────
+// Figma "Calender Base Components" (1456:20308) + "Calender" (1456:20307)
+// node-by-node doğrulandı (2026-09-21). Tek bir render fonksiyonu 4 view'ı
+// (day/month/year/decade) yönetiyor; state DOM'a data-cal-* attribute'ları
+// olarak yazılıyor, her etkileşimde ilgili state güncellenip panel yeniden
+// render ediliyor (bkz. design.md "Date Picker" — Figma statik mockup olduğu
+// için "başlığa tıkla=yukarı, hücreye tıkla=aşağı" navigasyonu ve nav
+// oklarının view'a göre ay/yıl/dekad/yüzyıl kaydırması projenin kendi makul
+// varsayımı, silent bırakılmadı).
+const CAL_MONTH_NAMES = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const CAL_WEEKDAY_NAMES = ['PZT','SL','ÇR','PR','CM','CT','PZ'];
 
-const _dtpIconCalendar = `<svg width="14" height="15" viewBox="0 0 14 15" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="0.6" y="2.6" width="12.8" height="11.8" rx="1.5"/><line x1="0.6" y1="6.6" x2="13.4" y2="6.6"/><line x1="4" y1="0.6" x2="4" y2="4.6"/><line x1="10" y1="0.6" x2="10" y2="4.6"/></svg>`;
-const _dtpChevLeft  = `<svg width="6" height="11" viewBox="0 0 6 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1L1 5.5L5 10"/></svg>`;
-const _dtpChevRight = `<svg width="6" height="11" viewBox="0 0 6 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1L5 5.5L1 10"/></svg>`;
+const dpIconCalendar    = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>`;
+const dpIconChevronLeft  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`;
+const dpIconChevronRight = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
 
-const _dtpMonthNames = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const _dtpWeekDays   = ['PZT','SL','ÇR','PR','CM','CT','PZ'];
+function _calIso(y, m, d) { return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+function _calParseDdMmYyyy(v) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(v || ''));
+  if (!m) return null;
+  return { d: parseInt(m[1], 10), m: parseInt(m[2], 10) - 1, y: parseInt(m[3], 10) };
+}
+function _calStateFromEl(panel) {
+  return {
+    view: panel.dataset.calView || 'day',
+    year: parseInt(panel.dataset.calYear, 10),
+    month: parseInt(panel.dataset.calMonth, 10),
+    selected: panel.dataset.calSelected || '',
+  };
+}
+function _calRerender(panel, state) {
+  panel.dataset.calView = state.view;
+  panel.dataset.calYear = state.year;
+  panel.dataset.calMonth = state.month;
+  panel.dataset.calSelected = state.selected || '';
+  panel.innerHTML = _calBodyHtml(state);
+}
 
-function _dtpCalendarHtml() {
+// Day view (Figma "_Base Body Weeks") — Pazartesi başlangıçlı 6 haftalık grid,
+// önceki/sonraki aydan taşan günler muted (bkz. "Previous"/"Next" cell state).
+function _calDayViewHtml(state) {
+  const { year, month } = state;
   const today = new Date();
-  const year  = today.getFullYear();
-  const month = today.getMonth();
-  const todayDay = today.getDate();
-
-  const firstDow    = new Date(year, month, 1).getDay(); // 0=Sun
-  const startOffset = firstDow === 0 ? 6 : firstDow - 1; // Monday-based
+  const todayIso = _calIso(today.getFullYear(), today.getMonth(), today.getDate());
+  const firstDow = new Date(year, month, 1).getDay();
+  const startOffset = firstDow === 0 ? 6 : firstDow - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const daysInPrev  = new Date(year, month, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
 
   const cells = [];
-  for (let i = startOffset - 1; i >= 0; i--)    cells.push({ day: daysInPrev - i, other: true });
-  for (let d = 1; d <= daysInMonth; d++)          cells.push({ day: d, other: false, isToday: d === todayDay });
+  for (let i = startOffset - 1; i >= 0; i--) {
+    const d = daysInPrev - i;
+    const m = month === 0 ? 11 : month - 1, y = month === 0 ? year - 1 : year;
+    cells.push({ day: d, iso: _calIso(y, m, d), edge: 'previous' });
+  }
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, iso: _calIso(year, month, d), edge: null });
   const rem = (7 - (cells.length % 7)) % 7;
-  for (let d = 1; d <= rem; d++)                  cells.push({ day: d, other: true });
-
-  const weekdaysHtml = _dtpWeekDays.map(d => `<div class="bt-cal__weekday">${d}</div>`).join('');
-  let weeksHtml = '';
-  for (let i = 0; i < cells.length; i += 7) {
-    const rowHtml = cells.slice(i, i + 7).map(c => {
-      const cls = ['bt-cal__day'];
-      if (c.other)   cls.push('bt-cal__day--other-month');
-      if (c.isToday) cls.push('bt-cal__day--selected');
-      return `<div class="${cls.join(' ')}">${c.day}</div>`;
-    }).join('');
-    weeksHtml += `<div class="bt-cal__week">${rowHtml}</div>`;
+  for (let d = 1; d <= rem; d++) {
+    const m = month === 11 ? 0 : month + 1, y = month === 11 ? year + 1 : year;
+    cells.push({ day: d, iso: _calIso(y, m, d), edge: 'next' });
   }
 
-  return `<div class="bt-cal">
-    <div class="bt-cal__header">
-      <button class="bt-cal__month-btn">${_dtpMonthNames[month]} ${year}</button>
-      <div class="bt-cal__nav">
-        <button class="bt-cal__nav-btn">${_dtpChevLeft}</button>
-        <button class="bt-cal__nav-btn bt-cal__nav-btn--today">Bugün</button>
-        <button class="bt-cal__nav-btn">${_dtpChevRight}</button>
-      </div>
-    </div>
-    <div class="bt-cal__body">
-      <div class="bt-cal__weekdays">${weekdaysHtml}</div>
-      ${weeksHtml}
-    </div>
-  </div>`;
+  let rows = '';
+  for (let i = 0; i < cells.length; i += 7) {
+    const rowHtml = cells.slice(i, i + 7).map(c => {
+      const cls = ['bt-calendar__cell', 'bt-calendar__cell--day'];
+      if (c.edge === 'previous') cls.push('bt-calendar__cell--previous');
+      if (c.edge === 'next') cls.push('bt-calendar__cell--next');
+      if (c.iso === state.selected) cls.push('bt-calendar__cell--selected');
+      else if (c.iso === todayIso) cls.push('bt-calendar__cell--current');
+      return `<button type="button" class="${cls.join(' ')}" data-date="${c.iso}" onclick="calCellClick(this)">${c.day}</button>`;
+    }).join('');
+    rows += `<div class="bt-calendar__row">${rowHtml}</div>`;
+  }
+  const weekdaysHtml = CAL_WEEKDAY_NAMES.map(w => `<div class="bt-calendar__weekday">${w}</div>`).join('');
+  return `<div class="bt-calendar__weekdays">${weekdaysHtml}</div><div class="bt-calendar__body">${rows}</div>`;
 }
 
-// Global toggle for interactive default-state date picker in playground
-window.btDtpToggle = function(inputEl) {
-  const root   = inputEl.closest('.bt-input');
-  const isOpen = root.classList.toggle('bt-input--active');
-  const cal    = root.querySelector('.bt-cal');
-  if (cal) cal.style.display = isOpen ? '' : 'none';
-};
-
-function _dtpInputInner(state) {
-  const isError    = state === 'error' || state === 'error-focused';
-  const isFilled   = state === 'filled';
-  const isDisabled = state === 'disabled';
-  const isReadOnly = state === 'readonly';
-  const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
-  const clearHtml      = isFilled ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
-  const inputAttrs     = ((isFilled || isReadOnly) ? ' value="Placeholder Text"' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
-  return `<div class="bt-tbx__control bt-tbx__control--left"><span class="bt-tbx__icon">${_dtpIconCalendar}</span></div><div class="bt-tbx__field"><input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} /></div>${validationHtml}${clearHtml}`;
+// Month/Year/Decade view (Figma "_Base Body Months/Years/Decades") — 4 sütun ×
+// N satır grid. Year view Figma'nın kendi örneğiyle AYNI pencere kuralı
+// (onluğun bir öncesinden +8'e, örn. 2026 → 2019-2028); Decade view için
+// Figma sadece placeholder "2000" taşıdığı için (bkz. design.md açık not)
+// gerçek hesaplanan yüzyıl penceresi kullanıldı.
+function _calPeriodViewHtml(state) {
+  const now = new Date();
+  let items;
+  if (state.view === 'month') {
+    items = CAL_MONTH_NAMES.map((name, i) => ({
+      label: name.toLocaleUpperCase('tr-TR'),
+      attr: `data-month="${i}"`,
+      current: i === now.getMonth() && state.year === now.getFullYear(),
+    }));
+  } else if (state.view === 'year') {
+    const start = Math.floor(state.year / 10) * 10 - 1;
+    items = Array.from({ length: 10 }, (_, i) => {
+      const y = start + i;
+      return { label: String(y), attr: `data-year="${y}"`, current: y === now.getFullYear() };
+    });
+  } else {
+    const start = Math.floor(state.year / 100) * 100;
+    items = Array.from({ length: 10 }, (_, i) => {
+      const y = start + i * 10;
+      return { label: `${y}-${y + 9}`, attr: `data-decade-start="${y}"`, current: false };
+    });
+  }
+  let rows = '';
+  for (let i = 0; i < items.length; i += 4) {
+    const rowHtml = items.slice(i, i + 4).map(it => {
+      const cls = ['bt-calendar__cell', 'bt-calendar__cell--period'];
+      if (it.current) cls.push('bt-calendar__cell--current');
+      return `<button type="button" class="${cls.join(' ')}" ${it.attr} onclick="calCellClick(this)">${it.label}</button>`;
+    }).join('');
+    rows += `<div class="bt-calendar__row bt-calendar__row--period">${rowHtml}</div>`;
+  }
+  return `<div class="bt-calendar__body">${rows}</div>`;
 }
 
-function _dtpCls(state, size) {
-  return _tbxCls(state, size) + ' bt-input--icon-left';
-}
-
-function dtpPreview(state, props = {}) {
-  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
-  const isActive  = state === 'active';
-  const isDefault = state === 'default';
-  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-input__label-value">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint-value">Helper Text</span>` : '';
-  // Calendar: always rendered for active/default; hidden initially for default (interactive)
-  const calHtml      = (isActive || isDefault) ? _dtpCalendarHtml().replace('<div class="bt-cal">', `<div class="bt-cal"${isDefault ? ' style="display:none;"' : ''}>`) : '';
-  const inputAttrs   = isDefault ? ` onclick="btDtpToggle(this)" style="cursor:pointer;"` : '';
+// Header (Figma "_Base Calendar Header") — TÜM view'larda aynı: sol başlık
+// (tıklanınca yukarı drill), sağ ‹/Bugün/›. Month/Year/Decade view'ların
+// başlık metni (yıl / dekad aralığı / yüzyıl aralığı) Figma'da tanımlı değil
+// (statik mockup her zaman "Eylül 2026" gösteriyordu) — bu projenin kendi
+// makul tamamlaması.
+function _calHeaderHtml(state) {
+  let titleText;
+  if (state.view === 'day') titleText = `${CAL_MONTH_NAMES[state.month]} ${state.year}`;
+  else if (state.view === 'month') titleText = String(state.year);
+  else if (state.view === 'year') { const s = Math.floor(state.year / 10) * 10 - 1; titleText = `${s} - ${s + 9}`; }
+  else { const s = Math.floor(state.year / 100) * 100; titleText = `${s} - ${s + 90}`; }
   return `
-    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
-      <div class="${_dtpCls(state, size)}">
-        ${metaHtml}
-        <div class="bt-input__anchor">
-          <div class="bt-tbx__input"${inputAttrs}>${_dtpInputInner(state)}</div>
-          ${calHtml}
-        </div>
-        ${helperHtml}
+    <div class="bt-calendar__header">
+      <button type="button" class="bt-calendar__title" onclick="calTitleClick(this)">${titleText}</button>
+      <div class="bt-calendar__nav">
+        <button type="button" class="bt-calendar__nav-btn" onclick="calNav(this,-1)" aria-label="Önceki"><span class="bt-icon">${dpIconChevronLeft}</span></button>
+        <button type="button" class="bt-calendar__today-btn" onclick="calToday(this)">Bugün</button>
+        <button type="button" class="bt-calendar__nav-btn" onclick="calNav(this,1)" aria-label="Sonraki"><span class="bt-icon">${dpIconChevronRight}</span></button>
       </div>
     </div>`;
 }
 
-function dtpCode(state, props = {}) {
-  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
-  const cls        = _dtpCls(state, size);
-  const isError    = state === 'error' || state === 'error-focused';
-  const isFilled   = state === 'filled';
-  const isDisabled = state === 'disabled';
-  const isReadOnly = state === 'readonly';
-  const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-input__label-value">\n${metaParts.join('\n')}\n</div>\n` : '';
-  const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
-  const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint-value">Helper Text</span>` : '';
-  const inputAttrs  = ((isFilled || isReadOnly) ? ' value="..."' : '') + (isDisabled ? ' disabled' : '') + (isReadOnly ? ' readonly' : '');
-  const code = `${metaBlock}<div class="bt-tbx__input">
-  <div class="bt-tbx__control bt-tbx__control--left">
-    <!-- calendar icon 14×15 -->
+function _calBodyHtml(state) {
+  return `${_calHeaderHtml(state)}${state.view === 'day' ? _calDayViewHtml(state) : _calPeriodViewHtml(state)}`;
+}
+
+function _calPanelHtml(state, hidden) {
+  return `<div class="bt-calendar"${hidden ? ' style="display:none;"' : ''} data-cal-view="${state.view}" data-cal-year="${state.year}" data-cal-month="${state.month}" data-cal-selected="${state.selected || ''}">${_calBodyHtml(state)}</div>`;
+}
+
+// Hücreye tıkla = aşağı in (decade→year→month→day, day'de seçim); başlığa
+// tıkla = yukarı çık (day→month→year→decade'de kalır).
+window.calCellClick = function(el) {
+  const panel = el.closest('.bt-calendar');
+  const state = _calStateFromEl(panel);
+  if (state.view === 'decade') {
+    state.year = parseInt(el.dataset.decadeStart, 10);
+    state.view = 'year';
+    _calRerender(panel, state);
+  } else if (state.view === 'year') {
+    state.year = parseInt(el.dataset.year, 10);
+    state.view = 'month';
+    _calRerender(panel, state);
+  } else if (state.view === 'month') {
+    state.month = parseInt(el.dataset.month, 10);
+    state.view = 'day';
+    _calRerender(panel, state);
+  } else {
+    state.selected = el.dataset.date;
+    calCommitSelection(panel, state);
+  }
+};
+window.calTitleClick = function(el) {
+  const panel = el.closest('.bt-calendar');
+  const state = _calStateFromEl(panel);
+  state.view = state.view === 'day' ? 'month' : state.view === 'month' ? 'year' : 'decade';
+  _calRerender(panel, state);
+};
+window.calNav = function(el, dir) {
+  const panel = el.closest('.bt-calendar');
+  const state = _calStateFromEl(panel);
+  if (state.view === 'day') {
+    state.month += dir;
+    if (state.month < 0) { state.month = 11; state.year--; }
+    if (state.month > 11) { state.month = 0; state.year++; }
+  } else if (state.view === 'month') state.year += dir;
+  else if (state.view === 'year') state.year += dir * 10;
+  else state.year += dir * 100;
+  _calRerender(panel, state);
+};
+window.calToday = function(el) {
+  const panel = el.closest('.bt-calendar');
+  const now = new Date();
+  _calRerender(panel, { view: 'day', year: now.getFullYear(), month: now.getMonth(), selected: _calStateFromEl(panel).selected });
+};
+// BUG (2026-09-21, kullanıcı bildirdi — "seçilen day inputa yazmıyor"):
+// panel.closest('.bt-input__box') HİÇBİR ZAMAN eşleşmiyordu, çünkü .bt-calendar
+// paneli .bt-input__box'ın KARDEŞİ (aynı .bt-input__anchor içinde iki ayrı
+// çocuk), atası değil — closest() sadece atalara bakar. Düzeltme: box'a
+// panel'in kendi atası olan .bt-input__anchor üzerinden querySelector ile
+// (aşağı, kardeş) ulaşılıyor — dpClosePanel'in zaten kullandığı AYNI desen.
+function calCommitSelection(panel, state) {
+  _calRerender(panel, state);
+  const anchor = panel.closest('.bt-input__anchor');
+  const box = anchor && anchor.querySelector('.bt-input__box');
+  const input = box && box.querySelector('.bt-input__value');
+  if (input) {
+    const [y, m, d] = state.selected.split('-');
+    input.value = `${d}/${m}/${y}`;
+    dpBaseInput(input);
+  }
+  dpClosePanel(box);
+}
+
+// ── Date Picker (Base Input) ──────────────────────────────────────
+// Date Input'un (§24, design.md) AYNI çekirdeği + Figma "DatePicker" node'undan
+// (1458:23415) doğrulanmış sol Input Controls: gerçek tıklanabilir bir takvim
+// butonu (Figma "Input Button", her state'te var — Date Input'ta hiç
+// render edilmeyen ikonun aksine, bkz. design.md §24.4). Value TextBox/Date
+// Input'la AYNI gerçek maskelenmiş <input> (Dropdown'ın statik <span>'inden
+// FARKLI) — takvimden seçim yapmak DA aynı inputu doldurur.
+const DP_STATE_CONFIG = {
+  'default':       { dark: false, clear: false, validation: false },
+  'hover':         { dark: false, clear: false, validation: false },
+  'focused':       { dark: false, clear: false, validation: false },
+  'active':        { dark: true,  clear: false, validation: false },
+  'filled':        { dark: true,  clear: true,  validation: false },
+  'disabled':      { dark: false, clear: false, validation: false, disabled: true },
+  'readonly':      { dark: true,  clear: false, validation: false, readonly: true },
+  'error':         { dark: true,  clear: false, validation: true },
+  'error-focused': { dark: true,  clear: false, validation: true },
+};
+const DP_DEMO_VALUE = '01/01/2026';
+
+function _dpBaseCls(state, size) {
+  const parts = ['bt-input__box', `bt-input__box--${size}`];
+  if (state === 'error-focused') {
+    parts.push('bt-input__box--error', 'bt-input__box--error-focused');
+  } else if (state !== 'default' && state !== 'filled') {
+    parts.push(`bt-input__box--${state}`);
+  }
+  return parts.join(' ');
+}
+
+function _dpBaseInner(state, affix = {}) {
+  const { prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = affix;
+  const cfg = DP_STATE_CONFIG[state] || DP_STATE_CONFIG.default;
+  const { p: prependHtml, a: appendHtml } = _biAffixHtml(prepend, prependValue, append, appendValue);
+  const validationHtml = cfg.validation ? `<div class="bt-input__validation"><span class="bt-icon">${tbxBaseIconValidation}</span></div>` : '';
+  const clearHtml = cfg.clear ? `<div class="bt-input__clear-button" onclick="dpBaseClear(this)"><span class="bt-icon">${sbxIconClear}</span></div>` : '';
+  const inputAttrs = (cfg.dark ? ` value="${DP_DEMO_VALUE}"` : '') + (cfg.disabled ? ' disabled' : '') + (cfg.readonly ? ' readonly' : '');
+  const btnAttrs = state === 'default' ? ` onclick="dpBaseToggle(this)"` : '';
+  const controlsHtml = `<div class="bt-input__controls"><button type="button" class="bt-input__button"${btnAttrs}${cfg.disabled ? ' disabled' : ''}><span class="bt-icon">${dpIconCalendar}</span></button></div>`;
+  const fieldHtml = `<input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DP_DEMO_VALUE}"${inputAttrs} oninput="dpBaseInput(this)" />`;
+  return `${controlsHtml}<div class="bt-input__content">${prependHtml}${fieldHtml}${appendHtml}</div>${validationHtml}${clearHtml}`;
+}
+
+// Aç/kapa — ddBaseToggle'ın (Dropdown) AYNI deseni: ayrı bir "açık" class'ı
+// icat etmiyoruz, .bt-input__box--active zaten çekirdekte border+ring taşıyor.
+// FARK: Dropdown'da tüm kutu tıklanabilir (statik span), burada SADECE takvim
+// butonu — kutunun geri kalanı gerçek bir <input>, yazarken paneli açıp
+// kapatmamalı.
+window.dpBaseToggle = function(buttonEl) {
+  const box = buttonEl.closest('.bt-input__box');
+  const anchor = box.closest('.bt-input__anchor');
+  const panel = anchor ? anchor.querySelector('.bt-calendar') : null;
+  const isOpen = box.classList.toggle('bt-input__box--active');
+  if (!panel) return;
+  if (isOpen) {
+    const input = box.querySelector('.bt-input__value');
+    const parsed = input && _calParseDdMmYyyy(input.value);
+    const now = new Date();
+    _calRerender(panel, parsed
+      ? { view: 'day', year: parsed.y, month: parsed.m, selected: _calIso(parsed.y, parsed.m, parsed.d) }
+      : { view: 'day', year: now.getFullYear(), month: now.getMonth(), selected: '' });
+    panel.style.display = '';
+    _dpBindOutsideClickOnce();
+  } else {
+    panel.style.display = 'none';
+  }
+};
+function dpClosePanel(box) {
+  if (!box) return;
+  box.classList.remove('bt-input__box--active');
+  const panel = box.closest('.bt-input__anchor')?.querySelector('.bt-calendar');
+  if (panel) panel.style.display = 'none';
+}
+// Yeni bir pattern (proje genelinde başka hiçbir component'te yok, bkz.
+// design.md) — gerçek bir tarih seçici için dışarı tıklayınca kapanma
+// beklenen bir UX, sadece .bt-datepicker'ı etkiler (Dropdown'ın kendi
+// .bt-input__box--active'ına dokunmaz).
+// BUG (2026-09-21, kullanıcı bildirdi): "anchor.contains(e.target)" kontrolü
+// KIRIKTI — calNav/calTitleClick/calCellClick her tıklamada _calRerender ile
+// panel.innerHTML'i değiştiriyor, bu da tıklanan elemanı (chevron/başlık/
+// hücre) event HENÜZ bubble ederken DOM'dan koparıyor; bubble document'a
+// ulaştığında artık kopmuş olan e.target için .contains() her zaman false
+// dönüyor, yani HER navigasyon/view-değiştirme tıklaması "dışarı tıklandı"
+// sanılıp paneli anında kapatıyordu (view aslında güncelleniyordu ama panel
+// aynı anda kapandığı için hiçbir şey olmamış gibi görünüyordu). Düzeltme:
+// e.composedPath() event DISPATCH anında sabitlenir, sonraki DOM mutasyonlarından
+// etkilenmez — canlı .contains() yerine bunun üzerinde kontrol yapılıyor.
+let _dpOutsideBound = false;
+function _dpBindOutsideClickOnce() {
+  if (_dpOutsideBound) return;
+  _dpOutsideBound = true;
+  document.addEventListener('click', function(e) {
+    const path = e.composedPath ? e.composedPath() : [e.target];
+    document.querySelectorAll('.bt-datepicker .bt-input__box--active').forEach(function(box) {
+      const anchor = box.closest('.bt-input__anchor');
+      if (anchor && !path.includes(anchor)) dpClosePanel(box);
+    });
+  });
+}
+// SearchBox/TextBox/Date Input'taki AYNI standart (design.md §20.6) + Date
+// Input'un tarih maskesi (_dtiFormatDateMask, aynen reuse edildi).
+function dpBaseInput(el) {
+  const box = el.closest('.bt-input__box');
+  const caretAtEnd = el.selectionStart === el.value.length;
+  el.value = _dtiFormatDateMask(el.value);
+  if (caretAtEnd) { el.selectionStart = el.selectionEnd = el.value.length; }
+  const hasValue = el.value.length > 0;
+  let clearBtn = box.querySelector('.bt-input__clear-button');
+  if (hasValue && !clearBtn) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<div class="bt-input__clear-button" onclick="dpBaseClear(this)"><span class="bt-icon">${sbxIconClear}</span></div>`;
+    const validation = box.querySelector('.bt-input__validation');
+    box.insertBefore(wrap.firstElementChild, validation || null);
+  } else if (!hasValue && clearBtn) {
+    clearBtn.remove();
+  }
+}
+function dpBaseClear(el) {
+  const box = el.closest('.bt-input__box');
+  const input = box.querySelector('.bt-input__value');
+  input.value = '';
+  el.remove();
+  input.focus();
+  const panel = box.closest('.bt-input__anchor')?.querySelector('.bt-calendar');
+  if (panel) _calRerender(panel, { ..._calStateFromEl(panel), selected: '' });
+}
+
+function dpBasePreview(state, props = {}) {
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
+  const isError   = state === 'error' || state === 'error-focused';
+  const isDefault = state === 'default';
+  const isActive  = state === 'active';
+  const metaHtml  = label === 'on' ? `<div class="bt-input__label-value"><span class="bt-input__label">${_tbxEsc(labelValue)}</span></div>` : '';
+  const hintHtml  = hint  === 'on' ? `<span class="bt-input__hint-value">${_tbxEsc(hintValue)}</span>` : '';
+  const errorHtml = error === 'on' ? `<span class="bt-input__error-value">${_tbxEsc(errorValue)}</span>` : '';
+  const outerCls  = `bt-input bt-datepicker bt-input--${size}${isError ? ' bt-input--error' : ''}`;
+  const now = new Date();
+  const initState = { view: 'day', year: now.getFullYear(), month: now.getMonth(), selected: '' };
+  const panelHtml = (isDefault || isActive) ? _calPanelHtml(initState, isDefault) : '';
+  return `
+    <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
+      <div class="${outerCls}">
+        ${metaHtml}
+        <div class="bt-input__anchor">
+          <div class="${_dpBaseCls(state, size)}">${_dpBaseInner(state, { prepend, prependValue, append, appendValue })}</div>
+          ${panelHtml}
+        </div>
+        ${hintHtml}${errorHtml}
+      </div>
+    </div>`;
+}
+
+function dpBaseCode(state, props = {}) {
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
+  const cfg      = DP_STATE_CONFIG[state] || DP_STATE_CONFIG.default;
+  const isError  = state === 'error' || state === 'error-focused';
+  const isActive = state === 'active';
+  const outerCls = `bt-input bt-datepicker bt-input--${size}${isError ? ' bt-input--error' : ''}`;
+  const boxCls   = _dpBaseCls(state, size);
+
+  const metaBlock    = label === 'on' ? `<div class="bt-input__label-value">\n  <span class="bt-input__label">${labelValue}</span>\n</div>\n` : '';
+  const valBlock     = cfg.validation ? `\n  <div class="bt-input__validation">\n    <!-- Lucide circle-alert -->\n  </div>` : '';
+  const clearBlock   = cfg.clear ? `\n  <div class="bt-input__clear-button">\n    <!-- Input Clear Button — Lucide x -->\n  </div>` : '';
+  const panelBlock   = isActive ? `\n<div class="bt-calendar">\n  <!-- Calendar — bkz. CSS Properties tab -->\n</div>` : '';
+  const hintBlock    = hint  === 'on' ? `\n<span class="bt-input__hint-value">${hintValue}</span>` : '';
+  const errorBlock   = error === 'on' ? `\n<span class="bt-input__error-value">${errorValue}</span>` : '';
+  const inputAttrs   = (cfg.dark ? ` value="${DP_DEMO_VALUE}"` : '') + (cfg.disabled ? ' disabled' : '') + (cfg.readonly ? ' readonly' : '');
+  const prependBlock = prepend === 'on' ? `\n    <span class="bt-input__prepend-text">${prependValue}</span>` : '';
+  const appendBlock  = append  === 'on' ? `\n    <span class="bt-input__append-text">${appendValue}</span>`   : '';
+
+  const code = `${metaBlock}<div class="${boxCls}">
+  <div class="bt-input__controls">
+    <button type="button" class="bt-input__button">
+      <!-- Lucide calendar -->
+    </button>
   </div>
-  <div class="bt-tbx__field">
-    <input class="bt-tbx__text" type="text" placeholder="Placeholder Text"${inputAttrs} />
+  <div class="bt-input__content">${prependBlock}
+    <input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DP_DEMO_VALUE}"${inputAttrs} oninput="dpBaseInput(this)" />${appendBlock}
   </div>${valBlock}${clearBlock}
-</div>${helperBlock}`;
-  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+</div>${panelBlock}${hintBlock}${errorBlock}`;
+
+  return `<pre class="code-block">&lt;div class="${_tbxEsc(outerCls)}"&gt;\n${_tbxEsc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+function dpBaseCss(state, props = {}) {
+  const { size = 'md' } = props;
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+  const isError   = state === 'error' || state === 'error-focused';
+  const isFocused = state === 'focused' || state === 'active' || state === 'error-focused';
+  const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
+
+  lines.push(`/* Date Picker (.bt-input__box çekirdeği) · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push('');
+  lines.push('.bt-input__box {');
+  lines.push(p('height', size === 'lg' ? '36px' : size === 'sm' ? '28px' : '32px'));
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background',
+    (state === 'disabled' || state === 'readonly')
+      ? 'var(--bt-base-subtle)  /* #f5f5f5 */'
+      : 'var(--bt-base-default)  /* #ffffff */'));
+  lines.push(p('border', `1px solid ${
+    isError
+      ? 'var(--bt-border-error-default)  /* #b31d38 */'
+      : (state === 'hover' || state === 'focused' || state === 'active')
+        ? 'var(--bt-border-brand-default)  /* #0d4e97 */'
+        : 'var(--bt-border-primary-default)  /* #d4d4d4 */'
+  }`));
+  if (isFocused) lines.push(p('box-shadow',
+    isError ? '0 0 0 3px rgba(232,75,91,0.25)' : '0 0 0 3px rgba(13,78,151,0.25)'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push(`.bt-datepicker .bt-input__box--${size} .bt-input__content {`);
+  lines.push(p('padding', size === 'lg'
+    ? 'var(--bt-space-lg) var(--bt-space-md) var(--bt-space-lg) var(--bt-space-xs)  /* 10px 8px 10px 4px */'
+    : size === 'sm'
+      ? 'var(--bt-space-sm) var(--bt-space-md) var(--bt-space-sm) var(--bt-space-xs)  /* 6px 8px 6px 4px */'
+      : 'var(--bt-space-md) var(--bt-space-md) var(--bt-space-md) var(--bt-space-xs)  /* 8px 8px 8px 4px */'));
+  lines.push('}');
+
+  if (isError) {
+    lines.push('');
+    lines.push('.bt-input__label {');
+    lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
+    lines.push('}');
+  }
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${_tbxEsc(lines.join('\n'))}</pre>`;
 }
 
 PAGES_WEB['components/date-picker'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Anatomy', 'States', 'Sizes'],
+  toc:  ['Anatomy', 'Sizes', 'States'],
   render(tab) {
     const title = 'Date Picker';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
     const sharedProps = [
-      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'size',       label: 'Size',       options: TBX_SIZE_OPTS, default: 'md' },
+      { key: 'label',      label: 'Show Label', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'labelValue', label: 'Label Text', type: 'text',           default: 'Label Text' },
+      { key: 'hint',       label: 'Show Hint',  options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'hintValue',  label: 'Hint Text',  type: 'text',           default: 'Hint Text' },
+      { key: 'error',      label: 'Show Error', options: TBX_BOOL_OPTS, default: 'off' },
+      { key: 'errorValue', label: 'Error Text', type: 'text',           default: 'Error Text' },
+      ...BI_AFFIX_PROPS,
     ];
 
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — Default state'te gerçek takvim: ‹›/Bugün ile ay değiştirin, başlığa tıklayıp Ay→Yıl→Dekad'a çıkın, bir dekad/yıl/ay/gün seçip tekrar aşağı inin, bir güne tıklayınca input'a gerçek tarih yazılır ve panel kapanır.</p>
       ${registerPlayground({
-        id: 'pgd-dtp-ex',
+        id: 'pgd-dp-ex',
+        variantLabel: 'State',
         variants: TBX_STATE_VARIANTS,
         props: sharedProps,
-        preview: (state, p) => dtpPreview(state, p),
-        code:    (state, p) => dtpCode(state, p),
-        css:     (state, p) => tbxCss(state, p),
+        preview: (state, p) => dpBasePreview(state, p),
+        code:    (state, p) => dpBaseCode(state, p),
+        css:     (state, p) => dpBaseCss(state, p),
       })}
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">Date Picker için kullanılan design token–CSS değişken eşleşmeleri.</p>
+      <p class="page-desc">Date Picker için kullanılan design token–CSS değişken eşleşmeleri. Görsel shell ${tk('.bt-input__box')} çekirdek class'ında tanımlıdır (Date Input'la AYNI) — Date Picker onu aynı elementte taşır; field padding override'ı dış sarmalayıcıdaki ${tk('.bt-datepicker')} kimlik class'ı üzerinden ata seçiciyle uygulanır. Açılır takvim paneli ${tk('.bt-calendar')} ile ayrı bir bölümde belgelenir.</p>
       <h2>Sizes</h2>
       <table class="token-table">
-        <thead><tr><th>Size</th><th>Height</th><th>Control padding</th><th>Field padding</th></tr></thead>
+        <thead><tr><th>Size</th><th>Height</th><th>Field padding (sol control var → sol xs)</th></tr></thead>
         <tbody>
-          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-2xs')} (2px)</td><td>${tk('--bt-space-xs')} top/bot/left · ${tk('--bt-space-xs')} right</td></tr>
-          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-sm')} top/bot · ${tk('--bt-space-xs')} left/right</td></tr>
-          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-sm')} (6px)</td><td>${tk('--bt-space-md')} top/bot · ${tk('--bt-space-xs')} left/right</td></tr>
+          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-sm')} ${tk('--bt-space-md')} ${tk('--bt-space-sm')} ${tk('--bt-space-xs')} (6px 8px 6px 4px)</td></tr>
+          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-md')} ${tk('--bt-space-md')} ${tk('--bt-space-md')} ${tk('--bt-space-xs')} (8px 8px 8px 4px)</td></tr>
+          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-lg')} ${tk('--bt-space-md')} ${tk('--bt-space-lg')} ${tk('--bt-space-xs')} (10px 8px 10px 4px)</td></tr>
         </tbody>
       </table>
       <h2>State Tokens</h2>
@@ -6127,112 +6449,150 @@ PAGES_WEB['components/date-picker'] = {
         <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97 — ring YOK</td></tr>
           <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
           <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
-          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td rowspan="2">Read Only</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Active</td><td>ek davranış</td><td>—</td><td>${tk('.bt-calendar')} paneli açılır (bkz. Anatomy)</td></tr>
+          <tr><td rowspan="2">Filled</td><td>value metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Clear Button</td><td colspan="2">gösterilir</td></tr>
+          <tr><td>Disabled</td><td>background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5 — value muted kalır</td></tr>
+          <tr><td>Read Only</td><td>background / value</td><td>${tk('--bt-base-subtle')} / ${tk('--bt-text-primary-default')}</td><td>#f5f5f5 bg, KOYU value — Disabled'dan FARKLI</td></tr>
+          <tr><td rowspan="2">Error</td><td>border / label</td><td>${tk('--bt-border-error-default')} / ${tk('--bt-text-error-default')}</td><td>#b31d38 — validation ikonu da var</td></tr>
+          <tr><td>value metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a — koyu, muted DEĞİL</td></tr>
           <tr><td rowspan="2">Error Focused</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
           <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(232,75,91,0.25)</td></tr>
         </tbody>
       </table>
-      <h2>Shared Tokens</h2>
+      <h2>Calendar Cell Tokens</h2>
       <table class="token-table">
-        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
-          <tr><td>background (Default/Hover/Focused/Error)</td><td>${tk('--bt-surface-primary-default')}</td><td>#ffffff</td></tr>
-          <tr><td>Placeholder rengi</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>Değer metin rengi</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>Calendar ikon rengi</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
-          <tr><td>Calendar ikon rengi (disabled)</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
-          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
+          <tr><td>Default</td><td>—</td><td>—</td><td>düz, ${tk('--bt-text-primary-default')}</td></tr>
+          <tr><td>Current (bugün)</td><td>background / border</td><td>${tk('--bt-base-muted')} / ${tk('--bt-border-primary-default')}</td><td>#e6e6e6 / #d4d4d4</td></tr>
+          <tr><td>Hover</td><td>background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Focus (klavye)</td><td>box-shadow</td><td colspan="1">—</td><td>0 0 0 3px rgba(114,114,114,0.25)</td></tr>
+          <tr><td>Selected</td><td>background / text</td><td>${tk('--bt-primary-default')} / ${tk('--bt-text-primary-inverted')}</td><td>#0d4e97 / #ffffff</td></tr>
+          <tr><td>Previous / Next / Disabled</td><td>text</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3 — <strong>Figma'da Disabled, Previous/Next'ten görsel olarak ayırt edilemiyor</strong> (aynı stil)</td></tr>
         </tbody>
       </table>
       <h2>Class Reference</h2>
       <table class="token-table">
         <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
         <tbody>
-          <tr><td>${tk('.bt-input.bt-input--icon-left')}</td><td>Wrapper</td><td>TextBox base + sol ikon variant'ı; state modifier'ları buraya eklenir</td></tr>
-          <tr><td>${tk('.bt-tbx__control.bt-tbx__control--left')}</td><td>Calendar ikon sarmalayıcı</td><td>Sol tarafta sabit; hover/focused'ta subtle bg (--bt-surface-primary-subtle)</td></tr>
-          <tr><td>${tk('.bt-tbx__icon')}</td><td>24×24 ikon alanı</td><td>color: --bt-icon-primary-strong (disabled: --bt-icon-primary-muted)</td></tr>
-          <tr><td>${tk('.bt-tbx__field')}</td><td>Metin bölgesi</td><td>flex:1; padding-left --bt-space-xs (4px) — ikon nedeniyle küçültülmüş</td></tr>
-          <tr><td>${tk('.bt-tbx__clear')}</td><td>Temizle butonu</td><td>Filled state'te sağda gösterilir</td></tr>
+          <tr><td>${tk('.bt-input')}</td><td>Dış wrapper</td><td>flex-col, gap 4px — Label/Input/Hint/Error'ı diziyor (paylaşılan)</td></tr>
+          <tr><td>${tk('.bt-datepicker')}</td><td>Dış wrapper — kimlik</td><td>${tk('.bt-input')} ile AYNI elementte — "bu bir Date Picker" kimliği</td></tr>
+          <tr><td>${tk('.bt-input__box')}</td><td>Çekirdek — Input kutusu</td><td>Base Input shell'i (SearchBox/TextBox/Dropdown/Date Input'la AYNI)</td></tr>
+          <tr><td>${tk('.bt-input__button')}</td><td>Takvim ikon butonu</td><td>Figma "Input Controls &gt; Input Button" — Dropdown'ın chevron'uyla AYNI component (bkz. Figma master set 1283:3651); Hover ${tk('--bt-base-subtle')}, box açıkken (Active) ${tk('--bt-base-muted')} — Dropdown'dan tek farkı tıklamanın butonun kendisine bağlı olması</td></tr>
+          <tr><td>${tk('.bt-input__value')}</td><td>Değer alanı</td><td>Date Input'la AYNI — gerçek maskelenmiş ${tk('&lt;input&gt;')}</td></tr>
+          <tr><td>${tk('.bt-calendar')}</td><td>Açılır panel</td><td>272px sabit genişlik, ${tk('.bt-input__anchor')} içinde ${tk('position:absolute')}, z-index:200 (Dropdown List paneliyle AYNI desen)</td></tr>
+          <tr><td>${tk('.bt-calendar__cell')}</td><td>Gün/ay/yıl/dekad hücresi</td><td>Gerçek ${tk('&lt;button&gt;')} — Figma'nın ayrı "Calendar Cell" wrapper + "_Base Date/Period Text" katmanları TEK DOM node'unda birleştirildi (yapısal basitleştirme)</td></tr>
+          <tr><td>${tk('.bt-input__hint-value')} / ${tk('--error')}</td><td>Hint / Error metni</td><td>Paylaşılan, diğer Base Input component'leriyle AYNI</td></tr>
         </tbody>
       </table>
+      <p class="page-desc" style="margin-top:24px;"><strong>Açık notlar (Figma'da netleşmemiş, projenin kendi tamamlaması):</strong> Month/Year/Decade view'ların başlık metni Figma'da her zaman statik "Eylül 2026" gösteriyordu — buradaki yıl/dekad/yüzyıl aralığı başlıkları projenin kendi eklentisi. "Date Range Selected" cell state'i (CSS hazır, ${tk('.bt-calendar__cell--range-selected')}) DatePicker'ın 9 state'inin hiçbirinde görülmediği için JS'te uygulanmadı — muhtemelen ayrı bir gelecek "Date Range Picker" component'ine ait. "_Base Month-Year-Decade Title" Figma primitifi gerçek Calendar kodunda hiç kullanılmadığı için (ölü asset) burada da kullanılmadı — tüm view'lar aynı nav'lı Calendar Header'ı paylaşıyor. Dışarı tıklayınca kapanma davranışı projede İLK KEZ burada eklendi (Dropdown'da yok).</p>
     `};
 
     if (tab === 'Usage') return { title, html: `
       <p class="page-desc">Date Picker kullanım kuralları.</p>
       <h2>When to use</h2>
       <ul>
-        <li>Kullanıcının tarih seçmesi gereken form alanlarında</li>
-        <li>Tarih aralığı veya tek tarih girişi gerektiren formlarda</li>
-        <li>Takvim açılır paneli ile birlikte kullanılır (Active state)</li>
+        <li>Kullanıcının bir takvimden tarih seçmesi gerektiğinde (Date Input'un serbest klavye girişinden farklı olarak)</li>
+        <li>Yazarak VE seçerek tarih girişine aynı anda izin vermek gerektiğinde</li>
       </ul>
       <h2>Do</h2>
       <ul>
-        <li>Label ile birlikte kullan — kullanıcıya hangi tarih bilgisi beklendiğini belirt</li>
-        <li>Filled state'te temizleme (×) butonu göster</li>
-        <li>Hata durumunda helper text ile açıklayıcı mesaj ekle</li>
+        <li>Placeholder'da beklenen tarih formatını göster (örn. "gg/aa/yyyy")</li>
+        <li>Hata mesajını Error Text (Show Error) ile göster, State'i de Error/Error Focused yap</li>
+        <li>Ay/Yıl/Dekad başlığına tıklayarak hızlı navigasyonu koru — kullanıcı uzak bir tarihe (örn. doğum yılı) hızlı gitmek isteyebilir</li>
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li>Serbest metin girişi için Date Picker kullanma — TextBox kullan</li>
-        <li>Calendar ikonunu başka amaçlarla değiştirme</li>
+        <li>Sadece serbest metin girişi yeterliyse (takvim gerekmiyorsa) Date Picker kullanma — Date Input kullan</li>
+        <li>Takvim ikonunu başka amaçlarla değiştirme</li>
       </ul>
     `};
 
-    // ── Overview ───────────────────────────────────────────────────
+    // ── Overview ─────────────────────────────────────────────────
     return { title, html: `
       ${registerPlayground({
-        id: 'pgd-dtp-overview',
+        id: 'pgd-dp-overview',
+        variantLabel: 'State',
         variants: TBX_STATE_VARIANTS,
         props: sharedProps,
-        preview: (state, p) => dtpPreview(state, p),
-        code:    (state, p) => dtpCode(state, p),
-        css:     (state, p) => tbxCss(state, p),
+        preview: (state, p) => dpBasePreview(state, p),
+        code:    (state, p) => dpBaseCode(state, p),
+        css:     (state, p) => dpBaseCss(state, p),
       })}
-      <h2>Anatomy</h2>
-      <p class="page-desc">Date Picker bileşeni; meta satırı, sabit takvim ikonu, metin alanı, temizleme kontrolü ve doğrulama ikonu olmak üzere 6 yapısal öğeden oluşur. Sol taraftaki ${tk('.bt-tbx__control')} takvim ikonunu barındırırken ${tk('.bt-tbx__clear')} filled state'te ortaya çıkar; metin girişi ${tk('.bt-tbx__field')} sınıfıyla yönetilir. Blazor/Telerik'te ${tk('TelerikDatePicker')} bileşeniyle uygulanır.</p>
-      <ol>
-        <li><strong>Meta</strong> — label + required field satırı</li>
-        <li><strong>Left control</strong> — sabit calendar ikonu (${tk('.bt-tbx__control')})</li>
-        <li><strong>Field</strong> — metin / input alanı (${tk('.bt-tbx__field')})</li>
-        <li><strong>Clear control</strong> — filled state'te × butonu (${tk('.bt-tbx__clear')})</li>
-        <li><strong>Validation control</strong> — error state'te uyarı ikonu</li>
-        <li><strong>Helper text</strong> — yardımcı bilgi veya hata mesajı</li>
-      </ol>
-      <h2>States</h2>
-      <table class="token-table">
-        <thead><tr><th>State</th><th>Class modifier</th><th>Görsel fark</th></tr></thead>
+
+      <p class="page-desc">Date Input'un (${tk('.bt-input__box')}) çekirdeği üzerine kurulu, sol tarafta gerçek tıklanabilir bir takvim butonu taşıyan tarih seçici. Takvim butonuna tıklayınca 272px'lik bir Calendar paneli açılır — Bugün/‹›/başlık navigasyonu ve Day↔Month↔Year↔Decade arası drill ile tam etkileşimli; bir gün seçildiğinde değer gerçek ${tk('&lt;input&gt;')}'a yazılır ve panel kapanır. 3 boyut (Sm/Md/Lg) ve 9 state sunar.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Date Picker'ın görsel shell'i (border/bg/radius/height) ${tk('.bt-input__box')} çekirdek class'ından gelir — Date Input'la BİREBİR aynı. TEK component-özel fark: solda gerçek bir Input Controls (takvim butonu) olduğu için Content padding'i sol tarafta ${tk('--bt-space-xs')} (4px), sağda sabit ${tk('--bt-space-md')} (8px) — Dropdown'ın "sağ control" deseninin aynası.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>Default</td><td>—</td><td>Gri border</td></tr>
-          <tr><td>Hover</td><td>${tk('.bt-input--hover')}</td><td>Mavi border</td></tr>
-          <tr><td>Focused</td><td>${tk('.bt-input--focused')}</td><td>Mavi border + focus ring</td></tr>
-          <tr><td>Active</td><td>${tk('.bt-input--active')}</td><td>Mavi border + focus ring (takvim açık)</td></tr>
-          <tr><td>Filled</td><td>${tk('.bt-input--filled')}</td><td>Değer dolu + × butonu</td></tr>
-          <tr><td>Disabled</td><td>${tk('.bt-input--disabled')}</td><td>Subtle bg, soluk metin</td></tr>
-          <tr><td>Read Only</td><td>${tk('.bt-input--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
-          <tr><td>Error</td><td>${tk('.bt-input--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
-          <tr><td>Error Focused</td><td>${tk('.bt-input--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
+          <tr><td rowspan="3">Input kutusu</td><td>Border (Default)</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
+          <tr><td>Border (Hover/Focused/Active)</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
+          <tr><td>Border radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Takvim ikonu</td><td>Color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
+          <tr><td>Placeholder</td><td>Color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Girilen/seçilen değer</td><td>Color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Hint text</td><td>Color</td><td>${tk('--bt-text-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Error text</td><td>Color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Focus ring</td><td>box-shadow</td><td>—</td><td>0 0 0 3px rgba(13,78,151,0.25)</td></tr>
+          <tr><td>Calendar paneli</td><td>box-shadow</td><td>${tk('--bt-shadow-md')}</td><td>0 2px 4px rgba(16,24,40,.06), 0 4px 8px rgba(16,24,40,.10)</td></tr>
         </tbody>
       </table>
-      <h2>Sizes</h2>
-      <table class="token-table">
-        <thead><tr><th>Size</th><th>Class</th><th>Height</th></tr></thead>
+
+      <h2 id="Sizes">Sizes</h2>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Small</td><td>${tk('.bt-input--sm')}</td><td>28px</td></tr>
-          <tr><td>Medium (Default)</td><td>${tk('.bt-input--md')}</td><td>32px</td></tr>
-          <tr><td>Large</td><td>${tk('.bt-input--lg')}</td><td>36px</td></tr>
+          ${TBX_SIZE_OPTS.map(sz => `
+          <tr>
+            <td><span class="token-name">${sz.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;">
+                <div class="bt-input bt-datepicker bt-input--${sz.key}">
+                  <div class="bt-input__label-value"><span class="bt-input__label">Label Text</span></div>
+                  <div class="${_dpBaseCls('default', sz.key)}">${_dpBaseInner('default')}</div>
+                  <span class="bt-input__hint-value">Hint Text</span>
+                </div>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <table class="token-table">
+        <thead><tr><th>State</th><th>Preview (Md)</th></tr></thead>
+        <tbody>
+          ${TBX_STATE_VARIANTS.map(s => {
+            const isError = s.key === 'error' || s.key === 'error-focused';
+            const now = new Date();
+            const isActive = s.key === 'active';
+            const panelHtml = isActive ? _calPanelHtml({ view: 'day', year: now.getFullYear(), month: now.getMonth(), selected: '' }, false) : '';
+            return `
+          <tr>
+            <td><span class="token-name">${s.label}</span></td>
+            <td style="padding:6px 0;">
+              <div style="max-width:280px;${isActive ? 'padding-bottom:300px;' : ''}">
+                <div class="bt-input bt-datepicker bt-input--md${isError ? ' bt-input--error' : ''}">
+                  <div class="bt-input__label-value"><span class="bt-input__label">Label Text</span></div>
+                  <div class="bt-input__anchor">
+                    <div class="${_dpBaseCls(s.key, 'md')}">${_dpBaseInner(s.key)}</div>
+                    ${panelHtml}
+                  </div>
+                  <span class="${isError ? 'bt-input__error-value' : 'bt-input__hint-value'}">${isError ? 'Error Text' : 'Hint Text'}</span>
+                </div>
+              </div>
+            </td>
+          </tr>`;}).join('')}
         </tbody>
       </table>
     `};
-  }
+  },
 };
 
 PAGES_WEB['components/textarea'] = {
