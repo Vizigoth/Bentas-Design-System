@@ -2943,6 +2943,16 @@ sahip olduğu için ayrı bir "açık" class'ı icat edilmedi. Filled state'in C
 standardını izliyor (`ddBaseClear`) — tıklanınca value span'ı placeholder görünümüne döner, buton
 kendini kaldırır; canlı olarak tarayıcıda doğrulandı.
 
+**Seçenek seçimi (2026-09-22 düzeltme):** `_ddOptionsHtml`'deki item'lar `ddBaseToggle` panelini
+açıp kapatıyordu ama listeden bir seçenek tıklandığında HİÇBİR ŞEY olmuyordu — Grid'in Status
+dropdown'ında zaten var olan `btGridStatusOptionSelect` deseni (bkz. `pages-web.js` ~12064) Dropdown'ın
+kendi (gerçek, Base Input) sayfasına hiç taşınmamıştı. `window.ddBaseOptionSelect` eklendi: her
+item'a `onclick="ddBaseOptionSelect(event,this)"` bağlandı — tıklanan item'ın metnini kutunun
+`.bt-input__value`'suna yazar (rengi Filled'daki gibi koyulaştırır), `--selected` class'ını taşır,
+paneli kapatır ve chevron'u down'a döndürür (`ddBaseToggle` ile AYNI kapanma deseni, ayrı bir
+mekanizma icat edilmedi). `event.stopPropagation()` olmadan kutunun kendi `onclick`'i (`ddBaseToggle`)
+tekrar tetiklenip paneli anında yeniden açardı.
+
 ### 22.5 Kapsam kısıtı (SearchBox/TextBox'takiyle aynı gerekçe)
 
 `_ddInputInner`, `_ddIconChevron`/`_ddIconChevronUp`, `btDdToggle`, `_ddOptionsHtml`, `_tbxCls`
@@ -2996,6 +3006,50 @@ Ayrıca ikinci bir gerçek sorun ortaya çıktı: paylaşılan `.bt-tbx` dış s
 **Bilinçli kapsam sınırı — eski "TEXTBOX" sisteminin içi DOKUNULMADI:** `.bt-tbx__input`/`__field`/`__text`/`__control`(+`--left`/`--right`)/`__icon`/`__clear` ve `.bt-msl__*` — bunlar MultiSelect, Select LookUp, Date Picker'ın kendi sayfalarında ve Dialog form örneği + Data Table Inline/InCell edit hücrelerinde (`_tbxInputInner`, `_mslInputInner`, `_dtpInputInner`, `_slkInputInner`, `_ddInputInner`) hâlâ kullanılıyor — bunları `.bt-input__box`'a taşımak bu 3 component'i TAM Base Input'a migrate etmek anlamına gelir (Figma karşılaştırması yapılmadı, ayrı bir oturum gerektirir, bkz. §21.2). Sonuç: bu sayfalarda dış sarmalayıcı artık `.bt-input` ama içindeki kutu hâlâ `.bt-tbx__input` adını taşıyor — görsel/davranışsal olarak HİÇBİR ŞEY değişmedi, yalnızca dış sarmalayıcının adı değişti (`_tbxCls()`/`_mslCls()`/`_dtpCls()` fonksiyonları otomatik günceller).
 
 **Doğrulama:** `node --check` temiz, CSS brace-denge kontrolü temiz. Tarayıcıda tek tek doğrulanacaklar (bu oturumun devamı): SearchBox/TextBox/Dropdown'ın kendi sayfalarında kutu class'ının `.bt-input__box`, dış sarmalayıcının (varsa) `.bt-input bt-textbox`/`.bt-input bt-dropdown` olması; MultiSelect/Select LookUp/Date Picker/Dialog örneği/Data Table InCell-Inline'da dış sarmalayıcının `.bt-input` olması AMA iç kutunun hâlâ `.bt-tbx__input` olması ve görsel olarak hiçbir şeyin değişmemiş olması; her sayfada konsol hatası olmaması.
+
+### 22.10 Base Dropdown + Dropdown List yeniden doğrulandı (2026-09-22, kullanıcı Figma'da revize etti)
+
+Kullanıcı 3 node linki verdi: Base Dropdown (`1495:46995`), Dropdown (`1495:46997`), Dropdown List
+(`1494:43873`, dosya `hnnWtIvTnz9GRnWVJLU0GG`) — "tekrar incele" isteğiyle. Date Input'un aksine
+(§24.7) **Prepend/Append Text Dropdown'da KALMAYA devam ediyor** — Base Dropdown'ın Figma'sı bu
+slot'ları hâlâ taşıyor, kod tarafında hiçbir değişiklik gerekmedi.
+
+**Tek gerçek, düşük riskli düzeltme (uyguladım):** Content'in yatay padding'i artık sm/md/lg
+ÜÇÜNDE de sabit `--bt-space-md` (8px) — hem sol HEM sağ — boyuttan ve sağdaki chevron control'ünden
+tamamen bağımsız. Eskiden kodda "sağda control var → sağ `--bt-space-xs` (4px)'e düşer" kuralı
+uygulanıyordu (TextBox/Dropdown'ın genel "control varsa 4px" prensibinin bir uzantısıydı) — üç
+boyutun da (`1494:43778`/`43792`/`43806`) `get_design_context` çıktısı tutarlı şekilde sabit 8px
+gösterdi, artık asimetrik değil. `docs/css/styles.css` (`.bt-dropdown .bt-input__box--{size}
+.bt-input__content`), `ddBaseCss()`/CSS Properties tab metni (`pages-web.js`) güncellendi.
+
+**İki açık nokta kullanıcıya soruldu, ikisi de netleşti:**
+1. Figma'nın güncel Dropdown field state'lerinin (Default/Hover/Filled/Error/Disabled/Active)
+   HEPSİNDE Prepend/Append/Validation/Clear Button aynı anda görünüyordu (Default'ta bile boş bir
+   Clear × ve hata üçgeni) — bu, her state frame'ine aynı "her şeyi göster" kitchen-sink demo'sunun
+   kopyalanmasından kaynaklanan bir Figma-authoring artefaktı olarak değerlendirildi, kod
+   DEĞİŞTİRİLMEDİ: Validation hâlâ sadece Error'da, Clear hâlâ sadece Filled'da render ediliyor
+   (`_ddBaseInner`, dokunulmadı).
+2. Dropdown List artık belgelenmiş 4 Content varyantı taşıyor (Basic / Left Control+Label /
+   Label+Right Control / Left+Label+Right Control) × 6 state (Default/Hover/Active/Selected/Focus/
+   Disabled, node `1494:43880`) — ama Dropdown'ın kendi field'ına gömülü gerçek liste örneği
+   ("Type=Dropdown List Basic", node `1494:43930`) İKONSUZ. Kod ise `_ddOptionsHtml`'de HER zaman
+   sol ikon (`--has-left` + eski `_ddIconLoader` SVG'si) gösteriyordu. Kullanıcı onayıyla demo Basic
+   tipine geçirildi — `--has-left`/ikon kaldırıldı, sadece `.bt-dropdown-list-item__text` kaldı.
+   `_ddOptionsHtml` Dropdown'ın kendi sayfası DIŞINDA da paylaşıldığı için (Dialog form örneği,
+   `components/dialog`) bu değişiklik oraya da otomatik yansıdı — Data Table Grid'in satır-içi
+   dropdown hücresi (`_gridEditDropdownHtml`) zaten hiç ikon kullanmıyordu, ayrıca dokunulmadı.
+   `.bt-dropdown-list-item--has-left`/`--has-right` CSS modifier'ları KALDIRILMADI (hâlâ tanımlı,
+   gelecekte "Icons Left/Right/Left+Right" tipini kullanan başka bir liste — örn. bir MultiSelect
+   varyantı — ihtiyaç duyarsa hazır).
+
+**State/panel token tablosu değişmedi** — Hover→`--bt-base-subtle`, Active/Selected→`--bt-base-muted`
+(aynı zemin), Focus→beyaz + nötr ring `rgba(114,114,114,0.25)`, Disabled→muted metin/ikon; panel
+4px padding + `--bt-border-primary-subtle` + `--bt-shadow-md` — hepsi 2026-09-22'de node-by-node
+yeniden doğrulandı, `docs/css/styles.css`'teki mevcut değerlerle BİREBİR eşleşti, hiçbir CSS
+değişikliği gerekmedi (bu tablo zaten doğruydu).
+
+**Doğrulama:** `node --check` temiz. Bu oturumda da claude-in-chrome eklentisi localhost'a
+navigate edemediği için canlı tarayıcı testi yapılamadı.
 
 ---
 
@@ -3153,6 +3207,29 @@ siler. Bu, IMask gibi özel bir kütüphane olmadan yazılan basit maskeleme imp
 yaygın/kabul edilebilir bir davranış, caret-mükemmel bir çözüm bu component'in kapsamı dışında.
 Referans implementasyon: `_dtiFormatDateMask`/`dtiBaseInput`, `pages-web.js`.
 
+### 24.7 Prepend/Append kaldırıldı — Base DateInput çoklu-segment Input Value'ya geçti (2026-09-22)
+
+Kullanıcı Figma'da `_Base DateInput`'u (node `1456:20744`, dosya `hnnWtIvTnz9GRnWVJLU0GG`) revize
+etti: **Prepend Text / Append Text slot'ları component'ten tamamen kaldırıldı**, yerine `Input
+Value`'nun içine gelecekte kuracağı bir **Time Picker** için üç bağımsız, ayrı ayrı
+gösterilip/gizlenebilen metin segmenti eklendi — `dayMonthYearValue` ("01/01/2026", her zaman var),
+`hourMinutesSecondsValue` ("09:00:00", `showHourMinutesSeconds` ile opsiyonel), `amPmValue`
+("AM/PM", `showAmPm` ile opsiyonel) — üçü de `Input Value` içinde `gap-xs` (4px) ile yan yana
+diziliyor. `get_design_context` ile hem Base DateInput'un kendi izole önizlemesi (yukarıdaki 3 prop)
+hem gerçek `DateInput` (node `1456:20765`) ve `DatePicker` (node `1480:8826`) field state'leri
+(Default/Filled/Error, md boyut) yeniden doğrulandı: **gerçek field instance'larının HİÇBİRİNDE ne
+Prepend/Append ne de saat/AM-PM segmentleri render ediliyor** — sadece `dayMonthYearValue`. Yani bu
+oturumdaki değişiklik SADECE Base DateInput'un gelecekteki bir tüketici (Time/DateTime Picker) için
+alt yapı hazırlığı; Date Input ve Date Picker'ın kendi sayfalarında görsel/davranışsal hiçbir şey
+DEĞİŞMEDİ, sadece artık var olmayan Prepend/Append toggle'ları kaldırıldı.
+
+**Kod tarafı:** `_dtiBaseInner`/`dtiBasePreview`/`dtiBaseCode` (Date Input) ve `_dpBaseInner`/
+`dpBasePreview`/`dpBaseCode` (Date Picker) fonksiyonlarından `prepend`/`prependValue`/`append`/
+`appendValue` parametreleri ve `_biAffixHtml()` çağrıları kaldırıldı; her iki sayfanın
+`sharedProps`'undan `...BI_AFFIX_PROPS` satırı silindi. Saat/AM-PM segmentleri **implement
+EDİLMEDİ** — bunlar ayrı bir Time/DateTime Picker component'i talep edildiğinde ele alınacak, bu
+oturumun kapsamı sadece "gereksiz hale gelen Prepend/Append'i temizle" idi.
+
 ---
 
 ## 25. Base Input çekirdeği — GÜNCEL/NİHAİ class isimleri (2026-09-18)
@@ -3188,12 +3265,19 @@ revize edildi:
 | `Hint Value` | `.bt-input__hint-value` |
 | `Error Value` | `.bt-input__error-value` (Hint'in modifier'ı DEĞİL — Figma'da bağımsız bir node olduğu için kodda da tamamen ayrı bir class) |
 
-**Prepend/Append Text — YENİ eklenen standart property (2026-09-18):** Daha önce hiçbir Base Input
-component'inde implemente edilmemişti (Figma'da component property olarak var olsa da kod hiç
-kullanmıyordu). Kullanıcı "standart input yapısında olan properties" olduğunu belirtince tüm 4
-component'e birden eklendi — paylaşılan `_biAffixHtml()`/`BI_AFFIX_PROPS` (`pages-web.js`)
-üzerinden: `prepend`/`prependValue`, `append`/`appendValue` (ikisi de `TBX_BOOL_OPTS` desenli
-bağımsız toggle+text, varsayılan Off). Her component'in Overview playground'una eklendi.
+**Prepend/Append Text — YENİ eklenen standart property (2026-09-18), Date Input/Date Picker'da
+2026-09-22'de tekrar KALDIRILDI (bkz. §24.7):** Daha önce hiçbir Base Input component'inde
+implemente edilmemişti (Figma'da component property olarak var olsa da kod hiç kullanmıyordu).
+Kullanıcı "standart input yapısında olan properties" olduğunu belirtince tüm 4 component'e birden
+eklendi — paylaşılan `_biAffixHtml()`/`BI_AFFIX_PROPS` (`pages-web.js`) üzerinden: `prepend`/
+`prependValue`, `append`/`appendValue` (ikisi de `TBX_BOOL_OPTS` desenli bağımsız toggle+text,
+varsayılan Off). Dört gün sonra kullanıcı Figma'da `_Base DateInput`'u revize edip bu slot'ları
+component'ten tamamen çıkardı (yerine gelecekteki bir Time Picker için çoklu-segment Input Value
+geldi, §24.7) — bu yüzden "TÜM Base Input component'lerinde standart" kuralı artık **SearchBox/
+TextBox/Dropdown** için geçerli, Date Input/Date Picker İSTİSNA: onların Figma kaynağı bu slot'ları
+hiç taşımıyor. Yeni bir Base Input tüketicisi eklerken varsayılan olarak Prepend/Append'i dahil et,
+ama Base DateInput'tan türeyen bir component (Time Picker, DateTime Picker) için önce o component'in
+KENDİ güncel Figma node'unu kontrol et — otomatik olarak "standart, ekle" varsayma.
 
 **Doğrulama:** `node --check` temiz, CSS brace-denge kontrolü temiz (0). Tarayıcıda: SearchBox'ta
 Prepend/Append Text playground'dan açılıp input içinde doğru render edildiği görüldü; Dropdown'ın

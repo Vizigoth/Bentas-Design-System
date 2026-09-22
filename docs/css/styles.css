@@ -4154,13 +4154,16 @@ pre.code-block.line-numbers {
 
 /* ════════════════════════════════════════════════════════════════
    DROPDOWN (Base Input) — .bt-dropdown ata seçicisi, TextBox'ınkiyle
-   AYNI desen. Text Content padding kuralı: solda aktif control yok
-   (control sağda, chevron) → sol sabit --bt-space-md (8px), dikey
-   sm/md/lg=6/8/10.
+   AYNI desen. Text Content padding: yatayda HER İKİ yan da sabit
+   --bt-space-md (8px), boyuttan/sağdaki chevron control'ünden bağımsız
+   (2026-09-22'de kullanıcı Base Dropdown'ı revize edince yeniden
+   doğrulandı — eskiden "sağ control varsa xs/4px'e düşer" kuralı
+   uygulanıyordu, güncel Figma'da (sm/md/lg üçü de) hep sabit 8px);
+   dikey sm/md/lg=6/8/10.
    ════════════════════════════════════════════════════════════════ */
-.bt-dropdown .bt-input__box--sm .bt-input__content { padding: var(--bt-space-sm, 6px) var(--bt-space-xs, 4px) var(--bt-space-sm, 6px) var(--bt-space-md, 8px); }
-.bt-dropdown .bt-input__box--md .bt-input__content { padding: var(--bt-space-md, 8px) var(--bt-space-xs, 4px) var(--bt-space-md, 8px) var(--bt-space-md, 8px); }
-.bt-dropdown .bt-input__box--lg .bt-input__content { padding: var(--bt-space-lg, 10px) var(--bt-space-xs, 4px) var(--bt-space-lg, 10px) var(--bt-space-md, 8px); }
+.bt-dropdown .bt-input__box--sm .bt-input__content { padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px); }
+.bt-dropdown .bt-input__box--md .bt-input__content { padding: var(--bt-space-md, 8px) var(--bt-space-md, 8px); }
+.bt-dropdown .bt-input__box--lg .bt-input__content { padding: var(--bt-space-lg, 10px) var(--bt-space-md, 8px); }
 
 /* ════════════════════════════════════════════════════════════════
    DATE INPUT (Base Input) — .bt-dateinput ata seçicisi. TextBox/

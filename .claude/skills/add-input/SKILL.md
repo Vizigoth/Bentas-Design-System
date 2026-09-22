@@ -124,12 +124,21 @@ pressed state) but is documented as `.bt-input__button--selected` so it isn't si
 Content=Icon's Hover variant, checked the same way, produced byte-identical output to its Default
 — confirming decorative icons really do have no state, that half of the original note was right.
 
-**Prepend Text / Append Text are standard properties on every Base Input consumer** — even if a
-given component's demo doesn't obviously need them, add the toggle (`prepend`/`prependValue`,
-`append`/`appendValue`, `TBX_BOOL_OPTS` pattern, default off) via the shared
-`_biAffixHtml()`/`BI_AFFIX_PROPS` helpers in `pages-web.js`. Don't skip them because "this
-component probably doesn't need a prefix" — the user's instruction was that these are part of the
-base structure, not optional per component.
+**Prepend Text / Append Text are standard properties on every Base Input consumer whose Figma
+source actually carries those slots** — even if a given component's demo doesn't obviously need
+them, add the toggle (`prepend`/`prependValue`, `append`/`appendValue`, `TBX_BOOL_OPTS` pattern,
+default off) via the shared `_biAffixHtml()`/`BI_AFFIX_PROPS` helpers in `pages-web.js`. Don't skip
+them because "this component probably doesn't need a prefix" — the user's original instruction was
+that these are part of the base structure, not optional per component.
+
+**Correction, 2026-09-22 — this is not an unconditional rule.** Date Input/Date Picker had
+Prepend/Append added under the rule above, then the user revised `_Base DateInput` in Figma to drop
+those slots entirely (replaced with a multi-segment `Input Value` — separate date/time/AM-PM text
+nodes — laying groundwork for a future Time Picker; see `design.md` §24.7). Both were removed from
+Date Input/Date Picker's code. **The actual rule: verify against the component's CURRENT Figma
+node before assuming Prepend/Append belongs — don't carry the toggle forward automatically just
+because a sibling Base Input consumer has it, and don't add it to a new Base-DateInput-family
+component (Time Picker, DateTime Picker) without checking that component's own field states first.**
 
 ## State behavior — don't assume it reduces to simple booleans
 

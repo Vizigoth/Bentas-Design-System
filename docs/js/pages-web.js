@@ -2769,9 +2769,13 @@ function _sbxCls(state, size) {
 
 // Prepend/Append Text (Figma "Prepend Text"/"Append Text", Content'in
 // opsiyonel önek/sonek metinleri — bkz. styles.css ".bt-input__prepend-text"/
-// "--append-text") — Base Input'a dayanan TÜM component'lerde (SearchBox/
-// TextBox/Dropdown/Date Input) aynı iki prop çifti: prepend/prependValue,
-// append/appendValue. Varsayılan Off — kullanıcı playground'dan açıp dener.
+// "--append-text") — SearchBox/TextBox/Dropdown'da aynı iki prop çifti:
+// prepend/prependValue, append/appendValue. Varsayılan Off — kullanıcı
+// playground'dan açıp dener. Date Input/Date Picker İSTİSNA (2026-09-22,
+// kullanıcı kararı) — Base DateInput'un Figma'sı bu slot'ları hiç
+// taşımıyor, Content'in Input Value'su onun yerine gelecekteki Time
+// Picker için ayrı gg/aa/yyyy + ss:dd:ss + ÖÖ/ÖS segmentlerine
+// hazırlanmış durumda (henüz kodda uygulanmadı, bkz. design.md §24/§26).
 function _biAffixHtml(prepend, prependValue, append, appendValue) {
   const p = prepend === 'on' ? `<span class="bt-input__prepend-text">${_tbxEsc(prependValue)}</span>` : '';
   const a = append === 'on' ? `<span class="bt-input__append-text">${_tbxEsc(appendValue)}</span>` : '';
@@ -4786,31 +4790,25 @@ function _ddInputInner(state) {
         </div>`;
 }
 
-// SVG'ye width/height YAZILMAZ — .bt-icon svg kuralı 16×16 zorlar (CLAUDE.md
-// "İkon Wrapper Standardı"). Bu ikon Dialog örneği ve Data Table inline
-// dropdown hücresi tarafından da reuse edildiği için isim/içerik DEĞİŞMEDİ.
-const _ddIconLoader = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>`;
-
-// Figma "Dropdown List"/"Base Dropdown List Item" (2026-09-17'de doğrulandı) —
-// Content ekseni burada sabit "Left Control + Label" (`--has-left`), Dialog
-// örneği ve Data Table'ın kapsam kısıtı gereği içerik/seçenek sayısı
-// DEĞİŞMEDİ (bkz. yukarıdaki not) — yalnızca yeni doğrulanmış class yapısına
-// (.bt-dropdown-list-item__control > .bt-icon, --has-left modifier) taşındı.
+// Figma "Dropdown List"/"Base Dropdown List Item" (2026-09-22'de yeniden
+// doğrulandı, node 1494:43873) — Content ekseni artık belgelenmiş 4 varyant
+// taşıyor (Label-only / +Sol İkon / +Sağ İkon / +Sol+Sağ İkon), ama
+// Dropdown'ın kendi field'ına GÖMÜLÜ gerçek liste örneği "Type=Dropdown List
+// Basic" (ikonsuz, sadece Label) — kullanıcı onayıyla (2026-09-22) demo
+// buna geçirildi, eski hep-sol-ikonlu hâl (`--has-left` + `_ddIconLoader`)
+// kaldırıldı. Dialog örneği ve Data Table'ın satır-içi dropdown hücresi bu
+// class'ları PAYLAŞTIĞI için aynı değişiklikten otomatik etkilendi.
 const _ddOptionsHtml = `
-  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left bt-dropdown-list-item--selected">
-    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+  <div class="bt-dropdown-list-item bt-dropdown-list-item--selected" onclick="ddBaseOptionSelect(event,this)">
     <span class="bt-dropdown-list-item__text">Option 1</span>
   </div>
-  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left">
-    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+  <div class="bt-dropdown-list-item" onclick="ddBaseOptionSelect(event,this)">
     <span class="bt-dropdown-list-item__text">Option 2</span>
   </div>
-  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left">
-    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+  <div class="bt-dropdown-list-item" onclick="ddBaseOptionSelect(event,this)">
     <span class="bt-dropdown-list-item__text">Option 3</span>
   </div>
-  <div class="bt-dropdown-list-item bt-dropdown-list-item--has-left">
-    <span class="bt-dropdown-list-item__control"><span class="bt-icon">${_ddIconLoader}</span></span>
+  <div class="bt-dropdown-list-item" onclick="ddBaseOptionSelect(event,this)">
     <span class="bt-dropdown-list-item__text">Option 4</span>
   </div>`;
 
@@ -4942,6 +4940,28 @@ function ddBaseClear(el) {
   el.remove();
 }
 
+// Listeden bir seçenek tıklanınca: değeri kutuya yazar (Filled rengine geçer),
+// seçili item'ı günceller ve paneli kapatır (ddBaseToggle'ın aç/kapa deseniyle
+// AYNI — ayrı bir "seçim sonrası kapanma" mekanizması icat edilmedi).
+window.ddBaseOptionSelect = function(event, optEl) {
+  event.stopPropagation();
+  const anchor = optEl.closest('.bt-input__anchor');
+  const box = anchor.querySelector('.bt-input__box');
+  const label = optEl.querySelector('.bt-dropdown-list-item__text').textContent;
+  const valueSpan = box.querySelector('.bt-input__value');
+  if (valueSpan) {
+    valueSpan.textContent = label;
+    valueSpan.style.color = 'var(--bt-text-primary-default,#1a1a1a)';
+  }
+  optEl.parentElement.querySelectorAll('.bt-dropdown-list-item').forEach(o => o.classList.remove('bt-dropdown-list-item--selected'));
+  optEl.classList.add('bt-dropdown-list-item--selected');
+  box.classList.remove('bt-input__box--active');
+  const list = anchor.querySelector('.bt-dropdown-list');
+  if (list) list.style.display = 'none';
+  const iconSpan = box.querySelector('.bt-input__controls:last-child .bt-icon');
+  if (iconSpan) iconSpan.innerHTML = ddBaseIconChevronDown;
+};
+
 function ddBasePreview(state, props = {}) {
   const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
   const isError   = state === 'error' || state === 'error-focused';
@@ -5031,10 +5051,10 @@ function ddBaseCss(state, props = {}) {
   lines.push('');
   lines.push(`.bt-dropdown .bt-input__box--${size} .bt-input__content {`);
   lines.push(p('padding', size === 'lg'
-    ? 'var(--bt-space-lg) var(--bt-space-xs) var(--bt-space-lg) var(--bt-space-md)  /* 10px 4px 10px 8px */'
+    ? 'var(--bt-space-lg) var(--bt-space-md)  /* 10px 8px */'
     : size === 'sm'
-      ? 'var(--bt-space-sm) var(--bt-space-xs) var(--bt-space-sm) var(--bt-space-md)  /* 6px 4px 6px 8px */'
-      : 'var(--bt-space-md) var(--bt-space-xs) var(--bt-space-md) var(--bt-space-md)  /* 8px 4px 8px 8px */'));
+      ? 'var(--bt-space-sm) var(--bt-space-md)  /* 6px 8px */'
+      : 'var(--bt-space-md) var(--bt-space-md)  /* 8px 8px */'));
   lines.push('}');
 
   if (isError) {
@@ -5093,7 +5113,7 @@ PAGES_WEB['components/dropdown'] = {
           <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-lg')} (10px)</td><td>${tk('--bt-space-sm')} (6px)</td></tr>
         </tbody>
       </table>
-      <p class="page-desc">Field'ın sol padding'i tüm boyutlarda sabit ${tk('--bt-space-md')} (8px) — solda aktif bir control yok (control sağda, chevron); sağ padding sabit ${tk('--bt-space-xs')} (4px).</p>
+      <p class="page-desc">Field'ın yatay padding'i (sol/sağ) tüm boyutlarda sabit ${tk('--bt-space-md')} (8px) — sağdaki chevron control'ünün varlığından bağımsız (2026-09-22'de Base Dropdown yeniden doğrulanınca güncellendi; eskiden sağ ${tk('--bt-space-xs')}/4px'e düşürülüyordu).</p>
       <h2>State Tokens</h2>
       <table class="token-table">
         <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
@@ -5113,7 +5133,7 @@ PAGES_WEB['components/dropdown'] = {
         </tbody>
       </table>
       <h2>Options Panel &amp; List Item</h2>
-      <p class="page-desc">Figma "Dropdown List" / "Base Dropdown List Item" (2026-09-17'de Desktop Bridge ile doğrulandı) — panel input'un 4px altında açılır, item'lar Content ekseni (Basic / Left Control / Right Control / Left+Right Control — ${tk('--has-left')}/${tk('--has-right')} modifier'ları) × State ekseni (Default/Hover/Active/Selected/Focus/Disabled) taşır. Active ve Selected Figma'da GÖRSEL OLARAK AYNI zemini paylaşır — ayrı bir Active rengi icat edilmedi.</p>
+      <p class="page-desc">Figma "Dropdown List" / "Base Dropdown List Item" (2026-09-22'de cloud üzerinden node 1494:43873 tekrar doğrulandı) — panel input'un 4px altında açılır, item'lar Content ekseni (Basic / Left Control / Right Control / Left+Right Control — ${tk('--has-left')}/${tk('--has-right')} modifier'ları) × State ekseni (Default/Hover/Active/Selected/Focus/Disabled) taşır. Active ve Selected Figma'da GÖRSEL OLARAK AYNI zemini paylaşır — ayrı bir Active rengi icat edilmedi. Dropdown'ın kendi field'ına gömülü gerçek liste örneği Content ekseninin **Basic** (ikonsuz) ucunu kullanıyor — bu sayfanın demo'su da (kullanıcı onayıyla, 2026-09-22) buna geçirildi; ${tk('--has-left')}/${tk('--has-right')} modifier'ları hâlâ CSS'te tanımlı, sadece şu an hiçbir demo'da kullanılmıyor.</p>
       <table class="token-table">
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
@@ -5331,21 +5351,19 @@ function dtiBaseClear(el) {
   input.focus();
 }
 
-function _dtiBaseInner(state, affix = {}) {
-  const { prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = affix;
+function _dtiBaseInner(state) {
   const cfg = DTI_STATE_CONFIG[state] || DTI_STATE_CONFIG.default;
-  const { p: prependHtml, a: appendHtml } = _biAffixHtml(prepend, prependValue, append, appendValue);
   const validationHtml = cfg.validation ? `<div class="bt-input__validation"><span class="bt-icon">${tbxBaseIconValidation}</span></div>` : '';
   const clearHtml       = cfg.clear ? _dtiBaseClearBtnHtml() : '';
   const inputAttrs      = (cfg.dark ? ` value="${DTI_DEMO_VALUE}"` : '') + (cfg.disabled ? ' disabled' : '') + (cfg.readonly ? ' readonly' : '');
   const fieldHtml = cfg.cursor
     ? `<span class="bt-input__value" style="display:inline-flex;flex:0 1 auto;width:auto;white-space:nowrap;color:var(--bt-text-primary-default,#1a1a1a);">${DTI_DEMO_VALUE}<span style="display:inline-block;width:1px;height:16px;background:var(--bt-base-intense,#404040);flex-shrink:0;"></span></span>`
     : `<input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DTI_DEMO_VALUE}"${inputAttrs} oninput="dtiBaseInput(this)" />`;
-  return `<div class="bt-input__content">${prependHtml}${fieldHtml}${appendHtml}</div>${validationHtml}${clearHtml}`;
+  return `<div class="bt-input__content">${fieldHtml}</div>${validationHtml}${clearHtml}`;
 }
 
 function dtiBasePreview(state, props = {}) {
-  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
   const isError   = state === 'error' || state === 'error-focused';
   const metaHtml  = label === 'on' ? `<div class="bt-input__label-value"><span class="bt-input__label">${_tbxEsc(labelValue)}</span></div>` : '';
   const hintHtml  = hint  === 'on' ? `<span class="bt-input__hint-value">${_tbxEsc(hintValue)}</span>` : '';
@@ -5358,14 +5376,14 @@ function dtiBasePreview(state, props = {}) {
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
       <div class="${outerCls}">
         ${metaHtml}
-        <div class="${_dtiBaseCls(state, size)}">${_dtiBaseInner(state, { prepend, prependValue, append, appendValue })}</div>
+        <div class="${_dtiBaseCls(state, size)}">${_dtiBaseInner(state)}</div>
         ${hintHtml}${errorHtml}
       </div>
     </div>`;
 }
 
 function dtiBaseCode(state, props = {}) {
-  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
   const cfg      = DTI_STATE_CONFIG[state] || DTI_STATE_CONFIG.default;
   const isError  = state === 'error' || state === 'error-focused';
   const outerCls = `bt-input bt-dateinput bt-input--${size}${isError ? ' bt-input--error' : ''}`;
@@ -5377,12 +5395,10 @@ function dtiBaseCode(state, props = {}) {
   const hintBlock  = hint  === 'on' ? `\n<span class="bt-input__hint-value">${hintValue}</span>` : '';
   const errorBlock = error === 'on' ? `\n<span class="bt-input__error-value">${errorValue}</span>` : '';
   const inputAttrs = (cfg.dark ? ` value="${DTI_DEMO_VALUE}"` : '') + (cfg.disabled ? ' disabled' : '') + (cfg.readonly ? ' readonly' : '');
-  const prependBlock = prepend === 'on' ? `\n    <span class="bt-input__prepend-text">${prependValue}</span>` : '';
-  const appendBlock  = append  === 'on' ? `\n    <span class="bt-input__append-text">${appendValue}</span>`   : '';
 
   const code = `${metaBlock}<div class="${boxCls}">
-  <div class="bt-input__content">${prependBlock}
-    <input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DTI_DEMO_VALUE}"${inputAttrs} oninput="dtiBaseInput(this)" />${appendBlock}
+  <div class="bt-input__content">
+    <input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DTI_DEMO_VALUE}"${inputAttrs} oninput="dtiBaseInput(this)" />
   </div>${valBlock}${clearBlock}
 </div>${hintBlock}${errorBlock}`;
 
@@ -5457,7 +5473,6 @@ PAGES_WEB['components/date-input'] = {
       { key: 'hintValue',  label: 'Hint Text',  type: 'text',           default: 'Hint Text' },
       { key: 'error',      label: 'Show Error', options: TBX_BOOL_OPTS, default: 'off' },
       { key: 'errorValue', label: 'Error Text', type: 'text',           default: 'Error Text' },
-      ...BI_AFFIX_PROPS,
     ];
 
     if (tab === 'Examples') return { title, html: `
@@ -5518,7 +5533,7 @@ PAGES_WEB['components/date-input'] = {
           <tr><td>${tk('.bt-input__hint-value')} / ${tk('--error')}</td><td>Hint / Error metni</td><td>Paylaşılan, diğer Base Input component'leriyle AYNI</td></tr>
         </tbody>
       </table>
-      <p class="page-desc" style="margin-top:24px;"><strong>Not — Figma'da henüz netleşmemiş, kullanıcı onayı bekliyor:</strong> "_Base DateInput" building-block'unun kendi önizlemesinde solda/sağda opsiyonel bir takvim ikonu (Input Controls) var, ama gerçek "DateInput" field'ının 9 state'inin HİÇBİRİNDE bu ikon render edilmiyor — bu yüzden bu sayfada da eklenmedi. Muhtemelen takvim ikonu ayrı bir "DatePicker" component'ine ait (DateInput = serbest klavye girişi, DatePicker = + takvim paneli), ama bu netleşene kadar varsayım olarak işaretli. Ayrıca Disabled VE Read Only state'lerinin ikisi de Clear Button gösteriyor (TextBox'ta sadece Filled gösterir) — Figma'da birebir bu şekilde, olduğu gibi uygulandı.</p>
+      <p class="page-desc" style="margin-top:24px;"><strong>Not:</strong> "_Base DateInput" building-block'unun solda/sağda opsiyonel bir takvim ikonu (Input Controls) var, ama gerçek "DateInput" field'ının 9 state'inin HİÇBİRİNDE bu ikon render edilmiyor — bu yüzden bu sayfada da eklenmedi. Takvim ikonu ayrı ${tk('components/date-picker')} component'ine ait (DateInput = serbest klavye girişi, DatePicker = + takvim paneli) — bu ayrım 2026-09-21'de Date Picker eklenirken netleşti. Ayrıca Disabled VE Read Only state'lerinin ikisi de Clear Button gösteriyor (TextBox'ta sadece Filled gösterir) — Figma'da birebir bu şekilde, olduğu gibi uygulandı.</p>
     `};
 
     if (tab === 'Usage') return { title, html: `
@@ -6201,17 +6216,15 @@ function _dpBaseCls(state, size) {
   return parts.join(' ');
 }
 
-function _dpBaseInner(state, affix = {}) {
-  const { prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = affix;
+function _dpBaseInner(state) {
   const cfg = DP_STATE_CONFIG[state] || DP_STATE_CONFIG.default;
-  const { p: prependHtml, a: appendHtml } = _biAffixHtml(prepend, prependValue, append, appendValue);
   const validationHtml = cfg.validation ? `<div class="bt-input__validation"><span class="bt-icon">${tbxBaseIconValidation}</span></div>` : '';
   const clearHtml = cfg.clear ? `<div class="bt-input__clear-button" onclick="dpBaseClear(this)"><span class="bt-icon">${sbxIconClear}</span></div>` : '';
   const inputAttrs = (cfg.dark ? ` value="${DP_DEMO_VALUE}"` : '') + (cfg.disabled ? ' disabled' : '') + (cfg.readonly ? ' readonly' : '');
   const btnAttrs = state === 'default' ? ` onclick="dpBaseToggle(this)"` : '';
   const controlsHtml = `<div class="bt-input__controls"><button type="button" class="bt-input__button"${btnAttrs}${cfg.disabled ? ' disabled' : ''}><span class="bt-icon">${dpIconCalendar}</span></button></div>`;
   const fieldHtml = `<input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DP_DEMO_VALUE}"${inputAttrs} oninput="dpBaseInput(this)" />`;
-  return `${controlsHtml}<div class="bt-input__content">${prependHtml}${fieldHtml}${appendHtml}</div>${validationHtml}${clearHtml}`;
+  return `${controlsHtml}<div class="bt-input__content">${fieldHtml}</div>${validationHtml}${clearHtml}`;
 }
 
 // Aç/kapa — ddBaseToggle'ın (Dropdown) AYNI deseni: ayrı bir "açık" class'ı
@@ -6299,7 +6312,7 @@ function dpBaseClear(el) {
 }
 
 function dpBasePreview(state, props = {}) {
-  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
   const isError   = state === 'error' || state === 'error-focused';
   const isDefault = state === 'default';
   const isActive  = state === 'active';
@@ -6315,7 +6328,7 @@ function dpBasePreview(state, props = {}) {
       <div class="${outerCls}">
         ${metaHtml}
         <div class="bt-input__anchor">
-          <div class="${_dpBaseCls(state, size)}">${_dpBaseInner(state, { prepend, prependValue, append, appendValue })}</div>
+          <div class="${_dpBaseCls(state, size)}">${_dpBaseInner(state)}</div>
           ${panelHtml}
         </div>
         ${hintHtml}${errorHtml}
@@ -6324,7 +6337,7 @@ function dpBasePreview(state, props = {}) {
 }
 
 function dpBaseCode(state, props = {}) {
-  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text', prepend = 'off', prependValue = '₺', append = 'off', appendValue = 'kg' } = props;
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'on', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
   const cfg      = DP_STATE_CONFIG[state] || DP_STATE_CONFIG.default;
   const isError  = state === 'error' || state === 'error-focused';
   const isActive = state === 'active';
@@ -6338,8 +6351,6 @@ function dpBaseCode(state, props = {}) {
   const hintBlock    = hint  === 'on' ? `\n<span class="bt-input__hint-value">${hintValue}</span>` : '';
   const errorBlock   = error === 'on' ? `\n<span class="bt-input__error-value">${errorValue}</span>` : '';
   const inputAttrs   = (cfg.dark ? ` value="${DP_DEMO_VALUE}"` : '') + (cfg.disabled ? ' disabled' : '') + (cfg.readonly ? ' readonly' : '');
-  const prependBlock = prepend === 'on' ? `\n    <span class="bt-input__prepend-text">${prependValue}</span>` : '';
-  const appendBlock  = append  === 'on' ? `\n    <span class="bt-input__append-text">${appendValue}</span>`   : '';
 
   const code = `${metaBlock}<div class="${boxCls}">
   <div class="bt-input__controls">
@@ -6347,8 +6358,8 @@ function dpBaseCode(state, props = {}) {
       <!-- Lucide calendar -->
     </button>
   </div>
-  <div class="bt-input__content">${prependBlock}
-    <input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DP_DEMO_VALUE}"${inputAttrs} oninput="dpBaseInput(this)" />${appendBlock}
+  <div class="bt-input__content">
+    <input class="bt-input__value" type="text" inputmode="numeric" maxlength="10" placeholder="${DP_DEMO_VALUE}"${inputAttrs} oninput="dpBaseInput(this)" />
   </div>${valBlock}${clearBlock}
 </div>${panelBlock}${hintBlock}${errorBlock}`;
 
@@ -6417,7 +6428,6 @@ PAGES_WEB['components/date-picker'] = {
       { key: 'hintValue',  label: 'Hint Text',  type: 'text',           default: 'Hint Text' },
       { key: 'error',      label: 'Show Error', options: TBX_BOOL_OPTS, default: 'off' },
       { key: 'errorValue', label: 'Error Text', type: 'text',           default: 'Error Text' },
-      ...BI_AFFIX_PROPS,
     ];
 
     if (tab === 'Examples') return { title, html: `
