@@ -26,6 +26,7 @@ const NAV_WEB = [
           { label: 'Badge',            id: 'components/badge' },
           { label: 'Banner',           id: 'components/banner' },
           { label: 'Card',             id: 'components/card' },
+          { label: 'Chip',             id: 'components/chip' },
           { label: 'Data Table',       id: 'components/data-table' },
           { label: 'Divider',          id: 'components/divider' },
           { label: 'Kbd',              id: 'components/kbd' },
@@ -5757,218 +5758,441 @@ function txaCss(state, props = {}) {
   return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
 }
 
-// ── Multi Select ─────────────────────────────────────────────────────────────
+// ── MultiSelect (Base Input üzerine — Chip component'ini reuse eder) ────────
+// Figma "Bentas DS" › "Base Multiselect" (1504:11620, Size sm/md/lg) + Multiselect
+// (1518:155154, Size × State=Default/Hover/Focus/Active/Filled/Disabled/Error/
+// Error Focus/Read Only, node-by-node Figma Desktop Bridge ile doğrulandı,
+// 2026-09-23). Chip alanı gerçek ${''}.bt-chip (components/chip, Closable type,
+// sm boyut) — CLAUDE.md "Mevcut Component'leri Reuse Et". Açılır panel Dropdown'la
+// PAYLAŞILAN aynı .bt-dropdown-list/.bt-dropdown-list-item (Figma'da da aynı
+// "Dropdown List" instance'ı reuse ediliyor). Prepend/Append Text YOK — Figma'nın
+// Content yapısında bu slotlar hiç tanımlı değil (add-input skill'in "verify
+// against current Figma" kuralı, BI_AFFIX_PROPS otomatik taşınmadı).
 
-const _mslIconXSmall = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5"/></svg>`;
+const MSL_SIZE_OPTS = [{ key: 'sm', label: 'Sm' }, { key: 'md', label: 'Md (Default)' }, { key: 'lg', label: 'Lg' }];
+const MSL_STATE_VARIANTS = [
+  { key: 'default',       label: 'Default' },
+  { key: 'hover',         label: 'Hover' },
+  { key: 'focus',         label: 'Focus' },
+  { key: 'active',        label: 'Active' },
+  { key: 'filled',        label: 'Filled' },
+  { key: 'disabled',      label: 'Disabled' },
+  { key: 'error',         label: 'Error' },
+  { key: 'error-focused', label: 'Error Focus' },
+  { key: 'readonly',      label: 'Read Only' },
+];
 
-const _mslChips = `
-  <span class="bt-msl__chip"><span class="bt-msl__chip-text">Option 1</span></span>
-  <span class="bt-msl__chip"><span class="bt-msl__chip-text">Option 2</span></span>
-  <span class="bt-msl__chip"><span class="bt-msl__chip-text">+2 more</span><button type="button" class="bt-msl__chip-remove">${_mslIconXSmall}</button></span>`;
+// State davranışı basit boolean'lara indirgenmiyor (bkz. add-input skill) —
+// Figma'dan node-by-node doğrulanmış açık bir config tablosu (DTI_STATE_CONFIG
+// deseniyle aynı). buttonState: Input Button'ın Figma state'i (default/hover/
+// active) — Hover VE Focus'ta bile Input Button "Hover" görünümünde (bg-subtle,
+// chevron-down), yalnız Active'te "Active" (bg-muted, chevron-UP) + panel açık.
+const MSL_STATE_CONFIG = {
+  default:         { chips: false, clear: false, validation: false, buttonState: 'default' },
+  hover:           { chips: false, clear: false, validation: false, buttonState: 'hover' },
+  focus:           { chips: false, clear: false, validation: false, buttonState: 'hover' },
+  active:          { chips: false, clear: false, validation: false, buttonState: 'active', open: true },
+  filled:          { chips: true,  clear: true,  validation: false, buttonState: 'default' },
+  disabled:        { chips: true,  clear: false, validation: false, buttonState: 'default', disabled: true },
+  error:           { chips: true,  clear: false, validation: true,  buttonState: 'default' },
+  'error-focused': { chips: true,  clear: false, validation: true,  buttonState: 'default' },
+  readonly:        { chips: true,  clear: false, validation: false, buttonState: 'default', readonly: true },
+};
 
+const MSL_OPTIONS = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6'];
+// Filled/Disabled/Error/Read Only'nin statik demo seçimi — Figma'nın kendi
+// "Chip Text + 3 more" örneğine denk (4 seçili, gerçek implementasyonda
+// truncation/"+N more" bir ALGORİTMA değil, Figma'nın statik bir illüstrasyonu
+// — bkz. design.md §28.5, canlı playground'da tüm seçili chip'ler gösterilir).
+const MSL_DEMO_SELECTED = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+// Dropdown'ın _ddBaseCls'iyle BİREBİR AYNI desen (state adları örtüşüyor) —
+// ayrı bir kopya yerine aynı mantığı burada da yazıyoruz (Dropdown'ın kendi
+// fonksiyonuna bağımlı kalmamak için, ikisi bağımsız evrilebilsin).
 function _mslCls(state, size) {
-  return _tbxCls(state, size) + ' bt-msl';
+  const parts = ['bt-input__box', `bt-input__box--${size}`];
+  if (state === 'error-focused') parts.push('bt-input__box--error', 'bt-input__box--error-focused');
+  else if (state !== 'default' && state !== 'filled') parts.push(`bt-input__box--${state}`);
+  return parts.join(' ');
 }
 
-function _mslInputInner(state) {
-  const isError    = state === 'error' || state === 'error-focused';
-  const isFilled   = state === 'filled';
-  const validationHtml = isError  ? `<div class="bt-tbx__control"><span class="bt-tbx__icon">${_tbxIconValidation}</span></div>` : '';
-  const clearHtml      = isFilled ? `<div class="bt-tbx__control"><button type="button" class="bt-tbx__clear">${_tbxIconClear}</button></div>` : '';
-  return `<div class="bt-tbx__control bt-tbx__control--left"><span class="bt-tbx__icon">${_slkIconPlus}</span></div><div class="bt-msl__content">${_mslChips}</div>${validationHtml}${clearHtml}`;
+function _mslOptionsHtml(selected) {
+  return MSL_OPTIONS.map(label => {
+    const isSel = selected.includes(label);
+    return `<div class="bt-dropdown-list-item${isSel ? ' bt-dropdown-list-item--selected' : ''}" data-value="${_tbxEsc(label)}" onclick="mslOptionToggle(event,this)"><span class="bt-dropdown-list-item__text">${_tbxEsc(label)}</span></div>`;
+  }).join('');
+}
+
+// Her seçili değer gerçek bir .bt-chip (Closable) — Chip component'inin kendi
+// chipHtml()'i reuse edilir, × butonu MultiSelect'e özel mslChipRemove'a
+// bağlanır (btChipRemove'un genel DOM-remove'undan farklı olarak listedeki
+// karşılığını da "seçili değil"e döndürmesi gerekiyor).
+function _mslChipsHtml(selected) {
+  return selected.map(label => chipHtml({
+    size: 'sm', fillMode: 'solid', content: 'text', closable: 'on',
+    text: label, interactive: false, onRemove: 'mslChipRemove(this)',
+  })).join('');
+}
+
+function _mslPlaceholderHtml() {
+  return `<span class="bt-input__value" style="color:var(--bt-text-primary-muted,#a3a3a3);white-space:nowrap;">Select List Item</span>`;
+}
+
+function _mslBoxInner(state, selected = []) {
+  const cfg = MSL_STATE_CONFIG[state] || MSL_STATE_CONFIG.default;
+  const hasChips = cfg.chips && selected.length > 0;
+  const contentInner = hasChips ? _mslChipsHtml(selected) : _mslPlaceholderHtml();
+  const validationHtml = cfg.validation ? `<div class="bt-input__validation"><span class="bt-icon">${tbxBaseIconValidation}</span></div>` : '';
+  const clearHtml = (cfg.clear && hasChips) ? `<div class="bt-input__clear-button" onclick="mslClearAll(this)"><span class="bt-icon">${sbxIconClear}</span></div>` : '';
+  const chevron = cfg.buttonState === 'active' ? ddBaseIconChevronUp : ddBaseIconChevronDown;
+  return `
+        <div class="bt-input__content">${contentInner}</div>${validationHtml}${clearHtml}
+        <div class="bt-input__controls"><div class="bt-input__button"><span class="bt-icon">${chevron}</span></div></div>`;
+}
+
+// ── Gerçek interaktif davranış (yalnızca "Default" state varyantı, Dropdown'ın
+// ddBaseToggle deseniyle AYNI ilke — diğer state'ler statik Figma-sadık
+// önizleme). Kullanıcı isteği: "seçim sonrası interaktif bir şekilde çalışmalı". ──
+
+// Kutuya/chevron'a tıklamak paneli açar/kapar. ddBaseToggle'dan TEK farkı:
+// bir seçenek tıklandığında panel KAPANMAZ (multi-select, art arda seçim
+// yapılabilmeli) — kapanma yalnız kutuya tekrar tıklayınca veya dışarı
+// tıklayınca olur.
+window.mslToggle = function (boxEl) {
+  const anchor = boxEl.closest('.bt-input__anchor');
+  const isOpen = boxEl.classList.toggle('bt-input__box--active');
+  const list = anchor ? anchor.querySelector('.bt-dropdown-list') : null;
+  if (list) list.style.display = isOpen ? '' : 'none';
+  const iconSpan = boxEl.querySelector('.bt-input__controls .bt-icon');
+  if (iconSpan) iconSpan.innerHTML = isOpen ? ddBaseIconChevronUp : ddBaseIconChevronDown;
+  if (isOpen) _mslBindOutsideClickOnce(anchor);
+};
+
+// Dışarı tıklayınca paneli kapatır — Date Picker'daki _dpBindOutsideClickOnce
+// ile AYNI e.composedPath() deseni (DOM mutasyonundan etkilenmeyen kontrol,
+// bkz. design.md §21 devam notu / add-input skill).
+function _mslBindOutsideClickOnce(anchor) {
+  if (!anchor || anchor._mslOutsideBound) return;
+  anchor._mslOutsideBound = true;
+  document.addEventListener('click', function (e) {
+    const box = anchor.querySelector('.bt-input__box');
+    if (!box || !box.classList.contains('bt-input__box--active')) return;
+    if (e.composedPath().includes(anchor)) return;
+    box.classList.remove('bt-input__box--active');
+    const list = anchor.querySelector('.bt-dropdown-list');
+    if (list) list.style.display = 'none';
+    const iconSpan = box.querySelector('.bt-input__controls .bt-icon');
+    if (iconSpan) iconSpan.innerHTML = ddBaseIconChevronDown;
+  });
+}
+
+// Listeden bir seçenek tıklanınca: zaten seçiliyse kaldırır (chip + seçili
+// işareti), değilse gerçek bir .bt-chip olarak content alanına ekler
+// (placeholder varsa kaldırılır). event.stopPropagation() dışarı-tıklama
+// kapatıcısını tetiklemesin diye.
+window.mslOptionToggle = function (event, optEl) {
+  event.stopPropagation();
+  const box = optEl.closest('.bt-input__anchor').querySelector('.bt-input__box');
+  const content = box.querySelector('.bt-input__content');
+  const value = optEl.dataset.value;
+  const existing = Array.from(content.querySelectorAll('.bt-chip__value')).find(v => v.textContent === value);
+  if (existing) {
+    existing.closest('.bt-chip').remove();
+    optEl.classList.remove('bt-dropdown-list-item--selected');
+  } else {
+    const placeholder = content.querySelector('.bt-input__value');
+    if (placeholder) placeholder.remove();
+    content.insertAdjacentHTML('beforeend', chipHtml({
+      size: 'sm', fillMode: 'solid', content: 'text', closable: 'on',
+      text: value, interactive: false, onRemove: 'mslChipRemove(this)',
+    }));
+    optEl.classList.add('bt-dropdown-list-item--selected');
+  }
+  _mslSyncClear(box);
+};
+
+// Chip'in kendi × butonu — chip'i kaldırır, listedeki karşılığını "seçili
+// değil"e döndürür (panel açıksa görünür değişiklik), hiç chip kalmadıysa
+// placeholder'ı geri getirir. btChipRemove'un genel DOM-remove'undan FARKI
+// budur — bu yüzden Chip component'inin genel onRemove parametresi kullanıldı.
+window.mslChipRemove = function (el) {
+  const chip = el.closest('.bt-chip');
+  const box = chip.closest('.bt-input__box');
+  const value = chip.querySelector('.bt-chip__value').textContent;
+  chip.remove();
+  const anchor = box.closest('.bt-input__anchor');
+  const optEl = anchor && anchor.querySelector(`.bt-dropdown-list-item[data-value="${CSS.escape(value)}"]`);
+  if (optEl) optEl.classList.remove('bt-dropdown-list-item--selected');
+  _mslRestorePlaceholderIfEmpty(box);
+  _mslSyncClear(box);
+};
+
+// Tümünü temizle (×, Figma "Input Clear Button") — tüm chip'leri kaldırır,
+// tüm liste item'larını seçili olmaktan çıkarır, placeholder'ı geri getirir,
+// kendini kaldırır (Filled'a özgü, chip kalmayınca zaten anlamsız).
+window.mslClearAll = function (el) {
+  const box = el.closest('.bt-input__box');
+  box.querySelectorAll('.bt-chip').forEach(c => c.remove());
+  const anchor = box.closest('.bt-input__anchor');
+  if (anchor) anchor.querySelectorAll('.bt-dropdown-list-item--selected').forEach(o => o.classList.remove('bt-dropdown-list-item--selected'));
+  _mslRestorePlaceholderIfEmpty(box);
+  el.remove();
+};
+
+function _mslRestorePlaceholderIfEmpty(box) {
+  const content = box.querySelector('.bt-input__content');
+  if (content && !content.querySelector('.bt-chip')) content.innerHTML = _mslPlaceholderHtml();
+}
+// Clear butonu chip varlığına göre canlı eklenir/kaldırılır — Figma'da yalnız
+// Filled state'te var ama canlı demoda "Default → seçim yapıldı" durumu
+// işlevsel olarak Filled'a denk düştüğü için aynı davranış uygulanıyor.
+function _mslSyncClear(box) {
+  const content = box.querySelector('.bt-input__content');
+  const hasChips = !!content.querySelector('.bt-chip');
+  const existingClear = box.querySelector('.bt-input__clear-button');
+  if (hasChips && !existingClear) {
+    const validation = box.querySelector('.bt-input__validation');
+    const btn = document.createElement('div');
+    btn.className = 'bt-input__clear-button';
+    btn.setAttribute('onclick', 'mslClearAll(this)');
+    btn.innerHTML = `<span class="bt-icon">${sbxIconClear}</span>`;
+    (validation || content).after(btn);
+  } else if (!hasChips && existingClear) {
+    existingClear.remove();
+  }
 }
 
 function mslPreview(state, props = {}) {
-  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
-  const labelHtml    = label    === 'on' ? `<span class="bt-input__label">Label Text</span>` : '';
-  const requiredHtml = required === 'on' ? `<span class="bt-input__required">Required Field</span>` : '';
-  const metaHtml     = (label === 'on' || required === 'on') ? `<div class="bt-input__label-value">${labelHtml}${requiredHtml}</div>` : '';
-  const helperHtml   = helper   === 'on' ? `<span class="bt-input__hint-value">Helper Text</span>` : '';
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'off', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
+  const cfg = MSL_STATE_CONFIG[state] || MSL_STATE_CONFIG.default;
+  const isError = state === 'error' || state === 'error-focused';
+  const isDefault = state === 'default';
+  const labelHtml = label === 'on' ? `<div class="bt-input__label-value"><span class="bt-input__label"${isError ? ' style="color:var(--bt-text-error-default,#b31d38);"' : ''}>${_tbxEsc(labelValue)}</span></div>` : '';
+  const hintHtml  = hint  === 'on' ? `<span class="bt-input__hint-value">${_tbxEsc(hintValue)}</span>` : '';
+  const errorHtml = (isError || error === 'on') ? `<span class="bt-input__error-value">${_tbxEsc(errorValue)}</span>` : '';
+  const outerCls  = `bt-input bt-multiselect bt-input--${size}${isError ? ' bt-input--error' : ''}`;
+  const selected  = cfg.chips ? MSL_DEMO_SELECTED.slice() : [];
+  const boxAttrs  = isDefault ? ` onclick="mslToggle(this)" style="cursor:pointer;"` : '';
+  const optionsHtml = isDefault
+    ? `<div class="bt-dropdown-list" style="display:none;">${_mslOptionsHtml([])}</div>`
+    : (cfg.open ? `<div class="bt-dropdown-list">${_mslOptionsHtml(selected)}</div>` : '');
   return `
     <div style="padding:24px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box;">
-      <div class="${_mslCls(state, size)}">
-        ${metaHtml}
-        <div class="bt-tbx__input">${_mslInputInner(state)}</div>
-        ${helperHtml}
+      <div class="${outerCls}">
+        ${labelHtml}
+        <div class="bt-input__anchor">
+          <div class="${_mslCls(state, size)}"${boxAttrs}>${_mslBoxInner(state, selected)}</div>
+          ${optionsHtml}
+        </div>
+        ${hintHtml}${errorHtml}
       </div>
     </div>`;
 }
 
 function mslCode(state, props = {}) {
-  const { size = 'md', label = 'on', required = 'on', helper = 'on' } = props;
-  const cls     = _mslCls(state, size);
+  const { size = 'md', label = 'on', labelValue = 'Label Text', hint = 'off', hintValue = 'Hint Text', error = 'off', errorValue = 'Error Text' } = props;
+  const cfg = MSL_STATE_CONFIG[state] || MSL_STATE_CONFIG.default;
   const isError = state === 'error' || state === 'error-focused';
-  const isFilled = state === 'filled';
-  const metaParts = [];
-  if (label    === 'on') metaParts.push('  <span class="bt-input__label">Label Text</span>');
-  if (required === 'on') metaParts.push('  <span class="bt-input__required">Required Field</span>');
-  const metaBlock   = metaParts.length ? `<div class="bt-input__label-value">\n${metaParts.join('\n')}\n</div>\n` : '';
-  const valBlock    = isError  ? `\n  <div class="bt-tbx__control">\n    <!-- circle-alert icon 15×15 -->\n  </div>` : '';
-  const clearBlock  = isFilled ? `\n  <div class="bt-tbx__control">\n    <!-- clear (×) icon 10×10 -->\n  </div>` : '';
-  const helperBlock = helper === 'on' ? `\n<span class="bt-input__hint-value">Helper Text</span>` : '';
-  const code = `${metaBlock}<div class="bt-tbx__input">
-  <div class="bt-tbx__control bt-tbx__control--left">
-    <!-- plus icon 16×16 -->
+  const cls = _mslCls(state, size);
+  const selected = cfg.chips ? MSL_DEMO_SELECTED : [];
+  const labelBlock = label === 'on' ? `<div class="bt-input__label-value">\n  <span class="bt-input__label">${_tbxEsc(labelValue)}</span>\n</div>\n` : '';
+  const contentBlock = selected.length
+    ? selected.map(v => `      <span class="bt-chip bt-chip--sm bt-chip--solid">\n        <span class="bt-chip__value">${_tbxEsc(v)}</span>\n        <span class="bt-chip__clear"><!-- × 10×10 --></span>\n      </span>`).join('\n')
+    : `      <span class="bt-input__value">Select List Item</span>`;
+  const validationBlock = cfg.validation ? `\n    <div class="bt-input__validation"><!-- circle-alert --></div>` : '';
+  const clearBlock = (cfg.clear && selected.length) ? `\n    <div class="bt-input__clear-button"><!-- × --></div>` : '';
+  const hintBlock = hint === 'on' ? `\n<span class="bt-input__hint-value">${_tbxEsc(hintValue)}</span>` : '';
+  const errorBlock = (isError || error === 'on') ? `\n<span class="bt-input__error-value">${_tbxEsc(errorValue)}</span>` : '';
+  const code = `${labelBlock}<div class="bt-input__anchor">
+  <div class="${cls}">
+    <div class="bt-input__content">
+${contentBlock}
+    </div>${validationBlock}${clearBlock}
+    <div class="bt-input__controls"><div class="bt-input__button"><!-- chevron --></div></div>
   </div>
-  <div class="bt-msl__content">
-    <span class="bt-msl__chip">
-      <span class="bt-msl__chip-text">Option 1</span>
-    </span>
-    <span class="bt-msl__chip">
-      <span class="bt-msl__chip-text">+2 more</span>
-      <button class="bt-msl__chip-remove"><!-- × icon 10×10 --></button>
-    </span>
-  </div>${valBlock}${clearBlock}
-</div>${helperBlock}`;
+  <div class="bt-dropdown-list"><!-- Option list, Dropdown'la paylaşılan --></div>
+</div>${hintBlock}${errorBlock}`;
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  return `<pre class="code-block">&lt;div class="${esc(cls)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+  return `<pre class="code-block">&lt;div class="${esc(`bt-input bt-multiselect bt-input--${size}${isError ? ' bt-input--error' : ''}`)}"&gt;\n${esc(code)}\n&lt;/div&gt;</pre>`;
+}
+
+function mslCss(state, props = {}) {
+  const { size = 'md' } = props;
+  const lines = [];
+  const p = (k, v) => `  ${k}: ${v};`;
+  const isError   = state === 'error' || state === 'error-focused';
+  const isFocused = state === 'focus' || state === 'active' || state === 'error-focused';
+  const label = state.charAt(0).toUpperCase() + state.slice(1).replace('-', ' ');
+
+  lines.push(`/* MultiSelect (.bt-input__box çekirdeği) · ${label}${size !== 'md' ? ' · ' + size.toUpperCase() : ''} */`);
+  lines.push('');
+  lines.push('.bt-input__box {');
+  lines.push(p('height', size === 'lg' ? '36px' : size === 'sm' ? '28px' : '32px'));
+  lines.push(p('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(p('background',
+    (state === 'disabled' || state === 'readonly')
+      ? 'var(--bt-base-subtle)  /* #f5f5f5 */'
+      : 'var(--bt-base-default)  /* #ffffff */'));
+  lines.push(p('border', `1px solid ${
+    isError
+      ? 'var(--bt-border-error-default)  /* #b31d38 */'
+      : (state === 'hover' || state === 'focus' || state === 'active')
+        ? 'var(--bt-border-brand-default)  /* #0d4e97 */'
+        : 'var(--bt-border-primary-default)  /* #d4d4d4 */'
+  }`));
+  if (isFocused) lines.push(p('box-shadow',
+    isError ? '0 0 0 3px rgba(232,75,91,0.25)' : '0 0 0 3px rgba(13,78,151,0.25)'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push(`.bt-multiselect .bt-input__box--${size} .bt-input__content {`);
+  lines.push(p('gap', 'var(--bt-space-xs)  /* 4px — chip\'ler arası */'));
+  lines.push(p('padding', size === 'lg'
+    ? 'var(--bt-space-md) var(--bt-space-md)  /* 8px 8px */'
+    : size === 'sm'
+      ? 'var(--bt-space-xs) var(--bt-space-md)  /* 4px 8px */'
+      : 'var(--bt-space-sm) var(--bt-space-md)  /* 6px 8px */'));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('/* Seçili değerler gerçek .bt-chip (Closable, sm) — bkz. components/chip */');
+  lines.push('.bt-chip--sm { height: 20px; }');
+
+  if (isError) {
+    lines.push('');
+    lines.push('.bt-input__label {');
+    lines.push(p('color', 'var(--bt-text-error-default)  /* #b31d38 */'));
+    lines.push('}');
+  }
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${_tbxEsc(lines.join('\n'))}</pre>`;
 }
 
 PAGES_WEB['components/multi-select'] = {
   tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
-  toc:  ['Anatomy', 'States', 'Sizes'],
+  toc:  ['Anatomy', 'Sizes', 'States'],
   render(tab) {
     const title = 'MultiSelect';
     const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
 
+    // Figma'nın gerçek property modeli: showLabelText/labelValue, showHintText/
+    // hintValue, showErrorText/errorValue — üçü bağımsız (Dropdown'la aynı
+    // model, "Required" YOK). Prepend/Append Text Figma'da tanımlı değil.
     const sharedProps = [
-      { key: 'size',     label: 'Size',     options: TBX_SIZE_OPTS, default: 'md'  },
-      { key: 'label',    label: 'Label',    options: TBX_BOOL_OPTS, default: 'on' },
-      { key: 'required', label: 'Required', options: TBX_BOOL_OPTS, default: 'on' },
-      { key: 'helper',   label: 'Helper',   options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'size',       label: 'Size',       options: MSL_SIZE_OPTS, default: 'md' },
+      { key: 'label',      label: 'Show Label', options: TBX_BOOL_OPTS, default: 'on' },
+      { key: 'labelValue', label: 'Label Text', type: 'text',           default: 'Label Text' },
+      { key: 'hint',       label: 'Show Hint',  options: TBX_BOOL_OPTS, default: 'off' },
+      { key: 'hintValue',  label: 'Hint Text',  type: 'text',           default: 'Hint Text' },
+      { key: 'error',      label: 'Show Error', options: TBX_BOOL_OPTS, default: 'off' },
+      { key: 'errorValue', label: 'Error Text', type: 'text',           default: 'Error Text' },
     ];
 
     if (tab === 'Examples') return { title, html: `
-      <p class="page-desc">Tüm state'ler interaktif playground üzerinde — boyutu ve label görünürlüğünü değiştirin.</p>
+      <p class="page-desc">Dokuz state'in (Default/Hover/Focus/Active/Filled/Disabled/Error/Error Focus/Read Only) tümü üst varyant çubuğundan seçilebilir. Yalnızca <strong>Default</strong> gerçekten interaktiftir — kutuya tıklayınca panel açılır, bir seçeneğe tıklamak gerçek bir ${tk('.bt-chip')} ekler, chip'in × butonu onu kaldırır; diğer state'ler Figma'ya sadık statik önizlemelerdir.</p>
       ${registerPlayground({
         id: 'pgd-msl-ex',
-        variants: TBX_STATE_VARIANTS,
+        variants: MSL_STATE_VARIANTS,
         props: sharedProps,
         preview: (state, p) => mslPreview(state, p),
         code:    (state, p) => mslCode(state, p),
-        css:     (state, p) => tbxCss(state, p),
+        css:     (state, p) => mslCss(state, p),
       })}
     `};
 
     if (tab === 'CSS Properties') return { title, html: `
-      <p class="page-desc">MultiSelect için kullanılan design token–CSS değişken eşleşmeleri.</p>
-      <h2>Sizes</h2>
+      <p class="page-desc">MultiSelect için design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>Base Multiselect</em> ve <em>Multiselect</em> component set'lerinden Figma Desktop Bridge ile doğrulanmıştır. Chip token'ları için bkz. ${tk('components/chip')} — burada tekrarlanmıyor.</p>
       <table class="token-table">
-        <thead><tr><th>Size</th><th>Min Height</th><th>Left control padding</th><th>Content padding</th></tr></thead>
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td><span class="token-name">Sm</span></td><td>28px</td><td>${tk('--bt-space-2xs')} (2px)</td><td>${tk('--bt-space-xs')} (4px) tüm kenar</td></tr>
-          <tr><td><span class="token-name">Md</span></td><td>32px</td><td>${tk('--bt-space-xs')} (4px)</td><td>${tk('--bt-space-sm')} (6px) dikey · ${tk('--bt-space-xs')} (4px) yatay</td></tr>
-          <tr><td><span class="token-name">Lg</span></td><td>36px</td><td>${tk('--bt-space-sm')} (6px)</td><td>${tk('--bt-space-md')} (8px) dikey · ${tk('--bt-space-xs')} (4px) yatay</td></tr>
-        </tbody>
-      </table>
-      <h2>State Tokens</h2>
-      <table class="token-table">
-        <thead><tr><th>State</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>Default</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td>Hover</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td rowspan="2">Focused / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>#0d4e97</td></tr>
-          <tr><td>box-shadow</td><td colspan="2">0 0 0 3px rgba(13,78,151,0.25)</td></tr>
-          <tr><td rowspan="2">Disabled</td><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>chip opacity</td><td colspan="2">0.6</td></tr>
-          <tr><td rowspan="2">Error</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>#b31d38</td></tr>
-          <tr><td>label / required</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
-        </tbody>
-      </table>
-      <h2>Chip Tokens</h2>
-      <table class="token-table">
-        <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
-        <tbody>
-          <tr><td>background</td><td>${tk('--bt-surface-primary-subtle')}</td><td>#f5f5f5</td></tr>
-          <tr><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>#d4d4d4</td></tr>
-          <tr><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
-          <tr><td>padding</td><td>${tk('--bt-space-2xs')} / ${tk('--bt-space-xs')}</td><td>2px / 4px</td></tr>
-          <tr><td>gap</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
-          <tr><td>text color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
-          <tr><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px / 16px</td></tr>
-          <tr><td>remove icon color</td><td>${tk('--bt-icon-primary-strong')}</td><td>#535353</td></tr>
-        </tbody>
-      </table>
-      <h2>Class Reference</h2>
-      <table class="token-table">
-        <thead><tr><th>Class</th><th>Element</th><th>Açıklama</th></tr></thead>
-        <tbody>
-          <tr><td>${tk('.bt-input.bt-msl')}</td><td>Wrapper</td><td>TextBox state sistemi + min-height override; state/size modifier'ları buraya eklenir</td></tr>
-          <tr><td>${tk('.bt-tbx__control--left')}</td><td>Plus ikon sarmalayıcı</td><td>Sol tarafta sabit; hover/focused'ta subtle bg</td></tr>
-          <tr><td>${tk('.bt-msl__content')}</td><td>Chip alanı</td><td>flex-wrap, gap --bt-space-xs; boyuta göre padding</td></tr>
-          <tr><td>${tk('.bt-msl__chip')}</td><td>Tekil chip</td><td>subtle bg + border + radius-sm</td></tr>
-          <tr><td>${tk('.bt-msl__chip-text')}</td><td>Chip metni</td><td>12px, nowrap</td></tr>
-          <tr><td>${tk('.bt-msl__chip-remove')}</td><td>Chip × butonu</td><td>16×16, +N more chip'inde gösterilir</td></tr>
-          <tr><td>${tk('.bt-tbx__clear')}</td><td>Tümünü temizle butonu</td><td>Filled state'te sağda</td></tr>
+          <tr><td>Box · Sm / Md / Lg</td><td>height</td><td>—</td><td>28 / 32 / 36px</td></tr>
+          <tr><td>Box</td><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Box · Default / Hover / Focus / Active / Filled</td><td>background</td><td>${tk('--bt-base-default')}</td><td>#ffffff</td></tr>
+          <tr><td>Box · Disabled / Read Only</td><td>background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Box · Default / Filled</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4</td></tr>
+          <tr><td>Box · Hover / Focus / Active</td><td>border</td><td>${tk('--bt-border-brand-default')}</td><td>1px · #0d4e97</td></tr>
+          <tr><td>Box · Focus / Active</td><td>box-shadow</td><td>${tk('rgba(13,78,151,.25)')}</td><td>0 0 0 3px</td></tr>
+          <tr><td>Box · Error / Error Focus</td><td>border</td><td>${tk('--bt-border-error-default')}</td><td>1px · #b31d38</td></tr>
+          <tr><td>Box · Error Focus</td><td>box-shadow</td><td>${tk('rgba(232,75,91,.25)')}</td><td>0 0 0 3px</td></tr>
+          <tr><td>Content</td><td>gap (chip'ler arası)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Content · Sm</td><td>padding</td><td>${tk('--bt-space-xs')} ${tk('--bt-space-md')}</td><td>4px 8px</td></tr>
+          <tr><td>Content · Md</td><td>padding</td><td>${tk('--bt-space-sm')} ${tk('--bt-space-md')}</td><td>6px 8px</td></tr>
+          <tr><td>Content · Lg</td><td>padding</td><td>${tk('--bt-space-md')} ${tk('--bt-space-md')}</td><td>8px 8px</td></tr>
+          <tr><td>Input Value (placeholder)</td><td>color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Label · Error</td><td>color</td><td>${tk('--bt-text-error-default')}</td><td>#b31d38</td></tr>
+          <tr><td>Chip</td><td>—</td><td>—</td><td>gerçek ${tk('.bt-chip')} (sm, Closable) — bkz. ${tk('components/chip')}</td></tr>
+          <tr><td>Input Button (chevron)</td><td>state</td><td>—</td><td>Default (bg yok) → Hover/Focus (${tk('--bt-base-subtle')}) → Active (${tk('--bt-base-muted')} + chevron-up)</td></tr>
+          <tr><td>Dropdown List (panel)</td><td>—</td><td>—</td><td>Dropdown'la paylaşılan ${tk('.bt-dropdown-list')} — bkz. ${tk('components/dropdown')}</td></tr>
         </tbody>
       </table>
     `};
 
     if (tab === 'Usage') return { title, html: `
-      <p class="page-desc">MultiSelect kullanım kuralları.</p>
-      <h2>When to use</h2>
-      <ul>
-        <li>Kullanıcının birden fazla seçenek seçmesi gereken form alanlarında</li>
-        <li>Seçili değerlerin chip olarak görünür kalması gerektiğinde</li>
-        <li>Dropdown listesinden çoklu seçim yapılacak durumlarda</li>
-      </ul>
+      <p class="page-desc">MultiSelect kullanım kuralları. Birden fazla seçeneğin aynı anda seçilebildiği, seçili değerlerin görünür kalması gereken form alanlarında kullanılır — tekli seçim için Dropdown veya Select LookUp tercih edilmeli.</p>
       <h2>Do</h2>
       <ul>
-        <li>Seçilen chip sayısını göster — fazla chip'leri "+N more" olarak topla</li>
-        <li>Filled state'te "Tümünü temizle" (×) butonu ekle</li>
-        <li>Plus ikonu ile yeni seçim ekleneceğini kullanıcıya göster</li>
-        <li>Error state'te helper text ile açıklayıcı mesaj ekle</li>
+        <li>Seçili değerleri gerçek Chip component'iyle göster — özel/taklit bir chip yazma</li>
+        <li>Filled state'te "tümünü temizle" (×) butonu sun</li>
+        <li>Error state'te Error Value ile açıklayıcı bir mesaj ekle</li>
+        <li>Panel açıkken kullanıcı art arda birden fazla seçim yapabilsin — her seçimde panel kapanmamalı</li>
       </ul>
       <h2>Don't</h2>
       <ul>
-        <li>Tek seçim için MultiSelect kullanma — Select LookUp veya Dropdown kullan</li>
-        <li>Chip'leri readonly state'te kaldırma butonuyla gösterme</li>
+        <li>Tek seçim için MultiSelect kullanma — Dropdown veya Select LookUp kullan</li>
+        <li>Disabled bir MultiSelect'te chip'lerin × butonunu tıklanabilir bırakma</li>
+        <li>Read Only'de kullanıcının seçimi değiştirmesine izin verme (yalnızca görüntüleme)</li>
       </ul>
     `};
 
-    // ── Overview ───────────────────────────────────────────────────
+    // ── Overview ──
     return { title, html: `
       ${registerPlayground({
         id: 'pgd-msl-overview',
-        variants: TBX_STATE_VARIANTS,
+        variants: MSL_STATE_VARIANTS,
         props: sharedProps,
         preview: (state, p) => mslPreview(state, p),
         code:    (state, p) => mslCode(state, p),
-        css:     (state, p) => tbxCss(state, p),
+        css:     (state, p) => mslCss(state, p),
       })}
-      <h2>Anatomy</h2>
-      <p class="page-desc">Multi-Select bileşeni; meta satırı, sol kontrol, chip alanı, temizleme butonu ve yardım metni olmak üzere 7 yapısal öğeden oluşur. Chip'ler ${tk('.bt-msl__content')} konteyneri içinde dizilir; ${tk('.bt-tbx__control--left')} sol aksiyonu, ${tk('.bt-input--filled')} state modifier'ı ise temizle butonunun görünürlüğünü yönetir. Blazor/Telerik'te ${tk('TelerikMultiSelect')} bileşeniyle uygulanır.</p>
-      <ol>
-        <li><strong>Meta</strong> — label + required field satırı</li>
-        <li><strong>Left control</strong> — plus ikonu, yeni seçim eklemek için (${tk('.bt-tbx__control--left')})</li>
-        <li><strong>Content</strong> — seçili chip'ler (${tk('.bt-msl__content')})</li>
-        <li><strong>Chip</strong> — tekil seçim etiketi; "+N more" chip'i kaldırma × butonu içerir</li>
-        <li><strong>Clear control</strong> — filled state'te tüm seçimleri temizler</li>
-        <li><strong>Validation control</strong> — error state'te uyarı ikonu</li>
-        <li><strong>Helper text</strong> — yardımcı bilgi veya hata mesajı</li>
-      </ol>
-      <h2>States</h2>
-      <table class="token-table">
-        <thead><tr><th>State</th><th>Class modifier</th><th>Görsel fark</th></tr></thead>
+
+      <p class="page-desc">Birden fazla seçeneğin aynı anda seçilebildiği, seçili değerlerin gerçek ${tk('.bt-chip')} bileşenleriyle (bkz. ${tk('components/chip')}) gösterildiği input — kutuya tıklamak Dropdown'la PAYLAŞILAN aynı açılır paneli (${tk('.bt-dropdown-list')}) açar, bir seçeneğe tıklamak panel açık kalarak yeni bir chip ekler, chip'in kendi × butonu onu kaldırır. Dokuz state (Default/Hover/Focus/Active/Filled/Disabled/Error/Error Focus/Read Only) ve üç boyut (Sm/Md/Lg) destekler. HTML'de ${tk('.bt-input.bt-multiselect.bt-input--{size}')} + çocukları; Blazor tarafında ${tk('TelerikMultiSelect')} bileşeniyle uygulanır.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Base Input çekirdeğinin (bkz. add-input skill / design.md §25) MultiSelect'e özel dolumu: Content alanı ya bir placeholder ya da bir dizi gerçek Chip taşır, Controls her zaman tek bir Input Button (chevron) içerir — sol tarafta ayrı bir ikon YOK (eski implementasyondaki plus ikonu Figma'nın güncel Base Multiselect'inde artık yok). Açılır panel Dropdown'ın kendi ${tk('.bt-dropdown-list')}'ini reuse eder, ${tk('.bt-input__anchor')} içinde kutunun kardeşi olarak konumlanır.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Figma layer</th><th>Class</th><th>Rol</th></tr></thead>
         <tbody>
-          <tr><td>Default</td><td>—</td><td>Gri border, chip'ler görünür</td></tr>
-          <tr><td>Hover</td><td>${tk('.bt-input--hover')}</td><td>Mavi border</td></tr>
-          <tr><td>Focused</td><td>${tk('.bt-input--focused')}</td><td>Mavi border + focus ring</td></tr>
-          <tr><td>Active</td><td>${tk('.bt-input--active')}</td><td>Mavi border + focus ring (panel açık)</td></tr>
-          <tr><td>Filled</td><td>${tk('.bt-input--filled')}</td><td>Chip'ler + sağda × (tümünü temizle)</td></tr>
-          <tr><td>Disabled</td><td>${tk('.bt-input--disabled')}</td><td>Subtle bg, chip'ler %60 opacity</td></tr>
-          <tr><td>Read Only</td><td>${tk('.bt-input--readonly')}</td><td>Subtle bg, değiştirilemez</td></tr>
-          <tr><td>Error</td><td>${tk('.bt-input--error')}</td><td>Kırmızı border + label + uyarı ikonu</td></tr>
-          <tr><td>Error Focused</td><td>${tk('.bt-input--error-focused')}</td><td>Kırmızı border + error ring</td></tr>
+          <tr><td>Label Value</td><td>${tk('.bt-input__label-value')}</td><td>opsiyonel, bağımsız show/hide</td></tr>
+          <tr><td>_Base Multiselect (kutu)</td><td>${tk('.bt-input__box.bt-input__box--{size}')}</td><td>STATE katmanı, border/bg/ring</td></tr>
+          <tr><td>Content</td><td>${tk('.bt-input__content')}</td><td>placeholder VEYA chip dizisi, gap 4px</td></tr>
+          <tr><td>Chip (× N)</td><td>${tk('.bt-chip')}</td><td>gerçek Chip component'i (sm, Closable) — bkz. ${tk('components/chip')}</td></tr>
+          <tr><td>Validation</td><td>${tk('.bt-input__validation')}</td><td>Error/Error Focus'ta circle-alert</td></tr>
+          <tr><td>Input Clear Button</td><td>${tk('.bt-input__clear-button')}</td><td>Filled'da "tümünü temizle" — ${tk('window.mslClearAll')}</td></tr>
+          <tr><td>Input Controls › Input Button</td><td>${tk('.bt-input__controls > .bt-input__button')}</td><td>chevron-down/up, panel aç/kapa — ${tk('window.mslToggle')}</td></tr>
+          <tr><td>Dropdown List (panel)</td><td>${tk('.bt-dropdown-list')}</td><td>Dropdown'la PAYLAŞILAN, item tıklama — ${tk('window.mslOptionToggle')}</td></tr>
+          <tr><td>Hint Value / Error Value</td><td>${tk('.bt-input__hint-value')} / ${tk('.bt-input__error-value')}</td><td>bağımsız, opsiyonel</td></tr>
         </tbody>
       </table>
-      <h2>Sizes</h2>
-      <table class="token-table">
-        <thead><tr><th>Size</th><th>Class</th><th>Min Height</th></tr></thead>
+
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Üç boyut — Sm (28px), Md (32px, varsayılan), Lg (36px). Boyut kutu yüksekliğini ve Content'in dikey padding'ini (4/6/8px) değiştirir; yatay padding Figma'da tüm boyutlarda sabit 8px (Figma'nın kendi kodu bu değeri isimsel olarak "radius-lg" token'ına bağlamış — sayısal olarak ${tk('--bt-space-md')} ile aynı 8px, muhtemelen bir Figma authoring tutarsızlığı, kodda ${tk('--bt-space-md')} kullanıldı). Chip boyutu (sm, 20px) boyut ekseninden BAĞIMSIZ sabit kalır.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
         <tbody>
-          <tr><td>Small</td><td>${tk('.bt-input--sm')}</td><td>28px</td></tr>
-          <tr><td>Medium (Default)</td><td>${tk('.bt-input--md')}</td><td>32px</td></tr>
-          <tr><td>Large</td><td>${tk('.bt-input--lg')}</td><td>36px</td></tr>
+          ${MSL_SIZE_OPTS.map(s => `<tr><td><span class="token-name">${s.label}</span></td><td>${{ sm: '28px', md: '32px', lg: '36px' }[s.key]}</td><td><div style="max-width:280px;"><div class="bt-input bt-multiselect bt-input--${s.key}"><div class="bt-input__anchor"><div class="${_mslCls('filled', s.key)}">${_mslBoxInner('filled', MSL_DEMO_SELECTED.slice(0, 2))}</div></div></div></div></td></tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Dokuz etkileşim durumu: Default/Hover/Focus/Active/Filled/Disabled/Error/Error Focus/Read Only — davranışı basit boolean'lara indirgenmiyor, her biri kendi ${tk('MSL_STATE_CONFIG')} girdisiyle tanımlı. Chip'ler yalnız Filled/Disabled/Error/Error Focus/Read Only'de görünür (Default/Hover/Focus/Active boş demo — placeholder gösterir); Clear butonu SADECE Filled'da; Validation SADECE Error/Error Focus'ta; Active panel açık + chevron yukarı bakar. Disabled ile Read Only görsel olarak neredeyse özdeş (ikisi de subtle zemin + soluk buton) — fark etkileşimde: Disabled tamamen inert, Read Only yalnızca değiştirilemez.</p>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${MSL_STATE_VARIANTS.map(s => {
+            const cfg = MSL_STATE_CONFIG[s.key];
+            const selected = cfg.chips ? MSL_DEMO_SELECTED : [];
+            return `<tr><td><span class="token-name">${s.label}</span></td><td><div style="max-width:280px;"><div class="bt-input bt-multiselect bt-input--md${s.key === 'error' || s.key === 'error-focused' ? ' bt-input--error' : ''}"><div class="bt-input__anchor"><div class="${_mslCls(s.key, 'md')}">${_mslBoxInner(s.key, selected)}</div></div></div></div></td></tr>`;
+          }).join('')}
         </tbody>
       </table>
     `};
@@ -18400,6 +18624,359 @@ PAGES_WEB['patterns/page-layouts'] = {
           <tr><td>Content Toolbar</td><td>border-radius (üst)</td><td>${tk('--bt-radius-sm')}</td><td>4px 4px 0 0</td></tr>
         </tbody>
       </table>
+    `};
+  },
+};
+
+// ─── Chip ───────────────────────────────────────────────────────────────────
+// Figma "Bentas DS" › "Chip" (_Base Chip 25:7815 + _Base Chip Controls
+// 1508:29288 + _Base Chip Clear Button 1510:29329 + Chip 1512:34172).
+// İkon seti: Lucide "loader" (16×16 slot — global .bt-icon 24×24 wrapper'ı bu
+// component'e özel 16×16'ya override edilir, bkz. styles.css). Clear butonu
+// TextBox/Dropdown ailesiyle PAYLAŞILAN aynı Figma "Icon/Sm/x" asset'i
+// (_tbxIconClear, CLAUDE.md "Mevcut Component'leri Reuse Et").
+const _chipIconLoader = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>`;
+const _chipIconX = _tbxIconClear;
+
+const CHIP_FILL_OPTS    = [{ key: 'solid', label: 'Solid' }, { key: 'outline', label: 'Outline' }];
+const CHIP_SIZE_OPTS    = [{ key: 'sm', label: 'Sm (Default)' }, { key: 'md', label: 'Md' }, { key: 'lg', label: 'Lg' }];
+const CHIP_SIZE_VARIANTS = [{ key: 'sm', label: 'sm' }, { key: 'md', label: 'md' }, { key: 'lg', label: 'lg' }];
+const CHIP_CONTENT_OPTS = [
+  { key: 'text',                       label: 'Text' },
+  { key: 'left-icon-text',             label: 'Left Icon + Text' },
+  { key: 'text-right-icon',            label: 'Text + Right Icon' },
+  { key: 'left-icon-text-right-icon',  label: 'Left Icon + Text + Right Icon' },
+];
+const CHIP_STATE_OPTS = [
+  { key: 'default',  label: 'Default' },
+  { key: 'hover',    label: 'Hover' },
+  { key: 'selected', label: 'Selected' },
+  { key: 'focus',    label: 'Focus' },
+  { key: 'disabled', label: 'Disabled' },
+];
+// Figma'da "Theme Color" bir property olarak tanımlı ama şu an yalnızca Base
+// değeri implemente edilmiş (Alert/Button'ın Primary/Success/vb. temalarının
+// aksine) — tek seçenekli olsa da eksen kullanıcı isteğiyle playground'a ve
+// dokümantasyona (bkz. "Themes" bölümü) dahil edildi, ileride yeni bir tema
+// eklenirse yalnızca bu diziye eklenip .bt-chip--{theme} CSS'i yazılacak.
+const CHIP_THEME_OPTS = [{ key: 'base', label: 'Base (Default)' }];
+
+// Atomic yapı (Figma "Chip" component set):
+//   bt-chip.bt-chip--{size}.bt-chip--{fillMode}
+//     ├─ bt-chip__control   (opsiyonel — sol ikon, Content=Left Icon+*)
+//     ├─ bt-chip__value
+//     ├─ bt-chip__control   (opsiyonel — sağ ikon, Content=*+Right Icon)
+//     └─ bt-chip__clear     (opsiyonel — Type=Closable)
+function chipHtml(p = {}) {
+  const {
+    size = 'sm', fillMode = 'solid', content = 'text', closable = 'off',
+    text = 'Chip Text', state = 'default',
+    interactive = true, onRemove = 'btChipRemove(this)',
+  } = p;
+  const hasLeftIcon  = content === 'left-icon-text' || content === 'left-icon-text-right-icon';
+  const hasRightIcon = content === 'text-right-icon' || content === 'left-icon-text-right-icon';
+  const hasIcon = hasLeftIcon || hasRightIcon;
+  const isClosable = closable === 'on';
+  const isSelected = state === 'selected';
+  const isDisabled = state === 'disabled';
+
+  const cls = ['bt-chip', `bt-chip--${size}`, `bt-chip--${fillMode}`];
+  if (hasIcon) cls.push('bt-chip--has-icon');
+  if (isSelected) cls.push('bt-chip--selected');
+  if (isDisabled) cls.push('bt-chip--disabled');
+  if (state === 'hover') cls.push('bt-chip--hover');
+  if (state === 'focus') cls.push('bt-chip--focus');
+
+  const iconSpan  = `<span class="bt-chip__control"><span class="bt-icon">${_chipIconLoader}</span></span>`;
+  const valueSpan = `<span class="bt-chip__value">${text}</span>`;
+  const clearBtn  = isClosable
+    ? `<span class="bt-chip__clear" role="button" aria-label="Remove" tabindex="${isDisabled ? -1 : 0}" onclick="event.stopPropagation();${onRemove}">${_chipIconX}</span>`
+    : '';
+  const inner = `${hasLeftIcon ? iconSpan : ''}${valueSpan}${hasRightIcon ? iconSpan : ''}${clearBtn}`;
+
+  const onclick      = interactive ? ` onclick="btChipToggle(this)"` : '';
+  const disabledAttr = (interactive && isDisabled) ? ' disabled' : '';
+  return `<button type="button" class="${cls.join(' ')}"${onclick}${disabledAttr}>${inner}</button>`;
+}
+
+function chipCss(v, p = {}) {
+  const { size = 'sm', fillMode = 'solid', content = 'text' } = p;
+  const hasIcon = content !== 'text';
+  const lines = [];
+  const pr  = (k, val) => `  ${k}: ${val};`;
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const heights = { sm: 20, md: 24, lg: 28 };
+  const ctrlPad = {
+    sm: 'var(--bt-space-2xs)  /* 2px */',
+    md: 'var(--bt-space-xs)  /* 4px */',
+    lg: 'var(--bt-space-sm)  /* 6px */',
+  };
+
+  lines.push(`/* Chip · ${fillMode[0].toUpperCase() + fillMode.slice(1)} · ${size.toUpperCase()} */`);
+  lines.push('');
+  lines.push('.bt-chip {');
+  lines.push(pr('height', `${heights[size]}px`));
+  lines.push(pr('border', '1px solid var(--bt-border-primary-default)  /* #d4d4d4 */'));
+  lines.push(pr('border-radius', 'var(--bt-radius-sm)  /* 4px */'));
+  lines.push(pr('background', fillMode === 'solid' ? 'var(--bt-base-subtle)  /* #f5f5f5 */' : 'var(--bt-base-default)  /* #ffffff */'));
+  lines.push('}');
+  lines.push('');
+  lines.push('.bt-chip__value {');
+  lines.push(pr('padding', hasIcon ? '0 var(--bt-space-xs)  /* 0 4px */' : '0 var(--bt-space-md)  /* 0 8px */'));
+  lines.push(pr('font', 'var(--bt-text-xs-regular)  /* 400 12px/16px */'));
+  lines.push(pr('color', 'var(--bt-text-primary-default)  /* #1a1a1a */'));
+  lines.push('}');
+  if (hasIcon) {
+    lines.push('');
+    lines.push('.bt-chip__control {');
+    lines.push(pr('padding', ctrlPad[size]));
+    lines.push('}');
+    lines.push('.bt-chip__control .bt-icon { width: 16px; height: 16px; }');
+  }
+  lines.push('');
+  lines.push('.bt-chip:hover,');
+  lines.push('.bt-chip--selected {');
+  lines.push(pr('background', fillMode === 'solid' ? 'var(--bt-base-muted)  /* #e6e6e6 */' : 'var(--bt-base-subtle)  /* #f5f5f5 */'));
+  lines.push('}');
+  lines.push('.bt-chip:focus-visible {');
+  lines.push(pr('box-shadow', '0 0 0 3px rgba(114, 114, 114, 0.25)  /* nötr ring */'));
+  lines.push('}');
+  lines.push('.bt-chip--disabled {');
+  lines.push(pr('background', fillMode === 'solid' ? 'var(--bt-base-subtle)  /* #f5f5f5 — Default ile aynı */' : 'var(--bt-base-default)  /* #ffffff — Default ile aynı */'));
+  lines.push('}');
+  lines.push('.bt-chip--disabled .bt-chip__value {');
+  lines.push(pr('color', 'var(--bt-text-primary-muted)  /* #a3a3a3 */'));
+  lines.push('}');
+
+  return `<pre class="code-block" style="margin:0;border-radius:0;border:none;min-height:100%;">${esc(lines.join('\n'))}</pre>`;
+}
+
+// Chip'e tıklamak seçim durumunu değiştirir (filtre chip deseni) — clear
+// butonundan gelen tıklama event.stopPropagation() ile buraya sızmaz.
+window.btChipToggle = function (el) {
+  if (el.disabled) return;
+  el.classList.toggle('bt-chip--selected');
+};
+// Closable chip'in × butonu — chip'i DOM'dan kaldırır (Tab'ın btTabClose deseni).
+window.btChipRemove = function (el) {
+  const chip = el.closest('.bt-chip');
+  if (chip) chip.remove();
+};
+
+// Per-fill-mode ve per-content description'ları (Çok Eksenli Component
+// Dokümantasyonu standardı — bkz. add-component skill). tk render closure'ından gelir.
+const _CHIP_FILL_DESC = {
+  solid: tk => `Chip varsayılan olarak dolu bir zeminle (${tk('--bt-base-subtle')}) çevrelenir — bir filtre/etiket listesinde en yüksek görünürlüğü sağlayan fill mode. Hover ve Selected aynı, bir ton koyu zemine geçer (${tk('--bt-base-muted')}); Focus zemin sabit kalıp 3px nötr halka ekler; Disabled ise Hover/Selected'tan farklı olarak <strong>Default'un AYNI zeminini</strong> (${tk('--bt-base-subtle')}) korur, yalnız metin/ikon rengi ${tk('--bt-text-primary-muted')}'a söner. Border her state'te sabit ${tk('--bt-border-primary-default')}. CSS: ${tk('.bt-chip--solid')} (varsayılan).`,
+  outline: tk => `Outline, Solid'in bir tık daha açık/hafif karşılığıdır — Default'ta zemin beyaz (${tk('--bt-base-default')}), Hover/Selected Solid'in Default'una denk düşen ${tk('--bt-base-subtle')}'e geçer, Disabled beyazda kalır. Border her state'te Solid ile birebir aynı (${tk('--bt-border-primary-default')}) — iki fill mode'u ayıran tek şey zemin tonu, metin/radius/border değişmez. Yoğun chip listelerinde (çok sayıda etiket yan yana) görsel ağırlığı azaltmak için tercih edilir. CSS: ${tk('.bt-chip--outline')}.`,
+};
+const _CHIP_CONTENT_DESC = {
+  'text': (tk, fl) => `${fl}'nin en yalın biçimi — yalnızca metin, ikon yok. ${tk('.bt-chip__value')} yatay padding'i ${tk('--bt-space-md')} (8px), tüm boyutlarda sabit.`,
+  'left-icon-text': (tk, fl) => `${fl} + baştan 16×16 ikon (${tk('.bt-chip__control')}, boyuta göre 2px/4px/6px iç boşluk). İkon eklenince ${tk('.bt-chip__value')} yatay padding'i ${tk('--bt-space-xs')}'e (4px) düşer — Figma'nın <em>Content = Left Icon + Text</em> varyantı.`,
+  'text-right-icon': (tk, fl) => `${fl} + sondan 16×16 ikon. Figma'daki ham property adı <em>Text + Left Icon</em> olsa da katman sırası Chip Value → Controls şeklinde, yani ikon görsel olarak <strong>sağda</strong> oturuyor — dokümantasyonda karışıklık olmasın diye burada "Right Icon" etiketlendi. Padding kuralı Left Icon + Text ile aynı (${tk('--bt-space-xs')}).`,
+  'left-icon-text-right-icon': (tk, fl) => `${fl} + hem sol hem sağ 16×16 ikon — iki ${tk('.bt-chip__control')} slotu Chip Value'yu ortadan sarar, padding yine ${tk('--bt-space-xs')}'te sabit kalır.`,
+};
+const _CHIP_CLOSABLE_DESC = (tk, fl) => `${fl} + sonda kaldırma butonu (${tk('Type=Closable')}) — gerçek ${tk('.bt-chip__clear')} (16×16 ikon, tüm boyutlarda sabit ${tk('--bt-space-2xs')} 2px iç boşluk, boyut eksenine bağlı değil). <strong>Çalışır:</strong> ×'e tıklamak chip'i DOM'dan kaldırır (${tk('window.btChipRemove')}); tıklama olayı ${tk('event.stopPropagation()')} ile chip'in kendi seçim toggle'ına sızmaz. Closable, içerik eksenlerinden bağımsız bir feature toggle'dır — herhangi bir Content tipiyle birlikte açılabilir.`;
+
+PAGES_WEB['components/chip'] = {
+  tabs: ['Overview', 'Examples', 'CSS Properties', 'Usage'],
+  toc: ['Anatomy', 'Sizes', 'States', 'Themes', 'Fill Modes', 'Solid', 'Outline'],
+  render(tab) {
+    const title = 'Chip';
+    const tk = v => `<code style="font-size:12px;font-family:var(--mono)">${v}</code>`;
+    const staticChip = (p) => chipHtml({ ...p, interactive: false });
+    const wrap = (html) => `<div style="display:flex;align-items:center;justify-content:center;padding:16px;">${html}</div>`;
+
+    // shared playground prop atoms — sıralama Figma'nın kendi property
+    // panelini yansıtır: Size → Fill Mode → Theme Color → Content → State → Type
+    const P_SIZE     = { key: 'size',     label: 'Size',     options: CHIP_SIZE_OPTS,    default: 'sm' };
+    const P_THEME    = { key: 'themeColor', label: 'Theme Color', options: CHIP_THEME_OPTS, default: 'base' };
+    const P_CONTENT  = { key: 'content',  label: 'Content',  options: CHIP_CONTENT_OPTS, default: 'text' };
+    const P_STATE    = { key: 'state',    label: 'State',    options: CHIP_STATE_OPTS,   default: 'default' };
+    const P_CLOSABLE = { key: 'closable', label: 'Closable', options: TBX_BOOL_OPTS,     default: 'off' };
+
+    // ── Overview: bir fill mode bölümü — kilitli playground + 5 içerik alt-bölümü (her biri kendi playground'u) ──
+    const fillSection = (f) => `
+      <h2 id="${f.label}">${f.label}</h2>
+      <p class="page-desc">${_CHIP_FILL_DESC[f.key](tk)}</p>
+      ${registerPlayground({
+        id: `pgd-chip-${f.key}-sec`,
+        variants: [{ key: 'default', label: f.label }],
+        props: [P_THEME, P_SIZE, P_CONTENT, P_STATE, P_CLOSABLE],
+        preview: (v, p) => wrap(chipHtml({ ...p, fillMode: f.key })),
+        code:    (v, p) => chipHtml({ ...p, fillMode: f.key }),
+        css:     (v, p) => chipCss(v, { ...p, fillMode: f.key }),
+      })}
+      ${[
+        { key: 'text',                      label: 'Text',                       lock: { content: 'text' } },
+        { key: 'left-icon-text',            label: 'Left Icon + Text',           lock: { content: 'left-icon-text' } },
+        { key: 'text-right-icon',           label: 'Text + Right Icon',          lock: { content: 'text-right-icon' } },
+        { key: 'left-icon-text-right-icon', label: 'Left Icon + Text + Right Icon', lock: { content: 'left-icon-text-right-icon' } },
+      ].map(c => `
+      <h3>${c.label}</h3>
+      <p class="page-desc">${_CHIP_CONTENT_DESC[c.key](tk, f.label)}</p>
+      ${registerPlayground({
+        id: `pgd-chip-${f.key}-${c.key.replace(/-/g, '')}-sec`,
+        variants: [{ key: 'default', label: c.label }],
+        props: [P_SIZE, P_STATE, P_CLOSABLE],
+        preview: (v, p) => wrap(chipHtml({ ...p, fillMode: f.key, ...c.lock })),
+        code:    (v, p) => chipHtml({ ...p, fillMode: f.key, ...c.lock }),
+        css:     (v, p) => chipCss(v, { ...p, fillMode: f.key, ...c.lock }),
+      })}`).join('')}
+      <h3>Closable</h3>
+      <p class="page-desc">${_CHIP_CLOSABLE_DESC(tk, f.label)}</p>
+      ${registerPlayground({
+        id: `pgd-chip-${f.key}-closable-sec`,
+        variants: [{ key: 'default', label: 'Closable' }],
+        props: [P_SIZE, P_CONTENT, P_STATE],
+        preview: (v, p) => wrap(chipHtml({ ...p, fillMode: f.key, closable: 'on' })),
+        code:    (v, p) => chipHtml({ ...p, fillMode: f.key, closable: 'on' }),
+        css:     (v, p) => chipCss(v, { ...p, fillMode: f.key }),
+      })}`;
+
+    // ── Examples: bir fill mode bölümü — statik önizleme tablosu ──
+    const fillExample = (f) => `
+      <h2 id="${f.label}">${f.label}</h2>
+      <p class="page-desc">${_CHIP_FILL_DESC[f.key](tk)}</p>
+      <table class="token-table">
+        <thead><tr><th>İçerik</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Text</td><td>${staticChip({ fillMode: f.key, content: 'text' })}</td></tr>
+          <tr><td>Left Icon + Text</td><td>${staticChip({ fillMode: f.key, content: 'left-icon-text' })}</td></tr>
+          <tr><td>Text + Right Icon</td><td>${staticChip({ fillMode: f.key, content: 'text-right-icon' })}</td></tr>
+          <tr><td>Left Icon + Text + Right Icon</td><td>${staticChip({ fillMode: f.key, content: 'left-icon-text-right-icon' })}</td></tr>
+          <tr><td>Closable</td><td>${staticChip({ fillMode: f.key, content: 'text', closable: 'on' })}</td></tr>
+          <tr><td>Selected</td><td>${staticChip({ fillMode: f.key, content: 'text', state: 'selected' })}</td></tr>
+        </tbody>
+      </table>`;
+
+    if (tab === 'CSS Properties') return { title, html: `
+      <p class="page-desc">Chip bileşeni için design token–CSS değişken eşleşmeleri. Değerler Figma'daki <em>_Base Chip</em>, <em>_Base Chip Controls</em>, <em>_Base Chip Clear Button</em> ve <em>Chip</em> component set'lerinden Figma Desktop Bridge ile doğrulanmıştır.</p>
+      <table class="token-table">
+        <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Chip · Sm / Md / Lg</td><td>height</td><td>—</td><td>20 / 24 / 28px</td></tr>
+          <tr><td>Chip</td><td>border</td><td>${tk('--bt-border-primary-default')}</td><td>1px · #d4d4d4 · her state'te sabit</td></tr>
+          <tr><td>Chip</td><td>border-radius</td><td>${tk('--bt-radius-sm')}</td><td>4px</td></tr>
+          <tr><td>Chip · Solid · Default / Disabled</td><td>background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5 · Disabled Default'la AYNI zemini korur</td></tr>
+          <tr><td>Chip · Solid · Hover / Selected</td><td>background</td><td>${tk('--bt-base-muted')}</td><td>#e6e6e6</td></tr>
+          <tr><td>Chip · Outline · Default / Disabled</td><td>background</td><td>${tk('--bt-base-default')}</td><td>#ffffff · Disabled Default'la AYNI zemini korur</td></tr>
+          <tr><td>Chip · Outline · Hover / Selected</td><td>background</td><td>${tk('--bt-base-subtle')}</td><td>#f5f5f5</td></tr>
+          <tr><td>Chip · Focus (her iki fill mode)</td><td>box-shadow</td><td>${tk('rgba(114,114,114,.25)')}</td><td>0 0 0 3px · nötr ring (Chip'e özgü — Tab/Checkbox'ın ${tk('rgba(212,212,212,.5)')} ring'inden farklı)</td></tr>
+          <tr><td>Chip Value</td><td>font</td><td>${tk('--bt-text-xs-regular')}</td><td>400 · 12px/16px</td></tr>
+          <tr><td>Chip Value · Default</td><td>color</td><td>${tk('--bt-text-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Chip Value · Disabled</td><td>color</td><td>${tk('--bt-text-primary-muted')}</td><td>#a3a3a3</td></tr>
+          <tr><td>Chip Value · Content=Text</td><td>padding (yatay)</td><td>${tk('--bt-space-md')}</td><td>8px</td></tr>
+          <tr><td>Chip Value · ikonlu Content'ler</td><td>padding (yatay)</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Control (Sm)</td><td>padding</td><td>${tk('--bt-space-2xs')}</td><td>2px</td></tr>
+          <tr><td>Control (Md)</td><td>padding</td><td>${tk('--bt-space-xs')}</td><td>4px</td></tr>
+          <tr><td>Control (Lg)</td><td>padding</td><td>${tk('--bt-space-sm')}</td><td>6px</td></tr>
+          <tr><td>Control</td><td>size (taşıyıcı kutu)</td><td>—</td><td>16×16 · tüm boyutlarda sabit</td></tr>
+          <tr><td>Control · Icon (gerçek glif)</td><td>size</td><td>—</td><td>12×12 · 16×16 kutuyu DOLDURMAZ (Figma "Icon/Sm/placeholder" referansı, 2px pay her yanda)</td></tr>
+          <tr><td>Clear Button</td><td>toplam boyut (taşıyıcı + padding)</td><td>${tk('--bt-space-2xs')}</td><td>20×20 · 2px padding + 16×16 içerik kutusu</td></tr>
+          <tr><td>Clear Button · Icon (gerçek glif)</td><td>size</td><td>—</td><td>10×10 · 16×16 kutuyu DOLDURMAZ (Figma "Icon/Sm/x" referansı, 3px pay her yanda) — Lucide değil, TextBox ailesiyle paylaşılan ${tk('_tbxIconClear')}, ${tk('.bt-icon')} wrapper'ı KULLANILMAZ</td></tr>
+          <tr><td>Clear Button · Default</td><td>color</td><td>${tk('--bt-icon-primary-default')}</td><td>#1a1a1a</td></tr>
+          <tr><td>Clear Button · Hover / Active / Selected</td><td>color</td><td>${tk('--bt-icon-primary-emphasis')}</td><td>#727272</td></tr>
+          <tr><td>Clear Button · Disabled</td><td>color</td><td>${tk('--bt-icon-primary-muted')}</td><td>#a3a3a3</td></tr>
+        </tbody>
+      </table>
+    `};
+
+    if (tab === 'Usage') return { title, html: `
+      <p class="page-desc">Chip'in ne zaman ve hangi fill mode ile kullanılacağına dair kılavuz. Chip, kısa bir değeri (etiket, filtre, seçilebilir kategori) temsil eder ve tek başına veya bir grup içinde kullanılabilir; ${tk('Closable')} ile kaldırılabilir seçim listeleri (örn. MultiSelect'in seçili değerleri), ${tk('Selected')} ile tekli/çoklu filtre grupları oluşturur.</p>
+      <h2>Do</h2>
+      <ul>
+        <li>Kısa, tek satıra sığan metin kullan — chip metni kırpılmaz, taşar</li>
+        <li>Bir grup içindeki tüm chip'leri aynı boyut + fill mode'da tut</li>
+        <li>Kullanıcının aktif olarak kaldırabileceği değerlerde ${tk('Type=Closable')} kullan</li>
+        <li>Filtre/seçim amaçlı chip gruplarında ${tk('Selected')} state'ini gerçek seçim durumuna bağla</li>
+        <li>Yoğun listelerde (çok sayıda chip yan yana) ${tk('Outline')} fill mode ile görsel ağırlığı azalt</li>
+      </ul>
+      <h2>Don't</h2>
+      <ul>
+        <li>Chip'i bir aksiyon butonu gibi kullanma — tekil aksiyonlar için Button/Icon Button tercih et</li>
+        <li>Aynı grupta fill mode veya boyut karıştırma</li>
+        <li>Uzun/çok satırlı metinleri chip içine sıkıştırma — Badge veya Card tercih et</li>
+        <li>Disabled bir chip'e ${tk('Type=Closable')} vererek kullanıcıyı kaldırılabilir olduğuna inandırma (clear butonu disabled'da tıklanamaz olsa da görsel olarak kafa karıştırır — mümkünse gizle)</li>
+      </ul>
+    `};
+
+    if (tab === 'Examples') return { title, html: `
+      <p class="page-desc">İki fill mode'un (Solid · Outline) her biri, içerik tipi (Text / Left Icon + Text / Text + Right Icon / Left Icon + Text + Right Icon / Closable / Selected) kırılımıyla. Overview'daki kilitli playground'ların aksine burada her kombinasyon statik tablo satırı olarak gösterilir — chip'e tıklayarak seçimi, ×'e tıklayarak kaldırmayı canlı deneyebilirsiniz.</p>
+      ${fillExample(CHIP_FILL_OPTS[0])}
+      ${fillExample(CHIP_FILL_OPTS[1])}
+    `};
+
+    // ── Overview ──
+    return { title, html: `
+      ${registerPlayground({
+        id: 'pgd-chip-overview',
+        variants: [{ key: 'default', label: 'Chip' }],
+        props: [
+          P_SIZE,
+          { key: 'fillMode', label: 'Fill Mode', options: CHIP_FILL_OPTS, default: 'solid' },
+          P_THEME, P_CONTENT, P_STATE, P_CLOSABLE,
+        ],
+        preview: (v, p) => wrap(chipHtml(p)),
+        code:    (v, p) => chipHtml(p),
+        css:     (v, p) => chipCss(v, p),
+      })}
+
+      <p class="page-desc">Kısa bir değeri (etiket, filtre, seçilebilir kategori) temsil eden kompakt bileşen — tıklanınca ${tk('Selected')} durumunu değiştirir (filtre chip deseni, gerçek ${tk('window.btChipToggle')} davranışı) ve isteğe bağlı bir × butonuyla (${tk('Type=Closable')}) kaldırılabilir. İki fill mode (Solid/Outline), üç boyut (Sm/Md/Lg), dört içerik tipi (Text, sol ikon, sağ ikon, her iki ikon) ve beş etkileşim durumu (${tk('State')}: Default/Hover/Selected/Focus/Disabled) destekler; Theme Color ekseni Figma'da tanımlı ama şu an yalnızca <strong>Base</strong> değeri implemente edilmiş, ileride Primary/Success gibi temalar eklenebilir. Properties panelindeki ${tk('State')} dropdown'ı Figma'nın kendi property'siyle birebir eşleşir — Default dışındaki bir değer seçildiğinde o görünüm zorlanır, gerçek tıklama/hover davranışına ek bir demo aracıdır. HTML'de ${tk('.bt-chip.bt-chip--{size}.bt-chip--{fillMode}')} + çocukları; seçili chip ${tk('.bt-chip--selected')} taşır. Blazor tarafında ${tk('BtChip')} bileşeniyle uygulanır.</p>
+
+      <h2 id="Anatomy">Anatomy</h2>
+      <p class="page-desc">Dört olası çocuk: opsiyonel sol ${tk('.bt-chip__control')} (16×16 ikon taşıyıcı), zorunlu ${tk('.bt-chip__value')} (metin), opsiyonel sağ ${tk('.bt-chip__control')} ve opsiyonel ${tk('.bt-chip__clear')} (× butonu, ${tk('Type=Closable')}). Kontrol slotları Figma'nın <em>_Base Chip Controls</em> component'ini paylaşır — yalnız konum (sol/sağ) ve boyuta göre padding değişir; taşıyıcı kutu her zaman 16×16 sabit kalır ama <strong>içindeki ikon kutuyu doldurmaz</strong> — Figma'nın "Icon/Sm/placeholder" referansı yalnız 12×12'lik bir vector gösteriyor (2px pay her yanda), Clear butonundaki "Icon/Sm/x" ise yalnız 10×10 (3px pay her yanda) — ikisi de ${tk('get_metadata')} ile node-by-node doğrulandı. Clear butonu ${tk('.bt-chip__clear')}, TextBox/Dropdown ailesiyle aynı "Icon/Sm/x" Figma asset'ini (${tk('_tbxIconClear')}) reuse eder; bu ikon Lucide olmadığı için ${tk('.bt-icon')} wrapper'ı KULLANILMAZ, ham SVG kendi 10×10 doğal boyutunda render edilir.</p>
+      <table class="token-table" style="margin-top:12px">
+        <thead><tr><th>Figma layer</th><th>Class</th><th>Rol</th></tr></thead>
+        <tbody>
+          <tr><td>Chip (container)</td><td>${tk('.bt-chip')} + ${tk('--{size}')} + ${tk('--{fillMode}')}</td><td>STATE katmanı (hover/selected/focus/disabled) · border/radius/height</td></tr>
+          <tr><td>_Base Chip Controls (sol)</td><td>${tk('.bt-chip__control')}</td><td>16×16 taşıyıcı kutu (ikon 12×12, doldurmaz) · boyuta göre 2/4/6px padding · Content = Left Icon + *</td></tr>
+          <tr><td>Chip Value</td><td>${tk('.bt-chip__value')}</td><td>Geist 12px/400/16 · ikon varsa yatay padding 8→4px düşer</td></tr>
+          <tr><td>_Base Chip Controls (sağ)</td><td>${tk('.bt-chip__control')}</td><td>aynı slot, sağ tarafta · Content = * + Right Icon</td></tr>
+          <tr><td>_Base Chip Clear Button</td><td>${tk('.bt-chip__clear')}</td><td>16×16 taşıyıcı + sabit 2px padding (20×20 toplam) · içindeki × glifi yalnız 10×10 (kutuyu doldurmaz) · ${tk('Type = Closable')}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Sizes">Sizes</h2>
+      <p class="page-desc">Üç boyut — Sm (20px, varsayılan), Md (24px), Lg (28px). Boyut yalnızca chip yüksekliğini ve ikon control padding'ini (2px/4px/6px) değiştirir; Chip Value'nun kendi padding'i (Content'e göre 8px veya 4px), tipografi (${tk('--bt-text-xs-regular')}, her boyutta 12px/16px) ve ikon boyutu (16×16) sabit kalır. Boyut ${tk('.bt-chip--{size}')} ile uygulanır; varsayılan Sm modifiersizdir.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Size</th><th>Height</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${CHIP_SIZE_VARIANTS.map(s => `<tr><td><span class="token-name">${s.label}</span></td><td>${{ sm: '20px', md: '24px', lg: '28px' }[s.key]}</td><td>${staticChip({ fillMode: 'solid', size: s.key, content: 'left-icon-text' })}</td></tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h2 id="States">States</h2>
+      <p class="page-desc">Chip beş etkileşim durumu barındırır: Default, Hover, Selected, Focus ve Disabled. Solid'de Hover ve Selected <strong>aynı</strong> zemine (${tk('--bt-base-muted')}) geçer — birbirinden ayırt edilemez, çünkü Figma'nın kendi Chip component set'inde ikisi birebir aynı token'ları taşıyor. Focus her fill mode'da nötr bir 3px odak halkası (${tk('box-shadow')}, ${tk('rgba(114,114,114,.25)')}) ekler; Disabled ise Hover/Selected'tan <strong>farklı</strong> olarak zemin Default ile aynı kalır (${tk('--bt-base-subtle')} Solid'de, ${tk('--bt-base-default')} Outline'da), yalnız metin/ikon rengi ${tk('--bt-text-primary-muted')}'a düşer. HTML'de ${tk('.bt-chip--selected')} / ${tk('.bt-chip--disabled')} veya gerçek ${tk(':hover')} / ${tk(':focus-visible')}.</p>
+      ${CHIP_FILL_OPTS.map(f => `
+      <div style="font:var(--bt-text-xs-semibold, 600 12px/16px var(--font));color:var(--bt-text-primary-muted, #a3a3a3);margin:var(--bt-space-3xl, 20px) 0 var(--bt-space-xl, 12px);text-transform:capitalize;">${f.label}</div>
+      <table class="token-table" style="margin-bottom:24px;">
+        <thead><tr><th>State</th><th>Preview</th></tr></thead>
+        <tbody>
+          ${CHIP_STATE_OPTS.map(s => `<tr><td><span class="token-name">${s.label}</span></td><td>${staticChip({ fillMode: f.key, size: 'md', content: 'left-icon-text', state: s.key })}</td></tr>`).join('')}
+        </tbody>
+      </table>`).join('')}
+
+      <h2 id="Themes">Themes</h2>
+      <p class="page-desc">Figma'nın Chip component set'inde ${tk('Theme Color')} ayrı bir property olarak tanımlı, ama Alert/Button'ın Primary/Success/Warning/Error gibi çok-değerli temalarının aksine şu an yalnızca <strong>Base</strong> değeri implemente edilmiş. Bu yüzden aşağıdaki tablo tek satır — eksen mevcut ama henüz tek bir üyesi var; playground'daki ${tk('Theme Color')} dropdown'ı da bunu yansıtır (tek seçenek). CSS'te tema-özel bir class yok, tüm renk kuralları doğrudan ${tk('.bt-chip--{fillMode}')} altında tanımlı — ileride yeni bir tema eklenirse ${tk('.bt-chip--{theme}')} deseniyle genişletilecek.</p>
+      <table class="token-table" style="margin-bottom:40px;">
+        <thead><tr><th>Theme</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td><span class="token-name">Base</span></td><td>${staticChip({ fillMode: 'solid', content: 'left-icon-text' })}</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="Fill Modes">Fill Modes</h2>
+      <p class="page-desc">Fill mode yalnızca chip'in zemin tonunu belirler — ikisi de aynı Base Chip yapısını, border'ı ve tipografiyi kullanır. Aşağıdaki tablo ikisini tek bakışta karşılaştırır; ardından her biri <strong>kendi bölümünde</strong> (kilitli playground + Text / Left Icon + Text / Text + Right Icon / Left Icon + Text + Right Icon / Closable alt kırılımları) ayrıntılı ele alınır. CSS'te ${tk('.bt-chip--solid')} (varsayılan) / ${tk('.bt-chip--outline')} ile seçilir.</p>
+      <table class="token-table">
+        <thead><tr><th>Fill Mode</th><th>Default</th><th>Hover / Selected</th><th>Preview</th></tr></thead>
+        <tbody>
+          <tr><td>Solid</td><td>${tk('--bt-base-subtle')}</td><td>${tk('--bt-base-muted')}</td><td>${staticChip({ fillMode: 'solid', content: 'text' })}</td></tr>
+          <tr><td>Outline</td><td>${tk('--bt-base-default')}</td><td>${tk('--bt-base-subtle')}</td><td>${staticChip({ fillMode: 'outline', content: 'text' })}</td></tr>
+        </tbody>
+      </table>
+
+      ${fillSection(CHIP_FILL_OPTS[0])}
+      ${fillSection(CHIP_FILL_OPTS[1])}
     `};
   },
 };

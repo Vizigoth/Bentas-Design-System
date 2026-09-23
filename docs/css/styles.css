@@ -4190,6 +4190,23 @@ pre.code-block.line-numbers {
 .bt-datepicker .bt-input__box--lg .bt-input__content { padding: var(--bt-space-lg, 10px) var(--bt-space-md, 8px) var(--bt-space-lg, 10px) var(--bt-space-xs, 4px); }
 
 /* ════════════════════════════════════════════════════════════════
+   MULTISELECT (Base Input) — .bt-multiselect ata seçicisi. Figma "Base
+   Multiselect"in kendi Content padding'i Dropdown/DateInput/DatePicker'ın
+   sm/md/lg=6/8/10 ölçeğinden BİR KADEME DÜŞÜK: sm/md/lg=4/6/8 (spacing-
+   xs/sm/md) — node-by-node doğrulandı, chip'lerin 20px yüksekliğine daha
+   dar bir dikey pay yeterli geldiği için farklı, bir hata değil. Yatay
+   padding tüm boyutlarda sabit 8px (Figma'nın kendi kodu bunu "radius-lg"
+   adlı bir token'a bağlamış — sayısal olarak spacing-md ile aynı, muhtemelen
+   authoring tutarsızlığı, burada spacing-md kullanıldı). Sol Input Controls
+   YOK — Dropdown/DatePicker'ın aksine sağda tek bir Input Button (chevron)
+   dışında control yok, bu yüzden padding'de "sol control" asimetrisi de yok.
+   Chip'ler arası gap için ayrıca bkz. aşağıdaki .bt-input__content kuralı. */
+.bt-multiselect .bt-input__box--sm .bt-input__content { padding: var(--bt-space-xs, 4px) var(--bt-space-md, 8px); }
+.bt-multiselect .bt-input__box--md .bt-input__content { padding: var(--bt-space-sm, 6px) var(--bt-space-md, 8px); }
+.bt-multiselect .bt-input__box--lg .bt-input__content { padding: var(--bt-space-md, 8px) var(--bt-space-md, 8px); }
+.bt-multiselect .bt-input__content { gap: var(--bt-space-xs, 4px); flex-wrap: nowrap; overflow: hidden; }
+
+/* ════════════════════════════════════════════════════════════════
    TEXTBOX
    Wrapper:  <div class="bt-input [--sm|--md|--lg] [state-modifier]">
      <div class="bt-input__label-value">
@@ -7642,3 +7659,122 @@ pre.code-block.line-numbers {
   color: var(--bt-text-primary-emphasis, #727272);
   user-select: none;
 }
+
+/* ============================================================
+   Chip — Figma "Bentas DS" › "Chip" (_Base Chip 25:7815 + _Base Chip
+   Controls 1508:29288 + _Base Chip Clear Button 1510:29329 + Chip
+   1512:34172). Eksenler: Fill Mode(Solid/Outline) × Theme Color(yalnız
+   Base implemente — Figma'da başka değer yok) × Content(Text/Left
+   Icon+Text/Text+Right Icon/Left Icon+Text+Right Icon) × Size(sm/md/lg)
+   × State(Default/Hover/Selected/Focus/Disabled) × Type(Default/Closable).
+   ============================================================ */
+.bt-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-none, 0);
+  border-radius: var(--bt-radius-sm, 4px);
+  border: 1px solid var(--bt-border-primary-default, #d4d4d4);
+  overflow: hidden;
+  box-sizing: border-box;
+  cursor: pointer;
+  font: inherit;
+}
+.bt-chip--sm { height: 20px; }
+.bt-chip--md { height: 24px; }
+.bt-chip--lg { height: 28px; }
+
+.bt-chip__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 var(--bt-space-md, 8px);
+  font: var(--bt-text-xs-regular, 400 12px/16px var(--font));
+  color: var(--bt-text-primary-default, #1a1a1a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* İkon içeren Content tiplerinde Chip Value yatay padding 8px → 4px düşer
+   (Figma: yalnız Content=Text'te 8px; Left Icon+Text / Text+Right Icon /
+   Left Icon+Text+Right Icon'da 4px — Closable/clear butonu bu düşüşü
+   TETİKLEMEZ, yalnız ikon slotu tetikler, get_design_context ile doğrulandı). */
+.bt-chip--has-icon .bt-chip__value { padding: 0 var(--bt-space-xs, 4px); }
+
+/* _Base Chip Controls — sol/sağ ikon slotu, boyuta göre padding (2xs/xs/sm).
+   Taşıyıcı kutu her boyutta sabit 16×16 (global .bt-icon 24×24 wrapper'ını
+   burada 16×16'ya override ediyoruz — CLAUDE.md "Farklı boyut gerekiyorsa"
+   istisnası, global .bt-icon class'ı değiştirilmedi). İKON TAŞIYICIYI
+   DOLDURMAZ — Figma'nın "Icon/Sm/placeholder" referansı 16×16 kutu içinde
+   yalnız 12×12'lik bir vector gösteriyor (2px pay her yanda), get_metadata
+   ile doğrulandı; global .bt-icon svg'nin varsayılan 16×16 zorlamasını
+   burada 12×12'ye override ediyoruz — aksi halde ikon kutuyu tam dolduruyor
+   (proje genelinde tekrarlanan "icon wrapper doldurmaz" hatası). */
+.bt-chip__control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bt-chip__control .bt-icon { width: 16px; height: 16px; }
+.bt-chip__control .bt-icon svg { width: 12px; height: 12px; }
+.bt-chip--sm .bt-chip__control { padding: var(--bt-space-2xs, 2px); }
+.bt-chip--md .bt-chip__control { padding: var(--bt-space-xs, 4px); }
+.bt-chip--lg .bt-chip__control { padding: var(--bt-space-sm, 6px); }
+
+/* _Base Chip Clear Button — tüm boyutlarda sabit 2px padding (Figma'da size
+   eksenine bağlı değil, tek bir state varyant seti). Taşıyıcı kutu 16×16
+   ("Icon/Sm/x" instance boyutu) ama gerçek vector yalnız 10×10 (3px pay her
+   yanda, get_metadata ile doğrulandı) — bu yüzden global 16×16 zorlayan
+   .bt-icon YERİNE, TextBox/Dropdown ailesindeki _tbxIconClear kullanımıyla
+   AYNI desen izleniyor: ham <svg width="10" height="10"> wrapper'sız
+   render edilir, kendi doğal boyutunda kalıp flex ile ortalanır. */
+.bt-chip__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: content-box;  /* 16×16 içerik kutusu + 2px padding her yanda = 20×20 toplam (Figma "Button") */
+  width: 16px;
+  height: 16px;
+  padding: var(--bt-space-2xs, 2px);
+  color: var(--bt-icon-primary-default, #1a1a1a);
+  cursor: pointer;
+}
+.bt-chip__clear:hover,
+.bt-chip__clear:active,
+.bt-chip--selected .bt-chip__clear { color: var(--bt-icon-primary-emphasis, #727272); }
+.bt-chip--disabled .bt-chip__clear { color: var(--bt-icon-primary-muted, #a3a3a3); cursor: not-allowed; pointer-events: none; }
+
+/* Fill Mode × State — arkaplan/border/metin. Border rengi her state'te
+   sabit kalır (--bt-border-primary-default); yalnız arkaplan + (disabled'da)
+   metin değişir. Outline her state'te Solid'in bir tık daha açık karşılığını
+   kullanır (default: white vs subtle · hover/selected: subtle vs muted ·
+   disabled: her iki modda da kendi Default zeminiyle AYNI kalır — yalnız
+   metin/ikon rengi söner) — Figma'da Hover ile Selected AYNI arkaplanı
+   paylaşıyor, iki state kodda da birebir aynı sınıfı üretir. Disabled'ın
+   zemini Hover/Selected'tan FARKLI (2026-09-23'te Figma'da düzeltildi —
+   önceki analizde yanlışlıkla Hover/Selected'la aynı muted zemini
+   paylaştığı görülmüştü, kullanıcı isteğiyle yeniden doğrulanıp düzeltildi). */
+.bt-chip--solid { background: var(--bt-base-subtle, #f5f5f5); }
+.bt-chip--solid.bt-chip--selected,
+.bt-chip--solid.bt-chip--hover,
+.bt-chip--solid:not(.bt-chip--disabled):hover { background: var(--bt-base-muted, #e6e6e6); }
+.bt-chip--solid.bt-chip--disabled { background: var(--bt-base-subtle, #f5f5f5); }
+
+.bt-chip--outline { background: var(--bt-base-default, #ffffff); }
+.bt-chip--outline.bt-chip--selected,
+.bt-chip--outline.bt-chip--hover,
+.bt-chip--outline:not(.bt-chip--disabled):hover { background: var(--bt-base-subtle, #f5f5f5); }
+.bt-chip--outline.bt-chip--disabled { background: var(--bt-base-default, #ffffff); }
+
+.bt-chip--disabled .bt-chip__value { color: var(--bt-text-primary-muted, #a3a3a3); }
+.bt-chip--disabled { cursor: not-allowed; }
+
+/* Focus — nötr ring, Figma "Focus Ring/neutral" efekti (Chip'e özgü renk:
+   Icon/Primary/emphasis #727272 @ .25 alpha — Tab/Checkbox'ın kullandığı
+   rgba(212,212,212,.5) ring'inden FARKLI; iki component'in Figma'da ayrı
+   efekt tanımı var, birbirine kopyalanmadı). */
+.bt-chip--focus,
+.bt-chip:focus-visible { box-shadow: 0 0 0 3px rgba(114, 114, 114, 0.25); outline: none; }

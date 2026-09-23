@@ -3457,3 +3457,270 @@ tıklayınca panelin açıldığı, ‹›/Bugün navigasyonunun çalıştığı
 Decade'e çıkıp bir dekad→yıl→ay→gün seçerek geri Day view'a inildiği, seçilen günün input'a
 `gg/aa/yyyy` olarak yazıldığı ve panelin kapandığı, dışarı tıklayınca da kapandığı, Clear/Error/
 Disabled/Read Only state'lerinin doğru göründüğü ve konsol hatası olmadığı doğrulandı.
+
+## 27. Chip
+
+Kısa bir değeri (etiket, filtre, seçilebilir kategori) temsil eden kompakt, tıklanabilir bileşen —
+Figma "Bentas DS" › "Chip" (`_Base Chip` 25:7815 + `_Base Chip Controls` 1508:29288 +
+`_Base Chip Clear Button` 1510:29329 + `Chip` 1512:34172), Figma Desktop Bridge ile node-by-node
+doğrulandı (2026-09-23). Nav: Displaying Data grubu, Card ile Data Table arasında; tek leaf sayfa
+(`components/chip`, "Varyant Dokümantasyonu — Tek Sayfa Standardı" — grup/children yapısı yok).
+
+### 27.1 Eksenler
+
+- **Fill Mode** (Primary eksen) — Solid / Outline. İkisi de aynı yapı/border/tipografiyi kullanır,
+  yalnız zemin tonu değişir: Outline, Solid'in her state'te bir tık daha açık karşılığıdır
+  (Default: beyaz vs subtle · Hover/Selected: subtle vs muted · Disabled: beyaz vs muted).
+- **Size** (Core) — Sm (20px, varsayılan) / Md (24px) / Lg (28px). Yalnızca chip yüksekliğini ve
+  ikon control padding'ini (2px/4px/6px, sırasıyla `--bt-space-2xs/xs/sm`) değiştirir; Chip
+  Value'nun padding'i, tipografi ve ikon boyutu (16×16) sabit kalır.
+- **Content** (Content ekseni, Fill Mode'un içinde `<h3>` alt-bölüm) — Text / Left Icon + Text /
+  Text + Right Icon / Left Icon + Text + Right Icon. Yalnız Content=Text'te Chip Value yatay
+  padding'i `--bt-space-md` (8px); ikon içeren üç Content'te `--bt-space-xs` (4px) — bu düşüş
+  yalnızca ikon slotu tarafından tetiklenir, Closable/clear butonu TETİKLEMEZ (Closable'da Chip
+  Value padding'i 8px'te kalır, doğrulandı).
+- **Type = Closable** (Feature toggle, her Fill Mode'un içinde ayrı `<h3>`) — sonda bir × butonu
+  (`.bt-chip__clear`) ekler, içerik eksenlerinden bağımsız çalışır.
+- **State** — Default / Hover / Selected / Focus / Disabled. Solid'de **Hover ve Selected birebir
+  aynı** zemine (`--bt-base-muted`) geçer — Figma'nın kendi component set'inde ikisi aynı token'ı
+  taşıyor, ayrı bir "seçili" göstergesi (checkmark vb.) yok. Disabled zemin Hover/Selected ile aynı
+  kalır, yalnız metin `--bt-text-primary-muted`'a düşer.
+- **Theme Color** — Figma'da property olarak tanımlı ama şu an yalnızca **Base** değeri var (Alert/
+  Button'ın Primary/Success/vb. temalarının aksine). **Güncelleme (aynı oturum, kullanıcı isteği —
+  "tek değer bile olsa ekleyelim"):** ilk yazımda bu eksen için ayrı bir bölüm/prop AÇILMAMIŞTI,
+  yalnızca prose'da geçiyordu; kullanıcı Figma'nın 6 property'sinin (Size/Type/Fill Mode/Theme
+  Color/Content/State) hepsinin dokümante edilip edilmediğini sorunca eksik olan TEK eksenin bu
+  olduğu görüldü ve eklendi: `CHIP_THEME_OPTS = [{key:'base',label:'Base (Default)'}]`, `P_THEME`
+  prop'u (master overview + her Fill Mode'un kilitli playground'u), `<h2 id="Themes">` bölümü (tek
+  satırlı karşılaştırma tablosu) — TOC sıralaması standardına uyularak States ile Fill Modes arasına
+  yerleştirildi (`Anatomy → Sizes → States → Themes` sabit core blok). Kodda `themeColor` prop'u
+  chip render'ını etkilemiyor (tek değer olduğu için görsel fark yok) — yalnızca dokümantasyon/
+  gelecekteki genişleme için eksen görünür kılındı.
+
+### 27.2 Anatomy → class eşlemesi
+
+`.bt-chip.bt-chip--{size}.bt-chip--{fillMode}` (+ `--has-icon`/`--selected`/`--disabled` durum
+class'ları) kapsayıcı `<button>`; içinde opsiyonel sol `.bt-chip__control`, zorunlu
+`.bt-chip__value`, opsiyonel sağ `.bt-chip__control`, opsiyonel `.bt-chip__clear`. İki
+`.bt-chip__control` de Figma'nın tek `_Base Chip Controls` component'ini paylaşır — yalnız DOM'daki
+konumu (ilk mi son mu) sol/sağ ayrımını yapar. İkon her zaman 16×16 sabit: global `.bt-icon`
+(24×24 wrapper) burada `.bt-chip__control .bt-icon`/`.bt-chip__clear .bt-icon` ile 16×16'ya override
+edildi (CLAUDE.md "Farklı boyut gerekiyorsa" istisnası — global class değiştirilmedi).
+
+### 27.3 İkon kaynağı
+
+Content ikonu gerçek Lucide `loader` (`unpkg.com/lucide-static` ile çekildi, elle çizilmedi —
+kullanıcı isteğiyle 2026-09-23'te `tag`'dan değiştirildi, `_chipIconLoader`) — Figma'da bu slot
+soyut bir "Icon/Sm/placeholder" taşıyor, gerçek bir chip'te hangi ikonun kullanılacağı tüketen
+projeye kalıyor, dokümantasyon için temsili bir ikon seçildi. Clear butonu ise TextBox/
+Dropdown ailesiyle **paylaşılan aynı Figma "Icon/Sm/x" asset'i** (`_tbxIconClear` doğrudan reuse
+edildi, CLAUDE.md "Mevcut Component'leri Reuse Et") — yeni bir ikon icat edilmedi.
+
+### 27.4 İsimlendirme notu — "Text + Right Icon"
+
+Figma'nın ham `Content` property değeri `Text + Left Icon` (katman sırası Chip Value → Controls,
+yani ikon görsel olarak **sağda** oturuyor — muhtemelen designer'ın "control tipi" ile "görsel
+konum"u karıştırdığı bir isimlendirme). Kullanıcı bunu Figma'da kontrol edip md/lg boyut hatası
+gibi ayrıca düzeltmedi; dokümantasyon karışıklığını önlemek için playground/Examples'ta bu değer
+**"Text + Right Icon"** olarak etiketlendi (internal key: `text-right-icon`), CSS/davranış
+etkilenmedi — yalnız kullanıcıya gösterilen label netleştirildi.
+
+### 27.5 Focus ring — Chip'e özgü renk
+
+Figma'nın "Focus Ring/neutral" efekti Chip'te `#72727240` (→ `rgba(114,114,114,.25)`) — Tab/
+Checkbox'ın kullandığı `rgba(212,212,212,.5)` ring'inden **farklı bir renk**, aynı isimli iki ayrı
+Figma efekt stili. `get_design_context` ile Chip'in kendi Focus state node'undan doğrulandı,
+diğer component'lerin ring'i buraya kopyalanmadı.
+
+### 27.6 Bilinçli sınır — md/lg boyutları (kullanıcı Figma'da düzeltti)
+
+İlk analizde Figma'daki gerçek `Chip` component'inde (scaffold amaçlı `_Base Chip`'in aksine) `md`
+ve `lg` boyutlarının görsel olarak birebir aynı olduğu (24px yükseklik, 4px control padding)
+görüldü — kullanıcıya soruldu, kullanıcı bunun kendi hatası olduğunu belirtip Figma'da düzeltti
+(`lg` → 28px yükseklik, 6px control padding, `_Base Chip` scaffold'ıyla tutarlı hale geldi).
+Kod, düzeltilmiş son Figma değerlerini yansıtıyor.
+
+### 27.7 Düzeltme — ikon taşıyıcılar glyph'i doldurmuyordu (proje genelinde 4. tekrar)
+
+Kullanıcı "chip clear button yapısını tekrar incele: Button → Icon Taşıyıcı 16×16 → Gerçek Icon
+Size" diyerek işaret etti. İlk implementasyonda `.bt-chip__control`/`.bt-chip__clear` içindeki
+`.bt-icon` wrapper'ı 16×16'ya override edilmişti ama global `.bt-icon svg { width:16px;height:16px
+}` kuralı miras kalmıştı — bu, gerçek glyph'i taşıyıcıya ZORLA gerdi. `get_metadata` ile taşıyıcının
+İÇİNDEKİ "Vector (Stroke)" node'una bakılınca: Content ikonu ("Icon/Sm/placeholder") 16×16 kutu
+içinde yalnız **12×12** (2px pay her yanda); Clear butonu ("Icon/Sm/x") 16×16 kutu içinde yalnız
+**10×10** (3px pay her yanda) — ikisi de kutuyu DOLDURMUYOR ([[feedback_icon_wrapper_not_filled]],
+projede 4. tekrar).
+
+Düzeltme: `.bt-chip__control .bt-icon svg { width:12px; height:12px }` eklendi (wrapper 16×16
+kalıyor, yalnız svg küçültüldü). Clear butonu için farklı bir yol izlendi — `_tbxIconClear` Lucide
+değil, Figma'nın kendi küçük "Icon/Sm/x" glifi (TextBox ailesiyle paylaşılan), bu yüzden `.bt-icon`
+wrapper'ı TAMAMEN KALDIRILDI (CLAUDE.md'nin `.bt-icon` zorunluluğu yalnızca Lucide ikonlar için
+geçerli); ham `<svg width="10" height="10">` artık `.bt-chip__clear` içine doğrudan konuyor, kendi
+doğal boyutunda flex ile ortalanıyor — TextBox/Dropdown'daki `.bt-tbx__clear` deseniyle birebir
+aynı. `.bt-chip__clear`'a `box-sizing:content-box; width:16px; height:16px;` eklendi ki
+padding'le birlikte toplam 20×20 (Figma "Button") korunsun.
+
+**Genel ders (get_design_context vs get_metadata):** `get_design_context`'in Tailwind çıktısındaki
+`size-full`/`inset-0` gibi "doldurur" görünümlü class'lar YANILTICI — bunlar codegen'in kendi
+yaklaşımı, taşıyıcının gerçek piksel boyutunu yansıtmıyor. İkon boyutu şüpheliyse her zaman
+`get_metadata` ile taşıyıcının içindeki en alt seviye vector/path node'unun kendi width/height'ına
+bakılmalı.
+
+### 27.8 Düzeltme — "State" property panelde yoktu
+
+Kullanıcı "figmada properties'de state'te tanımlamıştım bunu properties'de göremiyorum" dedi.
+İlk implementasyonda `State` (Default/Hover/Selected/Focus/Disabled) Figma'da bir property olarak
+tanımlıydı ama koddaki Properties panelinde yalnızca ayrı `Selected`/`Disabled` boolean toggle'ları
+vardı (`forceState` yalnızca statik State tablosunda dahili kullanılıyordu) — Figma'nın property
+adı/yapısı birebir yansıtılmamıştı. Düzeltme: `chipHtml`'deki `selected`/`disabled`/`forceState`
+parametreleri TEK bir `state` prop'unda birleştirildi (`CHIP_STATE_OPTS` — Button/Card/Data
+Table'ın zaten kullandığı standart "State" dropdown deseniyle aynı), master overview + her Fill
+Mode'un kilitli playground'una `P_STATE` eklendi; `Selected`/`Disabled` boolean prop'ları
+kaldırıldı. Properties panelindeki prop sırası da Figma'nın kendi property panel sırasını
+(**Size → Fill Mode → Theme Color → Content → State → Type**) yansıtacak şekilde yeniden
+düzenlendi. `state='default'` iken gerçek tıklama (`btChipToggle`) davranışı korunuyor; `Default`
+dışındaki bir değer seçilirse o görünüm zorlanıyor (Button'daki State dropdown'ıyla aynı mantık).
+
+### 27.9 Düzeltme — Disabled zemini yanlış doğrulanmıştı + gizli Hover class bug'ı
+
+Kullanıcı "chipte figmada disabled state'in variable'larını tekrar kontrol et" dedi. `get_metadata`/
+`get_design_context` ile Disabled state node'ları (Solid `1512:34148`, Outline `1512:34123`)
+yeniden çekildi: **Solid Disabled'ın zemini artık `--bt-base-subtle` (#f5f5f5) — Hover/Selected'ın
+`--bt-base-muted`'ı (#e6e6e6) DEĞİL, Default'un KENDİ zeminiyle aynı.** İlk implementasyonda (§27
+ilk yazım) Disabled'ın Hover/Selected ile aynı muted zemini paylaştığı doğrulanmıştı — bu ya
+kullanıcının o sırada Figma'da yaptığı bir düzeltmeydi ya da ilk `get_design_context` çıktısı
+yanıltıcıydı; hangisi olursa olsun bu yeniden-doğrulama ile kesinleşti: Disabled = Default zemini +
+yalnız soluk metin/ikon rengi. Outline Disabled zaten doğruydu (beyaz, değişmedi). CSS'te
+`.bt-chip--solid.bt-chip--disabled` artık `--bt-base-muted` yerine `--bt-base-subtle` kullanıyor;
+`chipCss()`, CSS Properties tablosu, States/Fill Mode açıklama metinleri güncellendi.
+
+**Yan bulgu (aynı doğrulama sırasında yakalandı):** Statik State tablosundaki "Hover" satırı
+`.bt-chip--hover` class'ını zorluyordu ama CSS'te yalnızca gerçek `:hover` pseudo-class tanımlıydı
+— `.bt-chip--hover` class'ının kendisi hiçbir kurala karşılık gelmiyordu, bu yüzden States
+tablosundaki Hover önizlemesi görsel olarak Default'la AYNI görünüyordu (sessizce yanlış
+dokümantasyon). `.bt-chip--solid.bt-chip--hover` / `.bt-chip--outline.bt-chip--hover` kuralları
+gerçek `:hover`'la aynı arkaplan bloğuna eklendi. Tarayıcıda `getComputedStyle` ile 2 fill mode ×
+5 state = 10 kombinasyonun tamamı tek tek doğrulandı, hepsi Figma'yla eşleşiyor.
+
+### 27.10 Doğrulama
+
+`node --check docs/js/pages-web.js` temiz. Tarayıcıda (node static server, `docs/index.html`):
+Overview playground'da Fill Mode/Size/Content/Closable/Selected/Disabled prop'larının tümü
+denendi (Content dropdown'ı 4 seçeneği doğru gösteriyor); chip'e tıklamak `bt-chip--selected`'i
+gerçekten toggluyor (computed style ile doğrulandı: seçili zemin `rgb(230,230,230)` =
+`--bt-base-muted`, metin `rgb(26,26,26)` = `--bt-text-primary-default`); Closable'da × butonuna
+tıklamak chip'i DOM'dan kaldırıyor (`event.stopPropagation()` sayesinde chip'in kendi toggle'ını
+tetiklemiyor); Sizes/States/Fill Modes/Solid/Outline bölümlerindeki statik tablolar doğru
+render oluyor; CSS Properties tablosu token/hex eşleşmelerini doğru gösteriyor; konsol hatası yok.
+**İkon boyutu düzeltmesi sonrası (§27.7):** `getBoundingClientRect()` ile ölçüldü — control ikon
+wrapper'ı 16×16/svg 12×12, clear butonu toplam 20×20/svg 10×10, Figma'nın `get_metadata` çıktısıyla
+birebir eşleşiyor; zoom screenshot'ta ikonların artık kutuyu doldurmadığı, küçük ve ortalı göründüğü
+doğrulandı; konsol hatası yok.
+
+## 28. MultiSelect (Base Input üzerine — sıfırdan revize edildi, Chip component'ini reuse eder)
+
+Kullanıcı isteği — "multiselect input componentini revize edeceğiz base multiselectten multiselect
+componentini oluşturduğum için önce base multiselecti incele, sonra multiselect componentini
+incele, multiselectte projede eklediğimiz chip componentini kullandım interaktif bir şekilde
+çalışmalı seçim sonrası. incelerken properties ve nested instances'ı atlama." Figma "Base
+Multiselect" (1504:11620, Size sm/md/lg) ve "Multiselect" (1518:155154, Size × State=Default/
+Hover/Focus/Active/Filled/Disabled/Error/Error Focus/Read Only) Figma Desktop Bridge ile
+node-by-node doğrulandı — Active state'in "Dropdown List" nested instance'ı (1518:156597) dahil,
+o da ayrıca `get_design_context` ile incelendi. MultiSelect eski implementasyonu (bespoke
+`.bt-msl__chip`, `.bt-tbx__input`, plus ikonlu sol control, eski `.bt-input--{state}` sistemi)
+**TAMAMEN silinip** Base Input mimarisi (`.bt-input__box`, design.md §25) + gerçek Chip
+component'i (§27) üzerine sıfırdan kuruldu.
+
+### 28.1 Mimari — eski implementasyondan temel farklar
+
+- **Sol control YOK.** Eski implementasyon solda sabit bir plus ikonu taşıyordu — Figma'nın güncel
+  "Base Multiselect"inde Content doğrudan Input Value/chip'lerle başlıyor, sol Input Controls hiç
+  yok. Bu, muhtemelen eski bir tasarım kararının Figma'da terk edilmesi; kod güncel Figma'yı
+  yansıtıyor.
+- **Chip'ler gerçek `.bt-chip`.** Eski `.bt-msl__chip` bespoke bir class'tı (kendi border/bg/
+  padding'i). Yeni implementasyon `components/chip`'in kendi `chipHtml()` fonksiyonunu doğrudan
+  çağırıyor (sm, Solid, Closable) — CLAUDE.md "Mevcut Component'leri Reuse Et".
+- **Panel Dropdown'la PAYLAŞILAN.** Figma'nın Active state'i, Dropdown'ın kendi "Dropdown List"
+  component'ini (aynı node ailesi) instance olarak reuse ediyor — kodda da aynı `.bt-dropdown-list`/
+  `.bt-dropdown-list-item` class'ları kullanıldı, yeni bir panel class'ı icat edilmedi.
+- **Content padding bir kademe düşük.** Dropdown/DateInput/DatePicker'ın sm/md/lg=6/8/10
+  (spacing-sm/md/lg) dikey padding ölçeğinden FARKLI olarak MultiSelect sm/md/lg=4/6/8
+  (spacing-xs/sm/md) kullanıyor — chip'lerin 20px yüksekliğine daha dar bir dikey pay yeterli
+  geldiği için, node-by-node doğrulandı, bir hata değil. Yatay padding tüm boyutlarda sabit 8px.
+- **Prepend/Append Text YOK.** add-input skill'in "verify against current Figma, don't carry
+  forward automatically" kuralı gereği kontrol edildi — MultiSelect'in Content yapısında bu
+  slotlar hiç tanımlı değil, `BI_AFFIX_PROPS` eklenmedi.
+- **"Required" alanı YOK.** Diğer Base Input tüketicileriyle (Dropdown, Date Input) aynı, Figma'nın
+  güncel modeli yalnız Label/Hint/Error — üçü bağımsız show/hide + editable text.
+
+### 28.2 State config (basit boolean'lara indirgenmiyor)
+
+| State | chips | clear | validation | Input Button | Not |
+|---|---|---|---|---|---|
+| Default | ✗ (placeholder) | ✗ | ✗ | default (bg yok) | |
+| Hover | ✗ | ✗ | ✗ | hover (bg-subtle) | border brand |
+| Focus | ✗ | ✗ | ✗ | hover (bg-subtle) | border brand + ring — Input Button Figma'da "Hover" görünümünde, "Active" DEĞİL |
+| Active | ✗ (bu demo örneğinde) | ✗ | ✗ | active (bg-muted) + chevron-UP | border brand + ring + panel açık |
+| Filled | ✓ | ✓ | ✗ | default | tek state'te Clear butonu var |
+| Disabled | ✓ | ✗ | ✗ | default (soluk) | bg subtle |
+| Error | ✓ | ✗ | ✓ | default | border+label error rengi |
+| Error Focus | ✓ | ✗ | ✓ | default | + error ring rgba(232,75,91,.25) |
+| Read Only | ✓ | ✗ | ✗ | default (soluk) | bg subtle — Disabled'la görsel olarak neredeyse özdeş, fark yalnız etkileşimde |
+
+### 28.3 Gerçek interaktif davranış (kullanıcı isteği — "interaktif bir şekilde çalışmalı seçim sonrası")
+
+Yalnızca **Default** state varyantı gerçekten tıklanabilir (Dropdown'ın kendi `ddBaseToggle`
+deseniyle aynı ilke — diğer 8 state statik Figma-sadık önizleme):
+
+- `window.mslToggle` — kutuya/chevron'a tıklamak paneli açar/kapar. Dropdown'dan TEK farkı: bir
+  seçenek tıklandığında panel KAPANMAZ (multi-select, art arda seçim yapılabilmeli).
+- `window.mslOptionToggle` — listeden bir seçeneğe tıklamak: zaten seçiliyse chip'i kaldırıp
+  seçili işaretini kaldırır, değilse gerçek bir `.bt-chip` (Closable) ekler ve seçili işaretler.
+- `window.mslChipRemove` — chip'in kendi × butonu (Chip component'inin `onRemove` parametresiyle
+  override edildi, bkz. §28.4) chip'i kaldırır VE listedeki karşılığını "seçili değil"e döndürür.
+- `window.mslClearAll` — Filled'daki "tümünü temizle" × butonu tüm chip'leri ve liste seçimlerini
+  temizler, placeholder'ı geri getirir, kendini kaldırır.
+- `_mslBindOutsideClickOnce` — Date Picker'daki `_dpBindOutsideClickOnce` ile AYNI
+  `e.composedPath()` deseni, dışarı tıklayınca paneli kapatır.
+- Clear butonu chip varlığına göre CANLI eklenir/kaldırılır (`_mslSyncClear`) — Figma'da yalnız
+  Filled state'te var ama "Default → kullanıcı seçim yaptı" durumu işlevsel olarak Filled'a denk
+  düştüğü için aynı davranış canlı demoda da uygulanıyor.
+
+### 28.4 Chip component'inde yapılan minimal genişletme
+
+`chipHtml()`'e (components/chip) yeni bir opsiyonel `onRemove` parametresi eklendi (varsayılan
+`'btChipRemove(this)'`, geriye dönük uyumlu) — MultiSelect kendi chip'lerini `onRemove:
+'mslChipRemove(this)'` ile render ediyor ki × butonu yalnız DOM'dan silmekle kalmayıp listedeki
+karşılığını da senkronize etsin. Bu, Chip'in genel API'sini bozmadan tek bir tüketicinin özel
+ihtiyacını karşılayan minimal bir genişletme.
+
+### 28.5 Bilinçli sınır — "+N more" truncation bir algoritma DEĞİL
+
+Figma'nın Base Multiselect demo'su "Chip Text" (1 gerçek chip) + "+3 more" (1 overflow chip) —
+toplam 4 seçili — gösteriyor. Bu, Figma'nın (statik bir tasarım aracı olarak) gerçek bir "mevcut
+genişliği ölç, sığmayanları topla" ALGORİTMASI tanımlamadığı, yalnızca temsili bir illüstrasyon
+olduğu anlamına geliyor. Kod bunu iki ayrı şekilde ele alıyor:
+- **Canlı interaktif demo (Default state):** truncation YOK — seçilen her öğe kendi chip'i olarak
+  eklenir, kutu `overflow:hidden` + `flex-wrap:nowrap` ile taşan içeriği gizler (gerçek bir
+  production ortamında container genişliğine göre tasarlanır).
+- **Statik state tabloları (Filled/Disabled/Error/vb.):** Figma'nın 4-öğe demo setini (`MSL_DEMO_
+  SELECTED`) birebir chip olarak gösterir — "+N more" özel bir chip TÜRÜ olarak render edilmez,
+  dördü de normal birer seçim chip'idir (Figma'nın "+3 more" metnini bir chip İÇİNDE literal metin
+  olarak göstermesi de aslında sadece bir demo string'i, ayrı bir component değil).
+Gerçek bir "+N more" overflow-toplama davranışı istenirse bu ayrı bir kullanıcı kararı gerektirir
+(maxVisible eşiği, hangi öğelerin toplanacağı vb.) — şimdilik açık bırakıldı.
+
+### 28.6 Doğrulama
+
+`node --check docs/js/pages-web.js` temiz, CSS brace-denge temiz. Tarayıcıda (node static server):
+Properties panelinden State dropdown'ının 9 değeri de denendi; **Default**'ta canlı akış uçtan uca
+test edildi — kutuya tıklayınca panel açılıp chevron aşağı→yukarı döndüğü, bir seçeneğe tıklayınca
+gerçek bir chip eklenip panelin AÇIK kaldığı, ikinci bir seçeneğe tıklayınca ikinci chip'in eklendiği
+(`getBoundingClientRect`/DOM sorgusuyla doğrulandı: `chips:["Option 1","Option 2"]`), bir chip'in ×
+butonuna tıklayınca hem chip'in hem listedeki seçili işaretinin kalktığı, "tümünü temizle" (×)
+butonuna tıklayınca tüm chip'lerin/seçimlerin temizlenip placeholder'ın geri geldiği (`chips:0,
+selectedItems:0,hasClear:false`), dışarı tıklayınca panelin kapandığı (`isOpen:false,
+listDisplay:"none"`) doğrulandı. Sizes/States statik tabloları, Anatomy tablosu doğru render oluyor.
+Dropdown sayfasında regresyon kontrolü yapıldı (panel aç/kapa + seçim + otomatik kapanma hâlâ
+çalışıyor) — MultiSelect'in yeni fonksiyonları Dropdown'ın kendi fonksiyonlarına dokunmadı, paralel
+bir kopya yazıldı. Konsol hatası yok.
