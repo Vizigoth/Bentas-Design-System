@@ -14201,8 +14201,8 @@ PAGES_WEB['components/data-table'] = {
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Donmuş Kolon</td><td>Position / Z-index</td><td>—</td><td>sticky / 5</td></tr>
-          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)</td></tr>
-          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06), -10px 0 20px rgba(16,24,40,0.035)</td></tr>
+          <tr><td>Sol Donmuş Kenar</td><td>Shadow</td><td>—</td><td>2px 0 4px rgba(16,24,40,0.08)</td></tr>
+          <tr><td>Sağ Donmuş Kenar</td><td>Shadow</td><td>—</td><td>-2px 0 4px rgba(16,24,40,0.08)</td></tr>
         </tbody>
       </table>
       <h2>Sorting / Filtering</h2>
@@ -14600,7 +14600,7 @@ PAGES_WEB['components/data-table'] = {
         <thead><tr><th>Element</th><th>Property</th><th>Token</th><th>Value</th></tr></thead>
         <tbody>
           <tr><td>Donmuş Hücre</td><td>Position / Left / Z-index</td><td>—</td><td>sticky / önceki kolonların genişliği / 5</td></tr>
-          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06), 10px 0 20px rgba(16,24,40,0.035)</td></tr>
+          <tr><td>Son Donmuş Kolon</td><td>Box-shadow</td><td>—</td><td>2px 0 4px rgba(16,24,40,0.08)</td></tr>
         </tbody>
       </table>
 
@@ -14634,8 +14634,8 @@ PAGES_WEB['components/data-table'] = {
         <tbody>
           <tr><td>Sol Donmuş Hücre</td><td>Position / Left / Z-index</td><td>—</td><td>sticky / önceki kolonların genişliği / 5</td></tr>
           <tr><td>Sağ Donmuş Hücre</td><td>Position / Right / Z-index</td><td>—</td><td>sticky / 0px / 5</td></tr>
-          <tr><td>Sol Kenar</td><td>Box-shadow</td><td>—</td><td>4px 0 10px rgba(16,24,40,0.06)</td></tr>
-          <tr><td>Sağ Kenar</td><td>Box-shadow</td><td>—</td><td>-4px 0 10px rgba(16,24,40,0.06)</td></tr>
+          <tr><td>Sol Kenar</td><td>Box-shadow</td><td>—</td><td>2px 0 4px rgba(16,24,40,0.08)</td></tr>
+          <tr><td>Sağ Kenar</td><td>Box-shadow</td><td>—</td><td>-2px 0 4px rgba(16,24,40,0.08)</td></tr>
         </tbody>
       </table>
 
